@@ -1,3 +1,4 @@
+import type { MarquaTable } from './types';
 import { checkNum } from 'mauss/utils';
 import { clean, compareString } from './helper';
 
@@ -56,9 +57,23 @@ export function extractMeta(metadata: string) {
 }
 
 export function generateId(title: string): string {
-	const trimmed = title.split(/ \| /)[0].toLowerCase(); // Take only part before vBar "|"
-	const tagId = trimmed.replace(separators, '-').replace(/(-)(?=-*\1)/g, '');
-	return tagId.slice(0, tagId.length - (tagId.slice(-1) === '-' ? 1 : 0));
+	title = title.toLowerCase().replace(separators, '-');
+	return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
+}
+
+export function generateTable(content: string) {
+	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} \w+/.test(l));
+	return lines.reduce((table: MarquaTable[], line) => {
+		const isTitle = line.startsWith('## ');
+		line = line.replace(/^#{2,3} (.+)/, '$1');
+		line = line.replace(/\[(.+)\]\(.+\)/g, '$1');
+		const id = generateId(line);
+		if (!isTitle) {
+			const lastTitle = table[table.length - 1];
+			lastTitle.sections.push({ id, cleaned: line });
+		} else table.push({ id, cleaned: line, sections: [] });
+		return table;
+	}, []);
 }
 
 export function traverseCompare(x: Record<string, any>, y: Record<string, any>): number {

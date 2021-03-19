@@ -2,7 +2,7 @@ import type { HydrateFn } from './types';
 import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { compareDate, compareString } from './helper';
-import { contentParser, countReadTime, extractMeta, generateId, traverseCompare } from './utils';
+import { contentParser, countReadTime, extractMeta, generateTable, traverseCompare } from './utils';
 import marker from './marker';
 
 export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O;
@@ -19,8 +19,7 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 	);
 	if (!result) return;
 
-	const headings = Array.from(article.match(/^## (.*)/gm) || [], (v) => v.slice(3));
-	result.toc = headings.map((raw) => ({ id: generateId(raw), cleaned: raw.split(' | ')[0] }));
+	result.toc = generateTable(article);
 	result.read_time = countReadTime(article);
 	if (result.date && result.date.published && !result.date.updated) {
 		result.date.updated = result.date.published;

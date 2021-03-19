@@ -8,3 +8,9 @@ export interface MarquaData extends Record<string, any> {
 	read_time: number;
 	content?: string;
 }
+
+export interface MarquaTable {
+	id: string;
+	cleaned: string;
+	sections: Array<{ id: string; cleaned: string }>;
+}
