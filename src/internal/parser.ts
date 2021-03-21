@@ -15,11 +15,11 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 	const metadata = extractMeta((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
 	const article = !match ? content : content.slice(sliceIdx);
+	metadata.toc = generateTable(article);
+	metadata.read_time = countReadTime(article);
 	const result = <typeof metadata>hydrate({ frontMatter: <I>metadata, content: article, filename });
 	if (!result) return;
 
-	result.toc = generateTable(article);
-	result.read_time = countReadTime(article);
 	if (result.date && result.date.published && !result.date.updated) {
 		result.date.updated = result.date.published;
 	}
