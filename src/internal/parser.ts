@@ -32,21 +32,22 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 	return result as O;
 }
 
-export function parseDir<I, O = I>(dirname: string, hydrate: HydrateFn<I, O>): Array<O>;
 export function parseDir<I, O extends Record<string, any> = I>(
-	dirname: string,
+	options: string | { dirname: string; extensions?: string[] },
 	hydrate: HydrateFn<I, O>
 ): Array<O> {
+	const { dirname, extensions = ['.md'] } =
+		typeof options === 'string' ? { dirname: options } : options;
 	return readdirSync(dirname)
-		.filter((name) => !name.startsWith('draft.') && name.endsWith('.md'))
+		.filter((name) => !name.startsWith('draft.') && extensions.some((ext) => name.endsWith(ext)))
 		.map((filename) => parseFile(join(dirname, filename), hydrate))
 		.filter(isExists)
 		.sort((x, y) => {
 			if (x.date && y.date) {
 				if (typeof x.date === 'string' && typeof y.date === 'string')
 					if (x.date !== y.date) return compareString(x.date, y.date);
-				const { updated: xu, published: xp } = x.date;
-				const { updated: yu, published: yp } = y.date;
+				const { updated: xu = '', published: xp = '' } = x.date;
+				const { updated: yu = '', published: yp = '' } = y.date;
 				if (xu && yu && xu !== yu) return compareString(xu, yu);
 				if (xp && yp && xp !== yp) return compareString(xp, yp);
 			}
