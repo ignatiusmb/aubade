@@ -1,6 +1,6 @@
 import type { HydrateFn } from './types';
 import { join } from 'path';
-import { readdirSync, readFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { isExists } from 'mauss/guards';
 import { compareString } from './helper';
 import { contentParser, countReadTime, extractMeta, generateTable, traverseCompare } from './utils';
@@ -38,6 +38,7 @@ export function parseDir<I, O extends Record<string, any> = I>(
 ): Array<O> {
 	const { dirname, extensions = ['.md'] } =
 		typeof options === 'string' ? { dirname: options } : options;
+	if (!existsSync(dirname)) throw new Error(`Pathname ${dirname} does not exists!`);
 	return readdirSync(dirname)
 		.filter((name) => !name.startsWith('draft.') && extensions.some((ext) => name.endsWith(ext)))
 		.map((filename) => parseFile(join(dirname, filename), hydrate))
