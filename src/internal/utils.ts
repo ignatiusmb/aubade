@@ -68,6 +68,7 @@ export function generateTable(content: string) {
 		const isTitle = line.startsWith('## ');
 		line = line.replace(/^#{2,3} (.+)/, '$1').trim();
 		line = line.replace(/\[(.+)\]\(.+\)/g, '$1');
+		line = line.replace(/`(.+)`/g, '$1');
 		const id = generateId(line);
 		if (!someTitle || isTitle) {
 			table.push({ id, cleaned: line, sections: [] });
