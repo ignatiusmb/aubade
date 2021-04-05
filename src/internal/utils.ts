@@ -63,15 +63,18 @@ export function generateId(title: string): string {
 
 export function generateTable(content: string) {
 	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} \w+/.test(l));
+	const someTitle = lines.some((l) => l.startsWith('## '));
 	return lines.reduce((table: MarquaTable[], line) => {
 		const isTitle = line.startsWith('## ');
 		line = line.replace(/^#{2,3} (.+)/, '$1');
 		line = line.replace(/\[(.+)\]\(.+\)/g, '$1');
 		const id = generateId(line);
-		if (!isTitle) {
+		if (!someTitle || isTitle) {
+			table.push({ id, cleaned: line, sections: [] });
+		} else if (table.length) {
 			const lastTitle = table[table.length - 1];
 			lastTitle.sections.push({ id, cleaned: line });
-		} else table.push({ id, cleaned: line, sections: [] });
+		}
 		return table;
 	}, []);
 }
