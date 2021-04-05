@@ -62,7 +62,7 @@ export function generateId(title: string): string {
 }
 
 export function generateTable(content: string) {
-	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} \w+/.test(l));
+	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} .+/.test(l));
 	const someTitle = lines.some((l) => l.startsWith('## '));
 	return lines.reduce((table: MarquaTable[], line) => {
 		const isTitle = line.startsWith('## ');
