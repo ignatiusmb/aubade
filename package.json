@@ -2,10 +2,11 @@
   "name": "marqua",
   "author": "Ignatius Bagus",
   "description": "Node.js Aqua-flavored markdown file parser",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "type": "module",
   "main": "index.js",
+  "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "watch": "tsc -w --noEmit",
@@ -28,7 +29,7 @@
   "dependencies": {
     "@ignatiusmb/aqua": "^20.3.3",
     "markdown-it": "^12.0.4",
-    "mauss": "^0.0.7"
+    "mauss": "^0.0.8"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.0.1",
