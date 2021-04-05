@@ -20,7 +20,7 @@ export function countReadTime(content: string): number {
 	);
 	const words = paragraphs.reduce((acc, cur) => {
 		if (/^[\t\s]*<.+>/.test(cur.trim())) return acc + 1;
-		return acc + clean(cur.trim().split(' ')).length;
+		return acc + cur.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 2).length;
 	}, 0);
 	const images = content.match(/!\[.+\]\(.+\)/g);
 	const total = words + (images || []).length * 12;
