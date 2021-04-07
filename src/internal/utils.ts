@@ -8,7 +8,7 @@ export function contentParser(data: Record<string, any>, content: string): strin
 	const traverse = (meta: string | Record<string, any>, properties: string): string => {
 		for (const key of properties.split(':'))
 			if (typeof meta !== 'string') meta = meta[checkNum(key)];
-		return JSON.stringify(meta);
+		return typeof meta === 'string' ? meta : JSON.stringify(meta);
 	};
 
 	return content.replace(/#{(.+)}!/g, (s, c) => (c && traverse(data, c)) || s);
