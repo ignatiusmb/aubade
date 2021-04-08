@@ -6,8 +6,10 @@ import { compareString } from './helper';
 import { contentParser, countReadTime, extractMeta, generateTable, traverseCompare } from './utils';
 import marker from './marker';
 
-export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O;
-export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O | undefined {
+export function parseFile<I, O extends Record<string, any> = I>(
+	pathname: string,
+	hydrate?: HydrateFn<I, O>
+): O | undefined {
 	const crude = readFileSync(pathname, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const [filename] = pathname.split(/[/\\]/).slice(-1);
@@ -17,7 +19,10 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 	const content = contentParser(metadata, crude.slice(sliceIdx));
 	metadata.toc = generateTable(content);
 	metadata.read_time = countReadTime(content);
-	const result = <typeof metadata>hydrate({ frontMatter: <I>metadata, content, filename });
+	const result = !hydrate
+		? ({ ...metadata, content } as Record<string, any>)
+		: hydrate({ frontMatter: <I>metadata, content, filename });
+
 	if (!result) return;
 
 	if (result.date && result.date.published && !result.date.updated) {
@@ -34,7 +39,7 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 
 export function parseDir<I, O extends Record<string, any> = I>(
 	options: string | { dirname: string; extensions?: string[] },
-	hydrate: HydrateFn<I, O>
+	hydrate?: HydrateFn<I, O>
 ): Array<O> {
 	const { dirname, extensions = ['.md'] } =
 		typeof options === 'string' ? { dirname: options } : options;
