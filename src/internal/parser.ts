@@ -25,15 +25,9 @@ export function parseFile<I, O extends Record<string, any> = I>(
 
 	if (!result) return;
 
-	if (result.date && result.date.published && !result.date.updated) {
-		result.date.updated = result.date.published;
-	}
+	if (result.date) result.date.updated = result.date.updated || result.date.published || undefined;
+	if (result.content) result.content = marker.render(result.content);
 
-	if (result.content) {
-		const { content, ...rest } = result;
-		result.content = contentParser(rest, content);
-		result.content = marker.render(result.content);
-	}
 	return result as O;
 }
 
