@@ -8,7 +8,7 @@ export function contentParser(data: Record<string, any>, content: string): strin
 	const traverse = (meta: string | Record<string, any>, properties: string): string => {
 		for (const key of properties.split(':'))
 			if (typeof meta !== 'string') meta = meta[checkNum(key)];
-		return JSON.stringify(meta);
+		return typeof meta === 'string' ? meta : JSON.stringify(meta);
 	};
 
 	return content.replace(/#{(.+)}!/g, (s, c) => (c && traverse(data, c)) || s);
@@ -20,7 +20,7 @@ export function countReadTime(content: string): number {
 	);
 	const words = paragraphs.reduce((acc, cur) => {
 		if (/^[\t\s]*<.+>/.test(cur.trim())) return acc + 1;
-		return acc + clean(cur.trim().split(' ')).length;
+		return acc + cur.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 2).length;
 	}, 0);
 	const images = content.match(/!\[.+\]\(.+\)/g);
 	const total = words + (images || []).length * 12;
@@ -62,16 +62,20 @@ export function generateId(title: string): string {
 }
 
 export function generateTable(content: string) {
-	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} \w+/.test(l));
+	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} .+/.test(l));
+	const someTitle = lines.some((l) => l.startsWith('## '));
 	return lines.reduce((table: MarquaTable[], line) => {
 		const isTitle = line.startsWith('## ');
-		line = line.replace(/^#{2,3} (.+)/, '$1');
+		line = line.replace(/^#{2,3} (.+)/, '$1').trim();
 		line = line.replace(/\[(.+)\]\(.+\)/g, '$1');
+		line = line.replace(/`(.+)`/g, '$1');
 		const id = generateId(line);
-		if (!isTitle) {
+		if (!someTitle || isTitle) {
+			table.push({ id, cleaned: line, sections: [] });
+		} else if (table.length) {
 			const lastTitle = table[table.length - 1];
 			lastTitle.sections.push({ id, cleaned: line });
-		} else table.push({ id, cleaned: line, sections: [] });
+		}
 		return table;
 	}, []);
 }

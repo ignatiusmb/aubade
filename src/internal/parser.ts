@@ -8,16 +8,16 @@ import marker from './marker';
 
 export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O;
 export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O | undefined {
-	const content = readFileSync(pathname, 'utf-8').trim();
-	const match = content.match(/---\r?\n([\s\S]+?)\r?\n---/);
+	const crude = readFileSync(pathname, 'utf-8').trim();
+	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const [filename] = pathname.split(/[/\\]/).slice(-1);
 
 	const metadata = extractMeta((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
-	const article = !match ? content : content.slice(sliceIdx);
-	metadata.toc = generateTable(article);
-	metadata.read_time = countReadTime(article);
-	const result = <typeof metadata>hydrate({ frontMatter: <I>metadata, content: article, filename });
+	const content = contentParser(metadata, crude.slice(sliceIdx));
+	metadata.toc = generateTable(content);
+	metadata.read_time = countReadTime(content);
+	const result = <typeof metadata>hydrate({ frontMatter: <I>metadata, content, filename });
 	if (!result) return;
 
 	if (result.date && result.date.published && !result.date.updated) {
