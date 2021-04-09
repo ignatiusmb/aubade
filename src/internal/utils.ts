@@ -1,7 +1,19 @@
 import { checkNum } from 'mauss/utils';
 import { clean, compareString } from './helper';
 
-export function extractMeta(metadata: string) {
+export function comparator(x: Record<string, any>, y: Record<string, any>): number {
+	const common = [...new Set([...Object.keys(x), ...Object.keys(y)])].filter(
+		(k) => k in x && k in y && typeof x[k] === typeof y[k] && x[k] !== y[k]
+	);
+	for (let i = 0, key = common[i]; i < common.length; key = common[++i]) {
+		if (x[key] === null && y[key] === null) continue;
+		if (typeof x[key] === 'string') return compareString(x[key], y[key]);
+		if (typeof x[key] === 'object') return comparator(x[key], y[key]);
+	}
+	return 0;
+}
+
+export function construct(metadata: string) {
 	const lines = clean(metadata.split(/\r?\n/));
 	if (!lines.length) return {};
 
@@ -38,16 +50,4 @@ export function supplant(data: Record<string, any>, content: string): string {
 	};
 
 	return content.replace(/!{(.+)}/g, (s, c) => (c && traverse(data, c)) || s);
-}
-
-export function traverseCompare(x: Record<string, any>, y: Record<string, any>): number {
-	const common = [...new Set([...Object.keys(x), ...Object.keys(y)])].filter(
-		(k) => k in x && k in y && typeof x[k] === typeof y[k] && x[k] !== y[k]
-	);
-	for (let i = 0, key = common[i]; i < common.length; key = common[++i]) {
-		if (x[key] === null && y[key] === null) continue;
-		if (typeof x[key] === 'string') return compareString(x[key], y[key]);
-		if (typeof x[key] === 'object') return traverseCompare(x[key], y[key]);
-	}
-	return 0;
 }

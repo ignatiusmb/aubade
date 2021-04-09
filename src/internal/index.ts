@@ -5,7 +5,7 @@ import { isExists } from 'mauss/guards';
 
 import { readTime, table } from './compute';
 import { compareString } from './helper';
-import { extractMeta, supplant, traverseCompare } from './utils';
+import { comparator, construct, supplant } from './utils';
 import marker from './marker';
 
 export function compile<I, O extends Record<string, any> = I>(
@@ -19,7 +19,7 @@ export function compile<I, O extends Record<string, any> = I>(
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const [filename] = pathname.split(/[/\\]/).slice(-1);
 
-	const metadata = extractMeta((match && match[1].trim()) || '');
+	const metadata = construct((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
 	const content = supplant(metadata, crude.slice(sliceIdx));
 	if (!minimal) {
@@ -59,6 +59,6 @@ export function traverse<I, O extends Record<string, any> = I>(
 				if (xu && yu && xu !== yu) return compareString(xu, yu);
 				if (xp && yp && xp !== yp) return compareString(xp, yp);
 			}
-			return traverseCompare(x, y);
+			return comparator(x, y);
 		});
 }
