@@ -1,21 +1,5 @@
-import type { MarquaTable } from './types';
 import { checkNum } from 'mauss/utils';
 import { clean, compareString } from './helper';
-
-const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
-
-export function countReadTime(content: string): number {
-	const paragraphs = content.split('\n').filter(
-		(p) => !!p && !/^[!*]/.test(p) // remove empty and not sentences
-	);
-	const words = paragraphs.reduce((acc, cur) => {
-		if (/^[\t\s]*<.+>/.test(cur.trim())) return acc + 1;
-		return acc + cur.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 2).length;
-	}, 0);
-	const images = content.match(/!\[.+\]\(.+\)/g);
-	const total = words + (images || []).length * 12;
-	return Math.round(total / 240) || 1;
-}
 
 export function extractMeta(metadata: string) {
 	const lines = clean(metadata.split(/\r?\n/));
@@ -44,30 +28,6 @@ export function extractMeta(metadata: string) {
 		else acc[key] = val instanceof Array ? clean(val) : val;
 		return acc;
 	}, {});
-}
-
-export function generateId(title: string): string {
-	title = title.toLowerCase().replace(separators, '-');
-	return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
-}
-
-export function generateTable(content: string) {
-	const lines = content.split('\n').filter((l) => !!l.trim() && /^#{2,3} .+/.test(l));
-	const someTitle = lines.some((l) => l.startsWith('## '));
-	return lines.reduce((table: MarquaTable[], line) => {
-		const isTitle = line.startsWith('## ');
-		line = line.replace(/^#{2,3} (.+)/, '$1').trim();
-		line = line.replace(/\[(.+)\]\(.+\)/g, '$1');
-		line = line.replace(/`(.+)`/g, '$1');
-		const id = generateId(line);
-		if (!someTitle || isTitle) {
-			table.push({ id, cleaned: line, sections: [] });
-		} else if (table.length) {
-			const lastTitle = table[table.length - 1];
-			lastTitle.sections.push({ id, cleaned: line });
-		}
-		return table;
-	}, []);
 }
 
 export function supplant(data: Record<string, any>, content: string): string {

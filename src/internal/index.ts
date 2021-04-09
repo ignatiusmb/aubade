@@ -2,8 +2,10 @@ import type { DirOptions, FileOptions, HydrateFn } from './types';
 import { join } from 'path';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { isExists } from 'mauss/guards';
+
+import { readTime, table } from './compute';
 import { compareString } from './helper';
-import { countReadTime, extractMeta, generateTable, supplant, traverseCompare } from './utils';
+import { extractMeta, supplant, traverseCompare } from './utils';
 import marker from './marker';
 
 export function compile<I, O extends Record<string, any> = I>(
@@ -21,8 +23,8 @@ export function compile<I, O extends Record<string, any> = I>(
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
 	const content = supplant(metadata, crude.slice(sliceIdx));
 	if (!minimal) {
-		if (!exclude.includes('toc')) metadata.toc = generateTable(content);
-		if (!exclude.includes('rt')) metadata.read_time = countReadTime(content);
+		if (!exclude.includes('toc')) metadata.toc = table(content);
+		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
 	const result = !hydrate
 		? ({ ...metadata, content } as Record<string, any>)

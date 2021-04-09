@@ -1,6 +1,7 @@
 import { isExists } from 'mauss/guards';
 
 const dateFormat = /\d{1,4}-\d{1,2}-\d{1,4}/;
+export const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
 export const clean = (arr: string[]) => arr.filter(isExists);
 export const compareDate = (x: string, y: string) => new Date(y).getTime() - new Date(x).getTime();
