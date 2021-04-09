@@ -4,11 +4,14 @@
 
 An enhanced markdown compiler that parses and converts your markdown code, files, and/or directories into a pseudo-AST, highly extensible and configurable. Marqua takes your code/contents with minimal boilerplate and generate structured markups, flexible enough for almost any related use cases.
 
-Ever wanted to start a blog but didn't know where to start? Want to keep the contents in a markdown format but still being highly configurable, flexible, and extendible? With Marqua, everything just works. From a markdown file, it will automatically
+Ever wanted to write a blog but didn't know where to start? Want to keep the contents in a markdown format but still be extendible? With Marqua, everything just works, *it just works*. Write a markdown file and it will automatically
 
-- parse (custom) [front matter](#front-matter)
-- generate Table of Contents
-- count the contents read time
+- parse the (custom) [front matter](#front-matter)
+- add `id` to the headings
+- generate a table of contents
+- generate read time duration
+
+The generated output format are highly adaptable to be used with any framework and designs of your choice. Iterate thoroughly and gain full control over your contents in your components and markup templates.
 
 ## Installation
 
@@ -19,15 +22,13 @@ npm install marqua
 ```js
 import { compile, traverse } from 'marqua';
 
-compile(/* file options */, /* optional hydrate callback */);
-traverse(/* dir options */, /* optional hydrate callback */);
+compile(/* string | file options */, /* optional hydrate callback */);
+traverse(/* string | dir options */, /* optional hydrate callback */);
 ```
 
 ***
 
-<h2 align="center"><pre>
-API Documentation
-</pre></h2>
+<h2 align="center"><pre>API Documentation</pre></h2>
 
 ### Front Matter
 
@@ -65,6 +66,4 @@ The output of the front matter should be
 
 ***
 
-<h3 align="center"><pre>
-Marqua ｜ <a href="LICENSE">MIT License</a>
-</pre></h3>
+<h3 align="center"><pre>Marqua ｜ <a href="LICENSE">MIT License</a></pre></h3>
