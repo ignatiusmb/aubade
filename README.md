@@ -163,6 +163,46 @@ The output of the front matter should be
 }
 ```
 
+### Content
+
+Everything after front matter (the second 3-dashes) will be considered as content. All declared properties in the front matter are available to the content and can be accessed inside `!{name}`, replace `name` with your property key or keys separated by a colon.
+
+```yaml
+---
+tags: blog, life, coding
+date:published: 2021-04-01
+date:updated: 2021-04-13
+---
+
+# the properties above will result to
+#
+# tags = ['blog', 'life', 'coding']
+# date = {
+#   published: '2021-04-01',
+#   updated: '2021-04-13',
+# }
+#
+# these can be accessed with !{}
+
+# !{tags:0} - accessing tags array at index 0
+This article's main topic will be about !{tags:0}
+
+# !{date:property} - accessing property of date
+This article was originally published on !{date:published}
+Thoroughly updated through this website on !{date:updated}
+```
+
+Headings starts at 2 (`##`) with the lowest one being 4 (`####`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
+
+- MD001: Heading levels should only increment by one level at a time
+- MD003: Heading style -> only ATX style
+- MD018: No space after hash on atx style heading
+- MD023: Headings must start at the beginning of the line
+- MD024: Multiple headings with the same content -> siblings only
+- MD042: No empty links
+
+If you're using VSCode, you can install the [markdownlint extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) to help you catch these lint errors / warnings and write better markdown. These rules can be configured, see the [.jsonc template](https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.jsonc) and [.yaml template](https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml) with an [example here](https://github.com/ignatiusmb/mauss.dev/blob/master/.markdownlint.yml).
+
 ***
 
 <h3 align="center"><pre>Marqua ｜ <a href="LICENSE">MIT License</a></pre></h3>
