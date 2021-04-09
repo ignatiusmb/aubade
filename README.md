@@ -57,7 +57,7 @@ const data = traverse(
 );
 ```
 
-Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or the directly at the [types](src/internal/types.ts).
+Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or at the [types](src/internal/types.ts) directly.
 
 The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when `undefined` will by default, return an object with `content` and all properties of `frontMatter`.
 
