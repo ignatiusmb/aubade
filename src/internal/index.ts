@@ -30,7 +30,7 @@ export function compile<I, O extends Record<string, any> = I>(
 
 	if (!result) return;
 
-	if (result.date && !minimal && !exclude.includes('date'))
+	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
 		result.date.updated = result.date.updated || result.date.published;
 	if (result.content) result.content = marker.render(result.content);
 	return result as O;
