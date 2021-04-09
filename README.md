@@ -30,6 +30,105 @@ traverse(/* string | dir options */, /* optional hydrate callback */);
 
 <h2 align="center"><pre>API Documentation</pre></h2>
 
+### Imports
+
+Marqua exposes 3 imports, 2 for the actual parsing, and 1 which is the markdown renderer which uses [markdown-it](https://github.com/markdown-it/markdown-it). As a result, its features can be extended via plugins that's made as a `markdown-it-plugin`.
+
+```js
+import { compile, traverse } from 'marqua';
+
+/* compile - parse a single source file */
+const body = compile(
+  'content/posts/2021-04-01.my-first-post.md',
+  ({ frontMatter, content, filename }) => {
+    const [date, slug] = filename.split('.');
+    return { slug, date, ...frontMatter, content };
+  }
+)
+
+/* traverse - scans a directory for sources */
+const data = traverse(
+  'content/posts',
+  ({ frontMatter, content, filename }) => {
+    if (filename.startsWith('draft')) return;
+    const [date, slug] = filename.split('.');
+    return { slug, date, ...frontMatter, content };
+  }
+);
+```
+
+Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or the directly at the [types](src/internal/types.ts).
+
+The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when `undefined` will by default, return an object with `content` and all properties of `frontMatter`.
+
+```ts
+interface FileOptions {
+  pathname: string;
+
+  /**
+   * minimal = false
+   *
+   * it can be set to true so it will not generate anything
+   * other than what is written in the file's frontMatter
+   */
+  minimal?: boolean;
+
+  /**
+   * exclude = []
+   * accepts: 'toc' | 'rt' | 'date'
+   *
+   * sometimes table of contents isn't needed and will add
+   * a lot of unnecessary bytes while it's still useful to
+   * know the read time duration
+   *
+   * these generated features can be individually turned off
+   * by passing their 'id's in an array
+   */
+  exclude?: Array<string>;
+}
+
+interface DirOptions {
+  dirname: string;
+
+  /**
+   * extensions = ['.md']
+   *
+   * traverse will only scan directories with files that
+   * ends with '.md', this can be changed or added by
+   * passing in other extensions
+   *
+   * it will consequently overwrite the default array and
+   * remove '.md' extension, you will need to explicitly
+   * readd it to your newly passed array
+   */
+  extensions?: Array<string>;
+}
+```
+
+When everything is set to default (none of the optional properties are passed), passing in a string as the first argument of `compile` or `traverse` will be the same as only passing in `pathname` or `dirname` as the options.
+
+```js
+/* marker (optional): extendible markdown renderer */
+import { marker } from 'marqua';
+import plugin from 'markdown-it-plugin';
+marker.use(plugin); // add this before calling 'compile' or 'traverse'
+```
+
+Extending `marker` with plugins is optional, it's already equipped with all the basics and a minimal footprint. But, let's say you wanted to write LaTeX in your markdown. Well, you can simply use a plugin to do exactly that. Here's a working example with a plugin that uses [KaTeX](https://katex.org/).
+
+```js
+import { marker, compile } from 'marqua';
+import Math from 'markdown-it-texmath';
+import KaTeX from 'katex';
+
+marker.use(Math, {
+  engine: KaTeX,
+  delimiters: 'dollars',
+});
+
+const data = compile(/* source path */);
+```
+
 ### Front Matter
 
 Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Marqua syntax resembles yaml in some ways except it only read raw strings. It doesn't support whitespace indentation, `[...]`, or `{...}`. Instead, it has some ways to handle creating objects/maps and arrays/lists.
