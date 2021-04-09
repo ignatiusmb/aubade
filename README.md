@@ -29,8 +29,6 @@ traverse(/* dir options */, /* optional hydrate callback */);
 API Documentation
 </pre></h2>
 
-***
-
 ### Front Matter
 
 Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Marqua syntax resembles yaml in some ways except it only read raw strings. It doesn't support whitespace indentation, `[...]`, or `{...}`. Instead, it has some ways to handle creating objects/maps and arrays/lists.
