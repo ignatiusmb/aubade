@@ -10,7 +10,7 @@ export function compile<I, O extends Record<string, any> = I>(
 	options: string | FileOptions,
 	hydrate?: HydrateFn<I, O>
 ): O | undefined {
-	const { pathname, minimal = !0, exclude = [] } =
+	const { pathname, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { pathname: options };
 
 	const crude = readFileSync(pathname, 'utf-8').trim();
