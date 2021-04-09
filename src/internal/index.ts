@@ -6,8 +6,10 @@ import { compareString } from './helper';
 import { contentParser, countReadTime, extractMeta, generateTable, traverseCompare } from './utils';
 import marker from './marker';
 
-export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O;
-export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>): O | undefined {
+export function compile<I, O extends Record<string, any> = I>(
+	pathname: string,
+	hydrate: HydrateFn<I, O>
+): O | undefined {
 	const crude = readFileSync(pathname, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const [filename] = pathname.split(/[/\\]/).slice(-1);
@@ -32,14 +34,13 @@ export function parseFile<I, O = I>(pathname: string, hydrate: HydrateFn<I, O>):
 	return result as O;
 }
 
-export function parseDir<I, O = I>(dirname: string, hydrate: HydrateFn<I, O>): Array<O>;
-export function parseDir<I, O extends Record<string, any> = I>(
+export function traverse<I, O extends Record<string, any> = I>(
 	dirname: string,
 	hydrate: HydrateFn<I, O>
 ): Array<O> {
 	return readdirSync(dirname)
 		.filter((name) => !name.startsWith('draft.') && name.endsWith('.md'))
-		.map((filename) => parseFile(join(dirname, filename), hydrate))
+		.map((filename) => compile(join(dirname, filename), hydrate))
 		.filter(isExists)
 		.sort((x, y) => {
 			if (x.date && y.date) {
