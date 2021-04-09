@@ -4,16 +4,6 @@ import { clean, compareString } from './helper';
 
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
-export function contentParser(data: Record<string, any>, content: string): string {
-	const traverse = (meta: string | Record<string, any>, properties: string): string => {
-		for (const key of properties.split(':'))
-			if (typeof meta !== 'string') meta = meta[checkNum(key)];
-		return typeof meta === 'string' ? meta : JSON.stringify(meta);
-	};
-
-	return content.replace(/#{(.+)}!/g, (s, c) => (c && traverse(data, c)) || s);
-}
-
 export function countReadTime(content: string): number {
 	const paragraphs = content.split('\n').filter(
 		(p) => !!p && !/^[!*]/.test(p) // remove empty and not sentences
@@ -78,6 +68,16 @@ export function generateTable(content: string) {
 		}
 		return table;
 	}, []);
+}
+
+export function supplant(data: Record<string, any>, content: string): string {
+	const traverse = (meta: string | Record<string, any>, properties: string): string => {
+		for (const key of properties.split(':'))
+			if (typeof meta !== 'string') meta = meta[checkNum(key)];
+		return typeof meta === 'string' ? meta : JSON.stringify(meta);
+	};
+
+	return content.replace(/!{(.+)}/g, (s, c) => (c && traverse(data, c)) || s);
 }
 
 export function traverseCompare(x: Record<string, any>, y: Record<string, any>): number {

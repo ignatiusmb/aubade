@@ -3,7 +3,7 @@ import { join } from 'path';
 import { readdirSync, readFileSync } from 'fs';
 import { isExists } from 'mauss/guards';
 import { compareString } from './helper';
-import { contentParser, countReadTime, extractMeta, generateTable, traverseCompare } from './utils';
+import { countReadTime, extractMeta, generateTable, supplant, traverseCompare } from './utils';
 import marker from './marker';
 
 export function compile<I, O extends Record<string, any> = I>(
@@ -16,7 +16,7 @@ export function compile<I, O extends Record<string, any> = I>(
 
 	const metadata = extractMeta((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
-	const content = contentParser(metadata, crude.slice(sliceIdx));
+	const content = supplant(metadata, crude.slice(sliceIdx));
 	metadata.toc = generateTable(content);
 	metadata.read_time = countReadTime(content);
 	const result = <typeof metadata>hydrate({ frontMatter: <I>metadata, content, filename });
@@ -26,11 +26,7 @@ export function compile<I, O extends Record<string, any> = I>(
 		result.date.updated = result.date.published;
 	}
 
-	if (result.content) {
-		const { content, ...rest } = result;
-		result.content = contentParser(rest, content);
-		result.content = marker.render(result.content);
-	}
+	if (result.content) result.content = marker.render(result.content);
 	return result as O;
 }
 
