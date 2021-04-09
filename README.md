@@ -114,7 +114,7 @@ import plugin from 'markdown-it-plugin';
 marker.use(plugin); // add this before calling 'compile' or 'traverse'
 ```
 
-Extending `marker` with plugins is optional, it's already equipped with all the basics and a minimal footprint. But, let's say you wanted to write LaTeX in your markdown. Well, you can simply use a plugin to do exactly that. Here's a working example with a plugin that uses [KaTeX](https://katex.org/).
+Extending `marker` with plugins is optional, it's already equipped with all the basics and a minimal footprint. But, let's say you wanted to write [LaTeX](https://www.latex-project.org/) in your markdown, which is useful for math typesetting and writing abstract symbols using TeX functions. Well, you can simply use a plugin to do exactly that. Here's a working example with a plugin that uses [KaTeX](https://katex.org/).
 
 ```js
 import { marker, compile } from 'marqua';
