@@ -34,7 +34,7 @@ export function table(content: string) {
 	return lines.reduce((table: MarquaTable[], [, signs, title]) => {
 		title = title.replace(/\[(.+)\]\(.+\)/g, '$1');
 		title = title.replace(/`(.+)`/g, '$1');
-		const content = { id: id(title), cleaned: title };
+		const content = { id: id(title), title };
 
 		if (alone || (!counter[0] && signs.length === 3) || signs.length === 2) {
 			table.push(content);
