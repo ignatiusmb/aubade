@@ -1,6 +1,6 @@
 import MarkIt, { Options } from 'markdown-it';
 import Aqua from '@ignatiusmb/aqua';
-import { id } from './compute';
+import { generate } from './helper';
 
 const marker = MarkIt({
 	html: true,
@@ -22,7 +22,7 @@ const marker = MarkIt({
 marker.renderer.rules.heading_open = (tokens: any, idx: number) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
-	return `<${token.tag} id="${id(text)}">`;
+	return `<${token.tag} id="${generate.id(text)}">`;
 };
 marker.renderer.rules.image = (tokens: any, idx: number, options: Options, env: any, slf: any) => {
 	tokens[idx].attrPush(['loading', 'lazy']); // add browser level lazy loading

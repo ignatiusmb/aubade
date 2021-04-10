@@ -1,11 +1,6 @@
 import type { MarquaData, MarquaTable } from './types';
-import { separators } from './helper';
+import { generate } from './helper';
 import marker from './marker';
-
-export function id(title: string): string {
-	title = title.toLowerCase().replace(separators, '-');
-	return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
-}
 
 export function readTime(content: string): number {
 	const paragraphs = content.split('\n').filter(
@@ -42,7 +37,7 @@ export function table(content: string) {
 	return lines.reduce((table: MarquaTable[], [, signs, title]) => {
 		title = title.replace(/\[(.+)\]\(.+\)/g, '$1');
 		title = title.replace(/`(.+)`/g, '$1');
-		const content = { id: id(title), title };
+		const content = { id: generate.id(title), title };
 
 		if (alone || (!counter[0] && signs.length === 3) || signs.length === 2) {
 			table.push(content);

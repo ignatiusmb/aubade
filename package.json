@@ -1,8 +1,8 @@
 {
   "name": "marqua",
   "author": "Ignatius Bagus",
-  "description": "Node.js Aqua-flavored markdown file parser",
-  "version": "0.1.0",
+  "description": "Augmented Markdown Compiler",
+  "version": "0.1.1",
   "license": "MIT",
   "type": "module",
   "main": "index.js",
@@ -26,6 +26,11 @@
   "bugs": {
     "url": "https://github.com/ignatiusmb/marqua/issues"
   },
+  "keywords": [
+    "markdown",
+    "compiler",
+    "parser"
+  ],
   "dependencies": {
     "@ignatiusmb/aqua": "^20.3.3",
     "markdown-it": "^12.0.4",
