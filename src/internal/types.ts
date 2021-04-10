@@ -23,5 +23,5 @@ export interface MarquaData extends Record<string, any> {
 export interface MarquaTable {
 	id: string;
 	cleaned: string;
-	sections: Array<{ id: string; cleaned: string }>;
+	sections?: Array<this>;
 }
