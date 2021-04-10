@@ -1,5 +1,6 @@
-import type { MarquaTable } from './types';
+import type { MarquaData, MarquaTable } from './types';
 import { separators } from './helper';
+import marker from './marker';
 
 export function id(title: string): string {
 	title = title.toLowerCase().replace(separators, '-');
@@ -17,6 +18,13 @@ export function readTime(content: string): number {
 	const images = content.match(/!\[.+\]\(.+\)/g);
 	const total = words + (images || []).length * 12;
 	return Math.round(total / 240) || 1;
+}
+
+export function structure(content: string, minimal: boolean): string | MarquaData[] {
+	if (minimal) return marker.render(content);
+	const tokens = marker.parse(content, {});
+	// TODO: Parse and Render Token Individually
+	return marker.renderer.render(tokens, {}, {});
 }
 
 export function table(content: string) {

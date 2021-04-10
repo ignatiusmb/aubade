@@ -3,10 +3,9 @@ import { join } from 'path';
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { isExists } from 'mauss/guards';
 
-import { readTime, table } from './compute';
+import { readTime, structure, table } from './compute';
 import { compareString } from './helper';
 import { comparator, construct, supplant } from './utils';
-import marker from './marker';
 
 export function compile<I, O extends Record<string, any> = I>(
 	options: string | FileOptions,
@@ -30,11 +29,12 @@ export function compile<I, O extends Record<string, any> = I>(
 		? ({ ...metadata, content } as Record<string, any>)
 		: hydrate({ frontMatter: <I>metadata, content, filename });
 
-	if (!result) return;
+	if (!result /* hydrate is used and returns undefined */) return;
 
 	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
 		result.date.updated = result.date.updated || result.date.published;
-	if (result.content) result.content = marker.render(result.content);
+	if (result.content && typeof result.content === 'string')
+		result.content = structure(result.content, minimal || exclude.includes('cnt'));
 	return result as O;
 }
 

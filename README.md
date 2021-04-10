@@ -75,7 +75,7 @@ interface FileOptions {
 
   /**
    * exclude = []
-   * accepts: 'toc' | 'rt' | 'date'
+   * accepts: 'toc' | 'rt' | 'date' | 'cnt'
    *
    * sometimes table of contents isn't needed and will add
    * a lot of unnecessary bytes while it's still useful to
