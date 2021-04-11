@@ -45,7 +45,8 @@ export function traverse<I, O extends Record<string, any> = I>(
 	const { entry, extensions = ['.md'], ...config } =
 		typeof options !== 'string' ? options : { entry: options };
 
-	if (!existsSync(entry)) throw new Error(`Pathname ${entry} does not exists!`);
+	if (!existsSync(entry)) return console.warn(`Path "${entry}" does not exists!`), [];
+
 	return readdirSync(entry)
 		.filter((name) => !name.startsWith('draft.') && extensions.some((ext) => name.endsWith(ext)))
 		.map((filename) => compile({ entry: join(entry, filename), ...config }, hydrate))
