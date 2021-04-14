@@ -19,7 +19,7 @@ export function structure(content: string, minimal: boolean): string | MarquaDat
 	if (minimal) return marker.render(content);
 	const tokens = marker.parse(content, {});
 	// TODO: Parse and Render Token Individually
-	return marker.renderer.render(tokens, {}, {});
+	return marker.renderer.render(tokens, marker.options, {});
 }
 
 export function table(content: string) {
