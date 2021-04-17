@@ -11,12 +11,12 @@ export function compile<I, O extends Record<string, any> = I>(
 	options: string | FileOptions,
 	hydrate?: HydrateFn<I, O>
 ): O | undefined {
-	const { pathname, minimal = !1, exclude = [] } =
-		typeof options !== 'string' ? options : { pathname: options };
+	const { entry, minimal = !1, exclude = [] } =
+		typeof options !== 'string' ? options : { entry: options };
 
-	const crude = readFileSync(pathname, 'utf-8').trim();
+	const crude = readFileSync(entry, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
-	const [filename] = pathname.split(/[/\\]/).slice(-1);
+	const [filename] = entry.split(/[/\\]/).slice(-1);
 
 	const metadata = construct((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
@@ -39,16 +39,17 @@ export function compile<I, O extends Record<string, any> = I>(
 }
 
 export function traverse<I, O extends Record<string, any> = I>(
-	options: string | (DirOptions & FileOptions),
+	options: string | DirOptions,
 	hydrate?: HydrateFn<I, O>
 ): Array<O> {
-	const { dirname, extensions = ['.md'], ...config } =
-		typeof options !== 'string' ? options : { dirname: options };
+	const { entry, extensions = ['.md'], ...config } =
+		typeof options !== 'string' ? options : { entry: options };
 
-	if (!existsSync(dirname)) throw new Error(`Pathname ${dirname} does not exists!`);
-	return readdirSync(dirname)
+	if (!existsSync(entry)) return console.warn(`Path "${entry}" does not exists!`), [];
+
+	return readdirSync(entry)
 		.filter((name) => !name.startsWith('draft.') && extensions.some((ext) => name.endsWith(ext)))
-		.map((filename) => compile({ pathname: join(dirname, filename), ...config }, hydrate))
+		.map((filename) => compile({ entry: join(entry, filename), ...config }, hydrate))
 		.filter(isExists)
 		.sort((x, y) => {
 			if (x.date && y.date) {

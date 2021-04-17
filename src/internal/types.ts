@@ -1,12 +1,11 @@
-export interface DirOptions {
-	dirname: string;
-	extensions?: Array<string>;
-}
-
 export interface FileOptions {
-	pathname: string;
+	entry: string;
 	minimal?: boolean;
 	exclude?: Array<string>;
+}
+export interface DirOptions extends FileOptions {
+	entry: string;
+	extensions?: Array<string>;
 }
 
 export interface HydrateFn<I, O = I> {
