@@ -5,6 +5,7 @@ export interface FileOptions {
 }
 export interface DirOptions extends FileOptions {
 	entry: string;
+	recurse?: boolean;
 	extensions?: Array<string>;
 }
 
