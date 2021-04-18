@@ -1,17 +1,5 @@
 import { checkNum } from 'mauss/utils';
-import { clean, compareString } from './helper';
-
-export function comparator(x: Record<string, any>, y: Record<string, any>): number {
-	const common = [...new Set([...Object.keys(x), ...Object.keys(y)])].filter(
-		(k) => k in x && k in y && typeof x[k] === typeof y[k] && x[k] !== y[k]
-	);
-	for (let i = 0, key = common[i]; i < common.length; key = common[++i]) {
-		if (x[key] === null && y[key] === null) continue;
-		if (typeof x[key] === 'string') return compareString(x[key], y[key]);
-		if (typeof x[key] === 'object') return comparator(x[key], y[key]);
-	}
-	return 0;
-}
+import { clean } from './helper';
 
 export function construct(metadata: string) {
 	const lines = clean(metadata.split(/\r?\n/));

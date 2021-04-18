@@ -1,11 +1,11 @@
 import type { DirOptions, FileOptions, HydrateFn } from './types';
 import { join } from 'path';
 import { existsSync, readdirSync, readFileSync } from 'fs';
+import { comparator, compare } from 'mauss';
 import { isExists } from 'mauss/guards';
 
 import { readTime, structure, table } from './compute';
-import { compareString } from './helper';
-import { comparator, construct, supplant } from './utils';
+import { construct, supplant } from './utils';
 
 export function compile<I, O extends Record<string, any> = I>(
 	options: string | FileOptions,
@@ -54,11 +54,11 @@ export function traverse<I, O extends Record<string, any> = I>(
 		.sort((x, y) => {
 			if (x.date && y.date) {
 				if (typeof x.date === 'string' && typeof y.date === 'string')
-					if (x.date !== y.date) return compareString(x.date, y.date);
+					if (x.date !== y.date) return compare.string(x.date, y.date);
 				const { updated: xu = '', published: xp = '' } = x.date;
 				const { updated: yu = '', published: yp = '' } = y.date;
-				if (xu && yu && xu !== yu) return compareString(xu, yu);
-				if (xp && yp && xp !== yp) return compareString(xp, yp);
+				if (xu && yu && xu !== yu) return compare.string(xu, yu);
+				if (xp && yp && xp !== yp) return compare.string(xp, yp);
 			}
 			return comparator(x, y);
 		});
