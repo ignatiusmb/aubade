@@ -1,8 +1,7 @@
 import type { DirOptions, FileOptions, HydrateFn } from './types';
 import { join } from 'path';
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import { existsSync, lstatSync, readdirSync, readFileSync } from 'fs';
 import { comparator, compare } from 'mauss';
-import { isExists } from 'mauss/guards';
 
 import { readTime, structure, table } from './compute';
 import { construct, supplant } from './utils';
@@ -42,15 +41,25 @@ export function traverse<I, O extends Record<string, any> = I>(
 	options: string | DirOptions,
 	hydrate?: HydrateFn<I, O>
 ): Array<O> {
-	const { entry, extensions = ['.md'], ...config } =
+	const { entry, recurse = !1, extensions = ['.md'], ...config } =
 		typeof options !== 'string' ? options : { entry: options };
 
-	if (!existsSync(entry)) return console.warn(`Path "${entry}" does not exists!`), [];
+	if (!existsSync(entry)) {
+		console.warn(`Skipping "${entry}", path does not exists`);
+		return [];
+	}
 
 	return readdirSync(entry)
-		.filter((name) => !name.startsWith('draft.') && extensions.some((ext) => name.endsWith(ext)))
-		.map((filename) => compile({ entry: join(entry, filename), ...config }, hydrate))
-		.filter(isExists)
+		.map((name) => {
+			const pathname = join(entry, name);
+			const path = lstatSync(pathname);
+			if (recurse && path.isDirectory()) {
+				return traverse({ entry: pathname, recurse, extensions, ...config }, hydrate);
+			} else if (extensions.some((e) => name.endsWith(e))) {
+				return compile({ entry: pathname, ...config }, hydrate);
+			} else return;
+		})
+		.filter((i): i is O => (Array.isArray(i) ? !!i.length : !!i))
 		.sort((x, y) => {
 			if (x.date && y.date) {
 				if (typeof x.date === 'string' && typeof y.date === 'string')
