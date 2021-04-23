@@ -10,7 +10,7 @@ export interface DirOptions extends FileOptions {
 }
 
 export interface HydrateFn<I, O = I> {
-	(data: { frontMatter: I; content: string; filename: string }): O | undefined;
+	(data: { frontMatter: I; content: string; breadcrumb: Array<string> }): O | undefined;
 }
 
 export interface MarquaData {

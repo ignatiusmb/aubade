@@ -15,7 +15,7 @@ export function compile<I, O extends Record<string, any> = I>(
 
 	const crude = readFileSync(entry, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
-	const [filename] = entry.split(/[/\\]/).slice(-1);
+	const breadcrumb = entry.split(/[/\\]/);
 
 	const metadata = construct((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
@@ -26,7 +26,7 @@ export function compile<I, O extends Record<string, any> = I>(
 	}
 	const result = !hydrate
 		? ({ ...metadata, content } as Record<string, any>)
-		: hydrate({ frontMatter: <I>metadata, content, filename });
+		: hydrate({ frontMatter: <I>metadata, content, breadcrumb });
 
 	if (!result /* hydrate is used and returns undefined */) return;
 
