@@ -40,7 +40,8 @@ import { compile, traverse } from 'marqua';
 /* compile - parse a single source file */
 const body = compile(
   'content/posts/2021-04-01.my-first-post.md',
-  ({ frontMatter, content, filename }) => {
+  ({ frontMatter, content, breadcrumb }) => {
+    const [filename] = breadcrumb.slice(-1);
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
@@ -49,8 +50,9 @@ const body = compile(
 /* traverse - scans a directory for sources */
 const data = traverse(
   'content/posts',
-  ({ frontMatter, content, filename }) => {
-    if (filename.startsWith('draft')) return;
+  ({ frontMatter, content, breadcrumb }) => {
+    if (breadcrumb.startsWith('draft')) return;
+    const [filename] = breadcrumb.slice(-1);
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
@@ -59,7 +61,7 @@ const data = traverse(
 
 Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or at the [types](src/internal/types.ts) directly.
 
-The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when `undefined` will by default, return an object with `content` and all properties of `frontMatter`.
+The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when not specified or `undefined`, will return an object with `content` and all properties of `frontMatter`.
 
 ```ts
 interface FileOptions {
