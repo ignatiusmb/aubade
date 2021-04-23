@@ -49,16 +49,17 @@ export function traverse<I, O extends Record<string, any> = I>(
 		return [];
 	}
 
-	return readdirSync(entry)
-		.map((name) => {
-			const pathname = join(entry, name);
-			const path = lstatSync(pathname);
-			if (recurse && path.isDirectory()) {
-				return traverse({ entry: pathname, recurse, extensions, ...config }, hydrate);
-			} else if (extensions.some((e) => name.endsWith(e))) {
-				return compile({ entry: pathname, ...config }, hydrate);
-			} else return;
-		})
+	const explored = readdirSync(entry).map((name) => {
+		const pathname = join(entry, name);
+		const opts = { entry: pathname, recurse, extensions, ...config };
+		if (recurse && lstatSync(pathname).isDirectory()) {
+			return traverse(opts, hydrate);
+		} else if (extensions.some((e) => name.endsWith(e))) {
+			return compile(opts, hydrate);
+		} else return;
+	});
+
+	return (recurse ? explored.flat(Number.POSITIVE_INFINITY) : explored)
 		.filter((i): i is O => (Array.isArray(i) ? !!i.length : !!i))
 		.sort((x, y) => {
 			if (x.date && y.date) {
