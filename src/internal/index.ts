@@ -12,6 +12,11 @@ export function compile<I, O extends Record<string, any> = I>(
 	const { entry, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { entry: options };
 
+	if (!fs.existsSync(entry)) {
+		console.warn(`Skipping "${entry}", path does not exists`);
+		return;
+	}
+
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const breadcrumb = entry.split(/[/\\]/);
