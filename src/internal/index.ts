@@ -1,7 +1,6 @@
 import type { DirOptions, FileOptions, HydrateFn } from './types';
 import { join } from 'path';
 import { existsSync, lstatSync, readdirSync, readFileSync } from 'fs';
-import { comparator, compare } from 'mauss';
 
 import { readTime, structure, table } from './compute';
 import { construct, supplant } from './utils';
@@ -49,27 +48,15 @@ export function traverse<I, O extends Record<string, any> = I>(
 		return [];
 	}
 
-	const explored = readdirSync(entry).map((name) => {
+	const backpack = readdirSync(entry).map((name) => {
 		const pathname = join(entry, name);
 		const opts = { entry: pathname, recurse, extensions, ...config };
-		if (recurse && lstatSync(pathname).isDirectory()) {
-			return traverse(opts, hydrate);
-		} else if (extensions.some((e) => name.endsWith(e))) {
-			return compile(opts, hydrate);
-		} else return;
+		if (recurse && lstatSync(pathname).isDirectory()) return traverse(opts, hydrate);
+		else if (extensions.some((e) => name.endsWith(e))) return compile(opts, hydrate);
+		else return;
 	});
 
-	return (recurse ? explored.flat(Number.POSITIVE_INFINITY) : explored)
-		.filter((i): i is O => (Array.isArray(i) ? !!i.length : !!i))
-		.sort((x, y) => {
-			if (x.date && y.date) {
-				if (typeof x.date === 'string' && typeof y.date === 'string')
-					if (x.date !== y.date) return compare.string(x.date, y.date);
-				const { updated: xu = '', published: xp = '' } = x.date;
-				const { updated: yu = '', published: yp = '' } = y.date;
-				if (xu && yu && xu !== yu) return compare.string(xu, yu);
-				if (xp && yp && xp !== yp) return compare.string(xp, yp);
-			}
-			return comparator(x, y);
-		});
+	return (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
+		(i): i is O => !!i && (typeof i.length === 'undefined' || !!i.length)
+	);
 }
