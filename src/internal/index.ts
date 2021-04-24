@@ -1,6 +1,6 @@
 import type { DirOptions, FileOptions, HydrateFn } from './types';
-import { join } from 'path';
-import { existsSync, lstatSync, readdirSync, readFileSync } from 'fs';
+import fs from 'fs';
+import path from 'path';
 
 import { readTime, structure, table } from './compute';
 import { construct, supplant } from './utils';
@@ -12,7 +12,7 @@ export function compile<I, O extends Record<string, any> = I>(
 	const { entry, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { entry: options };
 
-	const crude = readFileSync(entry, 'utf-8').trim();
+	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const breadcrumb = entry.split(/[/\\]/);
 
@@ -43,15 +43,15 @@ export function traverse<I, O extends Record<string, any> = I>(
 	const { entry, recurse = !1, extensions = ['.md'], ...config } =
 		typeof options !== 'string' ? options : { entry: options };
 
-	if (!existsSync(entry)) {
+	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
 		return [];
 	}
 
-	const backpack = readdirSync(entry).map((name) => {
-		const pathname = join(entry, name);
+	const backpack = fs.readdirSync(entry).map((name) => {
+		const pathname = path.join(entry, name);
 		const opts = { entry: pathname, recurse, extensions, ...config };
-		if (recurse && lstatSync(pathname).isDirectory()) return traverse(opts, hydrate);
+		if (recurse && fs.lstatSync(pathname).isDirectory()) return traverse(opts, hydrate);
 		else if (extensions.some((e) => name.endsWith(e))) return compile(opts, hydrate);
 		else return;
 	});
