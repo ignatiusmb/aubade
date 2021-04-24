@@ -1,6 +1,6 @@
 import MarkIt, { Options } from 'markdown-it';
 import Aqua from '@ignatiusmb/aqua';
-import { generate } from './helper';
+import { generate } from './utils';
 
 const marker = MarkIt({
 	html: true,

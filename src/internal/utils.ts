@@ -1,20 +1,17 @@
+import { isExists } from 'mauss/guards';
 import { checkNum } from 'mauss/utils';
-import { clean, compareString } from './helper';
 
-export function comparator(x: Record<string, any>, y: Record<string, any>): number {
-	const common = [...new Set([...Object.keys(x), ...Object.keys(y)])].filter(
-		(k) => k in x && k in y && typeof x[k] === typeof y[k] && x[k] !== y[k]
-	);
-	for (let i = 0, key = common[i]; i < common.length; key = common[++i]) {
-		if (x[key] === null && y[key] === null) continue;
-		if (typeof x[key] === 'string') return compareString(x[key], y[key]);
-		if (typeof x[key] === 'object') return comparator(x[key], y[key]);
-	}
-	return 0;
-}
+const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
+
+export const generate = {
+	id(title: string) {
+		title = title.toLowerCase().replace(separators, '-');
+		return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
+	},
+};
 
 export function construct(metadata: string) {
-	const lines = clean(metadata.split(/\r?\n/));
+	const lines = metadata.split(/\r?\n/).filter(isExists);
 	if (!lines.length) return {};
 
 	const ignored = ['title', 'description'];
@@ -23,7 +20,7 @@ export function construct(metadata: string) {
 		keys: string[],
 		val: string | string[]
 	): string | string[] | Record<string, any> => {
-		if (!keys.length) return val instanceof Array ? clean(val) : val;
+		if (!keys.length) return val instanceof Array ? val.filter(isExists) : val;
 		return { ...curr, [keys[0]]: traverse(curr[keys[0]] || {}, keys.slice(1), val) };
 	};
 
@@ -33,11 +30,11 @@ export function construct(metadata: string) {
 		const [key, data] = match.slice(1).map((g) => g.trim());
 		const val = /,/.test(data) ? data.split(',').map((v) => v.trim()) : data;
 		if (/:/.test(key)) {
-			const [attr, ...keys] = clean(key.split(':'));
+			const [attr, ...keys] = key.split(':').filter(isExists);
 			const initial = ignored.includes(attr) ? data : val;
 			acc[attr] = traverse(acc[attr] || {}, keys, initial);
 		} else if (ignored.includes(key)) acc[key] = data;
-		else acc[key] = val instanceof Array ? clean(val) : val;
+		else acc[key] = val instanceof Array ? val.filter(isExists) : val;
 		return acc;
 	}, {});
 }

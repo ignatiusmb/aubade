@@ -1,5 +1,5 @@
 import type { MarquaData, MarquaTable } from './types';
-import { generate } from './helper';
+import { generate } from './utils';
 import marker from './marker';
 
 export function readTime(content: string): number {
