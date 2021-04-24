@@ -13,6 +13,8 @@ Ever wanted to write a blog but didn't know where to start? Want to keep the con
 
 The generated output format are highly adaptable to be used with any framework and designs of your choice. Iterate thoroughly and gain full control over your contents in your components and markup templates.
 
+TL;DR &bull; Write articles on markdown files &rarr; `marqua()` &rarr; get structured markups.
+
 ## Installation
 
 ```bash
@@ -34,6 +36,27 @@ traverse(/* string | dir options */, /* optional hydrate callback */);
 
 Marqua exposes 3 imports, 2 for the actual parsing, and 1 which is the markdown renderer which uses [markdown-it](https://github.com/markdown-it/markdown-it). As a result, its features can be extended via plugins that's made as a `markdown-it-plugin`.
 
+```bash
+# Hypothetical Content Folder Structure
+content
+    ├── posts
+    │   ├── draft.my-amazing-two-part-series-part-1.md
+    │   ├── draft.my-amazing-two-part-series-part-2.md
+    │   ├── 2021-04-01.my-first-post.md
+    │   └── 2021-04-13.marqua-is-the-best.md
+    └── reviews
+        ├── game
+        │   └── doki-doki-literature-club.md
+        ├── book
+        │   ├── amazing-book-one.md
+        │   └── manga-is-literature.md
+        └── movie
+            ├── spirited-away.md
+            └── your-name.md
+```
+
+An example usage from the *hypothetical* content folder structure above should look like
+
 ```js
 import { compile, traverse } from 'marqua';
 
@@ -45,7 +68,7 @@ const body = compile(
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
-)
+); // {'posts/2021-04-01.my-first-post.md'}
 
 /* traverse - scans a directory for sources */
 const data = traverse(
@@ -56,7 +79,16 @@ const data = traverse(
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
-);
+); // [{'posts/3'}, {'posts/4'}]
+
+/* traverse - nested directories recursive scan */
+const data = traverse(
+  { entry: 'content/reviews', recurse: true },
+  ({ frontMatter, content, breadcrumb }) => {
+    const [category, slug] = breadcrumb.slice(-2);
+    return { slug, category, date, ...frontMatter, content };
+  }
+); // [{'game/0'}, {'book/0'}, {'book/1'}, {'movie/0'}, {'movie/1'}]
 ```
 
 Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or at the [types](src/internal/types.ts) directly.
@@ -91,6 +123,15 @@ interface FileOptions {
 
 interface DirOptions {
   dirname: string;
+
+  /**
+   * recurse = false
+   *
+   * traverse will only scan the root/top-level directory
+   * and will recursively scan all nested subdirectories
+   * when this flag is turned on
+   */
+  recurse?: boolean;
 
   /**
    * extensions = ['.md']
