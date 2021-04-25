@@ -9,18 +9,19 @@ export interface DirOptions extends FileOptions {
 	extensions?: Array<string>;
 }
 
-export interface HydrateFn<I, O = I> {
-	(data: { frontMatter: I; content: string; breadcrumb: Array<string> }): O | undefined;
-}
-
-export interface MarquaData {
-	type: string;
-	title: string;
-	body: string | Array<this>;
-}
-
 export interface MarquaTable {
 	id: string;
 	title: string;
 	sections?: Array<this>;
 }
+
+export interface MarquaData {
+	date: Record<'created' | 'modified', Date>;
+	content?: string;
+}
+
+export type HydrateFn<I, O = I> = (chunk: {
+	frontMatter: Pick<MarquaData, Exclude<keyof MarquaData, keyof I>> & I;
+	content: string;
+	breadcrumb: Array<string>;
+}) => O | undefined;

@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, HydrateFn } from './types';
+import type { DirOptions, FileOptions, HydrateFn, MarquaData } from './types';
 import fs from 'fs';
 import path from 'path';
 
@@ -35,8 +35,8 @@ export function compile<I, O extends Record<string, any> = I>(
 		metadata.date.modified = stats.mtime;
 	}
 	const result = !hydrate
-		? ({ ...metadata, content } as Record<string, any>)
-		: hydrate({ frontMatter: <I>metadata, content, breadcrumb });
+		? ({ ...metadata, content } as MarquaData & Record<string, unknown>)
+		: hydrate({ frontMatter: <MarquaData & I>metadata, content, breadcrumb });
 
 	if (!result /* hydrate is used and returns undefined */) return;
 
