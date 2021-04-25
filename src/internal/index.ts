@@ -28,6 +28,12 @@ export function compile<I, O extends Record<string, any> = I>(
 		if (!exclude.includes('toc')) metadata.toc = table(content);
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
+	if (typeof metadata.date !== 'string') {
+		const stats = fs.statSync(entry);
+		if (!metadata.date) metadata.date = {};
+		metadata.date.created = stats.birthtime;
+		metadata.date.modified = stats.mtime;
+	}
 	const result = !hydrate
 		? ({ ...metadata, content } as Record<string, any>)
 		: hydrate({ frontMatter: <I>metadata, content, breadcrumb });
