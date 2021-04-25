@@ -40,7 +40,7 @@ export function compile<I, O extends Record<string, any> = I>(
 
 	if (!result /* hydrate is used and returns undefined */) return;
 
-	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
+	if (!minimal && typeof result.date !== 'string' && !exclude.includes('date'))
 		result.date.updated = result.date.updated || result.date.published;
 	if (result.content && typeof result.content === 'string')
 		result.content = structure(result.content, minimal || exclude.includes('cnt'));
