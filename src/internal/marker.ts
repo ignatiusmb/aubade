@@ -1,4 +1,4 @@
-import MarkIt, { Options } from 'markdown-it';
+import MarkIt from 'markdown-it';
 import Aqua from '@ignatiusmb/aqua';
 import { generate } from './utils';
 
@@ -19,16 +19,16 @@ const marker = MarkIt({
 });
 
 /** Renderer Override Rules */
-marker.renderer.rules.heading_open = (tokens: any, idx: number) => {
+marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
 	return `<${token.tag} id="${generate.id(text)}">`;
 };
-marker.renderer.rules.image = (tokens: any, idx: number, options: Options, env: any, slf: any) => {
+marker.renderer.rules.image = (tokens, idx, options, env, slf) => {
 	tokens[idx].attrPush(['loading', 'lazy']); // add browser level lazy loading
 	const token = tokens[idx];
-	const altIdx: number = token.attrIndex('alt');
-	const titleIdx: number = token.attrIndex('title');
+	const altIdx = token.attrIndex('alt');
+	const titleIdx = token.attrIndex('title');
 	token.attrs[altIdx][1] = slf.renderInlineAsText(token.children, options, env);
 	if (titleIdx === -1) return slf.renderToken(tokens, idx, options);
 
