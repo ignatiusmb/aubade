@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, HydrateFn } from './types';
+import type { DirOptions, FileOptions, FrontMatter, HydrateFn } from './types';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,8 +29,8 @@ export function compile<I, O extends Record<string, any> = I>(
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
 	const result = !hydrate
-		? ({ ...metadata, content } as Record<string, any>)
-		: hydrate({ frontMatter: <I>metadata, content, breadcrumb });
+		? ({ ...metadata, content } as FrontMatter & Record<string, unknown>)
+		: hydrate({ frontMatter: <FrontMatter & I>metadata, content, breadcrumb });
 
 	if (!result /* hydrate is used and returns undefined */) return;
 

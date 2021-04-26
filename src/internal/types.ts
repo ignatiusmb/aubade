@@ -1,3 +1,4 @@
+/** Option Types */
 export interface FileOptions {
 	entry: string;
 	minimal?: boolean;
@@ -9,18 +10,25 @@ export interface DirOptions extends FileOptions {
 	extensions?: Array<string>;
 }
 
-export interface HydrateFn<I, O = I> {
-	(data: { frontMatter: I; content: string; breadcrumb: Array<string> }): O | undefined;
-}
-
+/** Data Types */
 export interface MarquaData {
 	type: string;
 	title: string;
 	body: string | Array<this>;
 }
-
 export interface MarquaTable {
 	id: string;
 	title: string;
 	sections?: Array<this>;
 }
+
+/** Parser Types */
+export interface FrontMatter {
+	date: Record<'created' | 'modified', Date>;
+	content?: string;
+}
+export type HydrateFn<I, O = I> = (chunk: {
+	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, keyof I>> & I;
+	content: string;
+	breadcrumb: Array<string>;
+}) => O | undefined;
