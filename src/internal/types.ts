@@ -25,7 +25,7 @@ export interface MarquaTable {
 /** Parser Types */
 export interface FrontMatter extends Record<string, any> {
 	date: Record<'created' | 'modified', Date>;
-	content?: string;
+	content?: string | MarquaData[];
 }
 export type HydrateFn<I, O = I> = (chunk: {
 	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, keyof I>> & I;
