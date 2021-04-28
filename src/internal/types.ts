@@ -23,7 +23,7 @@ export interface MarquaTable {
 }
 
 /** Parser Types */
-export interface FrontMatter {
+export interface FrontMatter extends Record<string, any> {
 	date: Record<'created' | 'modified', Date>;
 	content?: string;
 }
