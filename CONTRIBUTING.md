@@ -13,12 +13,3 @@ Documentation is especially helpful! You can add something that hasn't been cove
 ## Testing
 
 The easiest way to contribute. You're already helping just by using the software, simply use and let us know if you run into problems, or there's some use case you would like to use it for but are not yet covered. This is the most common way we uncover bugs or implement new features.
-
-## Maintainers - Publishing
-
-Publishing is handled and triggered automatically via `tag` events.
-
-```bash
-# npm version <major|minor|patch> && git push origin master --tags
-npm version patch && git push origin master --tags
-```
