@@ -29,8 +29,8 @@ export function compile<Input, Output extends Record<string, any> = Input>(
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
 	const result = !hydrate
-		? ({ ...metadata, content } as FrontMatter & Record<string, unknown>)
-		: hydrate({ frontMatter: <FrontMatter & Input>metadata, content, breadcrumb });
+		? ({ ...metadata, content } as FrontMatter)
+		: hydrate({ frontMatter: <any>metadata, content, breadcrumb });
 
 	if (!result /* hydrate is used and returns nothing */) return;
 
