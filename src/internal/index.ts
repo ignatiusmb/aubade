@@ -5,10 +5,10 @@ import path from 'path';
 import { readTime, structure, table } from './compute';
 import { construct, supplant } from './utils';
 
-export function compile<I, O extends Record<string, any> = I>(
+export function compile<Input, Output extends Record<string, any> = Input>(
 	options: string | FileOptions,
-	hydrate?: HydrateFn<I, O>
-): O | undefined {
+	hydrate?: HydrateFn<Input, Output>
+): void | Output {
 	const { entry, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { entry: options };
 
@@ -30,21 +30,21 @@ export function compile<I, O extends Record<string, any> = I>(
 	}
 	const result = !hydrate
 		? ({ ...metadata, content } as FrontMatter & Record<string, unknown>)
-		: hydrate({ frontMatter: <FrontMatter & I>metadata, content, breadcrumb });
+		: hydrate({ frontMatter: <FrontMatter & Input>metadata, content, breadcrumb });
 
-	if (!result /* hydrate is used and returns undefined */) return;
+	if (!result /* hydrate is used and returns nothing */) return;
 
 	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
 		result.date.updated = result.date.updated || result.date.published;
 	if (result.content && typeof result.content === 'string')
 		result.content = structure(result.content, minimal || exclude.includes('cnt'));
-	return result as O;
+	return result as Output;
 }
 
-export function traverse<I, O extends Record<string, any> = I>(
+export function traverse<Input, Output extends Record<string, any> = Input>(
 	options: string | DirOptions,
-	hydrate?: HydrateFn<I, O>
-): Array<O> {
+	hydrate?: HydrateFn<Input, Output>
+): Array<Output> {
 	const { entry, recurse = !1, extensions = ['.md'], ...config } =
 		typeof options !== 'string' ? options : { entry: options };
 
@@ -62,6 +62,6 @@ export function traverse<I, O extends Record<string, any> = I>(
 	});
 
 	return (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
-		(i): i is O => !!i && (typeof i.length === 'undefined' || !!i.length)
+		(i): i is Output => !!i && (typeof i.length === 'undefined' || !!i.length)
 	);
 }

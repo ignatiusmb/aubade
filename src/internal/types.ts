@@ -28,8 +28,8 @@ export interface FrontMatter extends Record<string, any> {
 		Partial<Record<'published' | 'updated', string | Date>>;
 	content?: string | MarquaData[];
 }
-export type HydrateFn<I, O = I> = (chunk: {
-	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, keyof I>> & I;
+export type HydrateFn<Input, Output = Input> = (chunk: {
+	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, keyof Input>> & Input;
 	content: string;
 	breadcrumb: Array<string>;
-}) => O | undefined;
+}) => void | Output;
