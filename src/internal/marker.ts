@@ -7,7 +7,7 @@ const marker = MarkIt({
 	typographer: true,
 	highlight(str, language) {
 		const lines = str.split('\n');
-		const dataset = { language, title: '', lineStart: 0 };
+		const dataset = { language, title: '', lineStart: 1 };
 		if (lines[0][0] === '~') {
 			const [title, lineNumber] = lines[0].split('#');
 			dataset['title'] = title.slice(1);
