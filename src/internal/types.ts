@@ -9,6 +9,10 @@ export interface DirOptions extends FileOptions {
 	recurse?: boolean;
 	extensions?: Array<string>;
 }
+export interface ParserTypes<Input, Output> {
+	Symbol(): Input;
+	Symbol(): Output;
+}
 
 /** Data Types */
 export interface MarquaData {
