@@ -24,9 +24,11 @@ export interface MarquaTable {
 
 /** Parser Types */
 export interface FrontMatter {
+	toc?: Array<MarquaTable>;
+	read_time?: number;
+	content?: string | Array<MarquaData>;
 	date: Record<'created' | 'modified', Date> &
 		Partial<Record<'published' | 'updated', string | Date>>;
-	content?: string | Array<MarquaData>;
 }
 export type HydrateFn<Input, Output = Input> = (chunk: {
 	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, 'content' | keyof Input>> & Input;
