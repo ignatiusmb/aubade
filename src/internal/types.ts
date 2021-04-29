@@ -32,6 +32,6 @@ export interface FrontMatter {
 }
 export type HydrateFn<Input, Output = Input> = (chunk: {
 	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, 'content' | keyof Input>> & Input;
-	content: string;
+	content: NonNullable<FrontMatter['content']>;
 	breadcrumb: Array<string>;
 }) => void | Output;
