@@ -30,8 +30,8 @@ export interface FrontMatter {
 	date: Record<'created' | 'modified', Date> &
 		Partial<Record<'published' | 'updated', string | Date>>;
 }
-export type HydrateFn<Input, Output = Input> = (chunk: {
+export type HydrateFn<Options extends FileOptions, Input, Output = Input> = (chunk: {
 	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, 'content' | keyof Input>> & Input;
-	content: NonNullable<FrontMatter['content']>;
+	content: Options['minimal'] extends true ? string : Array<MarquaData>;
 	breadcrumb: Array<string>;
 }) => void | Output;
