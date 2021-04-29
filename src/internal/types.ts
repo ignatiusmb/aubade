@@ -23,13 +23,13 @@ export interface MarquaTable {
 }
 
 /** Parser Types */
-export interface FrontMatter extends Record<string, any> {
+export interface FrontMatter {
 	date: Record<'created' | 'modified', Date> &
 		Partial<Record<'published' | 'updated', string | Date>>;
-	content?: string | MarquaData[];
+	content?: string | Array<MarquaData>;
 }
 export type HydrateFn<Input, Output = Input> = (chunk: {
-	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, keyof Input>> & Input;
+	frontMatter: Pick<FrontMatter, Exclude<keyof FrontMatter, 'content' | keyof Input>> & Input;
 	content: string;
 	breadcrumb: Array<string>;
 }) => void | Output;
