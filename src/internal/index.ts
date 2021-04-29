@@ -1,13 +1,18 @@
-import type { DirOptions, FileOptions, FrontMatter, HydrateFn } from './types';
+import type { DirOptions, FileOptions, FrontMatter, HydrateFn, ParserTypes } from './types';
 import fs from 'fs';
 import path from 'path';
 
 import { readTime, structure, table } from './compute';
 import { construct, supplant } from './utils';
 
-export function compile<Input, Output extends Record<string, any> = Input>(
-	options: string | FileOptions,
-	hydrate?: HydrateFn<Input, Output>
+export function compile<
+	Options extends FileOptions,
+	Input extends object,
+	Output extends Record<string, any> = Input
+>(
+	options: string | Options,
+	hydrate?: HydrateFn<Options, Input, Output>,
+	_types?: ParserTypes<Input, Output>
 ): void | Output {
 	const { entry, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { entry: options };
@@ -28,9 +33,10 @@ export function compile<Input, Output extends Record<string, any> = Input>(
 		if (!exclude.includes('toc')) metadata.toc = table(content);
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
+	const chunk = { frontMatter: metadata, content, breadcrumb };
 	const result = !hydrate
 		? ({ ...metadata, content } as FrontMatter)
-		: hydrate({ frontMatter: <any>metadata, content, breadcrumb });
+		: hydrate(chunk as Parameters<typeof hydrate>[0]);
 
 	if (!result /* hydrate is used and returns nothing */) return;
 
@@ -41,9 +47,14 @@ export function compile<Input, Output extends Record<string, any> = Input>(
 	return result as Output;
 }
 
-export function traverse<Input, Output extends Record<string, any> = Input>(
-	options: string | DirOptions,
-	hydrate?: HydrateFn<Input, Output>
+export function traverse<
+	Options extends DirOptions,
+	Input extends object,
+	Output extends Record<string, any> = Input
+>(
+	options: string | Options,
+	hydrate?: HydrateFn<Options, Input, Output>,
+	_types?: ParserTypes<Input, Output>
 ): Array<Output> {
 	const { entry, recurse = !1, extensions = ['.md'], ...config } =
 		typeof options !== 'string' ? options : { entry: options };
@@ -62,6 +73,6 @@ export function traverse<Input, Output extends Record<string, any> = Input>(
 	});
 
 	return (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
-		(i): i is Output => !!i && (typeof i.length === 'undefined' || !!i.length)
+		(i): i is Output => !!i && (Array.isArray(i) ? !!i.length : !!Object.keys(i).length)
 	);
 }
