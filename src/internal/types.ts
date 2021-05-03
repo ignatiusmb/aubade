@@ -36,8 +36,8 @@ export interface FrontMatter {
 }
 export type HydrateFn<Options extends FileOptions, Input, Output = Input> = (chunk: {
 	frontMatter: keyof Input extends never
-		? Pick<FrontMatter, Exclude<keyof FrontMatter, 'content'>> & Record<string, any>
-		: Pick<FrontMatter, Exclude<keyof FrontMatter, 'content' | keyof Input>> & Input;
+		? Omit<FrontMatter, 'content'> & Record<string, any>
+		: Omit<FrontMatter, 'content' | keyof Input> & Input;
 	content: Options['minimal'] extends true ? string : Array<MarquaData>;
 	breadcrumb: Array<string>;
 }) => void | Output;
