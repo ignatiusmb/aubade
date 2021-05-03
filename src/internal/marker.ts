@@ -1,4 +1,4 @@
-import MarkIt, { Options } from 'markdown-it';
+import MarkIt from 'markdown-it';
 import Aqua from '@ignatiusmb/aqua';
 import { generate } from './utils';
 
@@ -7,7 +7,7 @@ const marker = MarkIt({
 	typographer: true,
 	highlight(str, language) {
 		const lines = str.split('\n');
-		const dataset: Record<string, string | number> = { language };
+		const dataset = { language, title: '', lineStart: 1 };
 		if (lines[0][0] === '~') {
 			const [title, lineNumber] = lines[0].split('#');
 			dataset['title'] = title.slice(1);
@@ -19,29 +19,29 @@ const marker = MarkIt({
 });
 
 /** Renderer Override Rules */
-marker.renderer.rules.heading_open = (tokens: any, idx: number) => {
+marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
 	return `<${token.tag} id="${generate.id(text)}">`;
 };
-marker.renderer.rules.image = (tokens: any, idx: number, options: Options, env: any, slf: any) => {
-	tokens[idx].attrPush(['loading', 'lazy']); // add browser level lazy loading
+marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];
-	const altIdx: number = token.attrIndex('alt');
-	const titleIdx: number = token.attrIndex('title');
-	token.attrs[altIdx][1] = slf.renderInlineAsText(token.children, options, env);
-	if (titleIdx === -1) return slf.renderToken(tokens, idx, options);
+	const link = token.attrGet('src');
+	if (!token.attrs || !token.children || !link) return '';
+	token.attrPush(['loading', 'lazy']); // add browser level lazy loading
+	token.attrSet('alt', self.renderInlineAsText(token.children, options, env));
 
-	// Remove caption so it's not rendered below
-	const caption: string = token.attrs.splice(titleIdx, 1)[0][1];
-	const alt: string = token.attrs[altIdx][1];
-
-	const media: { type: string; attrs: string[]; data?: string } = {
+	const title = token.attrIndex('title');
+	if (title === -1) return `<img ${self.renderAttrs(token)}>`;
+	// Remove caption so it's not rendered in else block below
+	const caption = token.attrs.splice(title, 1)[0][1];
+	const alt = token.attrGet('alt') || '';
+	const media = {
+		data: '',
 		type: (alt.match(/^!(\w+[-\w]+)($|#)/) || ['', ''])[1],
 		attrs: (alt.match(/#(\w+)/g) || []).map((a) => a.slice(1)),
 	};
 
-	const link: string = token.attrs[token.attrIndex('src')][1];
 	if (media.type) {
 		const stripped = media.type.toLowerCase();
 		const [type, ...args] = stripped.split('-');
@@ -55,24 +55,24 @@ marker.renderer.rules.image = (tokens: any, idx: number, options: Options, env: 
 			media.data = `<video controls><source src="${link}" type="video/mp4"></video>`;
 		}
 	} else {
-		tokens[idx].attrs[altIdx][1] = alt.replace(/#\w+/g, '');
-		media.data = slf.renderToken(tokens, idx, options);
+		token.attrSet('alt', alt.replace(/#\w+/g, ''));
+		media.data = `<img ${self.renderAttrs(token)}>`;
 	}
 
-	const classMap: Record<string, string> = {
-		d: 'disclosure',
-		f: 'flexible',
-		fb: 'full-bleed',
-		hb: 'half-bleed',
-	};
-	const mAttrs = new Set(media.attrs.map((a) => classMap[a] || a));
+	const classMap = new Map([
+		['d', 'disclosure'],
+		['f', 'flexible'],
+		['fb', 'full-bleed'],
+		['hb', 'half-bleed'],
+	]);
+	const mAttrs = new Set(media.attrs.map((a) => classMap.get(a) || a));
 	const classes = {
 		div: ['captioned', ['flexible'].filter((c) => mAttrs.has(c))].flat(),
 		top: ['half-bleed', 'full-bleed'].filter((c) => mAttrs.has(c)),
 	};
 
 	media.data = `<div class="${classes.div.join(' ')}">${media.data}</div>`;
-	const rendered: string = marker.renderInline(caption);
+	const rendered = marker.renderInline(caption);
 	if (mAttrs.has('disclosure')) {
 		const body = `<summary>${rendered}</summary>${media.data}`;
 		return `<details class="${classes.top.join(' ')}">${body}</details>`;

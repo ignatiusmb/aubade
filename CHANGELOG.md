@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- [[`#10`](https://github.com/ignatiusmb/marqua/pull/10)]: add advanced typings for autocompletion
+- [[`#10`](https://github.com/ignatiusmb/marqua/pull/10)]: export new `forge` helper
 - [[`#8`](https://github.com/ignatiusmb/marqua/pull/8)]: add recursive parsing to `traverse`
 - [[`#8`](https://github.com/ignatiusmb/marqua/pull/8)]: change `filename` to `breadcrumb`
 - [[`#8`](https://github.com/ignatiusmb/marqua/pull/8)]: remove `.sort` when calling `traverse`
