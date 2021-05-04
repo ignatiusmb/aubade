@@ -7,7 +7,7 @@ import { construct, supplant } from './utils';
 
 export function compile<
 	Options extends FileOptions,
-	Input extends Record<string, any>,
+	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
@@ -49,7 +49,7 @@ export function compile<
 
 export function traverse<
 	Options extends DirOptions,
-	Input extends Record<string, any>,
+	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
