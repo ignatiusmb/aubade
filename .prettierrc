@@ -10,7 +10,7 @@
 			"options": { "useTabs": false }
 		},
 		{
-			"files": ["*.yml"],
+			"files": ["*.yaml"],
 			"options": { "singleQuote": false }
 		}
 	]
