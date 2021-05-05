@@ -5,7 +5,7 @@ on:
     tags:
       - "v*"
     branches-ignore:
-      - "*"
+      - "**"
 
 jobs:
   npm-publish:
@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 14
           registry-url: "https://registry.npmjs.org"
-      - name: Publish
-        run: npm publish
+      - name: Install & Publish
+        run: npm install && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
