@@ -95,11 +95,11 @@ const data = traverse(
 
 Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or at the [types](src/internal/types.ts) directly.
 
-The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when not specified or `undefined`, will return an object with `content` and all properties of `frontMatter`.
+The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | DirOptions`. The second argument of both functions is an optional callback (`hydrate`), when not specified or `undefined`, will return an object with `content` and all properties of `frontMatter`.
 
 ```ts
 interface FileOptions {
-  pathname: string;
+  entry: string;
 
   /**
    * minimal = false
@@ -123,8 +123,8 @@ interface FileOptions {
   exclude?: Array<string>;
 }
 
-interface DirOptions {
-  dirname: string;
+interface DirOptions extends FileOptions {
+  entry: string;
 
   /**
    * recurse = false
@@ -165,10 +165,10 @@ Extending `marker` with plugins is optional, it's already equipped with all the 
 
 ```js
 import { marker, compile } from 'marqua';
-import Math from 'markdown-it-texmath';
+import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 
-marker.use(Math, {
+marker.use(TexMath, {
   engine: KaTeX,
   delimiters: 'dollars',
 });
@@ -189,9 +189,9 @@ import { compile } from 'marqua';
  *    with a caveat of declaring its options
  *    beforehand as const
  */
-const opts = { entry: 'path/to/file', minimal: false } as const;
+const opts = { entry: 'content/reviews/movie/your-name.md', minimal: false } as const;
 // alternative declaration using forge for autocompletion
-// const opts = forge.compile({ entry: 'path/to/file', minimal: false });
+// const opts = forge.compile({ entry: 'content/reviews/movie/your-name.md', minimal: false });
 compile<typeof opts, Post>(opts);
 
 
@@ -200,7 +200,7 @@ compile<typeof opts, Post>(opts);
  */
 import { forge } from 'marqua';
 compile(
-  { entry: 'path/to/file', minimal: false },
+  { entry: 'content/reviews/movie/your-name.md', minimal: false },
   ({ frontMatter, content, breadcrumb }) => {
     // do stuff with frontMatter / content
     // parse breadcrumb or some other stuff
