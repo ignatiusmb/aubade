@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [[`#12`](https://github.com/ignatiusmb/marqua/pull/12)]: add automatic date metadata
+
 ## 0.2.0
 
 - [[`#10`](https://github.com/ignatiusmb/marqua/pull/10)]: add advanced typings for autocompletion
