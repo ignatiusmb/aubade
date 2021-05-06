@@ -55,6 +55,8 @@ content
             └── your-name.md
 ```
 
+#### `compile` and `traverse`
+
 An example usage from the *hypothetical* content folder structure above should look like
 
 ```js
@@ -93,11 +95,11 @@ const data = traverse(
 
 Marqua is shipped with built-in types, so any code editor that supports it should give autocompletion for the arguments passed. For a more detailed information, take a look at the [source code](src/index.ts) itself or at the [types](src/internal/types.ts) directly.
 
-The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | (DirOptions & FileOptions)`. The second argument of both functions is an optional callback (`hydrate`), when not specified or `undefined`, will return an object with `content` and all properties of `frontMatter`.
+The first argument of `compile` can either be `string | FileOptions`, and for `traverse` it can be `string | DirOptions`. The second argument of both functions is an optional callback (`hydrate`), when not specified or `undefined`, will return an object with `content` and all properties of `frontMatter`.
 
 ```ts
 interface FileOptions {
-  pathname: string;
+  entry: string;
 
   /**
    * minimal = false
@@ -121,8 +123,8 @@ interface FileOptions {
   exclude?: Array<string>;
 }
 
-interface DirOptions {
-  dirname: string;
+interface DirOptions extends FileOptions {
+  entry: string;
 
   /**
    * recurse = false
@@ -150,6 +152,8 @@ interface DirOptions {
 
 When everything is set to default (none of the optional properties are passed), passing in a string as the first argument of `compile` or `traverse` will be the same as only passing in `pathname` or `dirname` as the options.
 
+#### `marker`
+
 ```js
 /* marker (optional): extendible markdown renderer */
 import { marker } from 'marqua';
@@ -161,10 +165,10 @@ Extending `marker` with plugins is optional, it's already equipped with all the 
 
 ```js
 import { marker, compile } from 'marqua';
-import Math from 'markdown-it-texmath';
+import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 
-marker.use(Math, {
+marker.use(TexMath, {
   engine: KaTeX,
   delimiters: 'dollars',
 });
@@ -172,11 +176,49 @@ marker.use(Math, {
 const data = compile(/* source path */);
 ```
 
+#### `forge`
+
+Both `compile` and `traverse` can be passed an `Input` type for the available properties in `{ frontMatter }` and `Output` type for the expected returned object, it defaults to what's passed in `Input`. There are two ways to do this
+
+```ts
+import type { Post } from './types';
+import { compile } from 'marqua';
+
+/**
+ * 1. Pass it in directly to the functions
+ *    with a caveat of declaring its options
+ *    beforehand as const
+ */
+const opts = { entry: 'content/reviews/movie/your-name.md', minimal: false } as const;
+// alternative declaration using forge for autocompletion
+// const opts = forge.compile({ entry: 'content/reviews/movie/your-name.md', minimal: false });
+compile<typeof opts, Post>(opts);
+
+
+/**
+ * 2. Import and use forge helper
+ */
+import { forge } from 'marqua';
+compile(
+  { entry: 'content/reviews/movie/your-name.md', minimal: false },
+  ({ frontMatter, content, breadcrumb }) => {
+    // do stuff with frontMatter / content
+    // parse breadcrumb or some other stuff
+    return { ...frontMatter, content };
+  },
+  forge.types<Post>()
+);
+```
+
+Both options are available to use if needed, the rest is up to your preference on how you type your code. Both are also optional too, so this can be ignored completely if you don't need the autocompletion.
+
+All `forge` methods acts as a helper and are only meant to provide autocompletion. Both `forge.compile` and `forge.traverse` will return the respective options object, and `forge.types` need at least one type argument passed, expects 0 arguments passed, and never returns.
+
 ### Front Matter
 
 Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Marqua syntax resembles yaml in some ways except it only read raw strings. It doesn't support whitespace indentation, `[...]`, or `{...}`. Instead, it has some ways to handle creating objects/maps and arrays/lists.
 
-```yml
+```yaml
 ---
 title: My First Blog Post, Hello World!
 description: Welcome to my first post.
