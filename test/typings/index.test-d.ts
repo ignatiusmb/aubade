@@ -1,6 +1,6 @@
-import type { FrontMatter, MarquaData } from '../../src/internal/types';
+import type { FrontMatter, MarquaData, MarquaTable } from '../../src/internal/types';
 import { compile, traverse } from '../../src';
-import { expectType } from 'tsd';
+import { expectAssignable, expectNotType, expectType } from 'tsd';
 const entry = 'nonexistent-folder';
 
 type DefaultFM = Omit<FrontMatter, 'content'> & Record<string, any>;
@@ -10,6 +10,12 @@ type MinimalFM = Pick<FrontMatter, 'date'> & Record<string, any>;
 expectType<void | Record<string, any>>(
 	compile(entry, ({ frontMatter, content, breadcrumb }) => {
 		expectType<DefaultFM>(frontMatter);
+		expectType<Array<MarquaTable>>(frontMatter.toc);
+		expectType<number>(frontMatter.read_time);
+		expectAssignable<object>(frontMatter.date);
+		expectType<Date>(frontMatter.date.created);
+		expectType<Date>(frontMatter.date.modified);
+
 		expectType<Array<MarquaData>>(content);
 		expectType<Array<string>>(breadcrumb);
 	})
@@ -17,6 +23,7 @@ expectType<void | Record<string, any>>(
 expectType<Array<Record<string, any>>>(
 	traverse(entry, ({ frontMatter, content, breadcrumb }) => {
 		expectType<DefaultFM>(frontMatter);
+
 		expectType<Array<MarquaData>>(content);
 		expectType<Array<string>>(breadcrumb);
 	})
@@ -26,6 +33,7 @@ expectType<Array<Record<string, any>>>(
 expectType<void | Record<string, any>>(
 	compile({ entry }, ({ frontMatter, content, breadcrumb }) => {
 		expectType<DefaultFM>(frontMatter);
+
 		expectType<Array<MarquaData>>(content);
 		expectType<Array<string>>(breadcrumb);
 	})
@@ -35,6 +43,8 @@ expectType<void | Record<string, any>>(
 expectType<void | Record<string, any>>(
 	compile({ entry, minimal: true }, ({ frontMatter, content, breadcrumb }) => {
 		expectType<MinimalFM>(frontMatter);
+		expectNotType<number>(frontMatter.read_time);
+
 		expectType<string>(content);
 		expectType<Array<string>>(breadcrumb);
 	})
@@ -44,6 +54,7 @@ expectType<void | Record<string, any>>(
 expectType<Array<Record<string, any>>>(
 	traverse({ entry, recurse: true }, ({ frontMatter, content, breadcrumb }) => {
 		expectType<DefaultFM>(frontMatter);
+
 		expectType<Array<MarquaData>>(content);
 		expectType<Array<string>>(breadcrumb);
 	})
