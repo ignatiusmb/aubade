@@ -54,7 +54,7 @@ export function compile<
 }
 
 export function traverse<
-	Options extends DirOptions,
+	Options extends DirOptions<Output>,
 	Input extends object,
 	Output extends Record<string, any> = Input
 >(
@@ -62,7 +62,7 @@ export function traverse<
 	hydrate?: HydrateFn<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): Array<Output> {
-	const { entry, recurse = !1, extensions = ['.md'], ...config } =
+	const { entry, recurse = !1, extensions = ['.md'], sort = undefined, ...config } =
 		typeof options !== 'string' ? options : { entry: options };
 
 	if (!fs.existsSync(entry)) {
@@ -78,7 +78,9 @@ export function traverse<
 		else return;
 	});
 
-	return (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
+	const items = (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
 		(i): i is Output => !!i && (Array.isArray(i) ? !!i.length : !!Object.keys(i).length)
 	);
+
+	return sort ? (items as any).sort(sort) : items;
 }
