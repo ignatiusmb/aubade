@@ -4,14 +4,14 @@ export interface FileOptions {
 	minimal?: boolean;
 	exclude?: Array<string>;
 }
-export interface DirOptions<
-	Output = unknown,
-	Item = keyof Output extends never ? Record<string, any> : Output
-> extends FileOptions {
+export interface DirOptions<Output extends object = {}> extends FileOptions {
 	entry: string;
 	recurse?: boolean;
 	extensions?: Array<string>;
-	sort?(x: Item, y: Item): number;
+	sort?(
+		x: keyof Output extends never ? Record<string, any> : Output,
+		y: keyof Output extends never ? Record<string, any> : Output
+	): number;
 }
 export interface ParserTypes<Input, Output> {
 	Symbol(): Input;
