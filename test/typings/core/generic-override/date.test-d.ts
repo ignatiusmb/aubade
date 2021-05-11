@@ -16,14 +16,12 @@ type Default = Omit<ts.FrontMatter, 'content' | keyof Generic> & Generic;
 expectType<void | Generic>(
 	compile(
 		entry,
-		({ frontMatter, content, breadcrumb }) => {
-			expectType<Omit<ts.FrontMatter, 'content' | keyof Generic> & Generic>(frontMatter);
-			expectType<Array<ts.MarquaTable>>(frontMatter.toc);
-			expectType<number>(frontMatter.read_time);
+		({ frontMatter }) => {
+			expectType<Default>(frontMatter);
 			expectType<string>(frontMatter.date);
 
-			expectType<Array<ts.MarquaData>>(content);
-			expectType<Array<string>>(breadcrumb);
+			expectType<Array<ts.MarquaTable>>(frontMatter.toc);
+			expectType<number>(frontMatter.read_time);
 		},
 		forge.types<Generic>()
 	)
@@ -32,11 +30,12 @@ expectType<void | Generic>(
 expectType<Array<Generic>>(
 	traverse(
 		entry,
-		({ frontMatter, content, breadcrumb }) => {
+		({ frontMatter }) => {
 			expectType<Default>(frontMatter);
+			expectType<string>(frontMatter.date);
 
-			expectType<Array<ts.MarquaData>>(content);
-			expectType<Array<string>>(breadcrumb);
+			expectType<Array<ts.MarquaTable>>(frontMatter.toc);
+			expectType<number>(frontMatter.read_time);
 		},
 		forge.types<Generic>()
 	)
