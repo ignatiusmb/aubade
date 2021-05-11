@@ -4,7 +4,7 @@
  */
 
 import type * as ts from '../../../../src/internal/types';
-import { compile, traverse } from '../../../../src';
+import { compile } from '../../../../src';
 import { expectAssignable, expectType } from 'tsd';
 
 const entry = 'nonexistent-folder';
@@ -20,16 +20,6 @@ expectType<void | Generic>(
 		expectAssignable<object>(frontMatter.date);
 		expectType<Date>(frontMatter.date.created);
 		expectType<Date>(frontMatter.date.modified);
-
-		expectType<Array<ts.MarquaData>>(content);
-
-		expectType<Array<string>>(breadcrumb);
-	})
-);
-
-expectType<Array<Generic>>(
-	traverse(entry, ({ frontMatter, content, breadcrumb }) => {
-		expectType<Default>(frontMatter);
 
 		expectType<Array<ts.MarquaData>>(content);
 
