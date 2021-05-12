@@ -13,7 +13,7 @@ export function compile<
 	options: string | Options,
 	hydrate?: HydrateFn<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
-): void | Output {
+): undefined | Output {
 	const { entry, minimal = !1, exclude = [] } =
 		typeof options !== 'string' ? options : { entry: options };
 
