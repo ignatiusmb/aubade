@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [[`#16`](https://github.com/ignatiusmb/marqua/pull/16)]: add traverse sort option
 - [[`#12`](https://github.com/ignatiusmb/marqua/pull/12)]: add automatic date metadata
 
 ## 0.2.0
