@@ -1,39 +1,39 @@
 /** Option Types */
-export interface FileOptions {
+export type FileOptions = {
 	entry: string;
 	minimal?: boolean;
 	exclude?: Array<string>;
-}
-export interface DirOptions extends FileOptions {
+};
+export type DirOptions = FileOptions & {
 	entry: string;
 	recurse?: boolean;
 	extensions?: Array<string>;
-}
-export interface ParserTypes<Input, Output> {
+};
+export type ParserTypes<Input, Output> = {
 	Symbol(): Input;
 	Symbol(): Output;
-}
+};
 
 /** Data Types */
-export interface MarquaData {
+export type MarquaData = {
 	type: string;
 	title: string;
-	body: string | Array<this>;
-}
-export interface MarquaTable {
+	body: string | Array<MarquaData>;
+};
+export type MarquaTable = {
 	id: string;
 	title: string;
-	sections?: Array<this>;
-}
+	sections?: Array<MarquaTable>;
+};
 
 /** Parser Types */
-export interface FrontMatter {
+export type FrontMatter = {
 	toc: Array<MarquaTable>;
 	read_time: number;
 	content?: string | Array<MarquaData>;
 	date: Record<'created' | 'modified', Date> &
 		Partial<Record<'published' | 'updated', string | Date>>;
-}
+};
 export type HydrateFn<Options extends FileOptions, Input, Output = Input> = (chunk: {
 	frontMatter: keyof Input extends never
 		? Options['minimal'] extends true
