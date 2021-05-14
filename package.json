@@ -11,8 +11,9 @@
   "scripts": {
     "watch": "tsc -w --noEmit",
     "lint": "run-p lint:**",
-    "lint:types": "touch index.d.ts && tsd",
+    "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
+    "lint:types": "touch index.d.ts && tsd",
     "publish:clean": "git clean -dfx -e node_modules",
     "publish:build": "tsc -d --outDir .",
     "publish:format": "prettier -wu **/*.{d.ts,js}",
