@@ -1,5 +1,5 @@
 import { isExists } from 'mauss/guards';
-import { checkNum } from 'mauss/utils';
+import { tryNumber } from 'mauss/utils';
 
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
@@ -42,7 +42,7 @@ export function construct(metadata: string) {
 export function supplant(data: Record<string, any>, content: string): string {
 	const traverse = (meta: string | Record<string, any>, properties: string): string => {
 		for (const key of properties.split(':'))
-			if (typeof meta !== 'string') meta = meta[checkNum(key)];
+			if (typeof meta !== 'string') meta = meta[tryNumber(key)];
 		return typeof meta === 'string' ? meta : JSON.stringify(meta);
 	};
 
