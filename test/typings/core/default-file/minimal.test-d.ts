@@ -17,7 +17,7 @@ const options = forge.compile({
 type Generic = Record<string, any>;
 type Default = Pick<ts.FrontMatter, 'date'> & Generic;
 
-expectType<void | Generic>(
+expectType<undefined | Generic>(
 	compile(options, ({ frontMatter, content, breadcrumb }) => {
 		expectType<Default>(frontMatter);
 		expectNotType<number>(frontMatter.read_time);
