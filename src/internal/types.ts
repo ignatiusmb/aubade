@@ -1,3 +1,5 @@
+import type { Typify } from 'mauss/typings';
+
 /** Option Types */
 declare const UnSym1: unique symbol;
 declare const UnSym2: unique symbol;
@@ -17,16 +19,16 @@ export type DirOptions = FileOptions & {
 };
 
 /** Data Types */
-export type MarquaData = {
+export type MarquaData = Typify<{
 	type: string;
 	title: string;
 	body: string | Array<MarquaData>;
-};
-export type MarquaTable = {
+}>;
+export type MarquaTable = Typify<{
 	id: string;
 	title: string;
 	sections?: Array<MarquaTable>;
-};
+}>;
 
 /** Parser Types */
 export type FrontMatter = {
