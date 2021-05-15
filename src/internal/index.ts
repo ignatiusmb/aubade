@@ -16,7 +16,7 @@ export function compile<
 ): undefined | Output {
 	const {
 		entry,
-		minimal = !1,
+		minimal = false,
 		exclude = [],
 	} = typeof options !== 'string' ? options : { entry: options };
 
@@ -67,7 +67,7 @@ export function traverse<
 ): Array<Output> {
 	const {
 		entry,
-		recurse = !1,
+		recurse = false,
 		extensions = ['.md'],
 		...config
 	} = typeof options !== 'string' ? options : { entry: options };
