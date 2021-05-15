@@ -13,9 +13,12 @@ export function compile<
 	options: string | Options,
 	hydrate?: HydrateFn<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
-): void | Output {
-	const { entry, minimal = !1, exclude = [] } =
-		typeof options !== 'string' ? options : { entry: options };
+): undefined | Output {
+	const {
+		entry,
+		minimal = false,
+		exclude = [],
+	} = typeof options !== 'string' ? options : { entry: options };
 
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
@@ -62,8 +65,12 @@ export function traverse<
 	hydrate?: HydrateFn<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): Array<Output> {
-	const { entry, recurse = !1, extensions = ['.md'], ...config } =
-		typeof options !== 'string' ? options : { entry: options };
+	const {
+		entry,
+		recurse = false,
+		extensions = ['.md'],
+		...config
+	} = typeof options !== 'string' ? options : { entry: options };
 
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);

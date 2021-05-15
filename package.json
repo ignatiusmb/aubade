@@ -11,8 +11,9 @@
   "scripts": {
     "watch": "tsc -w --noEmit",
     "lint": "run-p lint:**",
-    "lint:types": "touch index.d.ts && tsd",
+    "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
+    "lint:types": "touch index.d.ts && tsd",
     "publish:clean": "git clean -dfx -e node_modules",
     "publish:build": "tsc -d --outDir .",
     "publish:format": "prettier -wu **/*.{d.ts,js}",
@@ -37,15 +38,14 @@
   "dependencies": {
     "@ignatiusmb/aqua": "^20.3.3",
     "markdown-it": "^12.0.4",
-    "mauss": "^0.0.9"
+    "mauss": "^0.0.10"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.0.1",
     "@types/node": "^14.14.16",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "tsd": "^0.14.0",
-    "tslib": "^2.0.3",
     "typescript": "^4.1.2"
   },
   "tsd": {

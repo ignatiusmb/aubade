@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [[`#18`](https://github.com/ignatiusmb/marqua/pull/18)]: guard marqua data types for index signatures
 - [[`#12`](https://github.com/ignatiusmb/marqua/pull/12)]: add automatic date metadata
 
 ## 0.2.0

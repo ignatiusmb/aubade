@@ -13,7 +13,7 @@ const entry = 'nonexistent-folder';
 type Generic = { date: string };
 type Default = Omit<ts.FrontMatter, 'content' | keyof Generic> & Generic;
 
-expectType<void | Generic>(
+expectType<undefined | Generic>(
 	compile(
 		entry,
 		({ frontMatter }) => {
