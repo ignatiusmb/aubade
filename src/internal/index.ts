@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, FrontMatter, HydrateFn, ParserTypes } from './types';
+import type { DirOptions, FileOptions, FrontMatter, Hydrate, ParserTypes } from './types';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,7 +11,7 @@ export function compile<
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: HydrateFn<Options, Input, Output>,
+	hydrate?: Hydrate<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): undefined | Output {
 	const {
@@ -62,7 +62,7 @@ export function traverse<
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: HydrateFn<Options, Input, Output>,
+	hydrate?: Hydrate<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): Array<Output> {
 	const {
