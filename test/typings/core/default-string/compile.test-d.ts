@@ -21,7 +21,7 @@ expectType<undefined | Generic>(
 		expectType<Date>(frontMatter.date.created);
 		expectType<Date>(frontMatter.date.modified);
 
-		expectType<Array<ts.MarquaData>>(content);
+		expectType</*Array< ts.MarquaData >*/ string>(content);
 
 		expectType<Array<string>>(breadcrumb);
 	})

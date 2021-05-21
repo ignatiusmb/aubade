@@ -16,7 +16,7 @@ expectType<Array<Generic>>(
 	traverse(entry, ({ frontMatter, content, breadcrumb }) => {
 		expectType<Default>(frontMatter);
 
-		expectType<Array<ts.MarquaData>>(content);
+		expectType</*Array< ts.MarquaData >*/ string>(content);
 
 		expectType<Array<string>>(breadcrumb);
 	})
