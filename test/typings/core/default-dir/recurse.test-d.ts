@@ -24,5 +24,7 @@ expectType<Array<Generic>>(
 		expectType</*Array< ts.MarquaData >*/ string>(content);
 
 		expectType<Array<string>>(breadcrumb);
+
+		return undefined;
 	})
 );

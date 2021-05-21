@@ -25,5 +25,7 @@ expectType<undefined | Generic>(
 		expectType<string>(content);
 
 		expectType<Array<string>>(breadcrumb);
+
+		return undefined;
 	})
 );
