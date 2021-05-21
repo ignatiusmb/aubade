@@ -1,6 +1,8 @@
+declare const UniqueInput: unique symbol;
+declare const UniqueOutput: unique symbol;
 export type ParserTypes<Input, Output> = {
-	UnSym(): Input;
-	UnSym(): Output;
+	[UniqueInput]: Input;
+	[UniqueOutput]: Output;
 };
 
 export type FileOptions = {
