@@ -12,7 +12,7 @@ const entry = 'nonexistent-folder';
 type Generic = Record<string, any>;
 type Default = Omit<ts.FrontMatter, 'content'> & Generic;
 
-expectType<void | Generic>(
+expectType<undefined | Generic>(
 	compile(entry, ({ frontMatter, content, breadcrumb }) => {
 		expectType<Default>(frontMatter);
 		expectType<Array<ts.MarquaTable>>(frontMatter.toc);
