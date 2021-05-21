@@ -22,6 +22,8 @@ expectType<undefined | Generic>(
 
 			expectType<Array<ts.MarquaTable>>(frontMatter.toc);
 			expectType<number>(frontMatter.read_time);
+
+			return undefined;
 		},
 		forge.types<Generic>()
 	)
@@ -36,6 +38,8 @@ expectType<Array<Generic>>(
 
 			expectType<Array<ts.MarquaTable>>(frontMatter.toc);
 			expectType<number>(frontMatter.read_time);
+
+			return undefined;
 		},
 		forge.types<Generic>()
 	)

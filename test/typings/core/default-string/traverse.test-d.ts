@@ -12,12 +12,14 @@ const entry = 'nonexistent-folder';
 type Generic = Record<string, any>;
 type Default = Omit<ts.FrontMatter, 'content'> & Generic;
 
-expectType<Array<Generic>>(
-	traverse(entry, ({ frontMatter, content, breadcrumb }) => {
-		expectType<Default>(frontMatter);
+const data = traverse(entry, ({ frontMatter, content, breadcrumb }) => {
+	expectType<Default>(frontMatter);
 
-		expectType<Array<ts.MarquaData>>(content);
+	expectType</*Array< ts.MarquaData >*/ string>(content);
 
-		expectType<Array<string>>(breadcrumb);
-	})
-);
+	expectType<Array<string>>(breadcrumb);
+
+	return undefined;
+});
+
+expectType<Array<Generic>>(data);

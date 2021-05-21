@@ -12,17 +12,20 @@ const entry = 'nonexistent-folder';
 type Generic = Record<string, any>;
 type Default = Omit<ts.FrontMatter, 'content'> & Generic;
 
-expectType<undefined | Generic>(
-	compile(entry, ({ frontMatter, content, breadcrumb }) => {
-		expectType<Default>(frontMatter);
-		expectType<Array<ts.MarquaTable>>(frontMatter.toc);
-		expectType<number>(frontMatter.read_time);
-		expectAssignable<object>(frontMatter.date);
-		expectType<Date>(frontMatter.date.created);
-		expectType<Date>(frontMatter.date.modified);
+const data = compile(entry, ({ frontMatter, content, breadcrumb }) => {
+	expectType<Default>(frontMatter);
+	expectType<Array<ts.MarquaTable>>(frontMatter.toc);
+	expectType<number>(frontMatter.read_time);
+	expectAssignable<object>(frontMatter.date);
+	expectType<Date>(frontMatter.date.created);
+	expectType<Date>(frontMatter.date.modified);
 
-		expectType<Array<ts.MarquaData>>(content);
+	expectType</*Array< ts.MarquaData >*/ string>(content);
 
-		expectType<Array<string>>(breadcrumb);
-	})
-);
+	expectType<Array<string>>(breadcrumb);
+
+	return undefined;
+});
+
+expectType<undefined | Generic>(data);
+expectType<undefined | Generic>(compile(''));

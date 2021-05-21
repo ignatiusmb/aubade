@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [[`#16`](https://github.com/ignatiusmb/marqua/pull/16)]: add traverse sort option
+
 ## 0.2.1
 
 - [[`#18`](https://github.com/ignatiusmb/marqua/pull/18)]: guard marqua data types for index signatures

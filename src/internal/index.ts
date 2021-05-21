@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, FrontMatter, HydrateFn, ParserTypes } from './types';
+import type { DirOptions, FileOptions, FrontMatter, Hydrate, ParserTypes } from './types';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,7 +11,7 @@ export function compile<
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: HydrateFn<Options, Input, Output>,
+	hydrate?: Hydrate<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): undefined | Output {
 	const {
@@ -57,18 +57,19 @@ export function compile<
 }
 
 export function traverse<
-	Options extends DirOptions,
+	Options extends DirOptions<Output>,
 	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: HydrateFn<Options, Input, Output>,
+	hydrate?: Hydrate<Options, Input, Output>,
 	_types?: ParserTypes<Input, Output>
 ): Array<Output> {
 	const {
 		entry,
 		recurse = false,
 		extensions = ['.md'],
+		sort = undefined,
 		...config
 	} = typeof options !== 'string' ? options : { entry: options };
 
@@ -85,7 +86,9 @@ export function traverse<
 		else return;
 	});
 
-	return (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
+	const items = (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
 		(i): i is Output => !!i && (Array.isArray(i) ? !!i.length : !!Object.keys(i).length)
 	);
+
+	return sort ? items.sort(sort as any) : items;
 }

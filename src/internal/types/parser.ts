@@ -9,7 +9,7 @@ export type FrontMatter = {
 		Partial<Record<'published' | 'updated', string | Date>>;
 };
 
-export type HydrateFn<Options extends FileOptions, Input, Output = Input> = (chunk: {
+export type Hydrate<Options extends FileOptions, Input, Output = Input> = (chunk: {
 	frontMatter: keyof Input extends never
 		? Options['minimal'] extends true
 			? Pick<FrontMatter, 'date'> & Record<string, any>
@@ -17,6 +17,6 @@ export type HydrateFn<Options extends FileOptions, Input, Output = Input> = (chu
 		: Options['minimal'] extends true
 		? Pick<FrontMatter, 'date'> & Input
 		: Omit<FrontMatter, 'content' | keyof Input> & Input;
-	content: Options['minimal'] extends true ? string : Array<MarquaData>;
+	content: string;
 	breadcrumb: Array<string>;
-}) => void | Output;
+}) => undefined | Output;
