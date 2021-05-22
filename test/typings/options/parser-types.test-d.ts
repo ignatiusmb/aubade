@@ -8,14 +8,19 @@ if ('compile:checking empty object') {
 }
 
 if ('compile:checking at least one property') {
-	const result = compile('', () => undefined, forge.types<{ description: string }>());
+	const result = compile(
+		{ entry: '' },
+		({ frontMatter }) => ({ description: frontMatter.description }),
+		forge.types<{ description: string }>()
+	);
 	expectNotType<any>(result);
 	expectType<undefined | { description: string }>(result);
+	expectType<undefined | { description: string }>(compile(''));
 }
 
 if ('compile:checking output types differ from input') {
 	const result = compile(
-		'',
+		{ entry: '' },
 		({ frontMatter }) => ({ description: [frontMatter.description] }),
 		forge.types<{ description: string }, { description: Array<string> }>()
 	);
