@@ -27,7 +27,7 @@ export function compile<
 
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
-	const breadcrumb = entry.split(/[/\\]/);
+	const breadcrumb = entry.split(/[/\\]/).reverse();
 
 	const metadata = construct((match && match[1].trim()) || '');
 	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
