@@ -65,8 +65,7 @@ import { compile, traverse } from 'marqua';
 /* compile - parse a single source file */
 const body = compile(
   'content/posts/2021-04-01.my-first-post.md',
-  ({ frontMatter, content, breadcrumb }) => {
-    const [filename] = breadcrumb.slice(-1);
+  ({ frontMatter, content, breadcrumb: [filename] }) => {
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
@@ -75,9 +74,8 @@ const body = compile(
 /* traverse - scans a directory for sources */
 const data = traverse(
   'content/posts',
-  ({ frontMatter, content, breadcrumb }) => {
-    if (breadcrumb.startsWith('draft')) return;
-    const [filename] = breadcrumb.slice(-1);
+  ({ frontMatter, content, breadcrumb: [filename] }) => {
+    if (filename.startsWith('draft')) return;
     const [date, slug] = filename.split('.');
     return { slug, date, ...frontMatter, content };
   }
@@ -86,8 +84,7 @@ const data = traverse(
 /* traverse - nested directories recursive scan */
 const data = traverse(
   { entry: 'content/reviews', recurse: true },
-  ({ frontMatter, content, breadcrumb }) => {
-    const [category, slug] = breadcrumb.slice(-2);
+  ({ frontMatter, content, breadcrumb: [slug, category] }) => {
     return { slug, category, date, ...frontMatter, content };
   }
 ); // [{'game/0'}, {'book/0'}, {'book/1'}, {'movie/0'}, {'movie/1'}]
