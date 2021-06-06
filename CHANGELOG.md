@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [#20](https://github.com/ignatiusmb/marqua/pull/20): reverse breadcrumb items
+
 ## 0.2.2
 
 - [#16](https://github.com/ignatiusmb/marqua/pull/16): add traverse sort option
