@@ -36,12 +36,6 @@ export function compile<
 		if (!exclude.includes('toc')) metadata.toc = table(content);
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
 	}
-	if (typeof metadata.date !== 'string') {
-		const stats = fs.statSync(entry);
-		if (!metadata.date) metadata.date = {};
-		metadata.date.created = stats.birthtime;
-		metadata.date.modified = stats.mtime;
-	}
 	const chunk = { frontMatter: metadata, content, breadcrumb };
 	const result = !hydrate
 		? ({ ...metadata, content } as FrontMatter)
@@ -49,7 +43,7 @@ export function compile<
 
 	if (!result /* hydrate is used and returns nothing */) return;
 
-	if (!minimal && typeof result.date !== 'string' && !exclude.includes('date'))
+	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
 		result.date.updated = result.date.updated || result.date.published;
 	if (result.content && typeof result.content === 'string')
 		result.content = structure(result.content, minimal || exclude.includes('cnt'));
