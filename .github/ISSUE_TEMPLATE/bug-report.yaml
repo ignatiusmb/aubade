@@ -1,0 +1,45 @@
+name: "\U0001F41E Bug report"
+description: Report an issue with Marqua
+body:
+  - type: markdown
+    attributes:
+      value: Before filling out this form, please search and make sure there's no existing issue, both open or closed. Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. If you intend to submit a PR for this issue, tell us in the description. Thanks!
+      placeholder: Bug description
+  - type: textarea
+    id: reproduction
+    validations:
+      required: true
+    attributes:
+      label: Reproduction
+      description: Please provide a small reproduction or link to a repo that can reproduce the problem you ran into.
+      placeholder: Reproduction
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Please include and copy paste any logs around the time this bug occurred.
+      render: shell
+  - type: dropdown
+    id: severity
+    validations:
+      required: true
+    attributes:
+      label: Severity
+      description: Select the severity of this issue
+      options:
+        - Annoyance
+        - Serious, but there's a workaround
+        - Blocking an upgrade
+        - Blocking all usage of Marqua
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Information
+      description: Add any other context about the issue here.
