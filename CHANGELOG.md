@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- revert automatic metadata injection
+- [#23](https://github.com/ignatiusmb/marqua/pull/23): revert metadata injection
 - [#20](https://github.com/ignatiusmb/marqua/pull/20): reverse breadcrumb items
 
 ## 0.2.2
