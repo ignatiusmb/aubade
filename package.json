@@ -2,7 +2,7 @@
   "name": "marqua",
   "author": "Ignatius Bagus",
   "description": "Augmented Markdown Compiler",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "type": "module",
   "main": "index.js",

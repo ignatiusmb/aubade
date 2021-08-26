@@ -1,6 +1,6 @@
 # marqua changelog
 
-## Unreleased
+## 0.3.0
 
 - [#23](https://github.com/ignatiusmb/marqua/pull/23): revert metadata injection
 - [#20](https://github.com/ignatiusmb/marqua/pull/20): reverse breadcrumb items
