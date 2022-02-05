@@ -1,9 +1,16 @@
-declare const UniqueInput: unique symbol;
-declare const UniqueOutput: unique symbol;
-export interface ParserTypes<Input, Output> {
-	[UniqueInput]: Input;
-	[UniqueOutput]: Output;
-}
+import type { Typify } from 'mauss/typings';
+
+export type MarquaData = Typify<{
+	type: string;
+	title: string;
+	body: string | MarquaData[];
+}>;
+
+export type MarquaTable = Typify<{
+	id: string;
+	title: string;
+	sections?: MarquaTable[];
+}>;
 
 export interface FileOptions {
 	entry: string;
@@ -59,4 +66,33 @@ export interface DirOptions<Output extends object = {}> extends FileOptions {
 		x: keyof Output extends never ? Record<string, any> : Output,
 		y: keyof Output extends never ? Record<string, any> : Output
 	): number;
+}
+
+export interface FrontMatter {
+	toc: MarquaTable[];
+	read_time: number;
+	content?: string | MarquaData[];
+	date: Record<'created' | 'modified', Date> &
+		Partial<Record<'published' | 'updated', string | Date>>;
+}
+
+export interface Hydrate<Options extends FileOptions, Input, Output = Input> {
+	(chunk: {
+		frontMatter: keyof Input extends never
+			? Options['minimal'] extends true
+				? Pick<FrontMatter, 'date'> & Record<string, any>
+				: Omit<FrontMatter, 'content'> & Record<string, any>
+			: Options['minimal'] extends true
+			? Pick<FrontMatter, 'date'> & Input
+			: Omit<FrontMatter, 'content' | keyof Input> & Input;
+		content: string;
+		breadcrumb: Array<string>;
+	}): undefined | Output;
+}
+
+declare const UniqueInput: unique symbol;
+declare const UniqueOutput: unique symbol;
+export interface ParserTypes<Input, Output> {
+	[UniqueInput]: Input;
+	[UniqueOutput]: Output;
 }
