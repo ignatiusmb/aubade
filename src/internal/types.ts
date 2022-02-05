@@ -1,22 +1,22 @@
 declare const UniqueInput: unique symbol;
 declare const UniqueOutput: unique symbol;
-export type ParserTypes<Input, Output> = {
+export interface ParserTypes<Input, Output> {
 	[UniqueInput]: Input;
 	[UniqueOutput]: Output;
-};
+}
 
-export type FileOptions = {
+export interface FileOptions {
 	entry: string;
 	minimal?: boolean;
-	exclude?: Array<string>;
-};
+	exclude?: string[];
+}
 
-export type DirOptions<Output extends object = {}> = FileOptions & {
+export interface DirOptions<Output extends object = {}> extends FileOptions {
 	entry: string;
 	recurse?: boolean;
-	extensions?: Array<string>;
+	extensions?: string[];
 	sort?(
 		x: keyof Output extends never ? Record<string, any> : Output,
 		y: keyof Output extends never ? Record<string, any> : Output
 	): number;
-};
+}
