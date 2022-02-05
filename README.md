@@ -99,7 +99,7 @@ interface FileOptions {
   entry: string;
 
   /**
-   * minimal = false
+   * `minimal = false`
    *
    * it can be set to true so it will not generate anything
    * other than what is written in the file's frontMatter
@@ -107,7 +107,7 @@ interface FileOptions {
   minimal?: boolean;
 
   /**
-   * exclude = []
+   * `exclude = []`
    * accepts: 'toc' | 'rt' | 'date' | 'cnt'
    *
    * sometimes table of contents isn't needed and will add
@@ -124,7 +124,7 @@ interface DirOptions extends FileOptions {
   entry: string;
 
   /**
-   * recurse = false
+   * `recurse = false`
    *
    * traverse will only scan the root/top-level directory
    * and will recursively scan all nested subdirectories
@@ -133,7 +133,7 @@ interface DirOptions extends FileOptions {
   recurse?: boolean;
 
   /**
-   * extensions = ['.md']
+   * `extensions = ['.md']`
    *
    * traverse will only scan directories with files that
    * ends with '.md', this can be changed or added by
@@ -141,7 +141,7 @@ interface DirOptions extends FileOptions {
    *
    * it will consequently overwrite the default array and
    * remove '.md' extension, you will need to explicitly
-   * readd it to your newly passed array
+   * readd the extension again to your newly passed array
    */
   extensions?: Array<string>;
 }
