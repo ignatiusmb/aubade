@@ -1,4 +1,4 @@
-import { isExists } from 'mauss/guards';
+import { exists } from 'mauss/guards';
 import { tryNumber } from 'mauss/utils';
 
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
@@ -11,7 +11,7 @@ export const generate = {
 };
 
 export function construct(metadata: string) {
-	const lines = metadata.split(/\r?\n/).filter(isExists);
+	const lines = metadata.split(/\r?\n/).filter(exists);
 	if (!lines.length) return {};
 
 	const ignored = ['title', 'description'];
@@ -20,7 +20,7 @@ export function construct(metadata: string) {
 		keys: string[],
 		val: string | string[]
 	): string | string[] | Record<string, any> => {
-		if (!keys.length) return val instanceof Array ? val.filter(isExists) : val;
+		if (!keys.length) return val instanceof Array ? val.filter(exists) : val;
 		return { ...curr, [keys[0]]: traverse(curr[keys[0]] || {}, keys.slice(1), val) };
 	};
 
@@ -30,11 +30,11 @@ export function construct(metadata: string) {
 		const [key, data] = match.slice(1).map((g) => g.trim());
 		const val = /,/.test(data) ? data.split(',').map((v) => v.trim()) : data;
 		if (/:/.test(key)) {
-			const [attr, ...keys] = key.split(':').filter(isExists);
+			const [attr, ...keys] = key.split(':').filter(exists);
 			const initial = ignored.includes(attr) ? data : val;
 			acc[attr] = traverse(acc[attr] || {}, keys, initial);
 		} else if (ignored.includes(key)) acc[key] = data;
-		else acc[key] = val instanceof Array ? val.filter(isExists) : val;
+		else acc[key] = val instanceof Array ? val.filter(exists) : val;
 		return acc;
 	}, {});
 }
