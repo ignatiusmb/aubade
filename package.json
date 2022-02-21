@@ -10,7 +10,7 @@
   "types": "index.d.ts",
   "scripts": {
     "dev": "tsc -w -d --outDir .",
-    "lint": "run-p lint:**",
+    "lint": "npm run lint:code && npm run lint:style && npm run lint:types",
     "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
     "lint:types": "touch index.d.ts && tsd",
