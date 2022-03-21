@@ -48,9 +48,10 @@
     "@types/node": "^17.0.17",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.0",
-    "tsm": "^2.2.1",
     "tsd": "^0.19.1",
-    "typescript": "^4.1.2"
+    "tsm": "^2.2.1",
+    "typescript": "^4.1.2",
+    "uvu": "^0.5.3"
   },
   "tsd": {
     "directory": "test/typings"
