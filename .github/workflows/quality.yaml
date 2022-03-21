@@ -19,3 +19,18 @@ jobs:
           node-version: 14
       - name: Lint
         run: npm install && npm run lint
+
+  check-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [14, 16]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Test
+        run: npm install && npm run test
