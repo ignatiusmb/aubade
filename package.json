@@ -9,7 +9,6 @@
   "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "dev": "tsc -w -d --outDir .",
     "lint": "run-p lint:**",
     "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
@@ -18,7 +17,7 @@
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
     "test:apps": "uvu -r tsm test/apps \"(spec\\.ts)\"",
     "publish:clean": "git clean -dfx -e node_modules",
-    "publish:build": "tsc -d --outDir .",
+    "publish:build": "tsc --declaration",
     "publish:format": "prettier -wu **/*.{d.ts,js}",
     "prepublishOnly": "run-s publish:**"
   },
