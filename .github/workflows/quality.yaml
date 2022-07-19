@@ -1,4 +1,4 @@
-name: Quality-CI
+name: QA
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - "**"
 
 jobs:
-  check-lint:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
