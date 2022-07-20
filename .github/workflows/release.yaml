@@ -1,4 +1,4 @@
-name: Release-CI
+name: Release
 
 on:
   push:
@@ -8,13 +8,13 @@ on:
       - "**"
 
 jobs:
-  npm-publish:
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
           registry-url: "https://registry.npmjs.org"
       - name: Install & Publish
         run: npm install && npm publish

@@ -5,7 +5,6 @@
   "version": "0.3.0",
   "license": "MIT",
   "type": "module",
-  "main": "index.js",
   "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
