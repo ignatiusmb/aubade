@@ -1,4 +1,4 @@
-name: Quality-CI
+name: QA
 
 on:
   push:
@@ -9,13 +9,13 @@ on:
       - "**"
 
 jobs:
-  check-lint:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - name: Lint
         run: npm install && npm run lint
