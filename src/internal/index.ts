@@ -1,9 +1,9 @@
-import type { DirOptions, FileOptions, FrontMatter, Hydrate, ParserTypes } from './types';
-import fs from 'fs';
-import path from 'path';
+import type { DirOptions, FileOptions, FrontMatter, Hydrate, ParserTypes } from './types.js';
+import * as fs from 'fs';
+import * as path from 'path';
 
-import { readTime, structure, table } from './compute';
-import { construct, supplant } from './utils';
+import { readTime, structure, table } from './compute.js';
+import { construct, supplant } from './utils.js';
 
 export function compile<
 	Options extends FileOptions,

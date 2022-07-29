@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, ParserTypes } from './types';
+import type { DirOptions, FileOptions, ParserTypes } from './types.js';
 
 export const forge = {
 	compile: <T extends FileOptions>(options: T) => options,
