@@ -1,4 +1,5 @@
 import MarkIt from 'markdown-it';
+// @ts-ignore - TODO upgrade/remove dependency
 import Aqua from '@ignatiusmb/aqua';
 import { generate } from './utils.js';
 
