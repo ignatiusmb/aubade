@@ -1,5 +1,9 @@
 # marqua changelog
 
+## 0.3.1 - 2022/07/29
+
+- [#41](https://github.com/ignatiusmb/marqua/pull/41): support native ESM resolution
+
 ## 0.3.0
 
 - [#23](https://github.com/ignatiusmb/marqua/pull/23): revert metadata injection
