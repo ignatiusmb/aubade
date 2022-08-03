@@ -13,7 +13,10 @@
     "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
     "lint:types": "touch index.d.ts && tsd",
-    "pub:build": "tsc -d --outDir .",
+    "test": "npm run test:core && npm run test:apps",
+    "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
+    "test:apps": "uvu -r tsm test/apps \"(spec\\.ts)\"",
+    "pub:build": "tsc --declaration",
     "pub:format": "prettier -wu **/*.{d.ts,js}",
     "prepublishOnly": "npm run pub:build && npm run pub:format"
   },
@@ -44,7 +47,9 @@
     "@types/node": "^18.6.1",
     "prettier": "^2.3.0",
     "tsd": "^0.22.0",
-    "typescript": "^4.1.2"
+    "tsm": "^2.2.1",
+    "typescript": "^4.1.2",
+    "uvu": "^0.5.3"
   },
   "tsd": {
     "directory": "test/typings"
