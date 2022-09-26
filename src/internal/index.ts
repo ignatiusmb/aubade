@@ -43,10 +43,13 @@ export function compile<
 
 	if (!result /* hydrate is used and returns nothing */) return;
 
-	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
+	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date')) {
 		result.date.updated = result.date.updated || result.date.published;
-	if (result.content && typeof result.content === 'string')
+	}
+	if (result.content && typeof result.content === 'string') {
 		result.content = structure(result.content, minimal || exclude.includes('cnt'));
+	}
+
 	return result as Output;
 }
 
