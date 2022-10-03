@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
+
 ## 0.3.1 - 2022/07/29
 
 - [#41](https://github.com/ignatiusmb/marqua/pull/41): support native ESM resolution

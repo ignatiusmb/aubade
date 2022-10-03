@@ -63,8 +63,8 @@ export interface DirOptions<Output extends object = {}> extends FileOptions {
 	extensions?: string[];
 
 	sort?(
-		x: keyof Output extends never ? Record<string, any> : Output,
-		y: keyof Output extends never ? Record<string, any> : Output
+		x: [keyof Output] extends [never] ? Record<string, any> : Output,
+		y: [keyof Output] extends [never] ? Record<string, any> : Output
 	): number;
 }
 
@@ -72,22 +72,26 @@ export interface FrontMatter {
 	toc: MarquaTable[];
 	read_time: number;
 	content?: string | MarquaData[];
-	date: Record<'created' | 'modified', Date> &
-		Partial<Record<'published' | 'updated', string | Date>>;
+	date: {
+		published?: string | Date;
+		updated?: string | Date;
+	};
+}
+
+export interface HydrateChunk<Options extends FileOptions, Input> {
+	frontMatter: [keyof Input] extends [never]
+		? Options['minimal'] extends true
+			? Pick<FrontMatter, 'date'> & Record<string, any>
+			: Omit<FrontMatter, 'content'> & Record<string, any>
+		: Options['minimal'] extends true
+		? Pick<FrontMatter, 'date'> & Input
+		: Omit<FrontMatter, 'content' | keyof Input> & Input;
+	content: string;
+	breadcrumb: string[];
 }
 
 export interface Hydrate<Options extends FileOptions, Input, Output = Input> {
-	(chunk: {
-		frontMatter: keyof Input extends never
-			? Options['minimal'] extends true
-				? Pick<FrontMatter, 'date'> & Record<string, any>
-				: Omit<FrontMatter, 'content'> & Record<string, any>
-			: Options['minimal'] extends true
-			? Pick<FrontMatter, 'date'> & Input
-			: Omit<FrontMatter, 'content' | keyof Input> & Input;
-		content: string;
-		breadcrumb: Array<string>;
-	}): undefined | Output;
+	(chunk: HydrateChunk<Options, Input>): undefined | Output;
 }
 
 declare const UniqueInput: unique symbol;

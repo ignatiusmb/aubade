@@ -1,4 +1,4 @@
-import type { DirOptions, FileOptions, FrontMatter, Hydrate, ParserTypes } from './types.js';
+import type * as TS from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6,13 +6,13 @@ import { readTime, structure, table } from './compute.js';
 import { construct, supplant } from './utils.js';
 
 export function compile<
-	Options extends FileOptions,
+	Options extends TS.FileOptions,
 	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: Hydrate<Options, Input, Output>,
-	_types?: ParserTypes<Input, Output>
+	hydrate?: TS.Hydrate<Options, Input, Output>,
+	_types?: TS.ParserTypes<Input, Output>
 ): undefined | Output {
 	const {
 		entry,
@@ -38,26 +38,29 @@ export function compile<
 	}
 	const chunk = { frontMatter: metadata, content, breadcrumb };
 	const result = !hydrate
-		? ({ ...metadata, content } as FrontMatter)
-		: hydrate(chunk as Parameters<typeof hydrate>[0]);
+		? ({ ...metadata, content } as TS.FrontMatter)
+		: hydrate(chunk as TS.HydrateChunk<Options, Input>);
 
 	if (!result /* hydrate is used and returns nothing */) return;
 
-	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date'))
+	if (!minimal && result.date && typeof result.date !== 'string' && !exclude.includes('date')) {
 		result.date.updated = result.date.updated || result.date.published;
-	if (result.content && typeof result.content === 'string')
+	}
+	if (result.content && typeof result.content === 'string') {
 		result.content = structure(result.content, minimal || exclude.includes('cnt'));
+	}
+
 	return result as Output;
 }
 
 export function traverse<
-	Options extends DirOptions<Output>,
+	Options extends TS.DirOptions<Output>,
 	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	options: string | Options,
-	hydrate?: Hydrate<Options, Input, Output>,
-	_types?: ParserTypes<Input, Output>
+	hydrate?: TS.Hydrate<Options, Input, Output>,
+	_types?: TS.ParserTypes<Input, Output>
 ): Array<Output> {
 	const {
 		entry,

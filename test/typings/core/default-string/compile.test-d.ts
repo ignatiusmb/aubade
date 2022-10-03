@@ -17,8 +17,6 @@ const data = compile(entry, ({ frontMatter, content, breadcrumb }) => {
 	expectType<Array<ts.MarquaTable>>(frontMatter.toc);
 	expectType<number>(frontMatter.read_time);
 	expectAssignable<object>(frontMatter.date);
-	expectType<Date>(frontMatter.date.created);
-	expectType<Date>(frontMatter.date.modified);
 
 	expectType</*Array< ts.MarquaData >*/ string>(content);
 
