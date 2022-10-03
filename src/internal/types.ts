@@ -79,7 +79,7 @@ export interface FrontMatter {
 }
 
 export interface HydrateChunk<Options extends FileOptions, Input> {
-	frontMatter: keyof Input extends never
+	frontMatter: [keyof Input] extends [never]
 		? Options['minimal'] extends true
 			? Pick<FrontMatter, 'date'> & Record<string, any>
 			: Omit<FrontMatter, 'content'> & Record<string, any>
