@@ -30,11 +30,11 @@ traverse(/* string | dir options */, /* optional hydrate callback */);
 
 ***
 
-<h2 align="center"><pre>API Documentation</pre></h2>
+## API Documentation
 
 ### Imports
 
-Marqua exposes 3 imports, 2 for the actual parsing, and 1 which is the markdown renderer which uses [markdown-it](https://github.com/markdown-it/markdown-it). As a result, its features can be extended via plugins that's made as a `markdown-it-plugin`.
+Marqua exposes 4 imports — 1 for the actual parsing, 2 helper parsing functions, and finally the markdown renderer which uses [markdown-it](https://github.com/markdown-it/markdown-it). As a result, its features can be extended via plugins that's made as a `markdown-it-plugin`.
 
 ```bash
 # Hypothetical Content Folder Structure
@@ -54,6 +54,19 @@ content
             ├── spirited-away.md
             └── your-name.md
 ```
+
+#### `parse`
+
+Where the parsing happens, it accepts a string and returns a `{ metadata, content }` structure.
+
+```ts
+export function parse(content: string): {
+  metadata: Record<string, any>;
+  content: string;
+}
+```
+
+If you need to read from a file or folder, use the `compile` and `traverse` functions.
 
 #### `compile` and `traverse`
 

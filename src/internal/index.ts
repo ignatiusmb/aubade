@@ -5,6 +5,17 @@ import * as path from 'path';
 import { readTime, structure, table } from './compute.js';
 import { construct, supplant } from './utils.js';
 
+export function parse(content: string) {
+	const match = content.match(/---\r?\n([\s\S]+?)\r?\n---/);
+	const metadata = construct((match && match[1].trim()) || '');
+
+	const start = match ? (match.index || 0) + match[0].length + 1 : 0;
+	return {
+		metadata,
+		content: supplant(metadata, content.slice(start)),
+	};
+}
+
 export function compile<
 	Options extends TS.FileOptions,
 	Input extends object,
@@ -25,13 +36,10 @@ export function compile<
 		return;
 	}
 
-	const crude = fs.readFileSync(entry, 'utf-8').trim();
-	const match = crude.match(/---\r?\n([\s\S]+?)\r?\n---/);
 	const breadcrumb = entry.split(/[/\\]/).reverse();
+	const crude = fs.readFileSync(entry, 'utf-8').trim();
+	const { metadata, content } = parse(crude);
 
-	const metadata = construct((match && match[1].trim()) || '');
-	const sliceIdx = match ? (match.index || 0) + match[0].length + 1 : 0;
-	const content = supplant(metadata, crude.slice(sliceIdx));
 	if (!minimal) {
 		if (!exclude.includes('toc')) metadata.toc = table(content);
 		if (!exclude.includes('rt')) metadata.read_time = readTime(content);
@@ -80,11 +88,11 @@ export function traverse<
 		const opts = { entry: pathname, recurse, extensions, ...config };
 		if (recurse && fs.lstatSync(pathname).isDirectory()) return traverse(opts, hydrate);
 		else if (extensions.some((e) => name.endsWith(e))) return compile(opts, hydrate);
-		else return;
+		return;
 	});
 
 	const items = (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
-		(i): i is Output => !!i && (Array.isArray(i) ? !!i.length : !!Object.keys(i).length)
+		(i): i is Output => !!(i && (Array.isArray(i) ? i : Object.keys(i)).length)
 	);
 
 	return sort ? items.sort(sort as any) : items;
