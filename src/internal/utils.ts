@@ -3,27 +3,27 @@ import { tryNumber } from 'mauss/utils';
 
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
-export const generate = {
+export const generate = Object.freeze({
 	id(title: string) {
 		title = title.toLowerCase().replace(separators, '-');
 		return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
 	},
-};
+});
 
 export function construct(metadata: string) {
 	const lines = metadata.split(/\r?\n/).filter(exists);
 	if (!lines.length) return {};
 
-	const ignored = ['title', 'description'];
-	const traverse = (
-		curr: Record<string, any>,
+	function drill(
 		keys: string[],
-		val: string | string[]
-	): string | string[] | Record<string, any> => {
-		if (!keys.length) return val instanceof Array ? val.filter(exists) : val;
-		return { ...curr, [keys[0]]: traverse(curr[keys[0]] || {}, keys.slice(1), val) };
-	};
+		val: string | string[],
+		memo: Record<string, any> = {}
+	): string | string[] | Record<string, any> {
+		if (!keys.length) return Array.isArray(val) ? val.filter(exists) : val;
+		return { ...memo, [keys[0]]: drill(keys.slice(1), val, memo[keys[0]]) };
+	}
 
+	const ignored = new Set(['title', 'description']);
 	return lines.reduce((acc: Record<string, any>, cur) => {
 		const match = cur.trim().match(/([:\w]+): (.+)/);
 		if (!match || (match && !match[2].trim())) return acc;
@@ -31,20 +31,21 @@ export function construct(metadata: string) {
 		const val = /,/.test(data) ? data.split(',').map((v) => v.trim()) : data;
 		if (/:/.test(key)) {
 			const [attr, ...keys] = key.split(':').filter(exists);
-			const initial = ignored.includes(attr) ? data : val;
-			acc[attr] = traverse(acc[attr] || {}, keys, initial);
-		} else if (ignored.includes(key)) acc[key] = data;
-		else acc[key] = val instanceof Array ? val.filter(exists) : val;
+			const initial = ignored.has(attr) ? data : val;
+			acc[attr] = drill(keys, initial, acc[attr]);
+		} else if (ignored.has(key)) acc[key] = data;
+		else acc[key] = Array.isArray(val) ? val.filter(exists) : val;
 		return acc;
 	}, {});
 }
 
 export function supplant(data: Record<string, any>, content: string): string {
-	const traverse = (meta: string | Record<string, any>, properties: string): string => {
-		for (const key of properties.split(':'))
+	function traverse(meta: string | Record<string, any>, properties: string): string {
+		for (const key of properties.split(':')) {
 			if (typeof meta !== 'string') meta = meta[tryNumber(key)];
+		}
 		return typeof meta === 'string' ? meta : JSON.stringify(meta);
-	};
+	}
 
 	return content.replace(/!{(.+)}/g, (s, c) => (c && traverse(data, c)) || s);
 }
