@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function
 - [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
 
 ## 0.3.1 - 2022/07/29
