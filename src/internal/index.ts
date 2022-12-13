@@ -87,5 +87,5 @@ export function traverse<
 		(i): i is Output => !!i && (Array.isArray(i) ? !!i.length : !!Object.keys(i).length)
 	);
 
-	return sort ? items.sort(sort as any) : items;
+	return sort ? items.sort(sort) : items;
 }

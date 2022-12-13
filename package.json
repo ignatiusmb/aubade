@@ -5,7 +5,6 @@
   "version": "0.3.1",
   "license": "MIT",
   "type": "module",
-  "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "clean": "git add * && git clean -dfx -e node_modules",
@@ -20,18 +19,14 @@
     "pub:format": "prettier -wu **/*.{d.ts,js}",
     "prepublishOnly": "npm run pub:build && npm run pub:format"
   },
-  "prettier": "mauss/prettier.json",
   "exports": {
     ".": "./index.js",
     "./package.json": "./package.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ignatiusmb/marqua.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ignatiusmb/marqua/issues"
-  },
+  "packageManager": "pnpm@7.17.1",
+  "prettier": "mauss/prettier.json",
+  "repository": "github:ignatiusmb/marqua",
+  "bugs": "https://github.com/ignatiusmb/marqua/issues",
   "keywords": [
     "markdown",
     "compiler",
