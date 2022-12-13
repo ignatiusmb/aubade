@@ -5,33 +5,29 @@
   "version": "0.3.1",
   "license": "MIT",
   "type": "module",
-  "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "clean": "git add * && git clean -dfx -e node_modules",
-    "lint": "npm run lint:code && npm run lint:style && npm run lint:types",
+    "watch": "pnpm pub:build --watch",
+    "lint": "pnpm lint:code && pnpm lint:style && pnpm lint:types",
     "lint:code": "tsc --noEmit",
     "lint:style": "prettier -c src test",
     "lint:types": "touch index.d.ts && tsd",
-    "test": "npm run test:core && npm run test:apps",
+    "test": "pnpm test:core && pnpm test:apps",
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
     "test:apps": "uvu -r tsm test/apps \"(spec\\.ts)\"",
     "pub:build": "tsc --declaration",
     "pub:format": "prettier -wu **/*.{d.ts,js}",
-    "prepublishOnly": "npm run pub:build && npm run pub:format"
+    "prepublishOnly": "pnpm pub:build && pnpm pub:format"
   },
-  "prettier": "mauss/prettier.json",
   "exports": {
     ".": "./index.js",
     "./package.json": "./package.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ignatiusmb/marqua.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ignatiusmb/marqua/issues"
-  },
+  "packageManager": "pnpm@7.17.1",
+  "prettier": "mauss/prettier.json",
+  "repository": "github:ignatiusmb/marqua",
+  "bugs": "https://github.com/ignatiusmb/marqua/issues",
   "keywords": [
     "markdown",
     "compiler",
