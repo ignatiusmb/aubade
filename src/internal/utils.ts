@@ -8,7 +8,7 @@ export const generate = {
 		title = title.toLowerCase().replace(separators, '-');
 		return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
 	},
-};
+} as const;
 
 export function construct(metadata: string) {
 	const lines = metadata.split(/\r?\n/).filter(exists);
