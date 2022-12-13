@@ -1,7 +1,7 @@
 {
 	"extends": "mauss/tsconfig.json",
 	"compilerOptions": {
-		"outDir": "..",
+		"outDir": ".",
 		"lib": ["DOM", "ES2019"],
 		"target": "ES2019"
 	},

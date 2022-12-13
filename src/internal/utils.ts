@@ -3,12 +3,12 @@ import { tryNumber } from 'mauss/utils';
 
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
-export const generate = Object.freeze({
+export const generate = {
 	id(title: string) {
 		title = title.toLowerCase().replace(separators, '-');
 		return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
 	},
-});
+} as const;
 
 export function construct(metadata: string) {
 	const lines = metadata.split(/\r?\n/).filter(exists);
