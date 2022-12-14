@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
-import assert from 'uvu/assert';
-import { readJSON } from '../utils';
+import * as assert from 'uvu/assert';
+import { readJSON } from '../utils.js';
 
 const basics = {
 	standard: suite('singular:standard'),

@@ -30,7 +30,7 @@ export function transform(source: string, dataset: Dataset) {
 		data-language="${language || ''}"
 		class="mrq ${title ? '' : 'empty'}"
 	>
-		${title ? `<span class="overflow-wrapper">${title}</span>` : ''}
+		${title ? `<span>${title}</span>` : ''}
 		<div data-mrq="toolbar" class="mrq">
 			${generate.icon('list', 'Toggle\nNumbering')}
 			${generate.icon('clipboard', 'Copy')}

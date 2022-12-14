@@ -1,7 +1,7 @@
 import { suite } from 'uvu';
-import assert from 'uvu/assert';
-import { traverse } from '../../../src';
-import { readJSON } from '../utils';
+import * as assert from 'uvu/assert';
+import { traverse } from '../../../index.js';
+import { readJSON } from '../utils.js';
 
 const basics = {
 	standard: suite('multiple:standard'),

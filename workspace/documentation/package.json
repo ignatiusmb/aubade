@@ -3,12 +3,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "pnpm build:source && pnpm build:svelte",
-    "build:source": "cd .. && pnpm i && pnpm pub:build",
-    "build:svelte": "vite build",
+    "build": "vite build",
     "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
     "lint:pt": "prettier -c . --plugin-search-dir=.",
-    "lint:sv": "svelte-check src --tsconfig tsconfig.json",
+    "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
   },
   "packageManager": "pnpm@7.17.1",

@@ -1,7 +1,7 @@
 <script>
 	import '@ignatiusmb/styles/core.css';
 	import 'marqua/styles/code.css';
-	import './fonts.css';
+	import '$lib/styles/fonts.css';
 
 	import Header from './Header.svelte';
 	import Footer from './Footer.svelte';

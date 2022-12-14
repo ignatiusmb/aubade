@@ -14,10 +14,10 @@
     "lint:types": "touch index.d.ts && tsd",
     "test": "pnpm test:core && pnpm test:apps",
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
-    "test:apps": "uvu -r tsm test/apps \"(spec\\.ts)\"",
+    "test:apps": "uvu test/apps \"(spec\\.js)\"",
     "pub:build": "tsc --declaration",
     "pub:format": "prettier -wu **/*.{d.ts,js}",
-    "prepublishOnly": "pnpm pub:build && pnpm pub:format"
+    "prepublish": "pnpm pub:build && pnpm pub:format"
   },
   "exports": {
     ".": "./index.js",
