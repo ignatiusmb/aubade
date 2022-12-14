@@ -3,7 +3,7 @@
 	export let title: string;
 	export let description: string;
 
-	const hostTitle = 'Mauss';
+	const hostTitle = 'Marqua';
 	const hostname = 'marqua.mauss.dev';
 
 	import { page } from '$app/stores';

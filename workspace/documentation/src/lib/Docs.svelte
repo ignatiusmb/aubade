@@ -7,10 +7,12 @@
 		content: string;
 	}>;
 
+	import { hydrate } from 'marqua/browser';
+	import { navigating } from '$app/stores';
 	import Edit from './Edit.svelte';
 </script>
 
-<main>
+<main use:hydrate={$navigating}>
 	<aside>
 		{#each sections as { slug, title }, i}
 			<a href="#{slug}" data-index={`0${i + 1}`.slice(-2)}>{title}</a>
