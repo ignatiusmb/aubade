@@ -2,7 +2,7 @@
 	"extends": "mauss/tsconfig.json",
 	"compilerOptions": {
 		"outDir": ".",
-		"lib": ["DOM", "ES2019"],
+		"module": "ES2022",
 		"target": "ES2019"
 	},
 	"include": ["src/**/*"],

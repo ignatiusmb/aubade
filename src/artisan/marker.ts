@@ -1,21 +1,20 @@
 import MarkIt from 'markdown-it';
-// @ts-ignore - TODO upgrade/remove dependency
-import Aqua from '@ignatiusmb/aqua';
-import { generate } from './utils.js';
+import { generate } from '../utils.js';
+import { transform } from './brush.js';
 
 const marker = MarkIt({
 	html: true,
 	typographer: true,
-	highlight(str, language) {
-		const lines = str.split('\n');
-		const dataset = { language, title: '', lineStart: 1 };
+	highlight(source, language) {
+		const lines = source.split('\n');
+		const title = source.match(/^~(.+)\n/) || [, ''];
+		const dataset = { language, title: title[1], lineStart: 1 };
 		if (lines[0][0] === '~') {
-			const [title, lineNumber] = lines[0].split('#');
-			dataset['title'] = title.slice(1);
-			if (lineNumber) dataset['lineStart'] = +lineNumber;
+			const [, start] = lines[0].split('#');
+			if (start) dataset.lineStart = +start;
 		}
-		const content = lines.slice(dataset['title'] ? 1 : 0);
-		return Aqua.code.highlight(content.join('\n'), dataset);
+		const content = lines.slice(dataset.title ? 1 : 0, -1);
+		return transform(content.join('\n'), dataset);
 	},
 });
 

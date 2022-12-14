@@ -1,21 +1,21 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@ignatiusmb/aqua': ^20.3.3
   '@types/markdown-it': ^12.0.1
   '@types/node': ^18.6.1
   markdown-it: ^13.0.1
-  mauss: ^0.3.1
+  mauss: ^0.4.6
   prettier: ^2.3.0
+  shiki: ^0.11.1
   tsd: ^0.22.0
   tsm: ^2.2.1
   typescript: ^4.1.2
   uvu: ^0.5.3
 
 dependencies:
-  '@ignatiusmb/aqua': 20.3.3
   markdown-it: 13.0.1
-  mauss: 0.3.3
+  mauss: 0.4.6
+  shiki: 0.11.1
 
 devDependencies:
   '@types/markdown-it': 12.2.3
@@ -66,10 +66,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /@ignatiusmb/aqua/20.3.3:
-    resolution: {integrity: sha512-eznzZoHMBNpdvbY1pwUDPky1j4s4Gjrk+PjF01BZxvAD+3QcEpub3YDnqRTjnNoLrI7B5PBTehFIx8r4u6zxsQ==}
-    dev: false
 
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -669,6 +665,10 @@ packages:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
     dev: true
 
+  /jsonc-parser/3.2.0:
+    resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
+    dev: false
+
   /kind-of/6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
@@ -732,8 +732,8 @@ packages:
       uc.micro: 1.0.6
     dev: false
 
-  /mauss/0.3.3:
-    resolution: {integrity: sha512-NSTslY2so2r6+cEwQi5Yc6i+L2aEEesd1WPOfYommjmg8UAXS87MVWnLXuR0XR0gWS3ukit+JMCKuT1Xkg7EvQ==}
+  /mauss/0.4.6:
+    resolution: {integrity: sha512-Q4XwfBDiJETZLsRzxfUEXoS94t6Dq5mNhUla7Oh7pExUK7t63j8Md3+gda3xePVU24D4waOOVYAqLOl6ospUxg==}
     dev: false
 
   /mdurl/1.0.1:
@@ -946,6 +946,14 @@ packages:
       lru-cache: 6.0.0
     dev: true
 
+  /shiki/0.11.1:
+    resolution: {integrity: sha512-EugY9VASFuDqOexOgXR18ZV+TbFrQHeCpEYaXamO+SZlsnT/2LxuLBX25GGtIrwaEVFXUAbUQ601SWE2rMwWHA==}
+    dependencies:
+      jsonc-parser: 3.2.0
+      vscode-oniguruma: 1.7.0
+      vscode-textmate: 6.0.0
+    dev: false
+
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
@@ -1103,6 +1111,14 @@ packages:
       spdx-correct: 3.1.1
       spdx-expression-parse: 3.0.1
     dev: true
+
+  /vscode-oniguruma/1.7.0:
+    resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
+    dev: false
+
+  /vscode-textmate/6.0.0:
+    resolution: {integrity: sha512-gu73tuZfJgu+mvCSy4UZwd2JXykjK9zAZsfmDeut5dx/1a7FeTk0XwJsSuqQn+cuMCGVbIBfl+s53X4T19DnzQ==}
+    dev: false
 
   /yallist/4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}

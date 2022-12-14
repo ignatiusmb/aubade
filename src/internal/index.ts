@@ -2,8 +2,8 @@ import type * as TS from './types.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { construct, supplant } from '../utils.js';
 import { readTime, structure, table } from './compute.js';
-import { construct, supplant } from './utils.js';
 
 export function compile<
 	Options extends TS.FileOptions,

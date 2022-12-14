@@ -1,6 +1,6 @@
 import type { MarquaData, MarquaTable } from './types.js';
-import { generate } from './utils.js';
-import marker from './marker.js';
+import { marker } from '../artisan/index.js';
+import { generate } from '../utils.js';
 
 export function readTime(content: string): number {
 	const paragraphs = content.split('\n').filter(
