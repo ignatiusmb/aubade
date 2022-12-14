@@ -18,7 +18,7 @@
     "@sveltejs/adapter-static": "next",
     "@sveltejs/kit": "next",
     "@types/node": "^18.11.15",
-    "marqua": "link:..",
+    "marqua": "workspace:^",
     "mauss": "^0.4.6",
     "prettier": "^2.8.1",
     "prettier-plugin-svelte": "^2.9.0",
