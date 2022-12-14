@@ -14,7 +14,7 @@
   "devDependencies": {
     "@ignatiusmb/styles": "^0.1.1",
     "@sveltejs/adapter-static": "next",
-    "@sveltejs/kit": "next",
+    "@sveltejs/kit": "1.0.0-next.587",
     "@types/node": "^18.11.15",
     "marqua": "workspace:^",
     "mauss": "^0.4.6",

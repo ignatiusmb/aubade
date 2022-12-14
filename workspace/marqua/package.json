@@ -14,7 +14,7 @@
     "lint:types": "touch index.d.ts && tsd",
     "test": "pnpm test:core && pnpm test:apps",
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
-    "test:apps": "uvu test/apps \"(spec\\.js)\"",
+    "test:apps": "pnpm pub:build && uvu test/apps",
     "pub:build": "tsc --declaration",
     "pub:format": "prettier -wu **/*.{d.ts,js}",
     "prepublish": "pnpm pub:build && pnpm pub:format"
