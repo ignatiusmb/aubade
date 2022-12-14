@@ -1,10 +1,10 @@
 :root {
-	--mrq-default: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Rubik', 'Ubuntu', 'Roboto',
+	--font-default: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Rubik', 'Ubuntu', 'Roboto',
 		sans-serif;
-	--mrq-heading: 'Karla', sans-serif;
-	--mrq-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
+	--font-heading: 'Karla', sans-serif;
+	--font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
 
-	--mrq-border-radius: 0.3em;
+	--mrq-rounding: 0.3rem;
 
 	--mrq-primary: #0070bb;
 	--mrq-bg-dark: #2d2d2d;
@@ -33,7 +33,7 @@
 }
 code {
 	padding: 0em 0.3em;
-	border-radius: var(--mrq-border-radius);
+	border-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
 }
@@ -48,8 +48,8 @@ code {
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding: 2em 1em 1em 1.6em;
-	border-bottom-left-radius: var(--mrq-border-radius);
-	border-bottom-right-radius: var(--mrq-border-radius);
+	border-bottom-left-radius: var(--mrq-rounding);
+	border-bottom-right-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
 	line-height: 1.5;
@@ -79,8 +79,8 @@ code {
 	padding-top: 1em;
 }
 .mrq[data-mrq='header'].empty + .mrq[data-mrq='pre'] {
-	border-top-right-radius: var(--mrq-border-radius);
-	border-top-left-radius: var(--mrq-border-radius);
+	border-top-right-radius: var(--mrq-rounding);
+	border-top-left-radius: var(--mrq-rounding);
 }
 
 /* ---- HEADER ---- */
@@ -88,8 +88,8 @@ code {
 .mrq[data-mrq='header'] {
 	padding: 0.5em 1em;
 	margin: 0;
-	border-top-right-radius: var(--mrq-border-radius);
-	border-top-left-radius: var(--mrq-border-radius);
+	border-top-right-radius: var(--mrq-rounding);
+	border-top-left-radius: var(--mrq-rounding);
 	background-color: var(--mrq-block-bg);
 	color: #fff;
 	font-weight: lighter;
@@ -102,11 +102,11 @@ code {
 }
 .mrq[data-mrq='header'].empty::after {
 	top: 0;
-	border-top-right-radius: var(--mrq-border-radius);
+	border-top-right-radius: var(--mrq-rounding);
 }
 .mrq[data-mrq='header']::after,
 .mrq[data-mrq='header']::before {
-	font-family: var(--mrq-default);
+	font-family: var(--font-default);
 	font-size: 0.75rem;
 }
 .mrq[data-mrq='header'] > .overflow-wrapper {
@@ -130,8 +130,8 @@ code {
 .mrq[data-mrq='header'].empty::before {
 	height: 0.6em;
 	top: 0;
-	border-top-left-radius: var(--mrq-border-radius);
-	border-top-right-radius: var(--mrq-border-radius);
+	border-top-left-radius: var(--mrq-rounding);
+	border-top-right-radius: var(--mrq-rounding);
 }
 
 .mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::before {
@@ -168,8 +168,8 @@ code {
 }
 .mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::after {
 	right: var(--mrq-bounce-distance);
-	border-bottom-right-radius: var(--mrq-border-radius);
-	border-bottom-left-radius: var(--mrq-border-radius);
+	border-bottom-right-radius: var(--mrq-rounding);
+	border-bottom-left-radius: var(--mrq-rounding);
 	transition: var(--mrq-transition-time);
 }
 .mrq[data-mrq='header'][data-language='']:not(.empty)::after,

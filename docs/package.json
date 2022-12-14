@@ -7,28 +7,25 @@
     "build:source": "cd .. && pnpm i && pnpm pub:build",
     "build:svelte": "vite build",
     "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
-    "lint:pt": "prettier -c src",
+    "lint:pt": "prettier -c . --plugin-search-dir=.",
     "lint:sv": "svelte-check src --tsconfig tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
   },
   "packageManager": "pnpm@7.17.1",
   "prettier": "mauss/prettier.json",
   "devDependencies": {
-    "@ignatiusmb/styles": "^0.1.0",
-    "@mauss/devtools": "^0.2.0",
+    "@ignatiusmb/styles": "^0.1.1",
     "@sveltejs/adapter-static": "next",
     "@sveltejs/kit": "next",
-    "@types/markdown-it": "^12.2.3",
-    "@types/node": "^18.11.13",
-    "markdown-it": "^13.0.1",
+    "@types/node": "^18.11.15",
     "marqua": "link:..",
-    "mauss": "^0.3.3",
+    "mauss": "^0.4.6",
     "prettier": "^2.8.1",
     "prettier-plugin-svelte": "^2.9.0",
-    "svelte": "^3.54.0",
+    "svelte": "^3.55.0",
     "svelte-check": "^2.10.2",
     "syv": "^0.0.16",
     "typescript": "^4.9.4",
-    "vite": "^4.0.0"
+    "vite": "^4.0.1"
   }
 }
