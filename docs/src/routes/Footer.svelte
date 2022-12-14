@@ -28,7 +28,7 @@
 		padding: 3em 2em;
 		margin: 0 auto;
 		text-align: center;
-		font-family: var(--mrq-monospace);
+		font-family: var(--font-monospace);
 		font-size: clamp(0.8em, 3vw, 1em);
 	}
 	section:last-of-type {

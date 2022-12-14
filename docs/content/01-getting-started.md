@@ -30,9 +30,9 @@ The following CSS variables will be made available
 
 ```css
 :root {
-  --mrq-default: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Rubik', 'Ubuntu', 'Roboto', sans-serif;
-  --mrq-heading: 'Karla', sans-serif;
-  --mrq-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
+  --font-default: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Rubik', 'Ubuntu', 'Roboto', sans-serif;
+  --font-heading: 'Karla', sans-serif;
+  --font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
 }
 ```
 

@@ -24,7 +24,7 @@
 	}
 
 	h1 {
-		font-family: var(--mrq-monospace);
+		font-family: var(--font-monospace);
 		font-size: 5em;
 	}
 	pre {

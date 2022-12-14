@@ -93,7 +93,7 @@ code {
 	background-color: var(--mrq-block-bg);
 	color: #fff;
 	font-weight: lighter;
-	font-family: var(--mrq-monospace);
+	font-family: var(--font-monospace);
 	font-size: clamp(0.8rem, 2vw, 0.95rem);
 }
 .mrq[data-mrq='header'].empty {

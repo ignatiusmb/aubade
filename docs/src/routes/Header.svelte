@@ -27,11 +27,11 @@
 	}
 	h1 {
 		font-size: 4rem;
-		font-family: var(--mrq-heading);
+		font-family: var(--font-heading);
 	}
 	h3 {
 		font-size: 1.5rem;
-		font-family: var(--mrq-monospace);
+		font-family: var(--font-monospace);
 	}
 
 	header > :global(.syv-core-link) {
