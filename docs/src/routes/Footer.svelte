@@ -1,21 +1,15 @@
-<script>
-	import { Link } from 'syv';
-</script>
-
 <footer>
-	<section>
-		<p>
-			Copyright &copy;
-			<Link href="https://mauss.dev/">Ignatius Bagussuputra</Link>
-			2019 &ndash; {new Date().getFullYear()}
-		</p>
-		<p>
-			Documentation made with ❤️ using
-			<Link href="https://kit.svelte.dev/">SvelteKit</Link>
-			+
-			<Link href="https://github.com/ignatiusmb/marqua/">Marqua</Link>
-		</p>
-	</section>
+	<p>
+		<span>Copyright &copy;</span>
+		<a href="https://mauss.dev/">Ignatius Bagussuputra</a>
+		<span>2019 &ndash; {new Date().getFullYear()}</span>
+	</p>
+	<p>
+		<span>Documentation made with &#x2764; using</span>
+		<a href="https://kit.svelte.dev/">SvelteKit</a>
+		<span>&plus;</span>
+		<a href="https://github.com/ignatiusmb/marqua/">Marqua</a>
+	</p>
 </footer>
 
 <style>
@@ -30,9 +24,5 @@
 		text-align: center;
 		font-family: var(--font-monospace);
 		font-size: clamp(0.8em, 3vw, 1em);
-	}
-	section:last-of-type {
-		display: grid;
-		gap: 0.5em;
 	}
 </style>

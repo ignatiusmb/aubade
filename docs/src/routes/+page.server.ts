@@ -5,8 +5,8 @@ export const load: import('./$types').PageServerLoad = async () => {
 		'content',
 		({ frontMatter: { title, ...rest }, content, breadcrumb: [filename] }) => {
 			if (filename.includes('draft')) return;
-			const path = `docs/content/${filename}.md`;
-			const [, index, slug] = filename.match(/(\d{2})-(\w+).md/) || [];
+			const path = `docs/content/${filename}`;
+			const [, index, slug] = filename.match(/^(\d{2})-(.+).md$/) || [];
 			return { index, slug, title, ...rest, content, path };
 		}
 	);
