@@ -2,13 +2,13 @@
 	export let data: import('./$types').PageData;
 
 	import { hydrate } from 'marqua/browser';
-	import { Docs } from '@mauss/devtools';
 	import { navigating } from '$app/stores';
+	import Docs from '$lib/Docs.svelte';
 	import MetaHead from './MetaHead.svelte';
 </script>
 
 <MetaHead
-	title="Marqua - Code Syntax Highlighter"
+	title="Marqua • Code Syntax Highlighter"
 	description="A markdown compiler with code syntax highlighting"
 />
 
