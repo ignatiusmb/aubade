@@ -10,9 +10,9 @@ This isn't usually necessary, but in case you want to handle the markdown parsin
 
 ```typescript
 export interface Dataset {
-	language?: string;
-	lineStart?: number;
-	title?: string;
+  language?: string;
+  lineStart?: number;
+  title?: string;
 }
 
 export function transform(source: string, dataset: Dataset): string;

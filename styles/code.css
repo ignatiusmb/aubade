@@ -10,7 +10,7 @@
 	--mrq-bg-dark: #2d2d2d;
 	--mrq-bg-light: #f7f7f7;
 	--mrq-cl-dark: #242424;
-	--mrq-cl-light: #ccc;
+	--mrq-cl-light: #dadada;
 }
 
 .mrq[data-mrq='block'],
@@ -32,14 +32,15 @@
 	white-space: pre;
 }
 code {
-	padding: 0rem 0.3rem;
+	position: relative;
+	top: -0.075rem;
+	padding: 0.15rem 0.3rem;
+	margin: 0 0.2rem;
 	border-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
-}
-.mrq[data-mrq='pre'] code {
-	padding: 0;
-	border-radius: 0;
+	font-size: 0.8em;
+	line-height: 1.5;
 }
 
 /* ---- BLOCK ---- */
@@ -52,9 +53,18 @@ code {
 	border-bottom-right-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
-	line-height: 1.5;
-	font-size: 0.8rem;
 	font-family: 'Fira Code', 'Inconsolata', 'Consolas', 'Ubuntu Mono', monospace;
+}
+.mrq[data-mrq='pre'] code {
+	top: 0;
+	padding: 0;
+	margin: 0;
+	border-radius: 0;
+}
+.mrq[data-mrq='pre'],
+.mrq[data-mrq='pre'] code {
+	line-height: 1.5;
+	font-size: 0.85rem;
 }
 
 .mrq[data-mrq='pre'].numbered {
@@ -288,7 +298,7 @@ code {
 	margin-left: 0.2rem;
 	color: var(--mrq-primary);
 	text-align: center;
-	font-size: small;
+	font-size: 0.7rem;
 	background-color: var(--mrq-bg-light);
 	background-size: contain;
 	background-repeat: no-repeat;
