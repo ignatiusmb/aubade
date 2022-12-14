@@ -238,6 +238,13 @@ code {
 	background: #ddd;
 	color: var(--mrq-header-dark);
 }
+.mrq[data-mrq='header'][data-language='typescript']::after,
+.mrq[data-mrq='header'][data-language='typescript']::before,
+.mrq[data-mrq='header'][data-language='ts']::after,
+.mrq[data-mrq='header'][data-language='ts']::before {
+	background: #3178c6;
+	color: var(--mrq-header-light);
+}
 
 /* ---- TOOLBAR ---- */
 
