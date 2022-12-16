@@ -1,44 +1,8 @@
 ---
-title: Modules / API
+title: Module / Browser
 ---
 
-Marqua provides a couple of modules and exports.
-
-### Artisan
-
-This isn't usually necessary, but in case you want to handle the markdown parsing and rendering by yourself, here's how you can tap into the `transform` function provided by the module.
-
-```typescript
-export interface Dataset {
-  language?: string;
-  lineStart?: number;
-  title?: string;
-}
-
-export function transform(source: string, dataset: Dataset): string;
-```
-
-A simple example would be passing a raw source code as a string.
-
-```javascript
-import { transform } from 'marqua/artisan'
-
-const source = `
-interface User {
-  id: number;
-  name: string;
-}
-
-const user: User = {
-  id: 0,
-  name: 'User'
-}
-`;
-
-transform(source, { language: 'typescript' });
-```
-
-### Browser
+### hydrate
 
 This is the browser module to hydrate and give interactivity to your HTML.
 

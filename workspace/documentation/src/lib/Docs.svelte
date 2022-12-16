@@ -21,8 +21,9 @@
 			style:letter-spacing="2px"
 			style:font-size="1.25rem"
 			style:font-family="var(--font-monospace)"
+			data-prefix="v"
 		>
-			v{version}
+			{version}
 		</a>
 
 		{#each sections as { slug, title }, i}
@@ -77,7 +78,11 @@
 	aside a {
 		line-height: 4ch;
 	}
-	aside a:not(:first-child):before {
+	aside a:first-child::before {
+		content: attr(data-prefix);
+		margin: 0 0.75rem 0 0.25rem;
+	}
+	aside a:not(:first-child)::before {
 		content: attr(data-index);
 		margin-right: 0.75rem;
 		font-family: var(--font-monospace);
