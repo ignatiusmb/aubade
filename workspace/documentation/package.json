@@ -4,12 +4,12 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "format": "prettier -wu **",
     "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
-    "lint:pt": "prettier -c . --plugin-search-dir=.",
+    "lint:pt": "prettier -cu **",
     "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
   },
-  "packageManager": "pnpm@7.17.1",
   "prettier": "mauss/prettier.json",
   "devDependencies": {
     "@ignatiusmb/styles": "^0.1.1",

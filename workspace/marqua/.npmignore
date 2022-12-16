@@ -1,6 +1,5 @@
 .*
 src/
-docs/
 test/
 
 tsconfig.json

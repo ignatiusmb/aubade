@@ -1,7 +1,5 @@
-node_modules
 .svelte-kit/
-content/
 build/
 
-app.html
 pnpm-lock.yaml
+app.html

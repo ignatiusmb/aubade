@@ -5,12 +5,10 @@
     "clean": "git add * && git clean -dfx -e node_modules",
     "lint": "pnpm --filter ./workspace/* lint",
     "test": "pnpm --filter ./workspace/* test",
-    "format": "prettier -wu workspace"
+    "format": "pnpm --filter ./workspace/* format"
   },
   "packageManager": "pnpm@7.17.1",
   "prettier": "mauss/prettier.json",
-  "repository": "github:ignatiusmb/marqua",
-  "bugs": "https://github.com/ignatiusmb/marqua/issues",
   "devDependencies": {
     "@types/node": "^18.11.15",
     "prettier": "^2.8.1",

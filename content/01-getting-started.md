@@ -2,7 +2,6 @@
 title: Getting Started
 ---
 
-
 ```bash
 ~Install via a package manager
 pnpm install marqua

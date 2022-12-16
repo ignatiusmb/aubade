@@ -1,5 +1,7 @@
 import { traverse } from 'marqua';
 
+export const prerender = true;
+
 export const load: import('./$types').PageServerLoad = async () => {
 	const docs = traverse(
 		'../../content',
