@@ -34,7 +34,7 @@ code {
 	position: relative;
 	top: -0.075rem;
 	padding: 0.15rem 0.3rem;
-	margin: 0 0.2rem;
+	margin: 0 0.1rem;
 	border-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
@@ -143,10 +143,12 @@ code {
 	border-top-right-radius: var(--mrq-rounding);
 }
 
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header']::before,
 .mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::before {
 	right: var(--mrq-bounce);
 	transition: var(--mrq-tms);
 }
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header'].empty[data-language='']::before,
 .mrq[data-mrq='block']:hover > .mrq[data-mrq='header'].empty[data-language='']::before {
 	right: 0;
 }
@@ -175,6 +177,7 @@ code {
 .mrq[data-mrq='header'][data-language]::after {
 	content: attr(data-language);
 }
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header']::after,
 .mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::after {
 	right: var(--mrq-bounce);
 	border-bottom-right-radius: var(--mrq-rounding);
@@ -279,11 +282,11 @@ code {
 	transform: translateY(10%);
 }
 
+.mrq[data-mrq='block']:focus-within .mrq[data-mrq='toolbar'],
 .mrq[data-mrq='block']:hover .mrq[data-mrq='toolbar'] {
 	opacity: 1;
 }
 
-/* toolbar items */
 .mrq[data-mrq='toolbar'] > .mrq[data-mrq-toolbar] {
 	cursor: pointer;
 	width: 1.3rem;
@@ -303,7 +306,9 @@ code {
 	background-origin: content-box;
 }
 
-/* toolbar hover */
+.mrq[data-mrq-toolbar]:focus {
+	outline: 1px solid rgba(255, 255, 255, 0.4);
+}
 .mrq[data-mrq-toolbar] > .mrq[data-mrq='tooltip'] {
 	user-select: none;
 	position: absolute;
@@ -326,6 +331,7 @@ code {
 	border-color: #7c7c7c transparent transparent transparent;
 	transform: translateY(99%);
 }
+.mrq[data-mrq-toolbar]:focus > .mrq[data-mrq='tooltip'],
 .mrq[data-mrq-toolbar]:hover > .mrq[data-mrq='tooltip'] {
 	display: block;
 }

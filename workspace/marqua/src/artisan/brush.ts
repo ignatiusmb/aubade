@@ -24,13 +24,13 @@ export function transform(source: string, dataset: Dataset) {
 		highlighted += `${code}</code>\n`;
 	}
 
+	// needs to be /^<pre/ to prevent added wrapper from markdown-it
 	return `<pre data-mrq="block" class="mrq">
 	<header 
 		data-mrq="header"
 		data-language="${language || ''}"
 		class="mrq ${title ? '' : 'empty'}"
-	>
-		${title ? `<span>${title}</span>` : ''}
+	>${title ? `<span>${title}</span>` : ''}
 		<div data-mrq="toolbar" class="mrq">
 			${generate.icon('list', 'Toggle\nNumbering')}
 			${generate.icon('clipboard', 'Copy')}
