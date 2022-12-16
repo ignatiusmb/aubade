@@ -7,7 +7,7 @@ export interface Dataset {
 	title?: string;
 }
 
-const highlighter = await getHighlighter({ theme: 'github-dark' });
+export const highlighter = await getHighlighter({ theme: 'github-dark' });
 
 export function transform(source: string, dataset: Dataset) {
 	const { codeToThemedTokens } = highlighter;
