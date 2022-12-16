@@ -11,6 +11,7 @@ export function listen(node: HTMLElement) {
 			if (action === 'clipboard') {
 				item.addEventListener('click', () => {
 					const tooltip = item.querySelector('.mrq[data-mrq="tooltip"]')!;
+					const text = tooltip.textContent;
 					clipboard.copy(source.textContent || '', {
 						accept() {
 							tooltip.textContent = 'Copied to clipboard!';
@@ -19,6 +20,10 @@ export function listen(node: HTMLElement) {
 							tooltip.textContent = `Failed to copy code`;
 						},
 					});
+
+					setTimeout(() => {
+						tooltip.textContent = text;
+					}, 5000);
 				});
 			} else if (action === 'list') {
 				item.addEventListener('click', () => {

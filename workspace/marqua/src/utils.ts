@@ -44,8 +44,8 @@ export function construct(metadata: string) {
 }
 
 export function escape(source: string) {
-	const symbols = { '&': '&amp;', '<': '&lt;', '>': '&gt;' } as const;
-	return source.replace(/[&<>]/g, (s) => symbols[s as keyof typeof symbols]);
+	const symbols = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as const;
+	return source.replace(/[&<>"']/g, (s) => symbols[s as keyof typeof symbols]);
 }
 
 export function supplant(data: Record<string, any>, content: string): string {

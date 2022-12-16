@@ -29,7 +29,7 @@ The following CSS variables will be made available
 
 ```css
 :root {
-  --font-default: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Rubik', 'Ubuntu', 'Roboto', sans-serif;
+  --font-default: 'Rubik', 'Ubuntu', 'Helvetica Neue', sans-serif;
   --font-heading: 'Karla', sans-serif;
   --font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
 }
