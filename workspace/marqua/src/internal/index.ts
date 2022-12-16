@@ -61,7 +61,7 @@ export function traverse<
 	options: string | Options,
 	hydrate?: TS.Hydrate<Options, Input, Output>,
 	_types?: TS.ParserTypes<Input, Output>
-): Array<Output> {
+): Output[] {
 	const {
 		entry,
 		recurse = false,

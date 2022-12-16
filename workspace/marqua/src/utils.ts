@@ -51,7 +51,8 @@ export function escape(source: string) {
 export function supplant(data: Record<string, any>, content: string): string {
 	function traverse(meta: string | Record<string, any>, properties: string): string {
 		for (const key of properties.split(':')) {
-			if (typeof meta !== 'string') meta = meta[tryNumber(key)];
+			if (typeof meta === 'string' || !meta) return meta || '';
+			meta = meta[tryNumber(key)];
 		}
 		return typeof meta === 'string' ? meta : JSON.stringify(meta);
 	}
