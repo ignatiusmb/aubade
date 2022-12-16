@@ -6,7 +6,7 @@
 </script>
 
 <MetaHead
-	title="Code Syntax Highlighter"
+	title="Augmented Markdown Compiler"
 	description="A markdown compiler with code syntax highlighting"
 />
 

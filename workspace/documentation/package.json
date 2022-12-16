@@ -13,8 +13,8 @@
   "prettier": "mauss/prettier.json",
   "devDependencies": {
     "@ignatiusmb/styles": "^0.1.1",
-    "@sveltejs/adapter-static": "next",
-    "@sveltejs/kit": "1.0.0-next.587",
+    "@sveltejs/adapter-static": "^1.0.0",
+    "@sveltejs/kit": "^1.0.0",
     "@types/node": "^18.11.15",
     "marqua": "workspace:^",
     "mauss": "^0.4.6",
