@@ -15,8 +15,8 @@ importers:
   workspace/documentation:
     specifiers:
       '@ignatiusmb/styles': ^0.1.1
-      '@sveltejs/adapter-static': next
-      '@sveltejs/kit': 1.0.0-next.587
+      '@sveltejs/adapter-static': ^1.0.0
+      '@sveltejs/kit': ^1.0.0
       '@types/node': ^18.11.15
       marqua: workspace:^
       mauss: ^0.4.6
@@ -29,8 +29,8 @@ importers:
       vite: ^4.0.1
     devDependencies:
       '@ignatiusmb/styles': 0.1.1
-      '@sveltejs/adapter-static': 1.0.0-next.50_oogoraclbppcquiitsbqrelvd4
-      '@sveltejs/kit': 1.0.0-next.587_svelte@3.55.0+vite@4.0.1
+      '@sveltejs/adapter-static': 1.0.0_@sveltejs+kit@1.0.1
+      '@sveltejs/kit': 1.0.1_svelte@3.55.0+vite@4.0.1
       '@types/node': 18.11.15
       marqua: link:../marqua
       mauss: 0.4.6
@@ -351,17 +351,17 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@sveltejs/adapter-static/1.0.0-next.50_oogoraclbppcquiitsbqrelvd4:
-    resolution: {integrity: sha512-xZKBmiwFGW8nrH8+eysUAAo9XrtApI81q0m67y1bexVw8IY7/x741b6VEklNM7BZ7js0Mi2x+yCkHpOee8UZKQ==}
+  /@sveltejs/adapter-static/1.0.0_@sveltejs+kit@1.0.1:
+    resolution: {integrity: sha512-ZrQhRgSa2TsH+zvrOIKpdVsAhExafpsn+w6Gv1WHzV76RZ2XOYFa8xi6hEzRjeeAL++ac0dsZHzp8M4X7YIabg==}
     peerDependencies:
-      '@sveltejs/kit': ^1.0.0-next.587
+      '@sveltejs/kit': ^1.0.0
     dependencies:
-      '@sveltejs/kit': 1.0.0-next.587_svelte@3.55.0+vite@4.0.1
+      '@sveltejs/kit': 1.0.1_svelte@3.55.0+vite@4.0.1
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.587_svelte@3.55.0+vite@4.0.1:
-    resolution: {integrity: sha512-F8zYXd7URcq57sGfrBRWTLtfj6JKkhNhwM4M8w4hNnJsJlZawPUvpybOSlIP87Z8URO8iCmyigQHxAYYzedrOg==}
-    engines: {node: '>=16.14'}
+  /@sveltejs/kit/1.0.1_svelte@3.55.0+vite@4.0.1:
+    resolution: {integrity: sha512-C41aCaDjA7xoUdsrc/lSdU1059UdLPIRE1vEIRRynzpMujNgp82bTMHkDosb6vykH6LrLf3tT2w2/5NYQhKYGQ==}
+    engines: {node: ^16.14 || >=18}
     hasBin: true
     requiresBuild: true
     peerDependencies:
