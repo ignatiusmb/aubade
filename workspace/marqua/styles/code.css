@@ -262,17 +262,19 @@ code {
 
 .mrq[data-mrq='toolbar'] {
 	z-index: 2;
+	opacity: 0;
 	position: absolute;
 	top: 50%;
 	right: 0.2rem;
-	display: flex;
-	opacity: 0;
+	display: grid;
+	gap: 0.2rem;
+	grid-auto-flow: column;
 	transition: var(--mrq-tms);
 	transform: translateY(-50%);
 }
 
 .mrq[data-mrq='header'].empty .mrq[data-mrq='toolbar'] {
-	transform: translateY(40%);
+	transform: translateY(50%);
 }
 .mrq[data-mrq='header'].empty:not([data-language='']) .mrq[data-mrq='toolbar'] {
 	transform: translateY(10%);
@@ -296,7 +298,6 @@ code {
 	justify-content: center;
 	padding: 0.25rem;
 	border-radius: 50%;
-	margin-left: 0.2rem;
 	color: var(--mrq-primary);
 	text-align: center;
 	font-size: 0.7rem;

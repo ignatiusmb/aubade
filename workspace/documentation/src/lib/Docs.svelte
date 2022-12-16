@@ -8,12 +8,23 @@
 	}>;
 
 	import { hydrate } from 'marqua/browser';
+	import { version } from 'marqua/package.json';
 	import { navigating } from '$app/stores';
 	import Edit from './Edit.svelte';
 </script>
 
 <main use:hydrate={$navigating}>
 	<aside>
+		<a
+			href="https://github.com/ignatiusmb/marqua/releases/latest"
+			style:margin-bottom="0.5rem"
+			style:letter-spacing="2px"
+			style:font-size="1.25rem"
+			style:font-family="var(--font-monospace)"
+		>
+			v{version}
+		</a>
+
 		{#each sections as { slug, title }, i}
 			<a href="#{slug}" data-index={`0${i + 1}`.slice(-2)}>{title}</a>
 		{/each}
@@ -66,7 +77,7 @@
 	aside a {
 		line-height: 4ch;
 	}
-	aside a::before {
+	aside a:not(:first-child):before {
 		content: attr(data-index);
 		margin-right: 0.75rem;
 		font-family: var(--font-monospace);
@@ -110,7 +121,8 @@
 		border-top: 0;
 	}
 
-	section :global(h3) {
+	/* @html content */
+	section > :global(h3) {
 		position: relative;
 		display: grid;
 		gap: 0.75rem;
@@ -120,7 +132,7 @@
 		font-size: 1.5rem;
 		font-weight: 500;
 	}
-	section :global(h3::before) {
+	section > :global(h3::before) {
 		content: '';
 		width: 0.75rem;
 		height: 0.75rem;
@@ -129,19 +141,23 @@
 		box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
 		background-color: var(--mrq-primary);
 	}
-	section :global(h3::after) {
+	section > :global(h3::after) {
 		content: '';
 		width: 100%;
 		height: 0.15rem;
 		background-color: rgba(0, 112, 187, 0.6);
 	}
-	section :global(p) {
-		margin-bottom: 1rem;
+	section > :global(p) {
 		line-height: 1.5;
 	}
+	section > :global(p:not(:first-child)) {
+		margin-top: 1rem;
+	}
+	section > :global(ul li:not(:first-child)) {
+		margin-top: 0.5rem;
+	}
 	section :global(.mrq[data-mrq='block']) {
-		margin-top: 0;
-		margin-bottom: 1.5rem;
+		margin: 1rem 0 1.5rem;
 	}
 
 	@media only screen and (min-width: 769px) {

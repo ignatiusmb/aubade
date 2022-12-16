@@ -1,17 +1,7 @@
-<script>
-	import { version } from 'marqua/package.json';
-</script>
-
 <header>
 	<h1>Marqua</h1>
-	<a
-		href="https://github.com/ignatiusmb/marqua/releases/latest"
-		style:color="#ffffff"
-		style:font-size="1.5rem"
-		style:font-family="var(--font-monospace)"
-	>
-		v{version}
-	</a>
+	<h2>Augmented Markdown Compiler</h2>
+
 	<a href="https://github.com/ignatiusmb/marqua">
 		<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
 			<path
@@ -24,18 +14,27 @@
 <style>
 	header {
 		height: 100vh;
-		display: grid;
-		gap: 1rem;
-		align-content: center;
+		display: flex;
+		flex-direction: column;
 		justify-content: center;
+
 		background: #0082c8;
 		background: -webkit-linear-gradient(to right, #000046, #1cb5e0);
 		background: linear-gradient(to right, #000046, #1cb5e0);
 		text-align: center;
 		color: white;
 	}
+	h1,
+	h2 {
+		letter-spacing: 0.1em;
+	}
 	h1 {
+		text-transform: uppercase;
 		font-size: 4rem;
 		font-family: var(--font-heading);
+	}
+	h2 {
+		margin-top: 0.75rem;
+		margin-bottom: 2rem;
 	}
 </style>
