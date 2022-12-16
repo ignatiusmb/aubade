@@ -25,7 +25,7 @@
 	header {
 		height: 100vh;
 		display: grid;
-		gap: 1em;
+		gap: 1rem;
 		align-content: center;
 		justify-content: center;
 		background: #0082c8;

@@ -38,7 +38,7 @@ code {
 	border-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
-	font-size: 0.8em;
+	font-size: 0.8em; /* em - relative to wrapper */
 	line-height: 1.5;
 }
 
@@ -71,11 +71,11 @@ code {
 }
 .mrq[data-mrq='pre'].numbered code::before {
 	content: attr(data-line);
-	max-width: 2em;
+	max-width: 2rem;
 	width: 100%;
 	display: inline-flex;
 	justify-content: flex-end;
-	margin-right: 0.8em;
+	margin-right: 0.6rem;
 	color: gray;
 	letter-spacing: normal;
 }
@@ -333,7 +333,7 @@ code {
 }
 .mrq[data-mrq-toolbar]:focus > .mrq[data-mrq='tooltip'],
 .mrq[data-mrq-toolbar]:hover > .mrq[data-mrq='tooltip'] {
-	display: block;
+	display: inline-flex;
 }
 
 /* toolbar icons */

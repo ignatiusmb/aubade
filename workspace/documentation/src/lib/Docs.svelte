@@ -49,11 +49,11 @@
 <style>
 	main {
 		display: grid;
-		gap: 2em;
+		gap: 2rem;
 		grid-template-columns: minmax(0, 1fr);
 		align-items: flex-start;
-		padding: 0 2em;
-		margin: 2em auto;
+		padding: 0 2rem;
+		margin: 2rem auto;
 	}
 
 	aside {
@@ -61,47 +61,47 @@
 		top: 0;
 		display: none;
 		align-content: flex-start;
-		padding-top: 2em;
+		padding-top: 2rem;
 	}
 	aside a {
 		line-height: 4ch;
 	}
 	aside a::before {
 		content: attr(data-index);
-		margin-right: 0.75em;
+		margin-right: 0.75rem;
 		font-family: var(--font-monospace);
 	}
 
 	article {
-		padding-top: 2em;
+		padding-top: 2rem;
 	}
 
 	section:not(:first-child) {
-		margin-top: 4em;
-		padding-top: 1em;
-		border-top: 0.25em solid var(--mrq-primary);
+		margin-top: 4rem;
+		padding-top: 1rem;
+		border-top: 0.25rem solid var(--mrq-primary);
 	}
 	section h2 {
 		position: relative;
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 1.5em;
+		margin-bottom: 3rem;
 		text-transform: uppercase;
 		font-family: var(--font-heading);
 		font-size: 2rem;
 		font-weight: bold;
 	}
-	section h2 > :global(a:first-child) {
+	section h2 > a:first-child {
 		position: absolute;
 		top: 50%;
-		left: -0.15em;
+		left: -0.15rem;
 		display: flex;
 		transform: translate(-95%, -50%);
 		transition: opacity 240ms;
 		opacity: 0;
 	}
-	section h2 > :global(a:first-child:focus),
-	section h2:hover > :global(a:first-child) {
+	section h2 > a:first-child:focus,
+	section h2:hover > a:first-child {
 		opacity: 1;
 	}
 	section h2 + :global(h3:first-of-type) {
@@ -113,40 +113,40 @@
 	section :global(h3) {
 		position: relative;
 		display: grid;
-		gap: 0.5em;
-		grid-template-columns: auto auto 1fr;
+		gap: 0.75rem;
+		grid-template-columns: 1.25rem auto 1fr;
 		align-items: center;
-		margin: 2em 0 1em;
+		margin: 2rem 0 1.5rem;
 		font-size: 1.5rem;
 		font-weight: 500;
 	}
 	section :global(h3::before) {
 		content: '';
-		width: 0.5em;
-		height: 0.5em;
+		width: 0.75rem;
+		height: 0.75rem;
 		border-radius: 50%;
-		margin-left: 0.25em;
-		box-shadow: 0 0 0 0.25em rgba(0, 112, 187, 0.6);
+		margin-left: 0.25rem;
+		box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
 		background-color: var(--mrq-primary);
 	}
 	section :global(h3::after) {
 		content: '';
 		width: 100%;
-		height: 0.15em;
+		height: 0.15rem;
 		background-color: rgba(0, 112, 187, 0.6);
 	}
 	section :global(p) {
-		margin-bottom: 1em;
+		margin-bottom: 1rem;
 		line-height: 1.5;
 	}
 	section :global(.mrq[data-mrq='block']) {
 		margin-top: 0;
-		margin-bottom: 1.5em;
+		margin-bottom: 1.5rem;
 	}
 
 	@media only screen and (min-width: 769px) {
 		main {
-			grid-template-columns: minmax(12em, 20%) minmax(0, 60em);
+			grid-template-columns: minmax(12rem, 20%) minmax(0, 60rem);
 		}
 
 		aside {

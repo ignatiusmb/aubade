@@ -42,15 +42,13 @@ transform(source, { language: 'typescript' });
 
 This is the browser module to hydrate and give interactivity to your HTML.
 
-#### `hydrate`
-
 ```typescript
 import type { ActionReturn } from 'svelte/action';
 
 export function hydrate(node: HTMLElement, key: any): ActionReturn;
 ```
 
-This function can be used to make the rendered code blocks from your markdown interactive, some of which are
+The `hydrate` function can be used to make the rendered code blocks from your markdown interactive, some of which are
 
 - toggle code line numbers
 - copy block to clipboard
