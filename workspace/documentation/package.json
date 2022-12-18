@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "format": "prettier -wu **",
+    "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
+    "lint:pt": "prettier -cu **",
+    "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
+    "lint:ts": "tsc --strict --noEmit --skipLibCheck"
+  },
+  "prettier": "mauss/prettier.json",
+  "devDependencies": {
+    "@ignatiusmb/styles": "^0.1.1",
+    "@sveltejs/adapter-static": "^1.0.0",
+    "@sveltejs/kit": "^1.0.0",
+    "@types/node": "^18.11.15",
+    "marqua": "workspace:^",
+    "mauss": "^0.4.6",
+    "prettier": "^2.8.1",
+    "prettier-plugin-svelte": "^2.9.0",
+    "svelte": "^3.55.0",
+    "svelte-check": "^2.10.2",
+    "syv": "^0.0.16",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.1"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "marqua",
+  "author": "Ignatius Bagus",
+  "description": "Augmented Markdown Compiler",
+  "version": "0.3.1",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "watch": "pnpm build --watch",
+    "build": "tsc --declaration",
+    "format": "prettier -wu **/*.{d.ts,js}",
+    "lint": "pnpm lint:code && pnpm lint:style && pnpm lint:types",
+    "lint:code": "tsc --noEmit",
+    "lint:style": "prettier -c src test",
+    "lint:types": "touch index.d.ts && tsd",
+    "test": "pnpm test:core && pnpm test:apps",
+    "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
+    "test:apps": "pnpm build && uvu test/apps",
+    "prepublish": "pnpm build && pnpm format"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./artisan": "./artisan/index.js",
+    "./browser": "./browser/index.js",
+    "./styles/code.css": "./styles/code.css",
+    "./package.json": "./package.json"
+  },
+  "prettier": "mauss/prettier.json",
+  "repository": "github:ignatiusmb/marqua",
+  "bugs": "https://github.com/ignatiusmb/marqua/issues",
+  "keywords": [
+    "markdown",
+    "compiler",
+    "parser"
+  ],
+  "dependencies": {
+    "markdown-it": "^13.0.1",
+    "mauss": "^0.4.6",
+    "shiki": "^0.11.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^12.2.3",
+    "@types/node": "^18.11.15",
+    "prettier": "^2.8.1",
+    "tsd": "^0.25.0",
+    "tsm": "^2.3.0",
+    "typescript": "^4.9.4",
+    "uvu": "^0.5.6"
+  },
+  "tsd": {
+    "directory": "test/typings"
+  }
+}
