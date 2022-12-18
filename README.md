@@ -1,9 +1,12 @@
 # Marqua ![Total npm downloads](https://img.shields.io/npm/dt/marqua) &middot; ![Published npm version](https://img.shields.io/npm/v/marqua) ![Monthly npm downloads](https://img.shields.io/npm/dm/marqua) ![License](https://img.shields.io/github/license/ignatiusmb/marqua)
 
-Augmented Markdown Compiler. Read the [documentation](https://marqua.mauss.dev) to get started.
+Augmented Markdown Compiler. Write markdown files &rarr; `'marqua'` &rarr; get structured markups with highlighted code blocks.
 
-Write in markdown files &rarr; `'marqua'` &rarr; get structured markups with highlighted code blocks.
+- Visit the [documentation site](https://marqua.mauss.dev) to get started.
+- Read the [CHANGELOG.md](workspace/marqua/CHANGELOG.md) to stay updated.
 
-***
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to develop locally.
 
 <h3 align="center"><pre>Marqua ｜ <a href="LICENSE">MIT License</a></pre></h3>

@@ -7,7 +7,7 @@
     "test": "pnpm --filter ./workspace/* test",
     "format": "pnpm --filter ./workspace/* format"
   },
-  "packageManager": "pnpm@7.17.1",
+  "packageManager": "pnpm@7.18.2",
   "prettier": "mauss/prettier.json",
   "devDependencies": {
     "@types/node": "^18.11.15",
