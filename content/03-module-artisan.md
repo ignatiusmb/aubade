@@ -36,6 +36,18 @@ const user: User = {
 transform(source, { language: 'typescript' });
 ```
 
+Another one would be to use as a highlighter function.
+
+```javascript
+import MarkdownIt from 'markdown-it';
+import { transform } from 'marqua/artisan';
+
+// passing as a 'markdown-it' options
+const marker = MarkdownIt({
+  highlight: (source, language) => transform(source, { language });
+});
+```
+
 ### marker
 
 The artisan module also exposes the `marker` import that is a markdown-it object.

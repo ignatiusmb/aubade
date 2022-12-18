@@ -76,16 +76,21 @@
 		padding-top: 2rem;
 	}
 	aside a {
+		padding-left: 1rem;
+		border-radius: 0.5rem;
 		line-height: 4ch;
 	}
-	aside a:first-child::before {
+	aside a[data-prefix]::before {
 		content: attr(data-prefix);
 		margin: 0 0.75rem 0 0.25rem;
 	}
-	aside a:not(:first-child)::before {
+	aside a[data-index]::before {
 		content: attr(data-index);
 		margin-right: 0.75rem;
 		font-family: var(--font-monospace);
+	}
+	aside a[data-index]:hover {
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 
 	article {
@@ -120,13 +125,12 @@
 	section h2:hover > a:first-child {
 		opacity: 1;
 	}
-	section h2 + :global(h3:first-of-type) {
-		padding-top: 0;
-		margin-top: 0;
-		border-top: 0;
+
+	/* ---- @html content ---- */
+	section [id] {
+		scroll-margin-top: 2rem;
 	}
 
-	/* @html content */
 	section > :global(h3) {
 		position: relative;
 		display: grid;
@@ -152,6 +156,11 @@
 		height: 0.15rem;
 		background-color: rgba(0, 112, 187, 0.6);
 	}
+	section h2 + :global(h3:first-of-type) {
+		padding-top: 0;
+		margin-top: 0;
+		border-top: 0;
+	}
 	section > :global(p) {
 		line-height: 1.5;
 	}
@@ -167,6 +176,7 @@
 
 	@media only screen and (min-width: 769px) {
 		main {
+			padding: 0 2rem 0 1rem;
 			grid-template-columns: minmax(12rem, 20%) minmax(0, 60rem);
 		}
 

@@ -1,14 +1,16 @@
 <footer>
 	<p>
 		<span>Copyright &copy;</span>
-		<a href="https://mauss.dev/">Ignatius Bagussuputra</a>
+		<a href="https://mauss.dev">Ignatius Bagussuputra</a>
 		<span>2019 &ndash; {new Date().getFullYear()}</span>
 	</p>
 	<p>
-		<span>Documentation made with &#x2764; using</span>
-		<a href="https://kit.svelte.dev/">SvelteKit</a>
+		<span>Documentation made with</span>
+		<span style:color="var(--mrq-primary)">&#x2764;</span>
+		<span>using</span>
+		<a href="https://github.com/sveltejs/kit">SvelteKit</a>
 		<span>&plus;</span>
-		<a href="https://github.com/ignatiusmb/marqua/">Marqua</a>
+		<a href="https://github.com/ignatiusmb/marqua">Marqua</a>
 	</p>
 </footer>
 

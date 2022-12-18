@@ -4,9 +4,10 @@ title: Introduction
 
 Marqua is an enhanced markdown compiler with code syntax highlighting that parses and converts your markdown code, files, and/or directories into a pseudo-AST, highly extensible and configurable. Marqua takes your code/contents with minimal boilerplate and generate structured markups, flexible enough for almost any related use cases.
 
-Ever wanted to write a blog but didn't know where to start? Want to keep the contents in a markdown format but still be extendible? With Marqua, everything just works, *insert "it just works" reference*. Write a markdown file and it will automatically
+Ever wanted to write a blog but didn't know where to start? Want to keep the contents in a markdown format but still be extendible? With Marqua, everything just works, *&#42;&#42;it just works&#42;&#42;*. Write a markdown file and it will automatically
 
-- parse the (custom) [front matter](#modules-front-matter)
+<!-- markdownlint-disable MD051 -->
+- parse the (custom) [front matter](#module-front-matter)
 - add `id` to the headings
 - generate a table of contents
 - generate read time duration
@@ -28,18 +29,6 @@ import { compile, traverse } from 'marqua';
 
 compile(/* string | file options */, /* optional hydrate callback */);
 traverse(/* string | dir options */, /* optional hydrate callback */);
-```
-
-Use the `transform` function from the `/artisan` module to highlight source string.
-
-```javascript
-import MarkdownIt from 'markdown-it';
-import { transform } from 'marqua/artisan';
-
-// passing as a 'markdown-it' options
-const marker = MarkdownIt({
-  highlight: (str, language) => transform(str, { language });
-});
 ```
 
 Add interactivity to the code blocks with `hydrate` from `/browser` module.
