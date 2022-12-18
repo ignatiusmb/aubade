@@ -137,9 +137,9 @@ When everything is set to default (none of the optional properties are passed), 
 
 ### forge
 
-Both `compile` and `traverse` can be passed an `Input` type for the available properties in `{ frontMatter }` and `Output` type for the expected returned object, it defaults to what's passed in `Input`. There are two ways to do this
+Both `compile` and `traverse` has an `Input` generic for the available properties in `{ frontMatter }` and `Output` generic for the expected returned object, defaulting to `Input`.
 
-```ts
+```typescript
 import type { Post } from './types';
 import { compile } from 'marqua';
 
@@ -169,9 +169,12 @@ compile(
 );
 ```
 
-Both options are available to use if needed, the rest is up to your preference on how you type your code. Both are also optional too, so this can be ignored completely if you don't need the autocompletion.
+Both options are available and optional to use if needed, the rest is up to your preference on how you type your code. All methods acts as a helper and are only meant to provide autocompletion.
 
-All `forge` methods acts as a helper and are only meant to provide autocompletion. Both `forge.compile` and `forge.traverse` will return the respective options object, and `forge.types` need at least one type argument passed, expects 0 arguments passed, and never returns.
+- `forge.compile` will return an object with `FileOptions` type
+- `forge.traverse` will return an object with `DirOptions` type
+- `forge.types` accepts 1 generic, no arguments, and returns `void`
+- `forge.types` is only used as the last argument of `compile` or `traverse`
 
 ### Front Matter
 
@@ -239,10 +242,10 @@ Thoroughly updated through this website on !{date:updated}
 Heading starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
 
 - MD001: Heading levels should only increment by one level at a time
-- MD003: Heading style -> only ATX style
+- MD003: Heading style; only ATX style
 - MD018: No space after hash on atx style heading
 - MD023: Headings must start at the beginning of the line
-- MD024: Multiple headings with the same content -> siblings only
+- MD024: Multiple headings with the same content; siblings only
 - MD042: No empty links
 
 If you're using VSCode, you can install the [markdownlint extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) to help you catch these lint errors / warnings and write better markdown. These rules can be configured, see the [.jsonc template](https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.jsonc) and [.yaml template](https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.yaml) with an [example here](https://github.com/ignatiusmb/mauss.dev/blob/master/.markdownlint.yaml).
