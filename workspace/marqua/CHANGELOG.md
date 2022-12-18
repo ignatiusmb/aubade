@@ -1,8 +1,14 @@
 # marqua changelog
 
-## Unreleased
+## 0.4.0 - Unreleased
 
+- [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
 - [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
+
+### Breaking Changes
+
+- [#47](https://github.com/ignatiusmb/marqua/pull/47) | Amalgamate `aqua`
+  - Moved `marker` from `'marqua'` to `'marqua/artisan'`
 
 ## 0.3.1 - 2022/07/29
 
