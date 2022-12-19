@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "svelte-kit sync && vite build",
     "format": "prettier -wu **",
     "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
     "lint:pt": "prettier -cu **",
