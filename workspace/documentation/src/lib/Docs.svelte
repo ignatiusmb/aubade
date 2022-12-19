@@ -127,7 +127,7 @@
 	}
 
 	/* ---- @html content ---- */
-	section [id] {
+	section :global([id]) {
 		scroll-margin-top: 2rem;
 	}
 
