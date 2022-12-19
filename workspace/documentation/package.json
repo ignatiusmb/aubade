@@ -3,12 +3,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "svelte-kit sync && vite build",
+    "build": "vite build",
     "format": "prettier -wu **",
     "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
     "lint:pt": "prettier -cu **",
     "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
-    "lint:ts": "tsc --strict --noEmit --skipLibCheck"
+    "lint:ts": "tsc --strict --noEmit --skipLibCheck",
+    "postinstall": "svelte-kit sync"
   },
   "prettier": "mauss/prettier.json",
   "devDependencies": {
