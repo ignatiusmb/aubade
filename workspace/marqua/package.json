@@ -2,7 +2,7 @@
   "name": "marqua",
   "author": "Ignatius Bagus",
   "description": "Augmented Markdown Compiler",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -16,7 +16,8 @@
     "test": "pnpm test:core && pnpm test:apps",
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
     "test:apps": "pnpm build && uvu test/apps",
-    "prepublish": "pnpm build && pnpm format"
+    "prepublish": "pnpm build && pnpm format",
+    "postinstall": "pnpm build"
   },
   "exports": {
     ".": "./index.js",

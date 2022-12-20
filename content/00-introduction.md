@@ -7,7 +7,7 @@ Marqua is an enhanced markdown compiler with code syntax highlighting that parse
 Ever wanted to write a blog but didn't know where to start? Want to keep the contents in a markdown format but still be extendible? With Marqua, everything just works, *&#42;&#42;it just works&#42;&#42;*. Write a markdown file and it will automatically
 
 <!-- markdownlint-disable MD051 -->
-- parse the (custom) [front matter](#module-front-matter)
+- parse the (custom) [front matter](#front-matter)
 - add `id` to the headings
 - generate a table of contents
 - generate read time duration
