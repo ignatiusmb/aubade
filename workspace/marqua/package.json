@@ -20,7 +20,7 @@
     "postinstall": "pnpm build"
   },
   "exports": {
-    ".": "./index.js",
+    ".": "./core/index.js",
     "./artisan": "./artisan/index.js",
     "./browser": "./browser/index.js",
     "./styles/code.css": "./styles/code.css",
