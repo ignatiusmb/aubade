@@ -6,9 +6,10 @@ export function readTime(content: string): number {
 	const paragraphs = content.split('\n').filter(
 		(p) => !!p && !/^[!*]/.test(p) // remove empty and not sentences
 	);
-	const words = paragraphs.reduce((acc, cur) => {
-		if (/^[\t\s]*<.+>/.test(cur.trim())) return acc + 1;
-		return acc + cur.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 2).length;
+	const words = paragraphs.reduce((total, line) => {
+		if (/^[\t\s]*<.+>/.test(line.trim())) return total + 1;
+		const accumulated = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
+		return total + accumulated.length;
 	}, 0);
 	const images = content.match(/!\[.+\]\(.+\)/g);
 	const total = words + (images || []).length * 12;
@@ -29,10 +30,7 @@ export function table(content: string) {
 		const match = line.trim().match(/^(#{2,4}) (.+)/);
 		if (match) lines.push(match), counter[match[1].length - 2]++;
 	}
-	const alone =
-		(counter[0] && !counter[1] && !counter[2]) ||
-		(!counter[0] && counter[1] && !counter[2]) ||
-		(!counter[0] && !counter[1] && counter[2]);
+	const alone = counter.filter((i) => i === 0).length === 2;
 
 	return lines.reduce((table: MarquaTable[], [, signs, title]) => {
 		title = title.replace(/\[(.+)\]\(.+\)/g, '$1');

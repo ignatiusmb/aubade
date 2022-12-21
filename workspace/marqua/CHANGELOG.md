@@ -3,6 +3,7 @@
 ## 0.4.0 - Unreleased
 
 - [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
+- [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function
 - [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
 
 ### Breaking Changes

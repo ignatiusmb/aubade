@@ -41,6 +41,19 @@ content
             └── your-name.md
 ```
 
+### parse
+
+Where the parsing happens, it accepts a string and returns a `{ metadata, content }` structure.
+
+```ts
+export function parse(content: string): {
+  metadata: Record<string, any>;
+  content: string;
+}
+```
+
+If you need to read from a file or folder, use the `compile` and `traverse` functions.
+
 ### compile / traverse
 
 An example usage from the *hypothetical* content folder structure above should look like
