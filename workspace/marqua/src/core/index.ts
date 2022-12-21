@@ -73,23 +73,23 @@ export function parse(source: string) {
 			},
 		}),
 	};
+}
 
-	function nest(val: string, keys: string[], memo: Record<string, any> = {}): string | typeof memo {
-		return !keys.length ? val : { ...memo, [keys[0]]: nest(val, keys.slice(1), memo[keys[0]]) };
-	}
+function nest(val: string, keys: string[], memo: Record<string, any> = {}): string | typeof memo {
+	return !keys.length ? val : { ...memo, [keys[0]]: nest(val, keys.slice(1), memo[keys[0]]) };
+}
 
-	function inject(source: string, metadata: Record<string, any>) {
-		const plane = compress(metadata);
-		return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c]) || s);
-	}
+function inject(source: string, metadata: Record<string, any>) {
+	const plane = compress(metadata);
+	return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c]) || s);
+}
 
-	function compress(metadata: Record<string, any>, parent = '') {
-		const memo: typeof metadata = {};
-		const prefix = parent ? `${parent}:` : '';
-		for (const [k, v] of Object.entries(metadata)) {
-			if (typeof v !== 'object') memo[prefix + k] = v;
-			else Object.assign(memo, compress(v, k));
-		}
-		return memo;
+function compress(metadata: Record<string, any>, parent = '') {
+	const memo: typeof metadata = {};
+	const prefix = parent ? `${parent}:` : '';
+	for (const [k, v] of Object.entries(metadata)) {
+		if (typeof v !== 'object') memo[prefix + k] = v;
+		else Object.assign(memo, compress(v, k));
 	}
+	return memo;
 }

@@ -17,14 +17,14 @@ export function compile(
 ): undefined | Output;
 
 interface TraverseOptions<Output extends object = {}> {
-	entry: string;
-	extensions?: string[];
-	depth?: number;
+  entry: string;
+  extensions?: string[];
+  depth?: number;
 
-	sort?(
-		x: [keyof Output] extends [never] ? Record<string, any> : Output,
-		y: [keyof Output] extends [never] ? Record<string, any> : Output
-	): number;
+  sort?(
+    x: [keyof Output] extends [never] ? Record<string, any> : Output,
+    y: [keyof Output] extends [never] ? Record<string, any> : Output
+  ): number;
 }
 
 export function traverse(
@@ -75,14 +75,14 @@ The first argument of `compile` is the source entry point.
 
 ```typescript
 interface TraverseOptions<Output extends object = {}> {
-	entry: string;
-	extensions?: string[];
-	depth?: number;
+  entry: string;
+  extensions?: string[];
+  depth?: number;
 
-	sort?(
-		x: [keyof Output] extends [never] ? Record<string, any> : Output,
-		y: [keyof Output] extends [never] ? Record<string, any> : Output
-	): number;
+  sort?(
+    x: [keyof Output] extends [never] ? Record<string, any> : Output,
+    y: [keyof Output] extends [never] ? Record<string, any> : Output
+  ): number;
 }
 
 export function traverse(
