@@ -1,53 +1,17 @@
 {
-  "name": "marqua",
-  "author": "Ignatius Bagus",
-  "description": "Augmented Markdown Compiler",
-  "version": "0.3.1",
-  "license": "MIT",
+  "private": true,
   "type": "module",
-  "types": "index.d.ts",
   "scripts": {
     "clean": "git add * && git clean -dfx -e node_modules",
-    "watch": "pnpm pub:build --watch",
-    "lint": "pnpm lint:code && pnpm lint:style && pnpm lint:types",
-    "lint:code": "tsc --noEmit",
-    "lint:style": "prettier -c src test",
-    "lint:types": "touch index.d.ts && tsd",
-    "test": "pnpm test:core && pnpm test:apps",
-    "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
-    "test:apps": "uvu -r tsm test/apps \"(spec\\.ts)\"",
-    "pub:build": "tsc --declaration",
-    "pub:format": "prettier -wu **/*.{d.ts,js}",
-    "prepublishOnly": "pnpm pub:build && pnpm pub:format"
+    "lint": "pnpm --filter ./workspace/* lint",
+    "test": "pnpm --filter ./workspace/* test",
+    "format": "pnpm --filter ./workspace/* format"
   },
-  "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
-  },
-  "packageManager": "pnpm@7.17.1",
+  "packageManager": "pnpm@7.18.2",
   "prettier": "mauss/prettier.json",
-  "repository": "github:ignatiusmb/marqua",
-  "bugs": "https://github.com/ignatiusmb/marqua/issues",
-  "keywords": [
-    "markdown",
-    "compiler",
-    "parser"
-  ],
-  "dependencies": {
-    "@ignatiusmb/aqua": "^20.3.3",
-    "markdown-it": "^13.0.1",
-    "mauss": "^0.3.1"
-  },
   "devDependencies": {
-    "@types/markdown-it": "^12.0.1",
-    "@types/node": "^18.6.1",
-    "prettier": "^2.3.0",
-    "tsd": "^0.22.0",
-    "tsm": "^2.2.1",
-    "typescript": "^4.1.2",
-    "uvu": "^0.5.3"
-  },
-  "tsd": {
-    "directory": "test/typings"
+    "@types/node": "^18.11.15",
+    "prettier": "^2.8.1",
+    "typescript": "^4.9.4"
   }
 }

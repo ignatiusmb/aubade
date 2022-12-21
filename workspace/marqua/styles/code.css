@@ -1,0 +1,353 @@
+:root {
+	--font-default: 'Rubik', 'Ubuntu', 'Helvetica Neue', sans-serif;
+	--font-heading: 'Karla', sans-serif;
+	--font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
+
+	--mrq-rounding: 0.3rem;
+
+	--mrq-primary: #0070bb;
+	--mrq-bg-dark: #2d2d2d;
+	--mrq-bg-light: #f7f7f7;
+	--mrq-cl-dark: #242424;
+	--mrq-cl-light: #dadada;
+}
+
+.mrq[data-mrq='block'],
+.mrq[data-mrq='header'],
+.mrq[data-mrq='pre'] {
+	width: 100%;
+	position: relative;
+
+	--mrq-pre-bg: #525252;
+	--mrq-bounce: 10rem;
+	--mrq-tms: 100ms;
+	--mrq-tfn: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+.mrq[data-mrq='block'] {
+	white-space: normal;
+	margin-top: 1rem;
+}
+.mrq[data-mrq='pre'] {
+	white-space: pre;
+}
+code {
+	position: relative;
+	top: -0.075rem;
+	padding: 0.15rem 0.3rem;
+	margin: 0 0.1rem;
+	border-radius: var(--mrq-rounding);
+	background: var(--mrq-bg-dark);
+	color: var(--mrq-cl-light);
+	line-height: 1.5;
+	font-size: 0.8em; /* em - relative to wrapper */
+	white-space: nowrap;
+}
+
+/* ---- <div data-mrq="pre"> ---- */
+
+.mrq[data-mrq='pre'] {
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 1.8rem 1rem 1rem 1.6rem;
+	border-bottom-left-radius: var(--mrq-rounding);
+	border-bottom-right-radius: var(--mrq-rounding);
+	background: var(--mrq-bg-dark);
+	color: var(--mrq-cl-light);
+	font-family: 'Fira Code', 'Inconsolata', 'Consolas', 'Ubuntu Mono', monospace;
+}
+.mrq[data-mrq='pre'] code {
+	top: 0;
+	padding: 0;
+	margin: 0;
+	border-radius: 0;
+	white-space: pre;
+}
+.mrq[data-mrq='pre'],
+.mrq[data-mrq='pre'] code {
+	line-height: 1.5;
+	font-size: 0.85rem;
+}
+
+.mrq[data-mrq='pre'].numbered {
+	padding-left: 0.6rem;
+}
+.mrq[data-mrq='pre'].numbered code::before {
+	content: attr(data-line);
+	max-width: 2rem;
+	width: 100%;
+	display: inline-flex;
+	justify-content: flex-end;
+	margin-right: 0.6rem;
+	color: gray;
+	letter-spacing: normal;
+}
+
+/* header check */
+.mrq[data-mrq='header'].empty + .mrq[data-mrq='pre'] {
+	padding-top: 2rem;
+}
+.mrq[data-mrq='header'][data-language='']:not(.empty) + .mrq[data-mrq='pre'] {
+	padding-top: 1rem;
+}
+.mrq[data-mrq='header'].empty + .mrq[data-mrq='pre'] {
+	border-top-right-radius: var(--mrq-rounding);
+	border-top-left-radius: var(--mrq-rounding);
+}
+
+/* ---- <header data-mrq="header"> ---- */
+
+.mrq[data-mrq='header'] {
+	padding: 0.5rem 1rem;
+	margin: 0;
+	border-top-right-radius: var(--mrq-rounding);
+	border-top-left-radius: var(--mrq-rounding);
+	background-color: var(--mrq-pre-bg);
+	color: #fff;
+	font-weight: 300;
+	font-family: var(--font-monospace);
+	font-size: clamp(0.8rem, 2vw, 0.95rem);
+}
+.mrq[data-mrq='header'].empty {
+	padding: 0;
+	background: transparent;
+}
+.mrq[data-mrq='header'].empty::after {
+	top: 0;
+	border-top-right-radius: var(--mrq-rounding);
+}
+.mrq[data-mrq='header']::after,
+.mrq[data-mrq='header']::before {
+	font-family: var(--font-default);
+	font-size: 0.75rem;
+}
+.mrq[data-mrq='header'] > span {
+	overflow: hidden;
+	width: 100%;
+	display: inline-flex;
+}
+/* language coloured line */
+.mrq[data-mrq='header']::before {
+	content: '';
+	z-index: 1;
+	height: 0.4rem;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+
+	transition: var(--mrq-tms);
+	transition-timing-function: var(--mrq-tfn);
+}
+.mrq[data-mrq='header'].empty::before {
+	height: 0.6rem;
+	top: 0;
+	border-top-left-radius: var(--mrq-rounding);
+	border-top-right-radius: var(--mrq-rounding);
+}
+
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header']::before,
+.mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::before {
+	right: var(--mrq-bounce);
+	transition: var(--mrq-tms);
+}
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header'].empty[data-language='']::before,
+.mrq[data-mrq='block']:hover > .mrq[data-mrq='header'].empty[data-language='']::before {
+	right: 0;
+}
+
+/* ---- data-language ---- */
+
+.mrq[data-mrq='header'] {
+	--mrq-header-dark: #323330;
+	--mrq-header-light: #feefe8;
+}
+
+.mrq[data-mrq='header']::after {
+	z-index: 1;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	padding: 0.5rem 0.7rem 0.4rem;
+	font-weight: 500;
+	text-indent: 0.2rem;
+	letter-spacing: 0.1rem;
+	text-transform: uppercase;
+	border-bottom-left-radius: 2px;
+	transition: var(--mrq-tms);
+	transition-timing-function: var(--mrq-tfn);
+}
+.mrq[data-mrq='header'][data-language]::after {
+	content: attr(data-language);
+}
+.mrq[data-mrq='block']:focus-within > .mrq[data-mrq='header']::after,
+.mrq[data-mrq='block']:hover > .mrq[data-mrq='header']::after {
+	right: var(--mrq-bounce);
+	border-bottom-right-radius: var(--mrq-rounding);
+	border-bottom-left-radius: var(--mrq-rounding);
+	transition: var(--mrq-tms);
+}
+.mrq[data-mrq='header'][data-language='']:not(.empty)::after,
+.mrq[data-mrq='header'][data-language='']:not(.empty)::before {
+	content: none;
+}
+.mrq[data-mrq='header'][data-language='']::before {
+	background: var(--mrq-pre-bg);
+}
+
+/* Language Styles */
+.mrq[data-mrq='header'][data-language='bash']::after,
+.mrq[data-mrq='header'][data-language='bash']::before {
+	background: #363377;
+	color: #a2a0d6;
+}
+.mrq[data-mrq='header'][data-language='css']::after,
+.mrq[data-mrq='header'][data-language='css']::before {
+	background: #264de4;
+	color: var(--mrq-header-light);
+}
+.mrq[data-mrq='header'][data-language='htaccess']::after,
+.mrq[data-mrq='header'][data-language='htaccess']::before {
+	background: #8bc34a;
+	color: var(--mrq-header-dark);
+}
+.mrq[data-mrq='header'][data-language='html']::after,
+.mrq[data-mrq='header'][data-language='html']::before {
+	background: #e34f26;
+	color: var(--mrq-header-light);
+}
+.mrq[data-mrq='header'][data-language='java']::after,
+.mrq[data-mrq='header'][data-language='java']::before {
+	background: #f89820;
+	color: var(--mrq-header-light);
+}
+.mrq[data-mrq='header'][data-language='javascript']::after,
+.mrq[data-mrq='header'][data-language='javascript']::before,
+.mrq[data-mrq='header'][data-language='js']::after,
+.mrq[data-mrq='header'][data-language='js']::before {
+	background: #f0db4f;
+	color: var(--mrq-header-dark);
+}
+.mrq[data-mrq='header'][data-language='json']::after,
+.mrq[data-mrq='header'][data-language='json']::before {
+	background: #f0db4f;
+	color: var(--mrq-header-dark);
+}
+.mrq[data-mrq='header'][data-language='python']::after,
+.mrq[data-mrq='header'][data-language='python']::before {
+	background: #dddddd;
+	color: var(--mrq-header-dark);
+}
+.mrq[data-mrq='header'][data-language='shell']::after,
+.mrq[data-mrq='header'][data-language='shell']::before {
+	background: #f3e2bb;
+	color: #c09022;
+}
+.mrq[data-mrq='header'][data-language='svelte']::after,
+.mrq[data-mrq='header'][data-language='svelte']::before {
+	background: #ff3e00;
+	color: var(--mrq-header-light);
+}
+.mrq[data-mrq='header'][data-language='terminal']::after,
+.mrq[data-mrq='header'][data-language='terminal']::before {
+	background: #dddddd;
+	color: var(--mrq-header-dark);
+}
+.mrq[data-mrq='header'][data-language='typescript']::after,
+.mrq[data-mrq='header'][data-language='typescript']::before,
+.mrq[data-mrq='header'][data-language='ts']::after,
+.mrq[data-mrq='header'][data-language='ts']::before {
+	background: #3178c6;
+	color: var(--mrq-header-light);
+}
+.mrq[data-mrq='header'][data-language='yaml']::after,
+.mrq[data-mrq='header'][data-language='yaml']::before {
+	background: #000000;
+	color: var(--mrq-header-light);
+}
+
+/* ---- <div data-mrq="toolbar"> ---- */
+
+.mrq[data-mrq='toolbar'] {
+	z-index: 2;
+	opacity: 0;
+	position: absolute;
+	top: 50%;
+	right: 0.2rem;
+	display: grid;
+	gap: 0.2rem;
+	grid-auto-flow: column;
+	transition: var(--mrq-tms);
+	transform: translateY(-50%);
+}
+
+.mrq[data-mrq='header'].empty .mrq[data-mrq='toolbar'] {
+	transform: translateY(50%);
+}
+.mrq[data-mrq='header'].empty:not([data-language='']) .mrq[data-mrq='toolbar'] {
+	transform: translateY(10%);
+}
+.mrq[data-mrq='header']:not([data-language='']):not(.empty) .mrq[data-mrq='toolbar'] {
+	top: 100%;
+	transform: translateY(10%);
+}
+
+.mrq[data-mrq='block']:focus-within .mrq[data-mrq='toolbar'],
+.mrq[data-mrq='block']:hover .mrq[data-mrq='toolbar'] {
+	opacity: 1;
+}
+
+.mrq[data-mrq='toolbar'] > .mrq[data-mrq-toolbar] {
+	cursor: pointer;
+	width: 1.3rem;
+	height: 1.3rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.25rem;
+	border-radius: 50%;
+	color: var(--mrq-primary);
+	text-align: center;
+	font-size: 0.7rem;
+	background-color: var(--mrq-bg-light);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-origin: content-box;
+}
+
+.mrq[data-mrq-toolbar]:focus {
+	outline: 1px solid rgba(255, 255, 255, 0.4);
+}
+.mrq[data-mrq-toolbar] > .mrq[data-mrq='tooltip'] {
+	user-select: none;
+	position: absolute;
+	bottom: 2rem;
+	display: none;
+	padding: 0.3rem 0.6rem;
+	border-radius: calc(var(--mrq-rounding) * 2);
+	background-color: #7c7c7c;
+	color: #ffffff;
+	transition: var(--mrq-tms);
+}
+.mrq[data-mrq-toolbar] > .mrq[data-mrq='tooltip']::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: #7c7c7c transparent transparent transparent;
+	transform: translateY(99%);
+}
+.mrq[data-mrq-toolbar]:focus > .mrq[data-mrq='tooltip'],
+.mrq[data-mrq-toolbar]:hover > .mrq[data-mrq='tooltip'] {
+	display: inline-flex;
+}
+
+/* toolbar icons */
+.mrq[data-mrq-toolbar='clipboard'] {
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230070bb' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'%3E%3C/path%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'%3E%3C/rect%3E%3C/svg%3E");
+}
+.mrq[data-mrq-toolbar='list'] {
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230070bb' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='8' y1='6' x2='21' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='12' x2='21' y2='12'%3E%3C/line%3E%3Cline x1='8' y1='18' x2='21' y2='18'%3E%3C/line%3E%3Cline x1='3' y1='6' x2='3.01' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='12' x2='3.01' y2='12'%3E%3C/line%3E%3Cline x1='3' y1='18' x2='3.01' y2='18'%3E%3C/line%3E%3C/svg%3E");
+}
