@@ -1,10 +1,10 @@
-import { traverse } from 'marqua';
+import { traverse } from 'marqua/fs';
 
 export const prerender = true;
 
 export const load: import('./$types').PageServerLoad = async () => {
 	const docs = traverse(
-		'../../content',
+		{ entry: '../../content' },
 		({ frontMatter: { title, ...rest }, content, breadcrumb: [filename] }) => {
 			if (filename.includes('draft')) return;
 			const path = `content/${filename}`;
