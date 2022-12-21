@@ -29,10 +29,7 @@ export function table(content: string) {
 		const match = line.trim().match(/^(#{2,4}) (.+)/);
 		if (match) lines.push(match), counter[match[1].length - 2]++;
 	}
-	const alone =
-		(counter[0] && !counter[1] && !counter[2]) ||
-		(!counter[0] && counter[1] && !counter[2]) ||
-		(!counter[0] && !counter[1] && counter[2]);
+	const alone = counter.filter((i) => i === 0).length === 2;
 
 	return lines.reduce((table: MarquaTable[], [, signs, title]) => {
 		title = title.replace(/\[(.+)\]\(.+\)/g, '$1');

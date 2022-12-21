@@ -39,7 +39,7 @@ export function parse(source: string) {
 		return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c]) || s);
 	}
 
-	function compress(metadata: Record<string, any>, parent = ''): Record<string, any> {
+	function compress(metadata: Record<string, any>, parent = '') {
 		const memo: typeof metadata = {};
 		const prefix = parent ? `${parent}:` : '';
 		for (const [k, v] of Object.entries(metadata)) {
