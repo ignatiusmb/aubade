@@ -1,30 +1,50 @@
 import type * as TS from '../types.js';
 import * as fs from 'fs';
 
-import { compile } from '../core/index.js';
+import { marker } from '../artisan/index.js';
+import { parse } from '../core/index.js';
+
+export function compile<Input extends object, Output extends Record<string, any> = Input>(
+	entry: string,
+	hydrate?: TS.Hydrate<Input, Output>
+): undefined | Output {
+	const breadcrumb = entry.split(/[/\\]/).reverse();
+	const crude = fs.readFileSync(entry, 'utf-8').trim();
+	const { content, metadata } = parse(crude.trim());
+
+	const chunk = { breadcrumb, content, frontMatter: metadata };
+	const result = !hydrate
+		? ({ ...metadata, content } as TS.FrontMatter)
+		: hydrate(chunk as TS.HydrateChunk<Input>);
+
+	if (!result /* hydrate is used and returns nothing */) return;
+	if (result.date && typeof result.date !== 'string') {
+		result.date.updated = result.date.updated || result.date.published;
+	}
+	if (result.content && typeof result.content === 'string') {
+		result.content = marker.render(result.content);
+	}
+
+	return result as Output;
+}
 
 export function traverse<
 	Options extends TS.DirOptions<Output>,
 	Input extends object,
 	Output extends Record<string, any> = Input
->(options: string | Options, hydrate?: TS.Hydrate<Input, Output>): Output[] {
-	const {
-		entry,
-		recurse = false,
-		extensions = ['.md'],
-		sort = undefined,
-		...config
-	} = typeof options !== 'string' ? options : { entry: options };
-
+>(
+	{ entry, extensions = ['.md'], depth = 0, sort = undefined }: Options,
+	hydrate?: TS.Hydrate<Input, Output>
+): Output[] {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
 		return [];
 	}
 
-	const backpack = fs.readdirSync(entry).map((name) => {
+	const backpack = fs.readdirSync(entry).flatMap((name) => {
 		const pathname = join(entry, name);
-		if (recurse && fs.lstatSync(pathname).isDirectory()) {
-			const opts = { entry: pathname, recurse, extensions, ...config };
+		if (depth !== 0 && fs.lstatSync(pathname).isDirectory()) {
+			const opts = { entry: pathname, extensions, depth: depth - 1 };
 			return traverse(opts, hydrate);
 		}
 		if (extensions.some((e) => name.endsWith(e))) {
@@ -33,7 +53,7 @@ export function traverse<
 		return;
 	});
 
-	const items = (recurse ? backpack.flat(Number.POSITIVE_INFINITY) : backpack).filter(
+	const items = backpack.filter(
 		(i): i is Output => !!(i && (Array.isArray(i) ? i : Object.keys(i)).length)
 	);
 

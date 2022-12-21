@@ -1,7 +1,5 @@
-import type * as TS from '../types.js';
-
+import type { MarquaTable } from '../types.js';
 import { exists } from 'mauss/guards';
-import { marker } from '../artisan/index.js';
 import { generate } from '../utils.js';
 
 export function parse(source: string) {
@@ -52,7 +50,7 @@ export function parse(source: string) {
 				}
 				const alone = counter.filter((i) => i === 0).length === 2;
 
-				return lines.reduce((table: TS.MarquaTable[], [, signs, title]) => {
+				return lines.reduce((table: MarquaTable[], [, signs, title]) => {
 					title = title.replace(/\[(.+)\]\(.+\)/g, '$1');
 					title = title.replace(/`(.+)`/g, '$1');
 					const content = { id: generate.id(title), title };
@@ -94,29 +92,4 @@ export function parse(source: string) {
 		}
 		return memo;
 	}
-}
-
-export function compile<Input extends object, Output extends Record<string, any> = Input>(
-	source: string,
-	hydrate?: TS.Hydrate<Input, Output>
-): undefined | Output {
-	// const breadcrumb = entry.split(/[/\\]/).reverse();
-	// const crude = fs.readFileSync(entry, 'utf-8').trim();
-	const { metadata, content } = parse(source.trim());
-
-	const chunk = { frontMatter: metadata, content, breadcrumb: [''] };
-	const result = !hydrate
-		? ({ ...metadata, content } as TS.FrontMatter)
-		: hydrate(chunk as TS.HydrateChunk<Input>);
-
-	if (!result /* hydrate is used and returns nothing */) return;
-
-	if (result.date && typeof result.date !== 'string') {
-		result.date.updated = result.date.updated || result.date.published;
-	}
-	if (result.content && typeof result.content === 'string') {
-		result.content = marker.render(result.content);
-	}
-
-	return result as Output;
 }

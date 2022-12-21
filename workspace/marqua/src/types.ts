@@ -12,28 +12,8 @@ export interface MarquaTable {
 
 export interface DirOptions<Output extends object = {}> {
 	entry: string;
-
-	/**
-	 * `recurse = false`
-	 *
-	 * traverse will only scan the root/top-level directory
-	 * and will recursively scan all nested subdirectories
-	 * when this flag is turned on
-	 */
-	recurse?: boolean;
-
-	/**
-	 * `extensions = ['.md']`
-	 *
-	 * traverse will only scan directories with files that
-	 * ends with '.md', this can be changed or added by
-	 * passing in other extensions
-	 *
-	 * it will consequently overwrite the default array and
-	 * remove '.md' extension, you will need to explicitly
-	 * readd the extension again to your newly passed array
-	 */
 	extensions?: string[];
+	depth?: number;
 
 	sort?(
 		x: [keyof Output] extends [never] ? Record<string, any> : Output,
@@ -54,11 +34,11 @@ export interface FrontMatter {
 }
 
 export interface HydrateChunk<Input> {
+	breadcrumb: string[];
+	content: string;
 	frontMatter: [keyof Input] extends [never]
 		? Omit<FrontMatter, 'content'> & Record<string, any>
 		: Omit<FrontMatter, 'content' | keyof Input> & Input;
-	content: string;
-	breadcrumb: string[];
 }
 
 export interface Hydrate<Input, Output = Input> {
