@@ -22,10 +22,10 @@ Markdown compiler is powered by [markdown-it](https://github.com/markdown-it/mar
 pnpm install marqua
 ```
 
-Use the functions from the main module to `compile` a file or `traverse` directories.
+Use the functions from the FileSystem module to `compile` a file or `traverse` directories.
 
 ```javascript
-import { compile, traverse } from 'marqua';
+import { compile, traverse } from 'marqua/fs';
 
 compile(/* string | file options */, /* optional hydrate callback */);
 traverse(/* string | dir options */, /* optional hydrate callback */);
