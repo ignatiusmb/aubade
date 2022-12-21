@@ -1,21 +1,38 @@
-import type { TraverseOptions, FrontMatter, HydrateChunk } from '../types.js';
+import type { MarquaTable } from '../types.js';
 import * as fs from 'fs';
-
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
+
+interface FrontMatter {
+	content?: string;
+	date: {
+		published?: string | Date;
+		updated?: string | Date;
+	};
+
+	//----> computed properties
+	estimate: number;
+	table: MarquaTable[];
+}
+
+interface HydrateChunk<Input> {
+	breadcrumb: string[];
+	content: string;
+	frontMatter: [keyof Input] extends [never]
+		? Omit<FrontMatter, 'content'> & Record<string, any>
+		: Omit<FrontMatter, 'content' | keyof Input> & Input;
+}
 
 export function compile<Input extends object, Output extends Record<string, any> = Input>(
 	entry: string,
 	hydrate?: (chunk: HydrateChunk<Input>) => undefined | Output
 ): undefined | Output {
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
-	const { content, metadata } = parse(crude.trim());
-
+	const { content: source, metadata } = parse(crude);
 	const breadcrumb = entry.split(/[/\\]/).reverse();
-	const chunk = { breadcrumb, content, frontMatter: metadata };
 	const result = !hydrate
-		? ({ ...metadata, content } as FrontMatter)
-		: hydrate(chunk as HydrateChunk<Input>);
+		? ({ ...metadata, content: source } as FrontMatter)
+		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
 
 	if (!result /* hydrate is used and returns nothing */) return;
 	if (result.date && typeof result.date !== 'string') {
@@ -26,6 +43,17 @@ export function compile<Input extends object, Output extends Record<string, any>
 	}
 
 	return result as Output;
+}
+
+interface TraverseOptions<Output extends object = {}> {
+	entry: string;
+	extensions?: string[];
+	depth?: number;
+
+	sort?(
+		x: [keyof Output] extends [never] ? Record<string, any> : Output,
+		y: [keyof Output] extends [never] ? Record<string, any> : Output
+	): number;
 }
 
 export function traverse<
