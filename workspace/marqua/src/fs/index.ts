@@ -48,7 +48,7 @@ export function traverse<
 			return traverse(opts, hydrate);
 		}
 		if (extensions.some((e) => name.endsWith(e))) {
-			return compile(fs.readFileSync(pathname, 'utf-8'), hydrate);
+			return compile(pathname, hydrate);
 		}
 		return;
 	});
