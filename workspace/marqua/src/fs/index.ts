@@ -1,4 +1,4 @@
-import type * as TS from '../types.js';
+import type { TraverseOptions, FrontMatter, HydrateChunk } from '../types.js';
 import * as fs from 'fs';
 
 import { marker } from '../artisan/index.js';
@@ -6,16 +6,16 @@ import { parse } from '../core/index.js';
 
 export function compile<Input extends object, Output extends Record<string, any> = Input>(
 	entry: string,
-	hydrate?: TS.Hydrate<Input, Output>
+	hydrate?: (chunk: HydrateChunk<Input>) => undefined | Output
 ): undefined | Output {
-	const breadcrumb = entry.split(/[/\\]/).reverse();
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const { content, metadata } = parse(crude.trim());
 
+	const breadcrumb = entry.split(/[/\\]/).reverse();
 	const chunk = { breadcrumb, content, frontMatter: metadata };
 	const result = !hydrate
-		? ({ ...metadata, content } as TS.FrontMatter)
-		: hydrate(chunk as TS.HydrateChunk<Input>);
+		? ({ ...metadata, content } as FrontMatter)
+		: hydrate(chunk as HydrateChunk<Input>);
 
 	if (!result /* hydrate is used and returns nothing */) return;
 	if (result.date && typeof result.date !== 'string') {
@@ -29,12 +29,12 @@ export function compile<Input extends object, Output extends Record<string, any>
 }
 
 export function traverse<
-	Options extends TS.DirOptions<Output>,
+	Options extends TraverseOptions<Output>,
 	Input extends object,
 	Output extends Record<string, any> = Input
 >(
 	{ entry, extensions = ['.md'], depth = 0, sort = undefined }: Options,
-	hydrate?: TS.Hydrate<Input, Output>
+	hydrate?: (chunk: HydrateChunk<Input>) => undefined | Output
 ): Output[] {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
@@ -44,8 +44,7 @@ export function traverse<
 	const backpack = fs.readdirSync(entry).flatMap((name) => {
 		const pathname = join(entry, name);
 		if (depth !== 0 && fs.lstatSync(pathname).isDirectory()) {
-			const opts = { entry: pathname, extensions, depth: depth - 1 };
-			return traverse(opts, hydrate);
+			return traverse({ entry: pathname, extensions, depth: depth - 1 }, hydrate);
 		}
 		if (extensions.some((e) => name.endsWith(e))) {
 			return compile(pathname, hydrate);

@@ -9,7 +9,7 @@ pnpm install marqua
 
 ### Include base styles
 
-Make sure to include these stylesheets to your app
+Make sure to include the stylesheets from `/styles` to your app
 
 ```svelte
 <script>

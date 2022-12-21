@@ -10,7 +10,7 @@ export interface MarquaTable {
 	sections?: MarquaTable[];
 }
 
-export interface DirOptions<Output extends object = {}> {
+export interface TraverseOptions<Output extends object = {}> {
 	entry: string;
 	extensions?: string[];
 	depth?: number;
@@ -39,8 +39,4 @@ export interface HydrateChunk<Input> {
 	frontMatter: [keyof Input] extends [never]
 		? Omit<FrontMatter, 'content'> & Record<string, any>
 		: Omit<FrontMatter, 'content' | keyof Input> & Input;
-}
-
-export interface Hydrate<Input, Output = Input> {
-	(chunk: HydrateChunk<Input>): undefined | Output;
 }

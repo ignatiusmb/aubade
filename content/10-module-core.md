@@ -12,7 +12,10 @@ Where the parsing happens, it accepts a source string and returns a `{ content, 
 ```typescript
 export function parse(source: string): {
   content: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, any> & {
+    readonly estimate: number;
+    readonly table: MarquaTable[];
+  };
 }
 ```
 
@@ -36,8 +39,6 @@ date:updated: 2021-04-13
 Every property is expressed in one line as a `[key]: [value]` pair, separated by a colon and whitespace. The whitespace after the key denotes the end of that key and indicates the start of the value.
 
 To create nested properties, add the keys separated by a colon (`:`). Once it becomes an object, it cannot be assigned a top-level value or it will either break or overwrite the previously assigned properties.
-
-To create an array/list, separate the values by a comma (`,`). This can be combined with nested properties. Applies to all keys with the exception of `title` and `description`, which always parses into raw strings.
 
 The output of the front matter should be
 

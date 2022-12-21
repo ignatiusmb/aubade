@@ -2,14 +2,19 @@
 
 ## 0.4.0 - Unreleased
 
+- [#49](https://github.com/ignatiusmb/marqua/pull/49): decouple parser and fs modules
 - [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
 - [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function
 - [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
 
 ### Breaking Changes
 
+- [#49](https://github.com/ignatiusmb/marqua/pull/49) | Decouple modules
+  - Renamed `toc` / `read_time` to `table` / `estimate`
 - [#47](https://github.com/ignatiusmb/marqua/pull/47) | Amalgamate `aqua`
   - Moved `marker` from `'marqua'` to `'marqua/artisan'`
+- [#45](https://github.com/ignatiusmb/marqua/pull/45) | Added `parse` function
+  - Commas `,` in front matter no longer splits values into array
 
 ## 0.3.1 - 2022/07/29
 
