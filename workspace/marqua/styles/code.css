@@ -222,13 +222,10 @@ code {
 }
 .mrq[data-mrq='header'][data-language='javascript']::after,
 .mrq[data-mrq='header'][data-language='javascript']::before,
+.mrq[data-mrq='header'][data-language='json']::after,
+.mrq[data-mrq='header'][data-language='json']::before,
 .mrq[data-mrq='header'][data-language='js']::after,
 .mrq[data-mrq='header'][data-language='js']::before {
-	background: #f0db4f;
-	color: var(--mrq-header-dark);
-}
-.mrq[data-mrq='header'][data-language='json']::after,
-.mrq[data-mrq='header'][data-language='json']::before {
 	background: #f0db4f;
 	color: var(--mrq-header-dark);
 }

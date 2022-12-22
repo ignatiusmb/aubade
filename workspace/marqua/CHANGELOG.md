@@ -2,14 +2,24 @@
 
 ## 0.4.0 - Unreleased
 
+- [#49](https://github.com/ignatiusmb/marqua/pull/49): decouple parser and fs modules
 - [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
-- [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function
+- [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function to core
 - [#42](https://github.com/ignatiusmb/marqua/pull/42): fix types to properly reflect data
 
 ### Breaking Changes
 
+- [#49](https://github.com/ignatiusmb/marqua/pull/49) | Decouple modules
+  - Moved `compile` / `traverse` from `'marqua'` to `'marqua/fs'`
+  - Renamed `toc` / `read_time` to `table` / `estimate`
+  - Changed `recurse: boolean` to `depth: number`, use `depth: -1` for the same behaviour
+  - Renamed `DirOptions` to `TraverseOptions`, removes `FileOptions` inheritance
+  - Removed `FileOptions` interface, `compile` receives single entry `string`
+  - Removed `traverse` union input, now solely accepts `TraverseOptions`
 - [#47](https://github.com/ignatiusmb/marqua/pull/47) | Amalgamate `aqua`
   - Moved `marker` from `'marqua'` to `'marqua/artisan'`
+- [#45](https://github.com/ignatiusmb/marqua/pull/45) | Added `parse` function
+  - Commas `,` in front matter no longer splits values into array
 
 ## 0.3.1 - 2022/07/29
 

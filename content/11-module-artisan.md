@@ -62,7 +62,7 @@ Importing `marker` to extend with plugins is optional, it is usually used to ena
 
 ```javascript
 import { marker } from 'marqua/artisan';
-import { compile } from 'marqua';
+import { compile } from 'marqua/fs';
 import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 
