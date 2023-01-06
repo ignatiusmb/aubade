@@ -23,6 +23,7 @@
     "./artisan": "./artisan/index.js",
     "./browser": "./browser/index.js",
     "./fs": "./fs/index.js",
+    "./transform": "./transform/index.js",
     "./styles/code.css": "./styles/code.css",
     "./package.json": "./package.json"
   },
