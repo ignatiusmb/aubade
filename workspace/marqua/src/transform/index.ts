@@ -1,6 +1,8 @@
 import type { Primitives } from 'mauss/typings';
 import { ntv } from 'mauss/std';
 
+export { pipe } from 'mauss';
+
 type Narrowable = Primitives | symbol | object | undefined | void | null | {};
 type Fallback<A, B> = A extends B ? A : B;
 type Narrow<T> = Fallback<

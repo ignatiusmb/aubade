@@ -28,9 +28,10 @@ interface TraverseOptions<Output extends object = {}> {
 }
 
 export function traverse(
-  options: TraverseOptions,
-  hydrate?: (chunk: HydrateChunk) => undefined | Output
-): Output[];
+  options: TraverseOptions<Output>,
+  hydrate?: (chunk: HydrateChunk) => undefined | Output,
+  transform?: (items: Output[]) => Transformed
+): Transformed;
 ```
 
 Using a folder structure shown below as a reference for the next examples, the usage will be as follows
@@ -86,9 +87,10 @@ interface TraverseOptions<Output extends object = {}> {
 }
 
 export function traverse(
-  options: TraverseOptions,
-  hydrate?: (chunk: HydrateChunk) => undefined | Output
-): Output[];
+  options: TraverseOptions<Output>,
+  hydrate?: (chunk: HydrateChunk) => undefined | Output,
+  transform?: (items: Output[]) => Transformed
+): Transformed;
 ```
 
 The first argument of `traverse` is the `TraverseOptions` and the second argument is an optional `hydrate` callback that can return an object with `content` property and all properties of `frontMatter`.
