@@ -22,6 +22,7 @@ The `chain` transformer is used to add a `flank` property to each items and atta
 
 ```typescript
 interface ChainOptions<T> {
+  base?: string;
   breakpoint?: (next: T) => boolean;
 }
 
@@ -30,16 +31,17 @@ export function chain<T extends { slug: string; title: string }>(
 ): (items: T[]) => Array<T & { flank?: { back?: T; next?: T } }>;
 ```
 
-A `breakpoint` function can be passed to stop the chain on a certain condition.
+- A `base` string can be passed as a prefix in the `slug` property of each items.
+- A `breakpoint` function can be passed to stop the chain on a certain condition.
 
-```typescript
-traverse(
-  { entry: 'content' },
-  ({ ... }) => { ... },
-  chain({
-    breakpoint(item) {
-      return ...
-    }
-  })
-);
-```
+    ```typescript
+    traverse(
+      { entry: 'content' },
+      ({ ... }) => { ... },
+      chain({
+        breakpoint(item) {
+          return ...
+        }
+      })
+    );
+    ```
