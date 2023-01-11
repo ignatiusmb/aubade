@@ -4,12 +4,12 @@ importers:
 
   .:
     specifiers:
-      '@types/node': ^18.11.15
-      prettier: ^2.8.1
+      '@types/node': ^18.11.18
+      prettier: ^2.8.2
       typescript: ^4.9.4
     devDependencies:
-      '@types/node': 18.11.15
-      prettier: 2.8.1
+      '@types/node': 18.11.18
+      prettier: 2.8.2
       typescript: 4.9.4
 
   workspace/documentation:
@@ -45,22 +45,22 @@ importers:
   workspace/marqua:
     specifiers:
       '@types/markdown-it': ^12.2.3
-      '@types/node': ^18.11.15
+      '@types/node': ^18.11.18
       markdown-it: ^13.0.1
-      mauss: ^0.4.6
-      prettier: ^2.8.1
+      mauss: ^0.4.8
+      prettier: ^2.8.2
       shiki: ^0.11.1
       tsm: ^2.3.0
       typescript: ^4.9.4
       uvu: ^0.5.6
     dependencies:
       markdown-it: 13.0.1
-      mauss: 0.4.6
+      mauss: 0.4.8
       shiki: 0.11.1
     devDependencies:
       '@types/markdown-it': 12.2.3
-      '@types/node': 18.11.15
-      prettier: 2.8.1
+      '@types/node': 18.11.18
+      prettier: 2.8.2
       tsm: 2.3.0
       typescript: 4.9.4
       uvu: 0.5.6
@@ -404,6 +404,10 @@ packages:
 
   /@types/node/18.11.15:
     resolution: {integrity: sha512-VkhBbVo2+2oozlkdHXLrb3zjsRkpdnaU2bXmX8Wgle3PUi569eLRaHGlgETQHR7lLL1w7GiG3h9SnePhxNDecw==}
+    dev: true
+
+  /@types/node/18.11.18:
+    resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
     dev: true
 
   /@types/pug/2.0.6:
@@ -947,6 +951,11 @@ packages:
 
   /mauss/0.4.6:
     resolution: {integrity: sha512-Q4XwfBDiJETZLsRzxfUEXoS94t6Dq5mNhUla7Oh7pExUK7t63j8Md3+gda3xePVU24D4waOOVYAqLOl6ospUxg==}
+    dev: true
+
+  /mauss/0.4.8:
+    resolution: {integrity: sha512-DjyB1y+X5h3NUYQqJbXiQ+A71/gBj7n1QWEtfE81dFJ+A3kT6uyixCC7P76O9uZhOuk24H0qnQt40ysVWkGvrA==}
+    dev: false
 
   /mdurl/1.0.1:
     resolution: {integrity: sha512-/sKlQJCBYVY9Ers9hqzKou4H6V5UWc/M59TH2dvkt+84itfnq7uFOMLpOiOS4ujvHP4etln18fmIxA5R5fll0g==}
@@ -1070,6 +1079,12 @@ packages:
 
   /prettier/2.8.1:
     resolution: {integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /prettier/2.8.2:
+    resolution: {integrity: sha512-BtRV9BcncDyI2tsuS19zzhzoxD8Dh8LiCx7j7tHzrkz8GFXAexeWFdi22mjE1d16dftH2qNaytVxqiRTGlMfpw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
