@@ -4,7 +4,6 @@ import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 interface FrontMatter {
-	content?: string;
 	date: {
 		published?: string | Date;
 		updated?: string | Date;
@@ -15,23 +14,25 @@ interface FrontMatter {
 	table: MarquaTable[];
 }
 
-interface HydrateChunk<Input> {
-	breadcrumb: string[];
+interface Compiled extends FrontMatter {
 	content: string;
-	frontMatter: [keyof Input] extends [never]
-		? Omit<FrontMatter, 'content'> & Record<string, any>
-		: Omit<FrontMatter, 'content' | keyof Input> & Input;
 }
 
-export function compile<Input extends object, Output extends Record<string, any> = Input>(
+export function compile<Input extends object, Output extends Compiled = Compiled & Input>(
 	entry: string,
-	hydrate?: (chunk: HydrateChunk<Input>) => undefined | Output
+	hydrate?: (chunk: {
+		breadcrumb: string[];
+		content: string;
+		frontMatter: [keyof Input] extends [never]
+			? FrontMatter & Record<string, any>
+			: Omit<FrontMatter, keyof Input> & Input;
+	}) => undefined | Output
 ): undefined | Output {
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const { content: source, metadata } = parse(crude);
 	const breadcrumb = entry.split(/[/\\]/).reverse();
 	const result = !hydrate
-		? ({ ...metadata, content: source } as FrontMatter)
+		? ({ ...metadata, content: source } as Compiled)
 		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
 
 	if (!result /* hydrate is used and returns nothing */) return;
@@ -59,14 +60,16 @@ interface TraverseOptions<Output extends object = {}> {
 export function traverse<
 	Options extends TraverseOptions<Output>,
 	Input extends object,
-	Output extends Record<string, any> = Input
+	Output extends Compiled = Compiled & Input,
+	Transformed = Output[]
 >(
-	{ entry, extensions = ['.md'], depth = 0, sort = undefined }: Options,
-	hydrate?: (chunk: HydrateChunk<Input>) => undefined | Output
-): Output[] {
+	{ entry, extensions = ['.md'], depth = 0 }: Options,
+	hydrate?: Parameters<typeof compile>[1],
+	transform?: (items: Output[]) => Transformed
+): Transformed {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
-		return [];
+		return transform ? transform([]) : ([] as Transformed);
 	}
 
 	const backpack = fs.readdirSync(entry).flatMap((name) => {
@@ -84,7 +87,7 @@ export function traverse<
 		(i): i is Output => !!(i && (Array.isArray(i) ? i : Object.keys(i)).length)
 	);
 
-	return sort ? items.sort(sort) : items;
+	return transform ? transform(items) : (items as Transformed);
 
 	// adapted from https://github.com/alchemauss/mauss/pull/153
 	function join(...paths: string[]) {
