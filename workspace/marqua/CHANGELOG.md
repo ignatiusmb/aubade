@@ -2,6 +2,7 @@
 
 ## 0.4.0 - Unreleased
 
+- [#51](https://github.com/ignatiusmb/marqua/pull/51): add `construct` function to core
 - [#49](https://github.com/ignatiusmb/marqua/pull/49): decouple parser and fs modules
 - [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
 - [#45](https://github.com/ignatiusmb/marqua/pull/45): add `parse` function to core
@@ -9,6 +10,9 @@
 
 ### Breaking Changes
 
+- [#51](https://github.com/ignatiusmb/marqua/pull/51) | Added `construct` function
+  - Removed automatic array conversion when `,` exists
+  - Reserved `,` only when pair-value is wrapped in brackets
 - [#49](https://github.com/ignatiusmb/marqua/pull/49) | Decouple modules
   - Moved `compile` / `traverse` from `'marqua'` to `'marqua/fs'`
   - Renamed `toc` / `read_time` to `table` / `estimate`

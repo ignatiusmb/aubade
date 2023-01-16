@@ -12,7 +12,7 @@ Where the parsing happens, it accepts a source string and returns a `{ content, 
 ```typescript
 export function parse(source: string): {
   content: string;
-  metadata: Record<string, any> & {
+  metadata: FrontMatterIndex & {
     readonly estimate: number;
     readonly table: MarquaTable[];
   };
@@ -22,23 +22,38 @@ export function parse(source: string): {
 <!-- markdownlint-disable MD051 -->
 If you need to read from a file or folder, use the `compile` and `traverse` functions from the [FileSystem module](#module-fs).
 
+### construct
+
+Where the `metadata` or front matter index gets constructed, it is used in the `parse` function.
+
+```typescript
+interface FrontMatterIndex {
+  [key: string]: string | string[] | FrontMatterIndex;
+}
+
+export function construct(raw: string): FrontMatterIndex;
+```
+
 ### Front Matter
 
-Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Marqua syntax resembles yaml in some ways except it only read raw strings. It doesn't support whitespace indentation, `[...]`, or `{...}`. Instead, it has some ways to handle creating objects/maps and arrays/lists.
+Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Every property is expressed in one line as a `(key): (data)` pair — separated by a colon and whitespace — and every `data` is expressed as a string.
+
+To create an array of values, wrap the `(data)` with brackets (`[ ... ]`) and separate the values with `,`, anything inside the brackets will be the values for the `(key)`. Values can only be a string and not another array or object.
+
+To create nested properties, add the nested property separated by a colon (`:`), the syntax would be `(parent):(property): (data)`. You can add however many `:` you'd like, but once it becomes an object, it cannot be assigned a top-level value for that parent.
 
 ```yaml
 ---
 title: My First Blog Post, Hello World!
 description: Welcome to my first post.
-tags: blog, life, coding
+tags: [blog, life, coding]
 date:published: 2021-04-01
 date:updated: 2021-04-13
+
+# this will overwrite previous 'date:published' and 'date:updated'
+# date: ... <- do not assign top-level data
 ---
 ```
-
-Every property is expressed in one line as a `[key]: [value]` pair, separated by a colon and whitespace. The whitespace after the key denotes the end of that key and indicates the start of the value.
-
-To create nested properties, add the keys separated by a colon (`:`). Once it becomes an object, it cannot be assigned a top-level value or it will either break or overwrite the previously assigned properties.
 
 The output of the front matter should be
 
@@ -60,7 +75,7 @@ Everything after front matter (the second 3-dashes) will be considered as conten
 
 ```yaml
 ---
-tags: blog, life, coding
+tags: [blog, life, coding]
 date:published: 2021-04-01
 date:updated: 2021-04-13
 ---
