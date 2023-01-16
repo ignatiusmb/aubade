@@ -1,9 +1,11 @@
+import type Docs from '$lib/Docs.svelte';
+import type { ComponentProps } from 'svelte';
 import { traverse } from 'marqua/fs';
 
 export const prerender = true;
 
 export const load: import('./$types').PageServerLoad = async () => {
-	const docs = traverse(
+	const docs: ComponentProps<Docs>['sections'] = traverse(
 		{ entry: '../../content' },
 		({ breadcrumb: [filename], content, frontMatter: { title, ...rest } }) => {
 			if (filename.includes('draft')) return;
