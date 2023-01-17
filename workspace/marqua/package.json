@@ -33,7 +33,10 @@
   "keywords": [
     "markdown",
     "compiler",
-    "parser"
+    "parser",
+    "syntax",
+    "highlighter",
+    "preprocessor"
   ],
   "engines": {
     "node": ">=14.8"
