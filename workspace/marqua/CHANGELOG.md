@@ -2,6 +2,7 @@
 
 ## 0.4.0 - Unreleased
 
+- [#52](https://github.com/ignatiusmb/marqua/pull/52): specify `"engines"` field
 - [#51](https://github.com/ignatiusmb/marqua/pull/51): add `construct` function to core
 - [#49](https://github.com/ignatiusmb/marqua/pull/49): decouple parser and fs modules
 - [#47](https://github.com/ignatiusmb/marqua/pull/47): amalgamate `aqua` as the artisan
@@ -10,6 +11,7 @@
 
 ### Breaking Changes
 
+- [#52](https://github.com/ignatiusmb/marqua/pull/52) | Require minimum of Node v14.8
 - [#51](https://github.com/ignatiusmb/marqua/pull/51) | Added `construct` function
   - Removed automatic array conversion when `,` exists
   - Reserved `,` only when pair-value is wrapped in brackets
