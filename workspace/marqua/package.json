@@ -33,8 +33,14 @@
   "keywords": [
     "markdown",
     "compiler",
-    "parser"
+    "parser",
+    "syntax",
+    "highlighter",
+    "preprocessor"
   ],
+  "engines": {
+    "node": ">=14.8"
+  },
   "dependencies": {
     "markdown-it": "^13.0.1",
     "mauss": "^0.4.8",
