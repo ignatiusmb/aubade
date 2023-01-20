@@ -49,7 +49,7 @@ For maintainers of the project.
 ### Publishing
 
 1. bump version in `package.json` accordingly
-2. update unreleased `CHANGELOG.md` header
+2. update unreleased header in `CHANGELOG.md`
 3. create a commit with format of `~ vX.Y.Z`
 4. create a (secure) tag formatted as `vX.Y.Z`
 5. push commit and tag with `--follow-tags` option

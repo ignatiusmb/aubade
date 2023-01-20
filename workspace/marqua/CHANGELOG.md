@@ -1,6 +1,6 @@
 # marqua changelog
 
-## 0.4.0 - Unreleased
+## 0.4.0 - 2023/01/20
 
 - [#52](https://github.com/ignatiusmb/marqua/pull/52): specify `"engines"` field
 - [#51](https://github.com/ignatiusmb/marqua/pull/51): add `construct` function to core
