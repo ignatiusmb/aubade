@@ -1,5 +1,9 @@
 # marqua changelog
 
+## 0.4.1 - Unreleased
+
+- [#53](https://github.com/ignatiusmb/marqua/pull/53): remove `"postinstall"` script
+
 ## 0.4.0 - 2023/01/20
 
 - [#52](https://github.com/ignatiusmb/marqua/pull/52): specify `"engines"` field
