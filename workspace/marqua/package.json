@@ -15,8 +15,7 @@
     "test": "pnpm test:core && pnpm test:apps",
     "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
     "test:apps": "pnpm build && uvu test/apps",
-    "prepublish": "pnpm build && pnpm format",
-    "postinstall": "pnpm build"
+    "prepublish": "pnpm build && pnpm format"
   },
   "exports": {
     ".": "./core/index.js",
