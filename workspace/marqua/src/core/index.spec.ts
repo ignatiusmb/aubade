@@ -7,18 +7,38 @@ const basics = {
 	parse: suite('core:parse'),
 };
 
-basics.construct('construct front matter index correctly', () => {
+basics.construct('construct front matter index', () => {
 	const index = core.construct(
 		`
-title: Hello World
+title: Hello Constructor
 date:published: 2023-02-01
-	`.trim()
+		`.trim()
 	);
 
 	assert.equal(index, {
-		title: 'Hello World',
+		title: 'Hello Constructor',
 		date: { published: '2023-02-01' },
 	});
+});
+
+basics.parse('parse markdown contents', () => {
+	const { content, metadata } = core.parse(
+		`
+---
+title: Hello Parser
+---
+
+Welcome to the contents
+		`.trim()
+	);
+
+	assert.equal(metadata, {
+		title: 'Hello Parser',
+		estimate: 1,
+		table: [],
+	});
+
+	assert.equal(content.trim(), 'Welcome to the contents');
 });
 
 Object.values(basics).forEach((v) => v.run());
