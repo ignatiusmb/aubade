@@ -22,7 +22,7 @@ export function construct(raw: string): FrontMatterIndex {
 
 	return index;
 
-	function nest([parent, ...rest]: string[], data: string | string[], memo: any): any {
+	function nest([parent, ...rest]: string[], data: string | string[], memo: any = {}): any {
 		return !parent ? data : { ...memo, [parent]: nest(rest, data, memo[parent]) };
 	}
 }
