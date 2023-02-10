@@ -6,7 +6,7 @@ interface ChainOptions<T> {
 	base?: string;
 	breakpoint?: (next: T) => boolean;
 }
-export function chain<T extends { slug: string; title: string; [k: string]: any }>({
+export function chain<T extends { slug?: string; title?: string; [k: string]: any }>({
 	base = '',
 	breakpoint,
 }: ChainOptions<T>) {
