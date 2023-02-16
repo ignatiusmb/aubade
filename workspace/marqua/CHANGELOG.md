@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#58](https://github.com/ignatiusmb/marqua/pull/58): fix `chain` extends strictness
 - [#56](https://github.com/ignatiusmb/marqua/pull/56): fix nested objects metadata
 
 ## 0.4.1 - 2023/01/25
