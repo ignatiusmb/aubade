@@ -2,16 +2,15 @@ import { ntv } from 'mauss/std';
 
 export { pipe } from 'mauss';
 
-interface ChainOptions<T> {
+export function chain<T extends { slug?: string; title?: any }>(options: {
 	base?: string;
 	breakpoint?: (next: T) => boolean;
-}
-export function chain<T extends { slug: string; title: string; [k: string]: any }>({
-	base = '',
-	breakpoint,
-}: ChainOptions<T>) {
+	sort?: (x: T, y: T) => number;
+}) {
+	const { base = '', breakpoint, sort } = options;
 	type Attachment = { flank?: { back?: T; next?: T } };
 	return (items: T[]): Array<T & Attachment> => {
+		if (sort) items = items.sort(sort);
 		const array: Array<T & Attachment> = items;
 		const unwrap = ntv.pick(['slug', 'title']);
 		for (let idx = 0; idx < array.length; idx++) {
