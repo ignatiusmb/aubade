@@ -8,7 +8,11 @@ export function chain<T extends { slug?: string; title?: any }>(options: {
 	sort?: (x: T, y: T) => number;
 }) {
 	const { base = '', breakpoint, sort } = options;
-	type Attachment = { flank?: { back?: T; next?: T } };
+
+	type Picked = Pick<T, 'slug' | 'title'>;
+	type Flank = { back?: Picked; next?: Picked };
+	type Attachment = { flank?: Flank };
+
 	return (items: T[]): Array<T & Attachment> => {
 		if (sort) items = items.sort(sort);
 		const array: Array<T & Attachment> = items;

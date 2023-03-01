@@ -14,7 +14,8 @@ export function construct(raw: string): FrontMatterIndex {
 
 		const [key, data] = match.slice(1).map((g) => g.trim());
 		const array = data[0] === '[' && data[data.length - 1] === ']';
-		const value = array ? data.slice(1, -1).split(',') : data;
+		const pruned = array ? data.slice(1, -1).trim() : null;
+		const value = array ? (pruned ? pruned.split(',') : []) : data;
 
 		const [head, ...rest] = key.split(':');
 		index[head] = rest.length ? nest(rest, value, index[head]) : value;
