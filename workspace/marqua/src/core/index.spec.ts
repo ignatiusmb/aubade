@@ -11,12 +11,14 @@ basics.construct('construct front matter index', () => {
 	const index = core.construct(
 		`
 title: Hello Constructor
+tags: []
 date:published: 2023-02-01
 		`.trim()
 	);
 
 	assert.equal(index, {
 		title: 'Hello Constructor',
+		tags: [],
 		date: { published: '2023-02-01' },
 	});
 });
