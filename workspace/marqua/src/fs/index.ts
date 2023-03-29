@@ -5,7 +5,7 @@ import { parse } from '../core/index.js';
 
 interface FrontMatter {
 	date: {
-		published?: string | Date;
+		published: string | Date;
 		updated?: string | Date;
 	};
 
@@ -18,16 +18,21 @@ interface Compiled extends FrontMatter {
 	content: string;
 }
 
-export function compile<Input extends object, Output extends Compiled = Compiled & Input>(
+interface HydrateChunk {
+	breadcrumb: string[];
+	content: string;
+	frontMatter: FrontMatter & Record<string, any>;
+}
+
+export function compile(entry: string): Compiled;
+export function compile<Output extends object>(
 	entry: string,
-	hydrate?: (chunk: {
-		breadcrumb: string[];
-		content: string;
-		frontMatter: [keyof Input] extends [never]
-			? FrontMatter & Record<string, any>
-			: Omit<FrontMatter, keyof Input> & Input;
-	}) => undefined | Output
-): undefined | Output {
+	hydrate?: (chunk: HydrateChunk) => undefined | Output
+): undefined | Output;
+export function compile<Output extends object>(
+	entry: string,
+	hydrate?: (chunk: HydrateChunk) => undefined | Output
+) {
 	const crude = fs.readFileSync(entry, 'utf-8').trim();
 	const { content: source, metadata } = parse(crude);
 	const breadcrumb = entry.split(/[/\\]/).reverse();
@@ -35,37 +40,25 @@ export function compile<Input extends object, Output extends Compiled = Compiled
 		? ({ ...metadata, content: source } as Compiled)
 		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
 
-	if (!result /* hydrate is used and returns nothing */) return;
-	if (result.date && typeof result.date !== 'string') {
+	if (!result /* hydrate returns nothing */) return;
+	if ('date' in result && result.date && typeof result.date !== 'string') {
 		result.date.updated = result.date.updated || result.date.published;
 	}
-	if (result.content && typeof result.content === 'string') {
+	if ('content' in result && typeof result.content === 'string') {
 		result.content = marker.render(result.content);
 	}
 
-	return result as Output;
-}
-
-interface TraverseOptions<Output extends object = {}> {
-	entry: string;
-	extensions?: string[];
-	depth?: number;
-
-	sort?(
-		x: [keyof Output] extends [never] ? Record<string, any> : Output,
-		y: [keyof Output] extends [never] ? Record<string, any> : Output
-	): number;
+	return result;
 }
 
 export function traverse<
-	Options extends TraverseOptions<Output>,
-	Input extends object,
-	Output extends Compiled = Compiled & Input,
-	Transformed = Output[]
+	Options extends { entry: string; extensions?: string[]; depth?: number },
+	Output extends object,
+	Transformed = Array<Output & FrontMatter>
 >(
 	{ entry, extensions = ['.md'], depth = 0 }: Options,
-	hydrate?: Parameters<typeof compile>[1],
-	transform?: (items: Output[]) => Transformed
+	hydrate?: (chunk: HydrateChunk) => undefined | Output,
+	transform?: (items: Array<Output & FrontMatter>) => Transformed
 ): Transformed {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
@@ -75,19 +68,19 @@ export function traverse<
 	const backpack = fs.readdirSync(entry).flatMap((name) => {
 		const pathname = join(entry, name);
 		if (depth !== 0 && fs.lstatSync(pathname).isDirectory()) {
-			return traverse({ entry: pathname, extensions, depth: depth - 1 }, hydrate);
+			depth = depth < 0 ? depth : depth - 1;
+			return traverse({ entry: pathname, extensions, depth }, hydrate);
 		}
 		if (extensions.some((e) => name.endsWith(e))) {
-			return compile(pathname, hydrate);
+			const data = compile(pathname, hydrate);
+			const keys = Object.keys(data || {});
+			return data && keys.length ? [data] : [];
 		}
-		return;
+		return [];
 	});
 
-	const items = backpack.filter(
-		(i): i is Output => !!(i && (Array.isArray(i) ? i : Object.keys(i)).length)
-	);
-
-	return transform ? transform(items) : (items as Transformed);
+	if (!transform) return backpack as Transformed;
+	return transform(backpack as Array<Output & FrontMatter>);
 
 	// adapted from https://github.com/alchemauss/mauss/pull/153
 	function join(...paths: string[]) {
