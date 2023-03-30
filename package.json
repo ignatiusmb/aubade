@@ -8,7 +8,7 @@
     "format": "pnpm --filter ./workspace/* format",
     "postinstall": "cd ./workspace/marqua && pnpm build"
   },
-  "packageManager": "pnpm@8.0.0",
+  "packageManager": "pnpm@7.30.5",
   "prettier": "mauss/prettier.json",
   "devDependencies": {
     "@types/node": "^18.15.11",

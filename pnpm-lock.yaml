@@ -20,7 +20,7 @@ importers:
         specifier: ^0.1.1
         version: 0.1.1
       '@sveltejs/adapter-static':
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: 2.0.1(@sveltejs/kit@1.14.0)
       '@sveltejs/kit':
         specifier: ^1.14.0
@@ -32,8 +32,8 @@ importers:
         specifier: workspace:^
         version: link:../marqua
       mauss:
-        specifier: ^0.4.10
-        version: 0.4.10
+        specifier: ^0.4.11
+        version: 0.4.11
       prettier:
         specifier: ^2.8.7
         version: 2.8.7
@@ -44,13 +44,13 @@ importers:
         specifier: ^3.57.0
         version: 3.57.0
       svelte-check:
-        specifier: ^3.0.0
+        specifier: ^3.1.4
         version: 3.1.4(svelte@3.57.0)
       syv:
         specifier: ^0.0.21
         version: 0.0.21(svelte@3.57.0)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.0.2
         version: 5.0.2
       vite:
         specifier: ^4.2.1
@@ -62,8 +62,8 @@ importers:
         specifier: ^13.0.1
         version: 13.0.1
       mauss:
-        specifier: ^0.4.10
-        version: 0.4.10
+        specifier: ^0.4.11
+        version: 0.4.11
       shiki:
         specifier: ^0.11.1
         version: 0.11.1
@@ -81,7 +81,7 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.0.2
         version: 5.0.2
       uvu:
         specifier: ^0.5.6
@@ -969,8 +969,8 @@ packages:
       uc.micro: 1.0.6
     dev: false
 
-  /mauss@0.4.10:
-    resolution: {integrity: sha512-FJyGGND0dqUgqkF528RyspeTVRqZVzN77xb8nmIXDDgfjTVOYHxRz3gZ1OolL100Bta+HhtXXzjxQJds9+5BSg==}
+  /mauss@0.4.11:
+    resolution: {integrity: sha512-xAMCTgi7pCeMbp0qp9EGPKPZc5XEiAlias0SZBLlbBF4ce/T5PpowZ5K32vO0yabz5GgD0CYQQHo4A6z616/ng==}
 
   /mdurl@1.0.1:
     resolution: {integrity: sha512-/sKlQJCBYVY9Ers9hqzKou4H6V5UWc/M59TH2dvkt+84itfnq7uFOMLpOiOS4ujvHP4etln18fmIxA5R5fll0g==}
@@ -1311,7 +1311,7 @@ packages:
     peerDependencies:
       svelte: ^3.49.0
     dependencies:
-      mauss: 0.4.10
+      mauss: 0.4.11
       svelte: 3.57.0
     dev: true
 
