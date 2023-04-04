@@ -5,7 +5,7 @@
     "dev": "vite dev",
     "build": "svelte-kit sync && vite build",
     "format": "prettier -wu **",
-    "lint": "pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
+    "lint": "svelte-kit sync && pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
     "lint:pt": "prettier -cu **",
     "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
