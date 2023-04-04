@@ -1,7 +1,9 @@
 # marqua changelog
 
-## Unreleased
+## 0.4.2 - 2023/04/04
 
+- [#61](https://github.com/ignatiusmb/marqua/pull/61): fix video play button style
+- [#59](https://github.com/ignatiusmb/marqua/pull/59): fix `/fs` module typings
 - [#58](https://github.com/ignatiusmb/marqua/pull/58): add `sort` option to `chain`
 - [#58](https://github.com/ignatiusmb/marqua/pull/58): fix `chain` extends strictness
 - [#57](https://github.com/ignatiusmb/marqua/pull/57): fix empty array construction
