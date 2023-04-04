@@ -50,7 +50,7 @@
     "@types/node": "^18.15.11",
     "prettier": "^2.8.7",
     "tsm": "^2.3.0",
-    "typescript": "^5.0.2",
+    "typescript": "^5.0.3",
     "uvu": "^0.5.6"
   }
 }
