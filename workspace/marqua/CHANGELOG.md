@@ -1,6 +1,6 @@
 # marqua changelog
 
-## 0.4.2 - 2023/04/04
+## 0.4.3 - 2023/04/04
 
 - [#61](https://github.com/ignatiusmb/marqua/pull/61): fix video play button style
 - [#59](https://github.com/ignatiusmb/marqua/pull/59): fix `/fs` module typings
