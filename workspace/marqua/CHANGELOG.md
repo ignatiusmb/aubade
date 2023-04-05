@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [#62](https://github.com/ignatiusmb/marqua/pull/62): upgrade shiki to v14
+
 ## 0.4.3 - 2023/04/04
 
 - [#61](https://github.com/ignatiusmb/marqua/pull/61): fix video play button style
