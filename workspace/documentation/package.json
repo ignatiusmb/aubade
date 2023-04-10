@@ -14,7 +14,7 @@
   "devDependencies": {
     "@ignatiusmb/styles": "^0.1.1",
     "@sveltejs/adapter-static": "^2.0.1",
-    "@sveltejs/kit": "^1.15.0",
+    "@sveltejs/kit": "^1.15.2",
     "@types/node": "^18.15.11",
     "marqua": "workspace:^",
     "mauss": "^0.4.11",
@@ -22,8 +22,8 @@
     "prettier-plugin-svelte": "^2.10.0",
     "svelte": "^3.58.0",
     "svelte-check": "^3.2.0",
-    "syv": "^0.0.21",
-    "typescript": "^5.0.3",
+    "syv": "^0.0.22",
+    "typescript": "^5.0.4",
     "vite": "^4.2.1"
   }
 }
