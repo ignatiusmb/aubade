@@ -13,7 +13,7 @@ const marker = MarkIt({
 			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
 		}
-		return transform(content.join('\n'), dataset);
+		return transform(content.join('\n').trim(), dataset);
 	},
 });
 
