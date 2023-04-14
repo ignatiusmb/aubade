@@ -6,12 +6,11 @@ const marker = MarkIt({
 	html: true,
 	typographer: true,
 	highlight(source, lang) {
-		const lines = source.split('\n');
 		const content: string[] = [];
 		const dataset: Record<string, string> = { lang };
-		for (let i = 0; i < lines.length; i += 1) {
-			const match = lines[i].match(/^#\$ (\w+): (.+)/);
-			if (!match) content.push(lines[i]);
+		for (const line of source.split('\n')) {
+			const match = line.match(/^#\$ (\w+): (.+)/);
+			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
 		}
 		return transform(content.join('\n'), dataset);
