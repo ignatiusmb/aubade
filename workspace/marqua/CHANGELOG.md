@@ -1,5 +1,9 @@
 # marqua changelog
 
+## Unreleased
+
+- [#63](https://github.com/ignatiusmb/marqua/pull/63): allow arbitrary metadata in code blocks
+
 ## 0.4.4 - 2023/04/20
 
 - [#62](https://github.com/ignatiusmb/marqua/pull/62): upgrade shiki to v14
