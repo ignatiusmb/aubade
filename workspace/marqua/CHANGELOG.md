@@ -1,6 +1,6 @@
 # marqua changelog
 
-## Unreleased
+## 0.4.4 - 2023/04/20
 
 - [#62](https://github.com/ignatiusmb/marqua/pull/62): upgrade shiki to v14
 
