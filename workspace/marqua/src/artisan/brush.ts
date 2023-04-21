@@ -4,7 +4,6 @@ import { escape, generate } from '../utils.js';
 export interface Dataset {
 	lang?: string;
 	file?: string;
-
 	[data: string]: string | undefined;
 }
 
@@ -15,8 +14,8 @@ export function transform(source: string, dataset: Dataset) {
 	const { file, ...rest } = dataset;
 
 	let highlighted = '';
-	let line = +(dataset['line-start'] || 1);
-	for (const tokens of codeToThemedTokens(source, dataset.lang)) {
+	let line = +(rest['line-start'] || 1);
+	for (const tokens of codeToThemedTokens(source, rest.lang)) {
 		let code = `<code data-line="${line++}">`;
 		for (const { content, color } of tokens) {
 			const style = color ? `style="color: ${color}"` : '';
@@ -41,7 +40,7 @@ export function transform(source: string, dataset: Dataset) {
 		</div>
 	</header>
 
-	<div 
+	<div
 		data-mrq="pre"
 		${attrs.join('\n\t\t')}
 		class="mrq language-${rest.lang || 'none'}"

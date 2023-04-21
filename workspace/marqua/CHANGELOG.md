@@ -4,6 +4,15 @@
 
 - [#63](https://github.com/ignatiusmb/marqua/pull/63): allow arbitrary metadata in code blocks
 
+### Breaking Changes
+
+- [#63](https://github.com/ignatiusmb/marqua/pull/63) | Allow arbitrary metadata
+  - Added specifier `#$ key: value` to specify metadata
+  - Dataset can now be specified from any line in the code block
+  - Renamed `language` and `lineStart` to `lang` and `line-start`
+  - Replaced `~title name` with `#$ file: title name`
+  - Replaced `~xyz#number` with `#$ line-start: number`
+
 ## 0.4.4 - 2023/04/20
 
 - [#62](https://github.com/ignatiusmb/marqua/pull/62): upgrade shiki to v14
