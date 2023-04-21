@@ -7,7 +7,7 @@
 ### Breaking Changes
 
 - [#63](https://github.com/ignatiusmb/marqua/pull/63) | Allow arbitrary metadata
-  - Added specifier `#$ key: value` to specify metadata
+  - Added `#$ key: value` as metadata specifier, accessible via `data-[key]` attributes
   - Dataset can now be specified from any line in the code block
   - Renamed `language` and `lineStart` to `lang` and `line-start`
   - Replaced `~title name` with `#$ file: title name`
