@@ -88,7 +88,9 @@ Code blocks are fenced with 3 backticks and can optionally be assigned a languag
 ```
 ``````
 
-Additional information can be added to the code block through data attributes, accessible via `data-[key]="[value]"`. The dataset can be specified from any line within the code block using `#$ key: value` syntax, and it will be omitted from the output. There are some special keys that will be used to modify the code block, some of them are
+Additional information can be added to the code block through data attributes, accessible via `data-[key]="[value]"`. The dataset can be specified from any line within the code block using `#$ key: value` syntax, and it will be omitted from the output. The key-value pair should roughly conform to the [`data-*` rules](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*), meaning `key` can only contain alphanumeric characters and hyphens, while `value` can be any string that fits in the data attribute value.
+
+There are some special keys that will be used to modify the code block itself, and they are
 
 - `#$ file: string` | add a filename to the code block that will be shown above the output
 - `#$ line-start: number` | define the starting line number of the code block
