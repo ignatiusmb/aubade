@@ -10,7 +10,7 @@ export const load: import('./$types').PageServerLoad = async () => {
 		({ breadcrumb: [filename], content, frontMatter: { title, ...rest } }) => {
 			if (filename.includes('draft')) return;
 			const path = `content/${filename}`;
-			const [, index, slug] = filename.match(/^(\d{2})-(.+).md$/) || [];
+			const [, index, slug] = /^(\d{2})-(.+).md$/.exec(filename) || [];
 			return { index, slug, title, ...rest, content, path };
 		}
 	);

@@ -9,7 +9,7 @@ const marker = MarkIt({
 		const content: string[] = [];
 		const dataset: Record<string, string> = { lang };
 		for (const line of source.split('\n')) {
-			const match = line.match(/^#\$ (\w+): (.+)/);
+			const match = /^#\$ (\w+): (.+)/.exec(line);
 			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
 		}
@@ -37,15 +37,15 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const alt = token.attrGet('alt') || '';
 	const media = {
 		data: '',
-		type: (alt.match(/^!(\w+[-\w]+)($|#)/) || ['', ''])[1],
-		attrs: (alt.match(/#(\w+)/g) || []).map((a) => a.slice(1)),
+		type: (/^!(\w+[-\w]+)($|#)/.exec(alt) || [, ''])[1],
+		attrs: (/#(\w+)/g.exec(alt) || []).map((a) => a.slice(1)),
 	};
 
 	if (media.type) {
 		const stripped = media.type.toLowerCase();
 		const [type, ...args] = stripped.split('-');
 		if (['yt', 'youtube'].includes(type)) {
-			const [, yid, params = ''] = link.match(/([-\w]+)\??(.+)?$/) || [];
+			const [, yid, params = ''] = /([-\w]+)\??(.+)?$/.exec(link) || [];
 			const prefix = args.length && args.includes('s') ? 'videoseries?list=' : '';
 			media.data = prefix
 				? `<iframe src="https://www.youtube-nocookie.com/embed/${prefix}${link}" frameborder="0" allowfullscreen title="${caption}"></iframe>`
