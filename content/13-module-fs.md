@@ -37,7 +37,6 @@ export function traverse(
 Using a folder structure shown below as a reference for the next examples, the usage will be as follows
 
 ```
-~ Hypothetical Content Folder Structure
 content
     ├── posts
     │   ├── draft.my-amazing-two-part-series-part-1.md

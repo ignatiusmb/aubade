@@ -5,16 +5,15 @@ import { transform } from './brush.js';
 const marker = MarkIt({
 	html: true,
 	typographer: true,
-	highlight(source, language) {
-		const lines = source.split('\n');
-		const title = source.match(/^~(.+)\n/) || [, ''];
-		const dataset = { language, title: title[1], lineStart: 1 };
-		if (lines[0][0] === '~') {
-			const [, start] = lines[0].split('#');
-			if (start) dataset.lineStart = +start;
+	highlight(source, lang) {
+		const content: string[] = [];
+		const dataset: Record<string, string> = { lang };
+		for (const line of source.split('\n')) {
+			const match = line.match(/^#\$ (\w+): (.+)/);
+			if (!match) content.push(line);
+			else dataset[match[1]] = match[2]?.trim() || '';
 		}
-		const content = lines.slice(dataset.title ? 1 : 0, -1);
-		return transform(content.join('\n'), dataset);
+		return transform(content.join('\n').trim(), dataset);
 	},
 });
 

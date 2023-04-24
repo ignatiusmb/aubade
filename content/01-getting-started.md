@@ -3,7 +3,6 @@ title: Getting Started
 ---
 
 ```
-~Install via a package manager
 pnpm install marqua
 ```
 
