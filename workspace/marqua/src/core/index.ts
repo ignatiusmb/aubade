@@ -75,8 +75,9 @@ export function construct(raw: string, memo: Record<string, any> = {}): ValueInd
 	const PATTERN = /(^[^:\s]+):(?!\/)\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
-		const [key, value] = match.slice(1);
-		const data = construct(indentation(value) ? dedent(value) : value, memo[key]);
+		const [, key, value] = match;
+		const i = indentation(value);
+		const data = construct(i ? dedent(value) : value, memo[key]);
 		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
 		else memo[key] = { ...memo[key], ...data };
 	}
