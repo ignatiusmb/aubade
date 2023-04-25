@@ -9,7 +9,7 @@ export function construct(raw: string): FrontMatterIndex {
 	const index: FrontMatterIndex = {};
 
 	for (const line of raw.split(/\r?\n/).filter(exists)) {
-		const match = line.trim().match(/([:\w\d]+): (.+)/);
+		const match = /([:\w\d]+): (.+)/.exec(line.trim());
 		if (!match || (match && !match[2].trim())) continue;
 
 		const [key, data] = match.slice(1).map((g) => g.trim());
@@ -29,7 +29,7 @@ export function construct(raw: string): FrontMatterIndex {
 }
 
 export function parse(source: string) {
-	const match = source.match(/---\r?\n([\s\S]+?)\r?\n---/);
+	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? (match.index || 0) + match[0].length + 1 : 0);
 	const memory = construct((match && match[1].trim()) || '');
 
@@ -46,7 +46,7 @@ export function parse(source: string) {
 					const accumulated = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
 					return total + accumulated.length;
 				}, 0);
-				const images = crude.match(/!\[.+\]\(.+\)/g);
+				const images = /!\[.+\]\(.+\)/g.exec(crude);
 				const total = words + (images || []).length * 12;
 				return Math.round(total / 240) || 1;
 			},
@@ -56,7 +56,7 @@ export function parse(source: string) {
 				const lines: RegExpMatchArray[] = [];
 				const counter = [0, 0, 0];
 				for (const line of crude.split('\n')) {
-					const match = line.trim().match(/^(#{2,4}) (.+)/);
+					const match = /^(#{2,4}) (.+)/.exec(line.trim());
 					if (match) lines.push(match), counter[match[1].length - 2]++;
 				}
 				const alone = counter.filter((i) => i === 0).length === 2;
