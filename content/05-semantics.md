@@ -5,7 +5,16 @@ title: Semantics
 
 ### Front Matter
 
-Marqua supports a subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
+Marqua supports a minimal subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
+
+All values will be attempted to be parsed into the supported types, which are `null`, `true`, and `false`. Any other values will go through the following checks and the first one to pass will be used.
+
+- Comments, `#`; indicated by a hash followed by the value, will be omitted from the output
+- Literal Block, `|`; indicated by a pipe followed by a newline and the value, will be parsed as multi-line string
+- Inline Array, `[x, y, 2]`; indicated by comma-separated values surrounded by square brackets, can only be primitives
+- Sequence, `- x`; indicated by a dash followed by a space and the value, this can contain nested maps and sequences
+
+To have a line be parsed as-is, simply wrap the value with single or double quotes.
 
 ```yaml
 ---
@@ -35,16 +44,7 @@ The above front matter will output the following JSON object...
 }
 ```
 
-Where we usually use indentation to represent the start of a nested maps, we can additionally denote them using a compressed syntax by combining the properties into one key separated by a colon without space, such as `key:x: value`.
-
-All values will be attempted to be parsed into the supported types, which are `null`, `true`, and `false`. Any other values will go through the following checks and the first one to pass will be used.
-
-- Literal Block, `|`; indicated by a pipe followed by a newline and the value
-- Inline Array, `[x, y, 2]`; indicated by comma-separated values surrounded by square brackets
-- Sequence, `- x`; indicated by a dash followed by a space and the value, can only be primitives
-- Comments, `#`; indicated by a hash followed by the value, will be omitted from the output
-
-To have it ignore all the checks above, simply wrap the value with single or double quotes, and it will be treated literally as-is.
+Where we usually use indentation to represent the start of a nested maps, we can additionally denote them using a compressed syntax by combining the properties into one key separated by a colon without space, such as `key:x: value`. This should only be declared at the top-level and not inside nested maps.
 
 ### Content
 

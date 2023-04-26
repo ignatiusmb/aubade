@@ -2,12 +2,12 @@
 
 ## Unreleased
 
-- [#65](https://github.com/ignatiusmb/marqua/pull/65): add almost full yaml support
+- [#65](https://github.com/ignatiusmb/marqua/pull/65): add minimal yaml syntax support
 - [#63](https://github.com/ignatiusmb/marqua/pull/63): allow arbitrary metadata in code blocks
 
 ### Breaking Changes
 
-- [#65](https://github.com/ignatiusmb/marqua/pull/65) | Almost full YAML support
+- [#65](https://github.com/ignatiusmb/marqua/pull/65) | Minimal YAML syntax support
   - Colons in values now require quotes
 - [#63](https://github.com/ignatiusmb/marqua/pull/63) | Allow arbitrary metadata
   - Added `#$ key: value` as metadata specifier, accessible via `data-[key]` attributes
