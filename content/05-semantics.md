@@ -5,11 +5,16 @@ title: Semantics
 
 ### Front Matter
 
-Metadata will be generated from the front matter semantically placed at the start of the file between two separate 3-dashes. Every property is expressed in one line as a `(key): (data)` pair — separated by a colon and whitespace — and every `data` is expressed as a string.
+Marqua supports a minimal subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
 
-To create an array of values, wrap the `(data)` with brackets (`[ ... ]`) and separate the values with `,`, anything inside the brackets will be the values for the `(key)`. Values can only be a string and not another array or object.
+All values will be attempted to be parsed into the supported types, which are `null`, `true`, and `false`. Any other values will go through the following checks and the first one to pass will be used.
 
-To create nested properties, add the nested property separated by a colon (`:`), the syntax would be `(parent):(property): (data)`. You can add however many `:` you'd like, but once it becomes an object, it cannot be assigned a top-level value for that parent.
+- Comments, `#`; indicated by a hash followed by the value, will be omitted from the output
+- Literal Block, `|`; indicated by a pipe followed by a newline and the value, will be parsed as multi-line string
+- Inline Array, `[x, y, 2]`; indicated by comma-separated values surrounded by square brackets, can only be primitives
+- Sequence, `- x`; indicated by a dash followed by a space and the value, this can contain nested maps and sequences
+
+To have a line be parsed as-is, simply wrap the value with single or double quotes.
 
 ```yaml
 ---
@@ -19,12 +24,13 @@ tags: [blog, life, coding]
 date:published: 2021-04-01
 date:updated: 2021-04-13
 
-# this will overwrite previous 'date:published' and 'date:updated'
-# date: ... <- do not assign top-level data
+# do not assign top-level data when using compressed nested properties syntax
+# because this will overwrite previous 'date:published' and 'date:updated'
+# date: ...
 ---
 ```
 
-The output of the front matter should be
+The above front matter will output the following JSON object...
 
 ```json
 {
@@ -38,19 +44,24 @@ The output of the front matter should be
 }
 ```
 
+Where we usually use indentation to represent the start of a nested maps, we can additionally denote them using a compressed syntax by combining the properties into one key separated by a colon without space, such as `key:x: value`. This should only be declared at the top-level and not inside nested maps.
+
 ### Content
 
 Everything after front matter will be considered as content and will be parsed as markdown. You can use the `!{}` syntax to access the metadata from the front matter.
 
 ```yaml
 ---
+title: "My Amazing Series: Second Coming"
 tags: [blog, life, coding]
-date:published: 2021-04-01
-date:updated: 2021-04-13
+date:
+  published: 2021-04-01
+  updated: 2021-04-13
 ---
 
 # the properties above will result to
 #
+# title = 'My Amazing Series: Second Coming'
 # tags = ['blog', 'life', 'coding']
 # date = {
 #   published: '2021-04-01',
@@ -67,7 +78,7 @@ This article was originally published on !{date:published}
 Thoroughly updated through this website on !{date:updated}
 ```
 
-Heading starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
+There should only be one `<h1>` heading per page, and it's usually declared in the front matter as `title`, which is why headings in the content starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
 
 - MD001: Heading levels should only increment by one level at a time
 - MD003: Heading style; only ATX style

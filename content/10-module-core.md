@@ -12,7 +12,7 @@ Where the parsing happens, it accepts a source string and returns a `{ content, 
 ```typescript
 export function parse(source: string): {
   content: string;
-  metadata: FrontMatterIndex & {
+  metadata: FrontMatter & {
     readonly estimate: number;
     readonly table: MarquaTable[];
   };
@@ -27,9 +27,9 @@ If you need to read from a file or folder, use the `compile` and `traverse` func
 Where the `metadata` or front matter index gets constructed, it is used in the `parse` function.
 
 ```typescript
-interface FrontMatterIndex {
-  [key: string]: string | string[] | FrontMatterIndex;
-}
+type Primitives = null | boolean | string;
+type ValueIndex = Primitives | Primitives[];
+type FrontMatter = { [key: string]: ValueIndex | FrontMatter };
 
-export function construct(raw: string): FrontMatterIndex;
+export function construct(raw: string): ValueIndex | FrontMatter;
 ```
