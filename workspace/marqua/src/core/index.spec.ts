@@ -86,7 +86,7 @@ hex:
 basics.construct('construct indents', () => {
 	const index = core.construct(
 		`
-title: Indented Objects and Arrays
+title: Indented Objects
 jobs:
 	test:
 		with: node
@@ -96,10 +96,34 @@ jobs:
 	);
 
 	assert.equal(index, {
-		title: 'Indented Objects and Arrays',
+		title: 'Indented Objects',
 		jobs: {
 			test: { with: 'node' },
 			sync: { with: 'pnpm' },
+		},
+	});
+});
+basics.construct('construct indented sequences', () => {
+	const index = core.construct(
+		`
+title: Indented Objects and Arrays
+jobs:
+	test:
+		- with: node
+			os: windows
+	sync:
+		- with: pnpm
+			os: linux
+			env:
+				TOKEN: 123
+		`.trim()
+	);
+
+	assert.equal(index, {
+		title: 'Indented Objects and Arrays',
+		jobs: {
+			test: [{ with: 'node', os: 'windows' }],
+			sync: [{ with: 'pnpm', os: 'linux', env: { TOKEN: '123' } }],
 		},
 	});
 });

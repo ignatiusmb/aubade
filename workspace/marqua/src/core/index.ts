@@ -60,9 +60,8 @@ export function parse(source: string) {
 }
 
 type Primitives = null | boolean | string;
-type ValueIndex = Primitives | Primitives[];
-type FrontMatter = { [key: string]: ValueIndex | FrontMatter };
-export function construct(raw: string, memo: Record<string, any> = {}): ValueIndex | FrontMatter {
+type FrontMatter = { [key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[] };
+export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	const indent = indentation(raw);
 	if (!/[:\-\[\]|#]/gm.test(raw)) {
 		return indent > 1 ? dedent(raw) : coerce(raw.trim());
@@ -87,8 +86,9 @@ export function construct(raw: string, memo: Record<string, any> = {}): ValueInd
 	const cleaned = raw.replace(/#.*$/gm, '').trim();
 	switch (cleaned[0]) {
 		case '-': {
-			const sequence = cleaned.split('-');
-			return sequence.filter((v) => v).map(coerce);
+			const sequence = cleaned.split('-').filter((v) => v);
+			type Possibly = Primitives & FrontMatter; // what the ...?
+			return sequence.map((v) => construct(dedent(v)) as Possibly);
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
