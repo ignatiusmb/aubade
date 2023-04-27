@@ -2,11 +2,13 @@
 
 ## Unreleased
 
+- [#67](https://github.com/ignatiusmb/marqua/pull/67): drop Node v14 support
 - [#65](https://github.com/ignatiusmb/marqua/pull/65): add minimal yaml syntax support
 - [#63](https://github.com/ignatiusmb/marqua/pull/63): allow arbitrary metadata in code blocks
 
 ### Breaking Changes
 
+- [#67](https://github.com/ignatiusmb/marqua/pull/67) | Drop support for Node v14
 - [#65](https://github.com/ignatiusmb/marqua/pull/65) | Minimal YAML syntax support
   - Colons in values now require quotes
 - [#63](https://github.com/ignatiusmb/marqua/pull/63) | Allow arbitrary metadata
