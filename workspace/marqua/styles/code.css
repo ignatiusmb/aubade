@@ -229,6 +229,13 @@ code {
 	background: #f0db4f;
 	color: var(--mrq-header-dark);
 }
+.mrq[data-mrq='header'][data-language='markdown']::after,
+.mrq[data-mrq='header'][data-language='markdown']::before,
+.mrq[data-mrq='header'][data-language='md']::after,
+.mrq[data-mrq='header'][data-language='md']::before {
+	background: #083fa1;
+	color: var(--mrq-header-light);
+}
 .mrq[data-mrq='header'][data-language='python']::after,
 .mrq[data-mrq='header'][data-language='python']::before {
 	background: #dddddd;
