@@ -46,11 +46,11 @@ export function compile<Output extends object>(
 }
 
 export function traverse<
-	Options extends { entry: string; depth?: number; compile?: RegExp[] },
+	Options extends { entry: string; compile?: RegExp[]; depth?: number },
 	Output extends object,
 	Transformed = Array<Output & Metadata>
 >(
-	{ entry, depth: level = 0, compile: exts = [/.md$/] }: Options,
+	{ entry, compile: exts = [/.md$/], depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 	transform?: (items: Array<Output & Metadata>) => Transformed
 ): Transformed {
