@@ -16,19 +16,12 @@ export function compile(
   hydrate?: (chunk: HydrateChunk) => undefined | Output
 ): undefined | Output;
 
-interface TraverseOptions<Output extends object = {}> {
-  entry: string;
-  extensions?: string[];
-  depth?: number;
-
-  sort?(
-    x: [keyof Output] extends [never] ? Record<string, any> : Output,
-    y: [keyof Output] extends [never] ? Record<string, any> : Output
-  ): number;
-}
-
 export function traverse(
-  options: TraverseOptions<Output>,
+  options: {
+    entry: string;
+    extensions?: string[];
+    depth?: number;
+  },
   hydrate?: (chunk: HydrateChunk) => undefined | Output,
   transform?: (items: Output[]) => Transformed
 ): Transformed;
@@ -74,19 +67,12 @@ The first argument of `compile` is the source entry point.
 ### traverse
 
 ```typescript
-interface TraverseOptions<Output extends object = {}> {
-  entry: string;
-  extensions?: string[];
-  depth?: number;
-
-  sort?(
-    x: [keyof Output] extends [never] ? Record<string, any> : Output,
-    y: [keyof Output] extends [never] ? Record<string, any> : Output
-  ): number;
-}
-
 export function traverse(
-  options: TraverseOptions<Output>,
+  options: {
+    entry: string;
+    extensions?: string[];
+    depth?: number;
+  },
   hydrate?: (chunk: HydrateChunk) => undefined | Output,
   transform?: (items: Output[]) => Transformed
 ): Transformed;

@@ -35,12 +35,14 @@ The first script to run is `"watch"` in `workspace/marqua`, this will compile an
 
 How the project and code is structured, and some entry points to be aware of
 
-- `workspace/marqua/internal` - marqua core module, compiler components
-- `workspace/marqua/artisan` - marqua artisan module, syntax highlighter and marker
-- `workspace/marqua/browser` - marqua browser module, DOM hydrating function
+- `content` - unprocessed markdown files containing all of the documentation
+- `workspace/marqua/src/core` - marqua core module, compiler components
+- `workspace/marqua/src/artisan` - marqua artisan module, syntax highlighter and marker
+- `workspace/marqua/src/browser` - marqua browser module, DOM hydrating function
+- `workspace/marqua/src/fs` - marqua file system module, read markdown files from disk
+- `workspace/marqua/src/transform` - marqua transform module, transformers for `traverse`
 - `workspace/marqua/styles` - stylesheets used and exported
 - `workspace/documentation` - source code for the website
-- `content` - unprocessed markdown files containing all of the documentation
 
 ## Maintaining
 

@@ -19,8 +19,8 @@ Use the functions from the FileSystem module to `compile` a file or `traverse` d
 ```javascript
 import { compile, traverse } from 'marqua/fs';
 
-compile(/* string | file options */, /* optional hydrate callback */);
-traverse(/* string | dir options */, /* optional hydrate callback */);
+compile(/* string */, /* optional hydrate callback */);
+traverse(/* options */, /* optional hydrate callback */);
 ```
 
 Add interactivity to the code blocks with `hydrate` from `/browser` module.

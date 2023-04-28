@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",
-    "@types/node": "^18.15.11",
-    "prettier": "^2.8.7",
+    "@types/node": "^18.16.1",
+    "prettier": "^2.8.8",
     "tsm": "^2.3.0",
     "typescript": "^5.0.4",
     "uvu": "^0.5.6"

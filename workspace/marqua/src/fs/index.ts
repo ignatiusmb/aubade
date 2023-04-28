@@ -4,11 +4,6 @@ import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 interface FrontMatter {
-	date: {
-		published: string | Date;
-		updated?: string | Date;
-	};
-
 	//----> computed properties
 	estimate: number;
 	table: MarquaTable[];
@@ -41,9 +36,6 @@ export function compile<Output extends object>(
 		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
 
 	if (!result /* hydrate returns nothing */) return;
-	if ('date' in result && result.date && typeof result.date !== 'string') {
-		result.date.updated = result.date.updated || result.date.published;
-	}
 	if ('content' in result && typeof result.content === 'string') {
 		result.content = marker.render(result.content);
 	}
@@ -56,7 +48,7 @@ export function traverse<
 	Output extends object,
 	Transformed = Array<Output & FrontMatter>
 >(
-	{ entry, extensions = ['.md'], depth = 0 }: Options,
+	{ entry, extensions = ['.md'], depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 	transform?: (items: Array<Output & FrontMatter>) => Transformed
 ): Transformed {
@@ -67,8 +59,8 @@ export function traverse<
 
 	const backpack = fs.readdirSync(entry).flatMap((name) => {
 		const pathname = join(entry, name);
-		if (depth !== 0 && fs.lstatSync(pathname).isDirectory()) {
-			depth = depth < 0 ? depth : depth - 1;
+		if (level !== 0 && fs.lstatSync(pathname).isDirectory()) {
+			const depth = level < 0 ? level : level - 1;
 			return traverse({ entry: pathname, extensions, depth }, hydrate);
 		}
 		if (extensions.some((e) => name.endsWith(e))) {
