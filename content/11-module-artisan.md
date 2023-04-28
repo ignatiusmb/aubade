@@ -8,9 +8,9 @@ This isn't usually necessary, but in case you want to handle the markdown parsin
 
 ```typescript
 export interface Dataset {
-  language?: string;
-  lineStart?: number;
-  title?: string;
+  lang?: string;
+  file?: string;
+  [data: string]: string | undefined;
 }
 
 export function transform(source: string, dataset: Dataset): string;
@@ -33,7 +33,7 @@ const user: User = {
 }
 `;
 
-transform(source, { language: 'typescript' });
+transform(source, { lang: 'typescript' });
 ```
 
 Another one would be to use as a highlighter function.
@@ -44,7 +44,7 @@ import { transform } from 'marqua/artisan';
 
 // passing as a 'markdown-it' options
 const marker = MarkdownIt({
-  highlight: (source, language) => transform(source, { language });
+  highlight: (source, lang) => transform(source, { lang });
 });
 ```
 
