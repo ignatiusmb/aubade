@@ -4,7 +4,7 @@ import { generate } from '../utils.js';
 export function parse(source: string) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
-	const memory = construct((match && match[1].trim()) || '') as FrontMatter;
+	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
 
 	return {
 		content: inject(crude, memory),

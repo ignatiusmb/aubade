@@ -71,7 +71,8 @@ export function traverse<
 				return compile(pathname, hydrate);
 			} else if (hydrate) {
 				const breadcrumb = pathname.split(/[/\\]/).reverse();
-				return hydrate({ breadcrumb, buffer: fs.readFileSync(pathname), parse });
+				const buffer = fs.readFileSync(pathname);
+				return hydrate({ breadcrumb, buffer, parse });
 			}
 			return;
 		});
