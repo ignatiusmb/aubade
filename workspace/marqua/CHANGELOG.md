@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#69](https://github.com/ignatiusmb/marqua/pull/69): fix traversal of `depth` level
 - [#67](https://github.com/ignatiusmb/marqua/pull/67): drop Node v14 support
 - [#65](https://github.com/ignatiusmb/marqua/pull/65): add minimal yaml syntax support
 - [#63](https://github.com/ignatiusmb/marqua/pull/63): allow arbitrary metadata in code blocks
