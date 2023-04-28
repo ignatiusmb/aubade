@@ -1,5 +1,6 @@
 import type { MarquaTable } from '../types.js';
 import * as fs from 'fs';
+import { scope } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
@@ -20,8 +21,8 @@ interface Compiled extends FrontMatter {
 
 interface HydrateChunk {
 	breadcrumb: string[];
-	content: string;
-	frontMatter: FrontMatter & Record<string, any>;
+	buffer?: Buffer;
+	parse: typeof parse;
 }
 
 export function compile(entry: string): Compiled;
@@ -33,12 +34,13 @@ export function compile<Output extends object>(
 	entry: string,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output
 ) {
-	const crude = fs.readFileSync(entry, 'utf-8').trim();
-	const { content: source, metadata } = parse(crude);
-	const breadcrumb = entry.split(/[/\\]/).reverse();
-	const result = !hydrate
-		? ({ ...metadata, content: source } as Compiled)
-		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
+	const buffer = fs.readFileSync(entry);
+	const result = scope(() => {
+		const breadcrumb = entry.split(/[/\\]/).reverse();
+		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
+		const { content, metadata } = parse(buffer.toString('utf-8'));
+		return { ...metadata, content } as Compiled;
+	});
 
 	if (!result /* hydrate returns nothing */) return;
 	if ('date' in result && result.date && typeof result.date !== 'string') {
@@ -52,11 +54,11 @@ export function compile<Output extends object>(
 }
 
 export function traverse<
-	Options extends { entry: string; extensions?: string[]; depth?: number },
+	Options extends { entry: string; depth?: number; compile?: RegExp[] },
 	Output extends object,
 	Transformed = Array<Output & FrontMatter>
 >(
-	{ entry, extensions = ['.md'], depth = 0 }: Options,
+	{ entry, depth = 0, compile: exts = [/.md$/] }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 	transform?: (items: Array<Output & FrontMatter>) => Transformed
 ): Transformed {
@@ -69,14 +71,19 @@ export function traverse<
 		const pathname = join(entry, name);
 		if (depth !== 0 && fs.lstatSync(pathname).isDirectory()) {
 			depth = depth < 0 ? depth : depth - 1;
-			return traverse({ entry: pathname, extensions, depth }, hydrate);
+			return traverse({ entry: pathname, depth, compile: exts }, hydrate);
 		}
-		if (extensions.some((e) => name.endsWith(e))) {
-			const data = compile(pathname, hydrate);
-			const keys = Object.keys(data || {});
-			return data && keys.length ? [data] : [];
-		}
-		return [];
+
+		const data = scope(() => {
+			if (exts.some((rule) => rule.test(name))) {
+				return compile(pathname, hydrate);
+			} else if (hydrate) {
+				const breadcrumb = pathname.split(/[/\\]/).reverse();
+				return hydrate({ breadcrumb, buffer: fs.readFileSync(pathname), parse });
+			}
+			return;
+		});
+		return data && Object.keys(data).length ? [data] : [];
 	});
 
 	if (!transform) return backpack as Transformed;
