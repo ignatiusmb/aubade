@@ -7,11 +7,11 @@ export const prerender = true;
 export const load: import('./$types').PageServerLoad = async () => {
 	const docs: ComponentProps<Docs>['sections'] = traverse(
 		{ entry: '../../content' },
-		({ breadcrumb: [filename], content, frontMatter: { title, ...rest } }) => {
-			if (filename.includes('draft')) return;
+		({ breadcrumb: [filename], buffer, parse }) => {
 			const path = `content/${filename}`;
-			const [, index, slug] = /^(\d{2})-(.+).md$/.exec(filename) || [];
-			return { index, slug, title, ...rest, content, path };
+			const [, index, slug] = /^(\d{2})-(.+).md$/.exec(filename)!;
+			const { content, metadata } = parse(buffer.toString('utf-8'));
+			return { index, slug, title: metadata.title, path, content };
 		}
 	);
 

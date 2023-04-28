@@ -4,19 +4,19 @@ import { scope } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
-interface FrontMatter {
+interface Metadata {
 	//----> computed properties
 	estimate: number;
 	table: MarquaTable[];
 }
 
-interface Compiled extends FrontMatter {
+interface Compiled extends Metadata {
 	content: string;
 }
 
 interface HydrateChunk {
 	breadcrumb: string[];
-	buffer?: Buffer;
+	buffer: Buffer;
 	parse: typeof parse;
 }
 
@@ -48,11 +48,11 @@ export function compile<Output extends object>(
 export function traverse<
 	Options extends { entry: string; depth?: number; compile?: RegExp[] },
 	Output extends object,
-	Transformed = Array<Output & FrontMatter>
+	Transformed = Array<Output & Metadata>
 >(
 	{ entry, depth: level = 0, compile: exts = [/.md$/] }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
-	transform?: (items: Array<Output & FrontMatter>) => Transformed
+	transform?: (items: Array<Output & Metadata>) => Transformed
 ): Transformed {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
@@ -79,7 +79,7 @@ export function traverse<
 	});
 
 	if (!transform) return backpack as Transformed;
-	return transform(backpack as Array<Output & FrontMatter>);
+	return transform(backpack as Array<Output & Metadata>);
 
 	// adapted from https://github.com/alchemauss/mauss/pull/153
 	function join(...paths: string[]) {
