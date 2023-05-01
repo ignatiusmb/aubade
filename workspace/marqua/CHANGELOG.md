@@ -1,6 +1,6 @@
 # marqua changelog
 
-## Unreleased
+## 0.5.0 0 2023/05/01
 
 - [#70](https://github.com/ignatiusmb/marqua/pull/70): pass `buffer` and `parse`
 - [#69](https://github.com/ignatiusmb/marqua/pull/69): fix traversal of `depth` level
