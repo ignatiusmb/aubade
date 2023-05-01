@@ -4,29 +4,6 @@ title: Module / FileSystem
 
 Marqua provides a couple of functions coupled with the FileSystem module to `compile` or `traverse` a directory, given an entry point.
 
-```typescript
-interface HydrateChunk {
-  breadcrumb: string[];
-  buffer: Buffer;
-  parse: typeof parse;
-}
-
-export function compile(
-  entry: string,
-  hydrate?: (chunk: HydrateChunk) => undefined | Output
-): undefined | Output;
-
-export function traverse(
-  options: {
-    entry: string;
-    compile?: RegExp[];
-    depth?: number;
-  },
-  hydrate?: (chunk: HydrateChunk) => undefined | Output,
-  transform?: (items: Output[]) => Transformed
-): Transformed;
-```
-
 Using a folder structure shown below as a reference for the next examples, the usage will be as follows
 
 ```
@@ -99,7 +76,7 @@ const body = compile(
 
 /* traverse - scans a directory for sources */
 const data = traverse(
-  { entry: 'content/posts'},
+  { entry: 'content/posts' },
   ({ breadcrumb: [filename], buffer, parse }) => {
     if (filename.startsWith('draft')) return;
     const [date, slug] = filename.split('.');
