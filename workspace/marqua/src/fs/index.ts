@@ -46,11 +46,15 @@ export function compile<Output extends object>(
 }
 
 export function traverse<
-	Options extends { entry: string; compile?: RegExp[]; depth?: number },
+	Options extends {
+		entry: string;
+		compile?(path: string): boolean;
+		depth?: number;
+	},
 	Output extends object,
 	Transformed = Array<Output & Metadata>
 >(
-	{ entry, compile: rgx = [/.md$/], depth: level = 0 }: Options,
+	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 	transform?: (items: Array<Output & Metadata>) => Transformed
 ): Transformed {
@@ -63,19 +67,16 @@ export function traverse<
 		const pathname = join(entry, name);
 		if (level !== 0 && fs.lstatSync(pathname).isDirectory()) {
 			const depth = level < 0 ? level : level - 1;
-			const options = { entry: pathname, depth, compile: rgx };
+			const options = { entry: pathname, depth, compile: fn };
 			return traverse(options, hydrate);
 		}
 
 		const data = scope(() => {
-			if (rgx.some((rule) => rule.test(name))) {
-				return compile(pathname, hydrate);
-			} else if (hydrate) {
-				const breadcrumb = pathname.split(/[/\\]/).reverse();
-				const buffer = fs.readFileSync(pathname);
-				return hydrate({ breadcrumb, buffer, parse });
-			}
-			return;
+			if (fn(pathname)) return compile(pathname, hydrate);
+			if (!hydrate) return; // no need to do anything else
+			const breadcrumb = pathname.split(/[/\\]/).reverse();
+			const buffer = fs.readFileSync(pathname);
+			return hydrate({ breadcrumb, buffer, parse });
 		});
 		return data && Object.keys(data).length ? [data] : [];
 	});

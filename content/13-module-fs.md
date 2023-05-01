@@ -70,7 +70,7 @@ The first argument of `compile` is the source entry point.
 export function traverse(
   options: {
     entry: string;
-    compile?: RegExp[];
+    compile?(path: string): boolean;
     depth?: number;
   },
   hydrate?: (chunk: HydrateChunk) => undefined | Output,
@@ -79,6 +79,8 @@ export function traverse(
 ```
 
 The first argument of `traverse` is its `typeof options` and the second argument is an optional `hydrate` callback function. The third argument is an optional `transform` callback function.
+
+The `compile` property of the `options` object is an optional function that takes the full path of a file from the `entry` point and returns a boolean. If the function returns `true`, the file will be processed by the `compile` function, else it will be passed over to the `hydrate` function if it exists.
 
 An example usage from the *hypothetical* content folder structure above should look like
 
