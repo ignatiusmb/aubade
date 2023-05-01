@@ -50,7 +50,7 @@ export function traverse<
 	Output extends object,
 	Transformed = Array<Output & Metadata>
 >(
-	{ entry, compile: exts = [/.md$/], depth: level = 0 }: Options,
+	{ entry, compile: rgx = [/.md$/], depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 	transform?: (items: Array<Output & Metadata>) => Transformed
 ): Transformed {
@@ -63,11 +63,12 @@ export function traverse<
 		const pathname = join(entry, name);
 		if (level !== 0 && fs.lstatSync(pathname).isDirectory()) {
 			const depth = level < 0 ? level : level - 1;
-			return traverse({ entry: pathname, depth, compile: exts }, hydrate);
+			const options = { entry: pathname, depth, compile: rgx };
+			return traverse(options, hydrate);
 		}
 
 		const data = scope(() => {
-			if (exts.some((rule) => rule.test(name))) {
+			if (rgx.some((rule) => rule.test(name))) {
 				return compile(pathname, hydrate);
 			} else if (hydrate) {
 				const breadcrumb = pathname.split(/[/\\]/).reverse();
