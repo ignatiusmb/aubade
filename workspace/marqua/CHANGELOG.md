@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#70](https://github.com/ignatiusmb/marqua/pull/70): pass `buffer` and `parse`
 - [#69](https://github.com/ignatiusmb/marqua/pull/69): fix traversal of `depth` level
 - [#68](https://github.com/ignatiusmb/marqua/pull/68): add language style for markdown
 - [#67](https://github.com/ignatiusmb/marqua/pull/67): drop Node v14 support
@@ -10,6 +11,12 @@
 
 ### Breaking Changes
 
+- [#70](https://github.com/ignatiusmb/marqua/pull/70) | Pass `buffer` and `parse`
+  - Removed `frontMatter` in favor of `parse` for more granular control
+  - Replaced `content: string` with `buffer: Buffer` in `HydrateChunk`
+  - Use `parse(buffer.toString('utf-8'))` to get `content` and `metadata` (`"frontMatter"`)
+  - Replaced `extensions: string[]` with `compile: RegExp[]` in `traverse` options
+  - Calling `traverse` now reads everything and only processes files that match `compile`
 - [#67](https://github.com/ignatiusmb/marqua/pull/67) | Drop support for Node v14
 - [#65](https://github.com/ignatiusmb/marqua/pull/65) | Minimal YAML syntax support
   - Colons in values now require quotes

@@ -12,7 +12,7 @@ Where the parsing happens, it accepts a source string and returns a `{ content, 
 ```typescript
 export function parse(source: string): {
   content: string;
-  metadata: FrontMatter & {
+  metadata: Record<string, any> & {
     readonly estimate: number;
     readonly table: MarquaTable[];
   };

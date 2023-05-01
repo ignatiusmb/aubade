@@ -1,22 +1,23 @@
 import type { MarquaTable } from '../types.js';
 import * as fs from 'fs';
+import { scope } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
-interface FrontMatter {
+interface Metadata {
 	//----> computed properties
 	estimate: number;
 	table: MarquaTable[];
 }
 
-interface Compiled extends FrontMatter {
+interface Compiled extends Metadata {
 	content: string;
 }
 
 interface HydrateChunk {
 	breadcrumb: string[];
-	content: string;
-	frontMatter: FrontMatter & Record<string, any>;
+	buffer: Buffer;
+	parse: typeof parse;
 }
 
 export function compile(entry: string): Compiled;
@@ -28,12 +29,13 @@ export function compile<Output extends object>(
 	entry: string,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output
 ) {
-	const crude = fs.readFileSync(entry, 'utf-8').trim();
-	const { content: source, metadata } = parse(crude);
-	const breadcrumb = entry.split(/[/\\]/).reverse();
-	const result = !hydrate
-		? ({ ...metadata, content: source } as Compiled)
-		: hydrate({ breadcrumb, content: source, frontMatter: metadata as any });
+	const buffer = fs.readFileSync(entry);
+	const result = scope(() => {
+		const breadcrumb = entry.split(/[/\\]/).reverse();
+		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
+		const { content, metadata } = parse(buffer.toString('utf-8'));
+		return { ...metadata, content } as Compiled;
+	});
 
 	if (!result /* hydrate returns nothing */) return;
 	if ('content' in result && typeof result.content === 'string') {
@@ -44,13 +46,17 @@ export function compile<Output extends object>(
 }
 
 export function traverse<
-	Options extends { entry: string; extensions?: string[]; depth?: number },
+	Options extends {
+		entry: string;
+		compile?(path: string): boolean;
+		depth?: number;
+	},
 	Output extends object,
-	Transformed = Array<Output & FrontMatter>
+	Transformed = Array<Output & Metadata>
 >(
-	{ entry, extensions = ['.md'], depth: level = 0 }: Options,
+	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
-	transform?: (items: Array<Output & FrontMatter>) => Transformed
+	transform?: (items: Array<Output & Metadata>) => Transformed
 ): Transformed {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
@@ -61,18 +67,22 @@ export function traverse<
 		const pathname = join(entry, name);
 		if (level !== 0 && fs.lstatSync(pathname).isDirectory()) {
 			const depth = level < 0 ? level : level - 1;
-			return traverse({ entry: pathname, extensions, depth }, hydrate);
+			const options = { entry: pathname, depth, compile: fn };
+			return traverse(options, hydrate);
 		}
-		if (extensions.some((e) => name.endsWith(e))) {
-			const data = compile(pathname, hydrate);
-			const keys = Object.keys(data || {});
-			return data && keys.length ? [data] : [];
-		}
-		return [];
+
+		const data = scope(() => {
+			if (fn(pathname)) return compile(pathname, hydrate);
+			if (!hydrate) return; // no need to do anything else
+			const breadcrumb = pathname.split(/[/\\]/).reverse();
+			const buffer = fs.readFileSync(pathname);
+			return hydrate({ breadcrumb, buffer, parse });
+		});
+		return data && Object.keys(data).length ? [data] : [];
 	});
 
 	if (!transform) return backpack as Transformed;
-	return transform(backpack as Array<Output & FrontMatter>);
+	return transform(backpack as Array<Output & Metadata>);
 
 	// adapted from https://github.com/alchemauss/mauss/pull/153
 	function join(...paths: string[]) {
