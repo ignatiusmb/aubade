@@ -90,6 +90,7 @@ title: Indented Objects
 jobs:
 	test:
 		with: node
+		path: ./test
 	sync:
 		with: pnpm
 		`.trim()
@@ -98,7 +99,7 @@ jobs:
 	assert.equal(index, {
 		title: 'Indented Objects',
 		jobs: {
-			test: { with: 'node' },
+			test: { with: 'node', path: './test' },
 			sync: { with: 'pnpm' },
 		},
 	});
@@ -132,14 +133,67 @@ basics.construct('handle edge cases', () => {
 		`
 title: Edge Cases
 name: "Hello: World"
-link: https://github.com
+link:
+	normal: https://github.com
+	dashed: https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower
+
 		`.trim()
 	);
 
 	assert.equal(index, {
 		title: 'Edge Cases',
 		name: 'Hello: World',
-		link: 'https://github.com',
+		link: {
+			normal: 'https://github.com',
+			dashed:
+				'https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower',
+		},
+	});
+});
+basics.construct.skip('construct with spaces indents', () => {
+	const index = core.construct(
+		`
+jobs:
+  test:
+    with: node
+    path: ./test
+    cache:
+      - ./.cache
+      - ~/.cache
+      - /tmp/cache
+  sync:
+    - with: npm
+      os: linux
+    - with: pnpm
+      os: windows
+
+link:
+  github: https://github.com
+  youtube: https://youtube.com
+  search-engines:
+    - https://duckduckgo.com
+    - https://google.com
+    - https://bing.com
+    `.trim()
+	);
+
+	assert.equal(index, {
+		jobs: {
+			test: {
+				with: 'node',
+				path: './test',
+				cache: ['./.cache', '~/.cache', '/tmp/cache'],
+			},
+			sync: [
+				{ with: 'npm', os: 'linux' },
+				{ with: 'pnpm', os: 'windows' },
+			],
+		},
+		link: {
+			github: 'https://github.com',
+			youtube: 'https://youtube.com',
+			'search-engines': ['https://duckduckgo.com', 'https://google.com', 'https://bing.com'],
+		},
 	});
 });
 
