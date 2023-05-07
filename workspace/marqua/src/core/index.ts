@@ -26,34 +26,22 @@ export function parse(source: string) {
 
 			/** table of contents */
 			get table() {
-				const lines: RegExpMatchArray[] = [];
-				const counter = [0, 0, 0];
+				const table: MarquaTable[] = [];
 				for (const line of crude.split('\n')) {
 					const match = /^(#{2,4}) (.+)/.exec(line.trim());
-					if (match) lines.push(match), counter[match[1].length - 2]++;
+					if (!match) continue;
+
+					const [, h, title] = match;
+
+					table.push({
+						id: generate.id(title),
+						level: h.length,
+						title: title.replace(/\[\]/g, ''),
+						sections: [],
+					});
 				}
-				const alone = counter.filter((i) => i === 0).length === 2;
 
-				return lines.reduce((table: MarquaTable[], [, signs, title]) => {
-					title = title.replace(/\[(.+)\]\(.+\)/g, '$1');
-					title = title.replace(/`(.+)`/g, '$1');
-					const content = { id: generate.id(title), title };
-
-					if (alone || (!counter[0] && signs.length === 3) || signs.length === 2) {
-						table.push(content);
-					} else if (table.length) {
-						let parent = table[table.length - 1];
-						if (!parent.sections) parent.sections = [];
-						if ((!counter[0] && signs.length === 4) || signs.length === 3) {
-							parent.sections.push(content);
-						} else if (counter[0] && parent.sections.length && signs.length === 4) {
-							parent = parent.sections[parent.sections.length - 1];
-							if (!parent.sections) parent.sections = [content];
-							else parent.sections.push(content);
-						}
-					}
-					return table;
-				}, []);
+				return table;
 			},
 		}),
 	};
