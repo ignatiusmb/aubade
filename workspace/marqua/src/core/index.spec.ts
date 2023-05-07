@@ -131,6 +131,8 @@ basics.construct('handle edge cases', () => {
 	const index = core.construct(
 		`
 title: Edge Cases
+empty:
+
 name: "Hello: World"
 link: https://github.com
 		`.trim()
@@ -138,8 +140,20 @@ link: https://github.com
 
 	assert.equal(index, {
 		title: 'Edge Cases',
+		empty: '',
 		name: 'Hello: World',
 		link: 'https://github.com',
+	});
+});
+basics.construct('handle carriage returns', () => {
+	// with tabs
+	assert.equal(core.construct(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`), {
+		link: { mal: 'abc', imdb: ['abc', 'def'] },
+	});
+
+	// with spaces
+	assert.equal(core.construct(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`), {
+		link: { mal: 'abc', imdb: ['abc', 'def'] },
 	});
 });
 
