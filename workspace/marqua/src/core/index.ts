@@ -71,7 +71,7 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 		return raw.trim().slice(1, -1);
 	}
 
-	const PATTERN = /(^[^:\s]+):(?!\/)\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
+	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
