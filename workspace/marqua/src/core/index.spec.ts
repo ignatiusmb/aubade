@@ -135,8 +135,10 @@ title: Edge Cases
 name: "Hello: World"
 link:
 	normal: https://github.com
-	dashed: https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower
-
+	dashed:
+		- https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower
+		- https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly
+		- https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song
 		`.trim()
 	);
 
@@ -145,8 +147,11 @@ link:
 		name: 'Hello: World',
 		link: {
 			normal: 'https://github.com',
-			dashed:
+			dashed: [
 				'https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower',
+				'https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly',
+				'https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song',
+			],
 		},
 	});
 });
