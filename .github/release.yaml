@@ -6,6 +6,9 @@ changelog:
     - title: 🌟 Highlights
       labels:
         - highlight
+    - title: 🚨 Breaking Changes
+      labels:
+        - breaking
     - title: 🏗️ Enhancements
       labels:
         - enhancement
