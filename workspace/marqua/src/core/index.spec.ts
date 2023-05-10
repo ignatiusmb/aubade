@@ -177,7 +177,7 @@ voyager:
 		}
 	);
 });
-basics.construct.skip('construct with spaces indents', () => {
+basics.construct('construct with spaces indents', () => {
 	const index = core.construct(
 		`
 jobs:
