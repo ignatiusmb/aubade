@@ -66,7 +66,6 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 	if (!/[:\-\[\]|#]/gm.test(raw)) {
 		return indent > 1 ? dedent(raw) : coerce(raw.trim());
 	}
-	if (indent <= 1) raw = raw.trimStart();
 	if (/^(".*"|'.*')$/.test(raw.trim())) {
 		return raw.trim().slice(1, -1);
 	}
@@ -87,8 +86,11 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 	switch (cleaned[0]) {
 		case '-': {
 			const sequence = cleaned.split('- ').filter((v) => v);
+			const tabbed = sequence.map((v) =>
+				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2))
+			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return sequence.map((v) => construct(dedent(` ${v}`)));
+			return tabbed.map((v) => construct(dedent(` ${item}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
@@ -114,8 +116,8 @@ function coerce(u: string) {
 }
 
 function dedent(input: string) {
-	const lines = input.split(/\r?\n/).filter((l) => l.trim());
-	const indent = indentation(lines.join('\n'));
+	const indent = indentation(input);
+	const lines = input.split(/\r?\n/);
 	return lines.map((l) => l.slice(indent)).join('\n');
 }
 
