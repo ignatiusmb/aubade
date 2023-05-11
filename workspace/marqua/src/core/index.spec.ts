@@ -157,6 +157,7 @@ link:
 		),
 		{
 			title: 'Edge Cases',
+			empty: '',
 			name: 'Hello: World',
 			link: {
 				normal: 'https://github.com',

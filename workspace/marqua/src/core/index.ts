@@ -90,7 +90,7 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2))
 			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => construct(dedent(` ${item}`)));
+			return tabbed.map((v) => construct(dedent(` ${v}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
