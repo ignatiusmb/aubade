@@ -116,8 +116,8 @@ function coerce(u: string) {
 }
 
 function dedent(input: string) {
-	const indent = indentation(input);
-	const lines = input.split(/\r?\n/);
+	const lines = input.split(/\r?\n/).filter((l) => l.trim());
+	const indent = indentation(lines[0]);
 	return lines.map((l) => l.slice(indent)).join('\n');
 }
 
