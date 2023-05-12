@@ -229,7 +229,7 @@ rating: [8, 7, 9]
 
 simple contents
 
-## !{rating:0} | $(story & plot)
+## !{rating:0}/10 | $(story & plot)
 
 story and plot
 		`.trim()
@@ -245,7 +245,7 @@ story and plot
 		{
 			id: 'story-plot',
 			level: 2,
-			title: 'story & plot',
+			title: '8/10 | story & plot',
 			sections: [],
 		},
 	]);
