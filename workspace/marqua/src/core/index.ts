@@ -5,13 +5,14 @@ export function parse(source: string) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
 	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
+	const stuffed = inject(crude, memory);
 
 	return {
-		content: inject(crude, memory),
+		content: stuffed,
 		metadata: Object.assign(memory, {
 			/** estimated reading time */
 			get estimate() {
-				const paragraphs = crude.split('\n').filter(
+				const paragraphs = stuffed.split('\n').filter(
 					(p) => !!p && !/^[!*]/.test(p) // remove empty and not sentences
 				);
 				const words = paragraphs.reduce((total, line) => {
@@ -19,7 +20,7 @@ export function parse(source: string) {
 					const accumulated = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
 					return total + accumulated.length;
 				}, 0);
-				const images = /!\[.+\]\(.+\)/g.exec(crude);
+				const images = /!\[.+\]\(.+\)/g.exec(stuffed);
 				const total = words + (images || []).length * 12;
 				return Math.round(total / 240) || 1;
 			},
@@ -27,16 +28,17 @@ export function parse(source: string) {
 			/** table of contents */
 			get table() {
 				const table: MarquaTable[] = [];
-				for (const line of crude.split('\n')) {
+				for (const line of stuffed.split('\n')) {
 					const match = /^(#{2,4}) (.+)/.exec(line.trim());
 					if (!match) continue;
 
 					const [, h, title] = match;
+					const [delimited] = /\$\(.*\)/.exec(title) || [''];
 
 					table.push({
-						id: generate.id(title),
+						id: generate.id(delimited.slice(2, -1) || title),
 						level: h.length,
-						title: title.replace(/\[\]/g, ''),
+						title: title.replace(delimited, delimited.slice(2, -1)),
 						sections: [],
 					});
 				}
