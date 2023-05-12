@@ -50,9 +50,9 @@ export function parse(source: string) {
 type Primitives = null | boolean | string;
 type FrontMatter = { [key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[] };
 export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
-	const indent = indentation(raw);
 	if (!/[:\-\[\]|#]/gm.test(raw)) {
-		return indent > 1 ? dedent(raw) : coerce(raw.trim());
+		const i = indentation(raw);
+		return i > 1 ? dedent(raw) : coerce(raw.trim());
 	}
 	if (/^(".*"|'.*')$/.test(raw.trim())) {
 		return raw.trim().slice(1, -1);
