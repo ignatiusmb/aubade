@@ -54,12 +54,11 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 	if (!/[:\-\[\]|#]/gm.test(raw)) {
 		return indent > 1 ? dedent(raw) : coerce(raw.trim());
 	}
-	if (indent <= 1) raw = raw.trimStart();
 	if (/^(".*"|'.*')$/.test(raw.trim())) {
 		return raw.trim().slice(1, -1);
 	}
 
-	const PATTERN = /(^[^:\s]+):(?!\/)\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
+	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
@@ -74,9 +73,12 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 	const cleaned = raw.replace(/#.*$/gm, '').trim();
 	switch (cleaned[0]) {
 		case '-': {
-			const sequence = cleaned.split('-').filter((v) => v);
-			type Possibly = Primitives & FrontMatter; // what the ...?
-			return sequence.map((v) => construct(dedent(v)) as Possibly);
+			const sequence = cleaned.split('- ').filter((v) => v);
+			const tabbed = sequence.map((v) =>
+				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2))
+			);
+			// @ts-expect-error - `FrontMatter` is assignable to itself
+			return tabbed.map((v) => construct(dedent(` ${v}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);

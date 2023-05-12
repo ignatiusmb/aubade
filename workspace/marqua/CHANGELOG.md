@@ -57,7 +57,6 @@
 
 - [#52](https://github.com/ignatiusmb/marqua/pull/52) | Require minimum of Node v14.8
 - [#51](https://github.com/ignatiusmb/marqua/pull/51) | Added `construct` function
-  - Removed automatic array conversion when `,` exists
   - Reserved `,` only when pair-value is wrapped in brackets
 - [#49](https://github.com/ignatiusmb/marqua/pull/49) | Decouple modules
   - Moved `compile` / `traverse` from `'marqua'` to `'marqua/fs'`
