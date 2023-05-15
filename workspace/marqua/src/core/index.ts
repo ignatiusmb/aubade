@@ -59,23 +59,17 @@ export function parse(source: string) {
 	};
 }
 
-type Primitives = null | boolean | string;
+type Primitives = string | boolean | null;
 type FrontMatter = { [key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[] };
 export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
-	const indent = indentation(raw);
-	if (!/[:\-\[\]|#]/gm.test(raw)) {
-		return indent > 1 ? dedent(raw) : coerce(raw.trim());
-	}
-	if (/^(".*"|'.*')$/.test(raw.trim())) {
-		return raw.trim().slice(1, -1);
-	}
+	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
+	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
 
 	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
-		const i = indentation(value);
-		const data = construct(i ? dedent(value) : value, memo[key]);
+		const data = construct(outdent(value), memo[key]);
 		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
 		else memo[key] = { ...memo[key], ...data };
 	}
@@ -90,14 +84,14 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2))
 			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => construct(dedent(` ${v}`)));
+			return tabbed.map((v) => construct(outdent(` ${v}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
 			return pruned.split(',').map(coerce);
 		}
 		case '|': {
-			return dedent(cleaned.slice(1).replace('\n', ''));
+			return outdent(cleaned.slice(1).replace('\n', ''));
 		}
 		default: {
 			return coerce(cleaned.trim());
@@ -115,14 +109,10 @@ function coerce(u: string) {
 	return /^(".*"|'.*')$/.test(v) ? v.slice(1, -1) : v;
 }
 
-function dedent(input: string) {
-	const indent = indentation(input);
-	const lines = input.split(/\r?\n/);
+function outdent(input: string) {
+	const lines = input.split(/\r?\n/).filter((l) => l.trim());
+	const indent = (/^\s*/.exec(lines[0]) || [''])[0].length;
 	return lines.map((l) => l.slice(indent)).join('\n');
-}
-
-function indentation(line: string) {
-	return (/^\s*/.exec(line) || [''])[0].length;
 }
 
 function inject(source: string, metadata: Record<string, any>) {
