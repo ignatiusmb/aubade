@@ -247,13 +247,46 @@ title: Hello Parser
 rating: [8, 7, 9]
 ---
 
+## !{rating:0}/10 | $(story & plot)
+
+story and plot contents
+		`.trim()
+	);
+
+	assert.equal(metadata.table, [
+		{
+			id: 'story-plot',
+			level: 2,
+			title: '8/10 | story & plot',
+			sections: [],
+		},
+	]);
+});
+suites['construct/table']('fill sections as expected', () => {
+	const { metadata } = core.parse(
+		`
+---
+title: Hello Parser
+rating: [8, 7, 9]
+---
+
 ## simple heading
 
 simple contents
 
-## !{rating:0}/10 | $(story & plot)
+## story & plot
 
 story and plot
+
+### subsection of story and plot
+
+subsection contents
+
+#### smallest heading
+
+something here
+
+### second subsection
 		`.trim()
 	);
 
@@ -267,8 +300,28 @@ story and plot
 		{
 			id: 'story-plot',
 			level: 2,
-			title: '8/10 | story & plot',
-			sections: [],
+			title: 'story & plot',
+			sections: [
+				{
+					id: 'subsection-of-story-and-plot',
+					level: 3,
+					title: 'subsection of story and plot',
+					sections: [
+						{
+							id: 'smallest-heading',
+							level: 4,
+							title: 'smallest heading',
+							sections: [],
+						},
+					],
+				},
+				{
+					id: 'second-subsection',
+					level: 3,
+					title: 'second subsection',
+					sections: [],
+				},
+			],
 		},
 	]);
 });
