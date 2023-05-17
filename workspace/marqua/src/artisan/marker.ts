@@ -21,7 +21,9 @@ const marker = MarkIt({
 marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
-	return `<${token.tag} id="${generate.id(text)}">`;
+	const [delimited] = /\$\(.*\)/.exec(text) || [''];
+	const id = generate.id(delimited.slice(2, -1) || text);
+	return `<${token.tag} id="${id}">`;
 };
 marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];
