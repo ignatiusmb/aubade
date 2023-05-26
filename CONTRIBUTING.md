@@ -50,9 +50,6 @@ For maintainers of the project.
 
 ### Publishing
 
-1. bump version in `package.json` accordingly
-2. update unreleased header in `CHANGELOG.md`
-3. create a commit with format of `~ vX.Y.Z`
-4. create a (secure) tag formatted as `vX.Y.Z`
-5. push commit and tag with `--follow-tags` option
-6. create a [new release](https://github.com/ignatiusmb/marqua/releases)
+0. prepare a [new release draft](https://github.com/ignatiusmb/marqua/releases/new) with a new tag
+1. bump version in `package.json` and commit with `~ vX.Y.Z`
+2. publish release draft and title release with `X.Y.Z`
