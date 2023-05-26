@@ -1,5 +1,7 @@
 # marqua changelog
 
+⚠️ see https://github.com/ignatiusmb/marqua/releases for future updates above `v0.5.0`
+
 ## 0.5.0 - 2023/05/01
 
 - [#70](https://github.com/ignatiusmb/marqua/pull/70): pass `buffer` and `parse`
