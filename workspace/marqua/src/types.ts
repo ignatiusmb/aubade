@@ -6,6 +6,7 @@ export interface MarquaData {
 
 export interface MarquaTable {
 	id: string;
+	level: number;
 	title: string;
-	sections?: MarquaTable[];
+	sections: MarquaTable[];
 }

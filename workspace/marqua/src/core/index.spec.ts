@@ -2,12 +2,13 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as core from './index.js';
 
-const basics = {
-	construct: suite('core:construct'),
-	parse: suite('core:parse'),
-};
+const suites = {
+	'construct/': suite('core/construct'),
+	'construct/table': suite('core/construct:table'),
+	'parse/': suite('core/parse'),
+} as const;
 
-basics.construct('construct simple index', () => {
+suites['construct/']('construct simple index', () => {
 	const index = core.construct(
 		`
 title: Simple Index
@@ -20,7 +21,7 @@ tags: [x, y, z]
 		tags: ['x', 'y', 'z'],
 	});
 });
-basics.construct('construct marqua rules', () => {
+suites['construct/']('construct marqua rules', () => {
 	const index = core.construct(
 		`
 title: Marqua Rules
@@ -37,7 +38,7 @@ a:b:z: 2
 		a: { b: { x: '0', y: '1', z: '2' } },
 	});
 });
-basics.construct('convert boolean values', () => {
+suites['construct/']('convert boolean values', () => {
 	const index = core.construct(
 		`
 title: Casting Boolean
@@ -52,7 +53,7 @@ hex: ["x", true, 0, false]
 		hex: ['x', true, '0', false],
 	});
 });
-basics.construct('construct literal block', () => {
+suites['construct/']('construct literal block', () => {
 	const index = core.construct(
 		`
 title: Literal Block
@@ -67,7 +68,7 @@ data: |
 		data: 'Hello World\nLorem Ipsum',
 	});
 });
-basics.construct('construct sequences', () => {
+suites['construct/']('construct sequences', () => {
 	const index = core.construct(
 		`
 title: List Sequence
@@ -83,7 +84,7 @@ hex:
 		hex: ['x', true, '0'],
 	});
 });
-basics.construct('construct indents', () => {
+suites['construct/']('construct indents', () => {
 	const index = core.construct(
 		`
 title: Indented Objects
@@ -104,7 +105,7 @@ jobs:
 		},
 	});
 });
-basics.construct('construct indented sequences', () => {
+suites['construct/']('construct indented sequences', () => {
 	const index = core.construct(
 		`
 title: Indented Objects and Arrays
@@ -128,7 +129,7 @@ jobs:
 		},
 	});
 });
-basics.construct('handle carriage returns', () => {
+suites['construct/']('handle carriage returns', () => {
 	// with tabs
 	assert.equal(core.construct(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`), {
 		link: { mal: 'abc', imdb: ['abc', 'def'] },
@@ -139,7 +140,7 @@ basics.construct('handle carriage returns', () => {
 		link: { mal: 'abc', imdb: ['abc', 'def'] },
 	});
 });
-basics.construct('handle edge cases', () => {
+suites['construct/']('handle edge cases', () => {
 	assert.equal(
 		core.construct(
 			`
@@ -191,7 +192,7 @@ voyager:
 		}
 	);
 });
-basics.construct('construct with spaces indents', () => {
+suites['construct/']('construct with spaces indents', () => {
 	const index = core.construct(
 		`
 jobs:
@@ -238,7 +239,94 @@ link:
 	});
 });
 
-basics.parse('parse markdown contents', () => {
+suites['construct/table']('generate hash from delimited heading', () => {
+	const { metadata } = core.parse(
+		`
+---
+title: Hello Parser
+rating: [8, 7, 9]
+---
+
+## !{rating:0}/10 | $(story & plot)
+
+story and plot contents
+		`.trim()
+	);
+
+	assert.equal(metadata.table, [
+		{
+			id: 'story-plot',
+			level: 2,
+			title: '8/10 | story & plot',
+			sections: [],
+		},
+	]);
+});
+suites['construct/table']('fill sections as expected', () => {
+	const { metadata } = core.parse(
+		`
+---
+title: Hello Parser
+rating: [8, 7, 9]
+---
+
+## simple heading
+
+simple contents
+
+## story & plot
+
+story and plot
+
+### subsection of story and plot
+
+subsection contents
+
+#### smallest heading
+
+something here
+
+### second subsection
+		`.trim()
+	);
+
+	assert.equal(metadata.table, [
+		{
+			id: 'simple-heading',
+			level: 2,
+			title: 'simple heading',
+			sections: [],
+		},
+		{
+			id: 'story-plot',
+			level: 2,
+			title: 'story & plot',
+			sections: [
+				{
+					id: 'subsection-of-story-and-plot',
+					level: 3,
+					title: 'subsection of story and plot',
+					sections: [
+						{
+							id: 'smallest-heading',
+							level: 4,
+							title: 'smallest heading',
+							sections: [],
+						},
+					],
+				},
+				{
+					id: 'second-subsection',
+					level: 3,
+					title: 'second subsection',
+					sections: [],
+				},
+			],
+		},
+	]);
+});
+
+suites['parse/']('parse markdown contents', () => {
 	const { content, metadata } = core.parse(
 		`
 ---
@@ -258,4 +346,4 @@ Welcome to the contents
 	assert.equal(content.trim(), 'Welcome to the contents');
 });
 
-Object.values(basics).forEach((v) => v.run());
+Object.values(suites).forEach((v) => v.run());

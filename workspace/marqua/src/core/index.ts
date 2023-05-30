@@ -5,13 +5,14 @@ export function parse(source: string) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
 	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
+	const stuffed = inject(crude, memory);
 
 	return {
-		content: inject(crude, memory),
+		content: stuffed,
 		metadata: Object.assign(memory, {
 			/** estimated reading time */
 			get estimate() {
-				const paragraphs = crude.split('\n').filter(
+				const paragraphs = stuffed.split('\n').filter(
 					(p) => !!p && !/^[!*]/.test(p) // remove empty and not sentences
 				);
 				const words = paragraphs.reduce((total, line) => {
@@ -19,41 +20,40 @@ export function parse(source: string) {
 					const accumulated = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
 					return total + accumulated.length;
 				}, 0);
-				const images = /!\[.+\]\(.+\)/g.exec(crude);
+				const images = /!\[.+\]\(.+\)/g.exec(stuffed);
 				const total = words + (images || []).length * 12;
 				return Math.round(total / 240) || 1;
 			},
 
 			/** table of contents */
 			get table() {
-				const lines: RegExpMatchArray[] = [];
-				const counter = [0, 0, 0];
-				for (const line of crude.split('\n')) {
+				const table: MarquaTable[] = [];
+				let parent = table; // reference to push
+				for (const line of stuffed.split('\n')) {
 					const match = /^(#{2,4}) (.+)/.exec(line.trim());
-					if (match) lines.push(match), counter[match[1].length - 2]++;
-				}
-				const alone = counter.filter((i) => i === 0).length === 2;
+					if (!match) continue;
 
-				return lines.reduce((table: MarquaTable[], [, signs, title]) => {
-					title = title.replace(/\[(.+)\]\(.+\)/g, '$1');
-					title = title.replace(/`(.+)`/g, '$1');
-					const content = { id: generate.id(title), title };
+					const [, h, title] = match;
+					const [delimited] = /\$\(.*\)/.exec(title) || [''];
 
-					if (alone || (!counter[0] && signs.length === 3) || signs.length === 2) {
-						table.push(content);
-					} else if (table.length) {
-						let parent = table[table.length - 1];
-						if (!parent.sections) parent.sections = [];
-						if ((!counter[0] && signs.length === 4) || signs.length === 3) {
-							parent.sections.push(content);
-						} else if (counter[0] && parent.sections.length && signs.length === 4) {
-							parent = parent.sections[parent.sections.length - 1];
-							if (!parent.sections) parent.sections = [content];
-							else parent.sections.push(content);
+					if (h.length === 2 || !table.length) {
+						parent = table;
+					} else {
+						parent = table[table.length - 1].sections;
+						if (h.length === 4) {
+							parent = parent[parent.length - 1].sections;
 						}
 					}
-					return table;
-				}, []);
+
+					parent.push({
+						id: generate.id(delimited.slice(2, -1) || title),
+						level: h.length,
+						title: title.replace(delimited, delimited.slice(2, -1)),
+						sections: [],
+					});
+				}
+
+				return table;
 			},
 		}),
 	};

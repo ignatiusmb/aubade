@@ -7,7 +7,8 @@ export const generate = {
 	},
 	id(title: string) {
 		title = title.toLowerCase().replace(separators, '-');
-		return title.replace(/-+/g, '-').replace(/^-*(.+)-*$/, '$1');
+		title = title.replace(/`/g, '').replace(/-+/g, '-');
+		return title.replace(/^-*(.+)-*$/, '$1');
 	},
 } as const;
 
