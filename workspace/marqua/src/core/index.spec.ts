@@ -84,6 +84,40 @@ hex:
 		hex: ['x', true, '0'],
 	});
 });
+suites['construct/']('construct nested sequences', () => {
+	const index = core.construct(
+		`
+title: Nested Sequences
+colors:
+	- red:
+			- ff0000
+			- 255-0-0
+		green:
+			- 00ff00
+			- 0-255-0
+		blue:
+			- 0000ff
+			- 0-0-255
+	- red:
+			- ff0000
+			- 255-0-0
+		green:
+			- 00ff00
+			- 0-255-0
+		blue:
+			- 0000ff
+			- 0-0-255
+		`.trim()
+	);
+
+	assert.equal(index, {
+		title: 'Nested Sequences',
+		colors: [
+			{ red: ['ff0000', '255-0-0'], green: ['00ff00', '0-255-0'], blue: ['0000ff', '0-0-255'] },
+			{ red: ['ff0000', '255-0-0'], green: ['00ff00', '0-255-0'], blue: ['0000ff', '0-0-255'] },
+		],
+	});
+});
 suites['construct/']('construct indents', () => {
 	const index = core.construct(
 		`
