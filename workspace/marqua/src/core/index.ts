@@ -79,7 +79,7 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 	const cleaned = raw.replace(/#.*$/gm, '').trim();
 	switch (cleaned[0]) {
 		case '-': {
-			const sequence = cleaned.split('- ').filter((v) => v);
+			const sequence = cleaned.split(/^- /gm).filter((v) => v);
 			const tabbed = sequence.map((v) =>
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2))
 			);
