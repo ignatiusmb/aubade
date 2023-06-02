@@ -15,14 +15,14 @@
     "@ignatiusmb/styles": "^0.1.1",
     "@sveltejs/adapter-static": "^2.0.2",
     "@sveltejs/kit": "^1.20.1",
-    "@types/node": "^18.16.16",
+    "@types/node": "^20.2.5",
     "marqua": "workspace:^",
-    "mauss": "^0.4.12",
+    "mauss": "^0.5.0",
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.1",
     "svelte": "^3.59.1",
     "svelte-check": "^3.4.3",
-    "syv": "^0.0.22",
+    "syv": "^0.0.26",
     "typescript": "^5.1.3",
     "vite": "^4.3.9"
   }
