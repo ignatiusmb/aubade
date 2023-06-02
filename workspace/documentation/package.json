@@ -4,9 +4,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "svelte-kit sync && vite build",
-    "format": "prettier -wu **",
+    "format": "prettier -wu ** --plugin-search-dir=.",
     "lint": "svelte-kit sync && pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
-    "lint:pt": "prettier -cu **",
+    "lint:pt": "prettier -cu ** --plugin-search-dir=.",
     "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
   },
