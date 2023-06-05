@@ -4,9 +4,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "svelte-kit sync && vite build",
-    "format": "prettier -wu **",
+    "format": "prettier -wu ** --plugin-search-dir=.",
     "lint": "svelte-kit sync && pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
-    "lint:pt": "prettier -cu **",
+    "lint:pt": "prettier -cu ** --plugin-search-dir=.",
     "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
     "lint:ts": "tsc --strict --noEmit --skipLibCheck"
   },
@@ -14,16 +14,16 @@
   "devDependencies": {
     "@ignatiusmb/styles": "^0.1.1",
     "@sveltejs/adapter-static": "^2.0.2",
-    "@sveltejs/kit": "^1.15.9",
-    "@types/node": "^18.16.1",
+    "@sveltejs/kit": "^1.20.1",
+    "@types/node": "^20.2.5",
     "marqua": "workspace:^",
-    "mauss": "^0.4.11",
+    "mauss": "^0.5.0",
     "prettier": "^2.8.8",
-    "prettier-plugin-svelte": "^2.10.0",
-    "svelte": "^3.58.0",
-    "svelte-check": "^3.2.0",
-    "syv": "^0.0.22",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.3"
+    "prettier-plugin-svelte": "^2.10.1",
+    "svelte": "^3.59.1",
+    "svelte-check": "^3.4.3",
+    "syv": "^0.0.26",
+    "typescript": "^5.1.3",
+    "vite": "^4.3.9"
   }
 }
