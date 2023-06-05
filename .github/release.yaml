@@ -18,9 +18,9 @@ changelog:
     - title: 🔃 Refactors
       labels:
         - refactor
+    - title: 📈 Dependencies
+      labels:
+        - dependencies
     - title: 💡 Others
       labels:
         - "*"
-    - title: 📈 Dependencies
-      labels:
-        - dependency
