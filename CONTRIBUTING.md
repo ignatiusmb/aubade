@@ -51,5 +51,5 @@ For maintainers of the project.
 ### Publishing
 
 0. prepare a [new release draft](https://github.com/ignatiusmb/marqua/releases/new) with a new tag
-1. bump version in `package.json` and commit with `~ vX.Y.Z`
+1. bump version in [`package.json`](workspace/marqua/package.json) and commit with `~ vX.Y.Z`
 2. publish release draft and title release with `X.Y.Z`
