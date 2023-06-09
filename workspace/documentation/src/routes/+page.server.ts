@@ -15,5 +15,11 @@ export const load: import('./$types').PageServerLoad = async () => {
 		}
 	);
 
-	return { docs };
+	return {
+		docs,
+		meta: {
+			title: 'Augmented Markdown Compiler',
+			description: 'A markdown compiler with code syntax highlighting',
+		},
+	};
 };

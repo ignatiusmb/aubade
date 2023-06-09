@@ -2,26 +2,64 @@
 	import '@ignatiusmb/styles/core.css';
 	import 'marqua/styles/code.css';
 	import '$lib/styles/fonts.css';
+	import '../app.css';
 
-	import Header from './Header.svelte';
-	import Footer from './Footer.svelte';
+	import { page } from '$app/stores';
 </script>
 
-<Header />
+<svelte:head>
+	<title>{$page.data.meta?.title || `Error ${$page.status}`} • Marqua</title>
+	<meta name="author" content="ignatiusmb" />
+
+	{#if $page.data.meta?.description}
+		<meta name="description" content={$page.data.meta.description} />
+	{/if}
+
+	<meta property="og:site_name" content="Marqua" />
+	<meta property="og:locale" content="en_ID" />
+
+	{#if $page.data.meta?.og}
+		{@const { title, url, description } = $page.data.meta.og}
+		<meta property="og:title" content={title} />
+		<meta property="og:type" content="article" />
+		{#if url}
+			<meta property="og:url" content={url} />
+		{/if}
+		{#if description}
+			<meta property="og:description" content={description} />
+		{/if}
+	{/if}
+</svelte:head>
 
 <slot />
 
-<Footer />
+<footer>
+	<p>
+		<span>Copyright &copy;</span>
+		<a href="https://mauss.dev">Ignatius Bagussuputra</a>
+		<span>2019 &ndash; {new Date().getFullYear()}</span>
+	</p>
+	<p>
+		<span>Documentation made with</span>
+		<span style:color="var(--mrq-primary)">&#x2764;</span>
+		<span>using</span>
+		<a href="https://github.com/sveltejs/kit">SvelteKit</a>
+		<span>&plus;</span>
+		<a href="https://github.com/ignatiusmb/marqua">Marqua</a>
+	</p>
+</footer>
 
 <style>
-	:global(body) {
-		min-height: 100vh;
+	footer {
+		width: 100%;
+		max-width: 84rem;
+		position: relative;
 		display: grid;
-		font-family: var(--mrq-default);
-		background-color: var(--mrq-bg-light);
-	}
-
-	:global(a) {
-		color: var(--mrq-primary);
+		gap: 0.5rem;
+		padding: 3rem 2rem;
+		margin: 0 auto;
+		text-align: center;
+		font-family: var(--font-monospace);
+		font-size: clamp(0.8rem, 3vw, 1rem);
 	}
 </style>
