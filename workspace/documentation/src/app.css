@@ -1,0 +1,10 @@
+body {
+	min-height: 100vh;
+	display: grid;
+	font-family: var(--mrq-default);
+	background-color: var(--mrq-bg-light);
+}
+
+a {
+	color: var(--mrq-primary);
+}

@@ -1,4 +1,9 @@
 <script lang="ts">
+	import Edit from './Edit.svelte';
+	import { hydrate } from 'marqua/browser';
+	import { version } from 'marqua/package.json';
+	import { navigating } from '$app/stores';
+
 	export let repo: string;
 	export let sections: Array<{
 		slug: string;
@@ -6,11 +11,6 @@
 		path: string;
 		content: string;
 	}>;
-
-	import { hydrate } from 'marqua/browser';
-	import { version } from 'marqua/package.json';
-	import { navigating } from '$app/stores';
-	import Edit from './Edit.svelte';
 </script>
 
 <main use:hydrate={$navigating}>
