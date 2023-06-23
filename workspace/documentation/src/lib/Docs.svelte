@@ -21,13 +21,11 @@
 		html.style.setProperty('scroll-behavior', 'smooth');
 
 		const sections = Array.from(document.querySelectorAll('main h2[id]'));
-		const tolerance = 16 * 16; // 2rem * 16
-
 		const check = debounce(() => {
 			const height = document.body.offsetHeight - window.innerHeight;
 			for (let i = sections.length - 1; i >= 0; i--) {
 				const { top } = sections[i].getBoundingClientRect();
-				const multiplied = tolerance * (+(i === 0) + 1);
+				const multiplied = 256 * (+(i === 0) + 1);
 				const heuristics = /* change hash when all applies */ [
 					top > multiplied, // top of next sibling is far enough
 					window.scrollY < height, // scroll is not at the end of page
@@ -38,9 +36,9 @@
 				}
 				return; // exit once hash is changed
 			}
-			// reset hash when all sections meets all heuristics
+			// reset hash when all sections passes all heuristics
 			goto('', { keepFocus: true, noScroll: true, replaceState: true });
-		}, tolerance);
+		}, 100);
 
 		document.addEventListener('scroll', check, true);
 		return () => {
