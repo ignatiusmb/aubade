@@ -1,8 +1,12 @@
 <script lang="ts">
 	import Edit from './Edit.svelte';
+
 	import { hydrate } from 'marqua/browser';
 	import { version } from 'marqua/package.json';
-	import { navigating } from '$app/stores';
+	import { debounce } from 'mauss';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { navigating, page } from '$app/stores';
 
 	export let repo: string;
 	export let sections: Array<{
@@ -11,6 +15,37 @@
 		path: string;
 		content: string;
 	}>;
+
+	onMount(() => {
+		const [html] = Array.from(document.getElementsByTagName('html'));
+		html.style.setProperty('scroll-behavior', 'smooth');
+
+		const sections = Array.from(document.querySelectorAll('main h2[id]'));
+		const check = debounce(() => {
+			const height = document.body.offsetHeight - window.innerHeight;
+			for (let i = sections.length - 1; i >= 0; i--) {
+				const { top } = sections[i].getBoundingClientRect();
+				const multiplied = 256 * (+(i === 0) + 1);
+				const heuristics = /* change hash when all applies */ [
+					top > multiplied, // top of next sibling is far enough
+					window.scrollY < height, // scroll is not at the end of page
+				];
+				if (heuristics.every((h) => h)) continue;
+				if (location.hash !== `#${sections[i].id}`) {
+					goto(`#${sections[i].id}`, { keepFocus: true, noScroll: true, replaceState: true });
+				}
+				return; // exit once hash is changed
+			}
+			// reset hash when all sections passes all heuristics
+			goto('', { keepFocus: true, noScroll: true, replaceState: true });
+		}, 100);
+
+		document.addEventListener('scroll', check, true);
+		return () => {
+			html.style.removeProperty('scroll-behavior');
+			document.removeEventListener('scroll', check, true);
+		};
+	});
 </script>
 
 <main use:hydrate={$navigating}>
@@ -27,7 +62,13 @@
 		</a>
 
 		{#each sections as { slug, title }, i}
-			<a href="#{slug}" data-index={`0${i + 1}`.slice(-2)}>{title}</a>
+			<a
+				href="#{slug}"
+				data-index={`0${i + 1}`.slice(-2)}
+				class:current={$page.url.hash === `#${slug}`}
+			>
+				{title}
+			</a>
 		{/each}
 	</aside>
 
@@ -89,6 +130,7 @@
 		margin-right: 0.75rem;
 		font-family: var(--font-monospace);
 	}
+	aside a[data-index].current,
 	aside a[data-index]:hover {
 		background-color: rgba(0, 0, 0, 0.1);
 	}
