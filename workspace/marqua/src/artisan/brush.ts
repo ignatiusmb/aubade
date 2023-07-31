@@ -26,7 +26,7 @@ export function transform(source: string, dataset: Dataset) {
 
 	rest.language = dataset.lang || ''; // fallback for HTML attribute
 	const attrs = Object.entries(rest).map(
-		([k, v]) => `data-${k.toLowerCase().replace(/[^a-z\-]/g, '')}="${escape(v || '')}"`
+		([k, v]) => `data-${k.toLowerCase().replace(/[^a-z\-]/g, '')}="${escape(v || '')}"`,
 	);
 
 	// needs to be /^<pre/ to prevent added wrapper from markdown-it
