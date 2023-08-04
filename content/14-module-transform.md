@@ -8,13 +8,9 @@ This module provides a set of transformer functions for the [`traverse.transform
 
 ```typescript
 import { traverse } from 'marqua/fs';
-import { pipe, ... } from 'marqua/transform';
+import { pipe } from 'marqua/transform';
 
-traverse(
-  { entry: 'content' },
-  ({ ... }) => { ... },
-  pipe(...)
-);
+traverse({ entry: 'content' }, () => {}, pipe(/* ... */));
 ```
 
 ### chain
@@ -34,13 +30,13 @@ export function chain<T extends { slug?: string; title?: any }>(options: {
 
     ```typescript
     traverse(
-      { entry: 'content' },
-      ({ ... }) => { ... },
-      chain({
-        breakpoint(item) {
-          return ...
-        }
-      })
+    	{ entry: 'content' },
+    	({}) => {},
+    	chain({
+    		breakpoint(item) {
+    			return; // ...
+    		},
+    	}),
     );
     ```
 

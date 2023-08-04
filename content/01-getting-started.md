@@ -33,6 +33,7 @@ The following CSS variables are made available and can be modified as needed
 	--font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
 
 	--mrq-rounding: 0.3rem;
+	--mrq-tab-size: 2;
 
 	--mrq-primary: #0070bb;
 	--mrq-bg-dark: #2d2d2d;

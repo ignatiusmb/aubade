@@ -23,13 +23,13 @@ import { transform } from 'marqua/artisan';
 
 const source = `
 interface User {
-  id: number;
-  name: string;
+	id: number;
+	name: string;
 }
 
 const user: User = {
-  id: 0,
-  name: 'User'
+	id: 0,
+	name: 'User'
 }
 `;
 
@@ -44,7 +44,7 @@ import { transform } from 'marqua/artisan';
 
 // passing as a 'markdown-it' options
 const marker = MarkdownIt({
-  highlight: (source, lang) => transform(source, { lang });
+	highlight: (source, lang) => transform(source, { lang });
 });
 ```
 
