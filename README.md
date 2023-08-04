@@ -2,8 +2,8 @@
 
 Augmented Markdown Compiler. Write markdown files and convert them into structured data and markup.
 
-- Visit the documentation site at https://marqua.mauss.dev to get started.
-- See https://github.com/ignatiusmb/marqua/releases tab to stay updated.
+-   Visit the documentation site at https://marqua.mauss.dev to get started.
+-   See https://github.com/ignatiusmb/marqua/releases tab to stay updated.
 
 ## Contributing
 

@@ -27,10 +27,10 @@ Add interactivity to the code blocks with `hydrate` from `/browser` module.
 
 ```svelte
 <script>
-  import { hydrate } from 'marqua/browser';
+	import { hydrate } from 'marqua/browser';
 </script>
 
 <main use:hydrate>
-  <!-- content here -->
+	<!-- content here -->
 </main>
 ```
