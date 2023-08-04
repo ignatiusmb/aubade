@@ -3,6 +3,7 @@
 	--font-heading: 'Karla', sans-serif;
 	--font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
 
+	--mrq-tab-size: 2;
 	--mrq-rounding: 0.3rem;
 
 	--mrq-primary: #0070bb;
@@ -17,6 +18,7 @@
 .mrq[data-mrq='pre'] {
 	width: 100%;
 	position: relative;
+	tab-size: var(--mrq-tab-size);
 
 	--mrq-pre-bg: #525252;
 	--mrq-bounce: 10rem;
