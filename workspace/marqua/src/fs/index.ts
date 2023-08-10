@@ -23,11 +23,11 @@ interface HydrateChunk {
 export function compile(entry: string): Compiled;
 export function compile<Output extends object>(
 	entry: string,
-	hydrate?: (chunk: HydrateChunk) => undefined | Output
+	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 ): undefined | Output;
 export function compile<Output extends object>(
 	entry: string,
-	hydrate?: (chunk: HydrateChunk) => undefined | Output
+	hydrate?: (chunk: HydrateChunk) => undefined | Output,
 ) {
 	const buffer = fs.readFileSync(entry);
 	const result = scope(() => {
@@ -52,11 +52,11 @@ export function traverse<
 		depth?: number;
 	},
 	Output extends object,
-	Transformed = Array<Output & Metadata>
+	Transformed = Array<Output & Metadata>,
 >(
 	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 }: Options,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
-	transform?: (items: Array<Output & Metadata>) => Transformed
+	transform?: (items: Array<Output & Metadata>) => Transformed,
 ): Transformed {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);

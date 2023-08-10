@@ -12,7 +12,7 @@ export const load: import('./$types').PageServerLoad = async () => {
 			const [, index, slug] = /^(\d{2})-(.+).md$/.exec(filename)!;
 			const { content, metadata } = parse(buffer.toString('utf-8'));
 			return { index, slug, title: metadata.title, path, content };
-		}
+		},
 	);
 
 	return {

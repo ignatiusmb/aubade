@@ -13,7 +13,7 @@ suites['construct/']('construct simple index', () => {
 		`
 title: Simple Index
 tags: [x, y, z]
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -29,7 +29,7 @@ date:published: 2023-02-01
 a:b:x: 0
 a:b:y: 1
 a:b:z: 2
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -44,7 +44,7 @@ suites['construct/']('convert boolean values', () => {
 title: Casting Boolean
 draft: false
 hex: ["x", true, 0, false]
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -60,7 +60,7 @@ title: Literal Block
 data: |
 	Hello World
 	Lorem Ipsum
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -76,7 +76,7 @@ hex:
 	- 'x'
 	- true
 	- 0
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -107,7 +107,7 @@ colors:
 		blue:
 			- 0000ff
 			- 0-0-255
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -128,7 +128,7 @@ jobs:
 		path: ./test
 	sync:
 		with: pnpm
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -152,7 +152,7 @@ jobs:
 			os: linux
 			env:
 				TOKEN: 123
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(index, {
@@ -188,7 +188,7 @@ link:
 		- https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower
 		- https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly
 		- https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song
-			`.trim()
+			`.trim(),
 		),
 		{
 			title: 'Edge Cases',
@@ -202,7 +202,7 @@ link:
 					'https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song',
 				],
 			},
-		}
+		},
 	);
 
 	assert.equal(
@@ -216,14 +216,14 @@ multiple:\t\t\t
 	- tabs
 voyager:   
 	- multiple space
-			`.trim()
+			`.trim(),
 		),
 		{
 			trailing: ['tab'],
 			invisible: ['trailing space'],
 			multiple: ['tabs'],
 			voyager: ['multiple space'],
-		}
+		},
 	);
 });
 suites['construct/']('construct with spaces indents', () => {
@@ -250,7 +250,7 @@ link:
     - https://duckduckgo.com
     - https://google.com
     - https://bing.com
-    `.trim()
+    `.trim(),
 	);
 
 	assert.equal(index, {
@@ -284,7 +284,7 @@ rating: [8, 7, 9]
 ## !{rating:0}/10 | $(story & plot)
 
 story and plot contents
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(metadata.table, [
@@ -321,7 +321,7 @@ subsection contents
 something here
 
 ### second subsection
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(metadata.table, [
@@ -368,7 +368,7 @@ title: Hello Parser
 ---
 
 Welcome to the contents
-		`.trim()
+		`.trim(),
 	);
 
 	assert.equal(metadata, {

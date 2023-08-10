@@ -1,56 +1,56 @@
 {
-  "name": "marqua",
-  "author": "Ignatius Bagus",
-  "description": "Augmented Markdown Compiler",
-  "version": "0.5.2",
-  "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "watch": "pnpm build --watch",
-    "build": "tsc --declaration",
-    "format": "prettier -wu **/*.{d.ts,js}",
-    "lint": "pnpm lint:code && pnpm lint:style",
-    "lint:code": "tsc --noEmit",
-    "lint:style": "prettier -c src test",
-    "test": "pnpm test:core && pnpm test:apps",
-    "test:core": "uvu -r tsm src \"(spec\\.ts)\"",
-    "test:apps": "pnpm build && uvu test/apps",
-    "prepublish": "pnpm build && pnpm format"
-  },
-  "exports": {
-    ".": "./core/index.js",
-    "./artisan": "./artisan/index.js",
-    "./browser": "./browser/index.js",
-    "./fs": "./fs/index.js",
-    "./transform": "./transform/index.js",
-    "./styles/code.css": "./styles/code.css",
-    "./package.json": "./package.json"
-  },
-  "prettier": "mauss/prettier.json",
-  "repository": "github:ignatiusmb/marqua",
-  "bugs": "https://github.com/ignatiusmb/marqua/issues",
-  "keywords": [
-    "markdown",
-    "compiler",
-    "parser",
-    "syntax",
-    "highlighter",
-    "preprocessor"
-  ],
-  "engines": {
-    "node": ">=14.8"
-  },
-  "dependencies": {
-    "markdown-it": "^13.0.1",
-    "mauss": "^0.5.0",
-    "shiki": "^0.14.2"
-  },
-  "devDependencies": {
-    "@types/markdown-it": "^12.2.3",
-    "@types/node": "^20.2.5",
-    "prettier": "^2.8.8",
-    "tsm": "^2.3.0",
-    "typescript": "^5.1.3",
-    "uvu": "^0.5.6"
-  }
+	"name": "marqua",
+	"version": "0.5.2",
+	"description": "Augmented Markdown Compiler",
+	"repository": "github:ignatiusmb/marqua",
+	"license": "MIT",
+	"author": "Ignatius Bagus",
+	"type": "module",
+	"scripts": {
+		"watch": "pnpm build --watch",
+		"build": "tsc --declaration",
+		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
+		"lint": "pnpm lint:code && pnpm lint:style",
+		"lint:code": "tsc --noEmit",
+		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
+		"test": "pnpm test:core && pnpm test:apps",
+		"test:core": "uvu -r tsm src \"(spec\\.ts)\"",
+		"test:apps": "pnpm build && uvu test/apps",
+		"prepublish": "pnpm build && pnpm format"
+	},
+	"exports": {
+		".": "./core/index.js",
+		"./artisan": "./artisan/index.js",
+		"./browser": "./browser/index.js",
+		"./fs": "./fs/index.js",
+		"./transform": "./transform/index.js",
+		"./styles/code.css": "./styles/code.css",
+		"./package.json": "./package.json"
+	},
+	"engines": {
+		"node": ">=14.8"
+	},
+	"prettier": "mauss/prettier.json",
+	"keywords": [
+		"markdown",
+		"compiler",
+		"parser",
+		"syntax",
+		"highlighter",
+		"preprocessor"
+	],
+	"dependencies": {
+		"markdown-it": "^13.0.1",
+		"mauss": "^0.7.0",
+		"shiki": "^0.14.3"
+	},
+	"devDependencies": {
+		"@types/markdown-it": "^12.2.3",
+		"@types/node": "^20.4.7",
+		"prettier": "^3.0.1",
+		"prettier-plugin-sort-package-json": "^0.1.1",
+		"tsm": "^2.3.0",
+		"typescript": "^5.1.6",
+		"uvu": "^0.5.6"
+	}
 }

@@ -8,9 +8,9 @@ This isn't usually necessary, but in case you want to handle the markdown parsin
 
 ```typescript
 export interface Dataset {
-  lang?: string;
-  file?: string;
-  [data: string]: string | undefined;
+	lang?: string;
+	file?: string;
+	[data: string]: string | undefined;
 }
 
 export function transform(source: string, dataset: Dataset): string;
@@ -19,17 +19,17 @@ export function transform(source: string, dataset: Dataset): string;
 A simple example would be passing a raw source code as a string.
 
 ```javascript
-import { transform } from 'marqua/artisan'
+import { transform } from 'marqua/artisan';
 
 const source = `
 interface User {
-  id: number;
-  name: string;
+	id: number;
+	name: string;
 }
 
 const user: User = {
-  id: 0,
-  name: 'User'
+	id: 0,
+	name: 'User'
 }
 `;
 
@@ -44,7 +44,7 @@ import { transform } from 'marqua/artisan';
 
 // passing as a 'markdown-it' options
 const marker = MarkdownIt({
-  highlight: (source, lang) => transform(source, { lang });
+	highlight: (source, lang) => transform(source, { lang });
 });
 ```
 
@@ -67,8 +67,8 @@ import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 
 marker.use(TexMath, {
-  engine: KaTeX,
-  delimiters: 'dollars',
+	engine: KaTeX,
+	delimiters: 'dollars',
 });
 
 const data = compile(/* source path */);

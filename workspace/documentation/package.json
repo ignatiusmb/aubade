@@ -1,29 +1,29 @@
 {
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "svelte-kit sync && vite build",
-    "format": "prettier -wu ** --plugin-search-dir=.",
-    "lint": "svelte-kit sync && pnpm lint:pt && pnpm lint:sv && pnpm lint:ts",
-    "lint:pt": "prettier -cu ** --plugin-search-dir=.",
-    "lint:sv": "svelte-check src --tsconfig ./tsconfig.json",
-    "lint:ts": "tsc --strict --noEmit --skipLibCheck"
-  },
-  "prettier": "mauss/prettier.json",
-  "devDependencies": {
-    "@ignatiusmb/styles": "^0.1.1",
-    "@sveltejs/adapter-static": "^2.0.2",
-    "@sveltejs/kit": "^1.20.1",
-    "@types/node": "^20.2.5",
-    "marqua": "workspace:^",
-    "mauss": "^0.5.0",
-    "prettier": "^2.8.8",
-    "prettier-plugin-svelte": "^2.10.1",
-    "svelte": "^3.59.1",
-    "svelte-check": "^3.4.3",
-    "syv": "^0.0.26",
-    "typescript": "^5.1.3",
-    "vite": "^4.3.9"
-  }
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "svelte-kit sync && vite build",
+		"format": "prettier -w . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
+		"lint": "svelte-kit sync && pnpm lint:style && pnpm lint:svelte",
+		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
+		"lint:svelte": "svelte-check src --tsconfig ./tsconfig.json"
+	},
+	"prettier": "mauss/prettier.json",
+	"devDependencies": {
+		"@ignatiusmb/styles": "^0.1.1",
+		"@sveltejs/adapter-static": "^2.0.3",
+		"@sveltejs/kit": "^1.22.4",
+		"@types/node": "^20.4.7",
+		"marqua": "workspace:^",
+		"mauss": "^0.7.0",
+		"prettier": "^3.0.1",
+		"prettier-plugin-sort-package-json": "^0.1.1",
+		"prettier-plugin-svelte": "^3.0.3",
+		"svelte": "^4.1.2",
+		"svelte-check": "^3.4.6",
+		"syv": "^0.0.27",
+		"typescript": "^5.1.6",
+		"vite": "^4.4.8"
+	}
 }

@@ -14,19 +14,19 @@ export function hydrate(node: HTMLElement, key: any): ActionReturn;
 
 The `hydrate` function can be used to make the rendered code blocks from your markdown interactive, some of which are
 
-- toggle code line numbers
-- copy block to clipboard
+-   toggle code line numbers
+-   copy block to clipboard
 
 Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 
 ```svelte
 <script>
-  import { hydrate } from 'marqua/browser';
-  import { navigating } from '$app/stores';
+	import { hydrate } from 'marqua/browser';
+	import { navigating } from '$app/stores';
 </script>
 
 <main use:hydrate={$navigating}>
-  <!-- content here -->
+	<!-- content here -->
 </main>
 ```
 
