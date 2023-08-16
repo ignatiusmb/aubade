@@ -1,4 +1,6 @@
 *.js
 *.d.ts
+*.map
 
+!scripts/*.js
 !test/**/*.js
