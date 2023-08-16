@@ -51,7 +51,7 @@
 <main use:hydrate={$navigating}>
 	<aside>
 		<a
-			href="https://github.com/ignatiusmb/marqua/releases/latest"
+			href="https://github.com/{repo}/releases/latest"
 			style:margin-bottom="0.5rem"
 			style:letter-spacing="2px"
 			style:font-size="1.25rem"
