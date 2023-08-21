@@ -28,6 +28,7 @@
 		"./package.json": "./package.json"
 	},
 	"files": [
+		"artisan/*.d.ts",
 		"src/**/*.js",
 		"src/**/*.d.ts",
 		"styles/",
