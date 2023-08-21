@@ -2,10 +2,8 @@ name: REL
 
 on:
   push:
-    tags:
-      - "v*"
-    branches-ignore:
-      - "**"
+    tags: ["v*"]
+    branches-ignore: ["**"]
 
 jobs:
   publish:
@@ -18,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          registry-url: "https://registry.npmjs.org"
+          registry-url: https://registry.npmjs.org
 
       - run: pnpm install
       - run: pnpm publish ./workspace/marqua --no-git-checks
