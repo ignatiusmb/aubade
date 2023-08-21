@@ -10,17 +10,13 @@ interface Metadata {
 	table: MarquaTable[];
 }
 
-interface Compiled extends Metadata {
-	content: string;
-}
-
 interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
 	parse: typeof parse;
 }
 
-export function compile(entry: string): Compiled;
+export function compile(entry: string): Metadata & { content: string };
 export function compile<Output extends object>(
 	entry: string,
 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
@@ -34,7 +30,7 @@ export function compile<Output extends object>(
 		const breadcrumb = entry.split(/[/\\]/).reverse();
 		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
 		const { content, metadata } = parse(buffer.toString('utf-8'));
-		return { ...metadata, content } as Compiled;
+		return { ...metadata, content } as Metadata & { content: string };
 	});
 
 	if (!result /* hydrate returns nothing */) return;
