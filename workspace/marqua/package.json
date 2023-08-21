@@ -3,12 +3,11 @@
 	"version": "0.5.2",
 	"description": "Augmented Markdown Compiler",
 	"repository": "github:ignatiusmb/marqua",
-	"license": "MIT",
 	"author": "Ignatius Bagus",
 	"type": "module",
 	"scripts": {
-		"watch": "pnpm build --watch",
-		"build": "tsc --declaration",
+		"build": "tsc && tsm scripts/bundle-types.ts",
+		"build:artisan": "tsc --project ./src/artisan/tsconfig.json && rm utils.d.ts",
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
 		"lint": "pnpm lint:code && pnpm lint:style",
 		"lint:code": "tsc --noEmit",
@@ -16,9 +15,9 @@
 		"test": "pnpm test:core && pnpm test:apps",
 		"test:core": "uvu -r tsm src \"(spec\\.ts)\"",
 		"test:apps": "pnpm build && uvu test/apps",
-		"generate": "tsm scripts/bundle-types.ts",
 		"prepublish": "pnpm build && pnpm format"
 	},
+	"typings": "index.d.ts",
 	"exports": {
 		".": "./src/core/index.js",
 		"./artisan": "./src/artisan/index.js",
