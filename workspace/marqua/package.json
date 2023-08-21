@@ -16,18 +16,25 @@
 		"test": "pnpm test:core && pnpm test:apps",
 		"test:core": "uvu -r tsm src \"(spec\\.ts)\"",
 		"test:apps": "pnpm build && uvu test/apps",
-		"prepublish": "pnpm build && pnpm format",
-		"generate": "tsm scripts/bundle-types.ts"
+		"generate": "tsm scripts/bundle-types.ts",
+		"prepublish": "pnpm build && pnpm format"
 	},
 	"exports": {
-		".": "./core/index.js",
-		"./artisan": "./artisan/index.js",
-		"./browser": "./browser/index.js",
-		"./fs": "./fs/index.js",
-		"./transform": "./transform/index.js",
-		"./styles/code.css": "./styles/code.css",
+		".": "./src/core/index.js",
+		"./artisan": "./src/artisan/index.js",
+		"./browser": "./src/browser/index.js",
+		"./fs": "./src/fs/index.js",
+		"./transform": "./src/transform/index.js",
+		"./styles/*.css": "./styles/*.css",
 		"./package.json": "./package.json"
 	},
+	"files": [
+		"src/**/*.js",
+		"src/**/*.d.ts",
+		"styles/",
+		"index.d.ts",
+		"index.d.ts.map"
+	],
 	"engines": {
 		"node": ">=14.8"
 	},
