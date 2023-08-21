@@ -45,9 +45,9 @@
 		"shiki": "^0.14.3"
 	},
 	"devDependencies": {
-		"@types/markdown-it": "^12.2.3",
-		"@types/node": "^20.4.7",
-		"prettier": "^3.0.1",
+		"@types/markdown-it": "^13.0.0",
+		"@types/node": "^20.5.1",
+		"prettier": "^3.0.2",
 		"prettier-plugin-sort-package-json": "^0.1.1",
 		"tsm": "^2.3.0",
 		"typescript": "^5.1.6",
