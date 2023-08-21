@@ -1,16 +1,11 @@
 import { createBundle } from 'dts-buddy';
-import * as pkg from '../package.json';
+import { exports } from '../package.json';
 
 await createBundle({
 	output: 'index.d.ts',
-	// modules: Object.entries(pkg.exports).reduce((acc, [exp, entry]) => {
-	// 	return { ...acc, [`marqua/${exp.slice(2)}`]: `./src/${entry.slice(2)}` };
-	// }, {}),
-	modules: {
-		marqua: './src/core/index.js',
-		'marqua/artisan': './src/artisan/index.js',
-		'marqua/browser': './src/browser/index.js',
-		'marqua/fs': './src/fs/index.js',
-		'marqua/transform': './src/transform/index.js',
-	},
+	modules: Object.keys(exports).reduce((acc, key) => {
+		if (key === './artisan') return acc; // TODO: why did this fails
+		if (key.slice(2).includes('.')) return acc; // skip non-modules
+		return { ...acc, ['marqua' + key.slice(1)]: exports[key] };
+	}, {}),
 });
