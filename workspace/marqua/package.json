@@ -6,7 +6,7 @@
 	"author": "Ignatius Bagus",
 	"type": "module",
 	"scripts": {
-		"build": "git clean -x src && tsm scripts/bundle-types.ts && tsc",
+		"build": "git clean -fx src && tsm scripts/bundle-types.ts && tsc && pnpm build:artisan",
 		"build:artisan": "tsc --project ./src/artisan/tsconfig.json && rm utils.d.ts",
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
 		"lint": "pnpm lint:code && pnpm lint:style",
