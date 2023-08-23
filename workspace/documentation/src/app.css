@@ -47,5 +47,6 @@ body {
 }
 
 a {
-	color: var(--mrq-primary);
+	/* color: var(--mrq-primary); */
+	color: #34aeff;
 }
