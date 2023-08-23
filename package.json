@@ -3,10 +3,10 @@
 	"type": "module",
 	"scripts": {
 		"clean": "git add * && git clean -dfx -e node_modules",
-		"lint": "pnpm --filter ./workspace/* lint",
-		"test": "pnpm --filter ./workspace/* test",
-		"format": "pnpm --filter ./workspace/* format",
-		"postinstall": "cd ./workspace/marqua && tsc"
+		"lint": "pnpm --filter \"./workspace/*\" lint",
+		"test": "pnpm --filter \"./workspace/*\" test",
+		"format": "pnpm --filter \"./workspace/*\" format",
+		"postinstall": "cd ./workspace/marqua && pnpm prepublish"
 	},
 	"packageManager": "pnpm@8.6.11",
 	"prettier": "mauss/prettier.json",
