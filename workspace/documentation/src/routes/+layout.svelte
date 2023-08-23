@@ -1,7 +1,12 @@
 <script>
+	import '@fontsource/rubik/400.css';
+	import '@fontsource/rubik/500.css';
+	import '@fontsource/karla/400.css';
+	import '@fontsource/karla/600.css';
+	import '@fontsource/fira-code/400.css';
+
 	import '@ignatiusmb/styles/core.css';
 	import 'marqua/styles/code.css';
-	import '$lib/styles/fonts.css';
 	import '../app.css';
 
 	import { page } from '$app/stores';
@@ -52,12 +57,13 @@
 <style>
 	footer {
 		width: 100%;
-		max-width: 84rem;
+		max-width: 84ch;
 		position: relative;
 		display: grid;
 		gap: 0.5rem;
 		padding: 3rem 2rem;
 		margin: 0 auto;
+
 		text-align: center;
 		font-family: var(--font-monospace);
 		font-size: clamp(0.8rem, 3vw, 1rem);
