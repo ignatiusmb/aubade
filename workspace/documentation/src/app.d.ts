@@ -1,4 +1,5 @@
 /// <reference types="@sveltejs/kit" />
+/// <reference types="../../marqua" />
 
 namespace App {
 	// interface Error {}
