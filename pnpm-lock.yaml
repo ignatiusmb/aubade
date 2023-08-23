@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@types/node':
-        specifier: ^20.5.1
-        version: 20.5.1
+        specifier: ^20.5.3
+        version: 20.5.3
       prettier:
         specifier: ^3.0.2
         version: 3.0.2
@@ -30,14 +30,14 @@ importers:
         specifier: ^1.22.6
         version: 1.22.6(svelte@4.2.0)(vite@4.4.9)
       '@types/node':
-        specifier: ^20.5.1
-        version: 20.5.1
+        specifier: ^20.5.3
+        version: 20.5.3
       marqua:
         specifier: workspace:^
         version: link:../marqua
       mauss:
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.7.1
+        version: 0.7.1
       prettier:
         specifier: ^3.0.2
         version: 3.0.2
@@ -61,7 +61,7 @@ importers:
         version: 5.1.6
       vite:
         specifier: ^4.4.9
-        version: 4.4.9(@types/node@20.5.1)
+        version: 4.4.9(@types/node@20.5.3)
 
   workspace/marqua:
     dependencies:
@@ -69,8 +69,8 @@ importers:
         specifier: ^13.0.1
         version: 13.0.1
       mauss:
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.7.1
+        version: 0.7.1
       shiki:
         specifier: ^0.14.3
         version: 0.14.3
@@ -79,11 +79,11 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0
       '@types/node':
-        specifier: ^20.5.1
-        version: 20.5.1
+        specifier: ^20.5.3
+        version: 20.5.3
       dts-buddy:
-        specifier: ^0.1.12
-        version: 0.1.12
+        specifier: ^0.1.13
+        version: 0.1.13
       prettier:
         specifier: ^3.0.2
         version: 3.0.2
@@ -422,7 +422,7 @@ packages:
       sirv: 2.0.3
       svelte: 4.2.0
       undici: 5.23.0
-      vite: 4.4.9(@types/node@20.5.1)
+      vite: 4.4.9(@types/node@20.5.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -438,7 +438,7 @@ packages:
       '@sveltejs/vite-plugin-svelte': 2.4.5(svelte@4.2.0)(vite@4.4.9)
       debug: 4.3.4
       svelte: 4.2.0
-      vite: 4.4.9(@types/node@20.5.1)
+      vite: 4.4.9(@types/node@20.5.3)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -457,7 +457,7 @@ packages:
       magic-string: 0.30.3
       svelte: 4.2.0
       svelte-hmr: 0.15.3(svelte@4.2.0)
-      vite: 4.4.9(@types/node@20.5.1)
+      vite: 4.4.9(@types/node@20.5.3)
       vitefu: 0.2.4(vite@4.4.9)
     transitivePeerDependencies:
       - supports-color
@@ -486,8 +486,8 @@ packages:
     resolution: {integrity: sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==}
     dev: true
 
-  /@types/node@20.5.1:
-    resolution: {integrity: sha512-4tT2UrL5LBqDwoed9wZ6N3umC4Yhz3W3FloMmiiG4JwmUJWpie0c7lcnUNd4gtMKuDEO4wRVS8B6Xa0uMRsMKg==}
+  /@types/node@20.5.3:
+    resolution: {integrity: sha512-ITI7rbWczR8a/S6qjAW7DMqxqFMjjTo61qZVWJ1ubPvbIQsL5D/TvwjYEalM8Kthpe3hTzOGrF2TGbAu2uyqeA==}
     dev: true
 
   /@types/pug@2.0.6:
@@ -579,7 +579,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /code-red@1.0.4:
@@ -645,8 +645,8 @@ packages:
     engines: {node: '>=0.3.1'}
     dev: true
 
-  /dts-buddy@0.1.12:
-    resolution: {integrity: sha512-3HcUQnmG02fPSFL/Y1Ufh4oAGpaJ8cN4UP60Q1ll014LSwfS7XceMr7jBt9k55cT+dznZsQCxOx2tITgq/WHsw==}
+  /dts-buddy@0.1.13:
+    resolution: {integrity: sha512-5IZvzhiyKcnQ7UKeLAhHREF5lxKMBB2z0v+2UCLMa/cNlTRCbZB7CXpqmDyZu7cTwaky8IXuzGvvWLXeE+d83Q==}
     hasBin: true
     dependencies:
       '@jridgewell/source-map': 0.3.5
@@ -948,8 +948,8 @@ packages:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
     dev: true
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -1079,8 +1079,8 @@ packages:
       uc.micro: 1.0.6
     dev: false
 
-  /mauss@0.7.0:
-    resolution: {integrity: sha512-1alb7+ne13blJSZ9tsZ1Vc6D6QnmA5GJgztXG/GiYUhvAOz5ML1DBqaHn0GsiaSctG0iSWWvDO/j2nU+czJawA==}
+  /mauss@0.7.1:
+    resolution: {integrity: sha512-ofUS5mvmZxTaqGwEx52BtAnriPYTeQ4RPuHdNa+U5CtqxdJBNYPueH0KOWJVibfCAcARNHxL8gC0CIRyNVJNaA==}
 
   /mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
@@ -1252,12 +1252,12 @@ packages:
       glob: 7.2.3
     dev: true
 
-  /rollup@3.28.0:
-    resolution: {integrity: sha512-d7zhvo1OUY2SXSM6pfNjgD5+d0Nz87CUp4mt8l/GgVP3oBsPwzNvSzyu1me6BSG9JIgWNTVcafIXBIyM8yQ3yw==}
+  /rollup@3.28.1:
+    resolution: {integrity: sha512-R9OMQmIHJm9znrU3m3cpE8uhN0fGdXiawME7aZIpQqvpS/85+Vt1Hq1/yVIcYfOmaQiHjvXkQAoJukvLpau6Yw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /run-parallel@1.2.0:
@@ -1438,7 +1438,7 @@ packages:
     peerDependencies:
       svelte: ^3.49.0 || ^4.0.0
     dependencies:
-      mauss: 0.7.0
+      mauss: 0.7.1
       svelte: 4.2.0
     dev: true
 
@@ -1506,7 +1506,7 @@ packages:
       sade: 1.8.1
     dev: true
 
-  /vite@4.4.9(@types/node@20.5.1):
+  /vite@4.4.9(@types/node@20.5.3):
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -1534,12 +1534,12 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.5.1
+      '@types/node': 20.5.3
       esbuild: 0.18.20
       postcss: 8.4.28
-      rollup: 3.28.0
+      rollup: 3.28.1
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /vitefu@0.2.4(vite@4.4.9):
@@ -1550,7 +1550,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.4.9(@types/node@20.5.1)
+      vite: 4.4.9(@types/node@20.5.3)
     dev: true
 
   /vscode-oniguruma@1.7.0:

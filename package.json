@@ -11,7 +11,7 @@
 	"packageManager": "pnpm@8.6.11",
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@types/node": "^20.5.1",
+		"@types/node": "^20.5.3",
 		"prettier": "^3.0.2",
 		"typescript": "^5.1.6"
 	}
