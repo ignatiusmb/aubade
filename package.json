@@ -3,15 +3,15 @@
 	"type": "module",
 	"scripts": {
 		"clean": "git add * && git clean -dfx -e node_modules",
-		"lint": "pnpm --filter ./workspace/* lint",
-		"test": "pnpm --filter ./workspace/* test",
-		"format": "pnpm --filter ./workspace/* format",
-		"postinstall": "cd ./workspace/marqua && tsc"
+		"lint": "pnpm --filter \"./workspace/*\" lint",
+		"test": "pnpm --filter \"./workspace/*\" test",
+		"format": "pnpm --filter \"./workspace/*\" format",
+		"postinstall": "cd ./workspace/marqua && pnpm prepublish"
 	},
 	"packageManager": "pnpm@8.6.11",
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@types/node": "^20.5.1",
+		"@types/node": "^20.5.3",
 		"prettier": "^3.0.2",
 		"typescript": "^5.1.6"
 	}
