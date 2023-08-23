@@ -3,30 +3,37 @@
 	"version": "0.5.2",
 	"description": "Augmented Markdown Compiler",
 	"repository": "github:ignatiusmb/marqua",
-	"license": "MIT",
 	"author": "Ignatius Bagus",
 	"type": "module",
 	"scripts": {
-		"watch": "pnpm build --watch",
-		"build": "tsc --declaration",
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
 		"lint": "pnpm lint:code && pnpm lint:style",
 		"lint:code": "tsc --noEmit",
 		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
 		"test": "pnpm test:core && pnpm test:apps",
 		"test:core": "uvu -r tsm src \"(spec\\.ts)\"",
-		"test:apps": "pnpm build && uvu test/apps",
-		"prepublish": "pnpm build && pnpm format"
+		"test:apps": "tsc && uvu test/apps",
+		"build:types": "tsm scripts/compile-types.ts",
+		"build:files": "tsc && tsc --project ./src/artisan/tsconfig.json && rm utils.d.ts",
+		"prepublish": "pnpm build:types && pnpm build:files"
 	},
+	"typings": "index.d.ts",
 	"exports": {
-		".": "./core/index.js",
-		"./artisan": "./artisan/index.js",
-		"./browser": "./browser/index.js",
-		"./fs": "./fs/index.js",
-		"./transform": "./transform/index.js",
-		"./styles/code.css": "./styles/code.css",
+		".": "./src/core/index.js",
+		"./artisan": "./src/artisan/index.js",
+		"./browser": "./src/browser/index.js",
+		"./fs": "./src/fs/index.js",
+		"./transform": "./src/transform/index.js",
+		"./styles/*.css": "./styles/*.css",
 		"./package.json": "./package.json"
 	},
+	"files": [
+		"artisan/*.d.ts",
+		"src/**/*.js",
+		"styles/",
+		"index.d.ts",
+		"index.d.ts.map"
+	],
 	"engines": {
 		"node": ">=14.8"
 	},
@@ -47,6 +54,7 @@
 	"devDependencies": {
 		"@types/markdown-it": "^13.0.0",
 		"@types/node": "^20.5.1",
+		"dts-buddy": "^0.1.12",
 		"prettier": "^3.0.2",
 		"prettier-plugin-sort-package-json": "^0.1.1",
 		"tsm": "^2.3.0",

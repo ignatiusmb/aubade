@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import { traverse } from '../../../fs/index.js';
+import { traverse } from '../../../src/fs/index.js';
 import { readJSON } from '../utils.js';
 
 const basics = {

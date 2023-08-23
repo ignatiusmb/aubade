@@ -81,6 +81,9 @@ importers:
       '@types/node':
         specifier: ^20.5.1
         version: 20.5.1
+      dts-buddy:
+        specifier: ^0.1.12
+        version: 0.1.12
       prettier:
         specifier: ^3.0.2
         version: 3.0.2
@@ -344,6 +347,13 @@ packages:
   /@jridgewell/set-array@1.1.2:
     resolution: {integrity: sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==}
     engines: {node: '>=6.0.0'}
+    dev: true
+
+  /@jridgewell/source-map@0.3.5:
+    resolution: {integrity: sha512-UTYAUj/wviwdsMfzoSJspJxbkH5o1snzwX0//0ENX1u/55kkZZkcTZP6u9bwKGkv+dkk9at4m1Cpt0uY80kcpQ==}
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.3
+      '@jridgewell/trace-mapping': 0.3.19
     dev: true
 
   /@jridgewell/sourcemap-codec@1.4.15:
@@ -633,6 +643,22 @@ packages:
   /diff@5.1.0:
     resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
     engines: {node: '>=0.3.1'}
+    dev: true
+
+  /dts-buddy@0.1.12:
+    resolution: {integrity: sha512-3HcUQnmG02fPSFL/Y1Ufh4oAGpaJ8cN4UP60Q1ll014LSwfS7XceMr7jBt9k55cT+dznZsQCxOx2tITgq/WHsw==}
+    hasBin: true
+    dependencies:
+      '@jridgewell/source-map': 0.3.5
+      '@jridgewell/sourcemap-codec': 1.4.15
+      globrex: 0.1.2
+      kleur: 4.1.5
+      locate-character: 3.0.0
+      magic-string: 0.30.3
+      sade: 1.8.1
+      tiny-glob: 0.2.9
+      ts-api-utils: 0.0.46(typescript@5.1.6)
+      typescript: 5.1.6
     dev: true
 
   /entities@3.0.1:
@@ -946,6 +972,14 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
+
+  /globalyzer@0.1.0:
+    resolution: {integrity: sha512-40oNTM9UfG6aBmuKxk/giHn5nQ8RVz/SS4Ir6zgzOv9/qC3kKZ9v4etGTcJbEl/NyVQH7FGU7d+X1egr57Md2Q==}
+    dev: true
+
+  /globrex@0.1.2:
+    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
     dev: true
 
   /graceful-fs@4.2.11:
@@ -1408,6 +1442,13 @@ packages:
       svelte: 4.2.0
     dev: true
 
+  /tiny-glob@0.2.9:
+    resolution: {integrity: sha512-g/55ssRPUjShh+xkfx9UPDXqhckHEsHr4Vd9zX55oSdGZc/MD0m3sferOkwWtp98bv+kcVfEHtRJgBVJzelrzg==}
+    dependencies:
+      globalyzer: 0.1.0
+      globrex: 0.1.2
+    dev: true
+
   /to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -1418,6 +1459,15 @@ packages:
   /totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
+    dev: true
+
+  /ts-api-utils@0.0.46(typescript@5.1.6):
+    resolution: {integrity: sha512-YKJeSx39n0mMk+hrpyHKyTgxA3s7Pz/j1cXYR+t8HcwwZupzOR5xDGKnOEw3gmLaUeFUQt3FJD39AH9Ajn/mdA==}
+    engines: {node: '>=16.13.0'}
+    peerDependencies:
+      typescript: '>=4.2.0'
+    dependencies:
+      typescript: 5.1.6
     dev: true
 
   /tsm@2.3.0:

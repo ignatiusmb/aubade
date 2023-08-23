@@ -6,7 +6,7 @@
 		"lint": "pnpm --filter ./workspace/* lint",
 		"test": "pnpm --filter ./workspace/* test",
 		"format": "pnpm --filter ./workspace/* format",
-		"postinstall": "cd ./workspace/marqua && pnpm build"
+		"postinstall": "cd ./workspace/marqua && tsc"
 	},
 	"packageManager": "pnpm@8.6.11",
 	"prettier": "mauss/prettier.json",
