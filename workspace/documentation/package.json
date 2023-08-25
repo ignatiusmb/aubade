@@ -11,6 +11,9 @@
 	},
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
+		"@fontsource/fira-code": "^5.0.8",
+		"@fontsource/karla": "^5.0.9",
+		"@fontsource/rubik": "^5.0.9",
 		"@ignatiusmb/styles": "^0.1.1",
 		"@sveltejs/adapter-static": "^2.0.3",
 		"@sveltejs/kit": "^1.22.6",

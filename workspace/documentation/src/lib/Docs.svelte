@@ -105,14 +105,17 @@
 		gap: 2rem;
 		grid-template-columns: minmax(0, 1fr);
 		align-items: flex-start;
+		justify-content: center;
 		padding: 0 2rem;
 		margin: 2rem auto;
 	}
 
 	aside {
+		display: none;
+
 		position: sticky;
 		top: 0;
-		display: none;
+		gap: 0.25rem;
 		align-content: flex-start;
 		padding-top: 2rem;
 	}
@@ -132,7 +135,7 @@
 	}
 	aside a[data-index].current,
 	aside a[data-index]:hover {
-		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(255, 255, 255, 0.2);
 	}
 
 	article {
@@ -173,6 +176,9 @@
 		scroll-margin-top: 2rem;
 	}
 
+	section > :not(h2:first-child) {
+		line-height: 1.5;
+	}
 	section > :global(h3) {
 		position: relative;
 		display: grid;
@@ -218,8 +224,8 @@
 
 	@media only screen and (min-width: 769px) {
 		main {
-			padding: 0 2rem 0 1rem;
-			grid-template-columns: minmax(12rem, 20%) minmax(0, 60rem);
+			padding: 0 1rem;
+			grid-template-columns: minmax(12rem, 16rem) minmax(0, 60rem);
 		}
 
 		aside {
