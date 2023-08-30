@@ -49,17 +49,15 @@
 	],
 	"dependencies": {
 		"markdown-it": "^13.0.1",
-		"mauss": "^0.7.1",
+		"mauss": "^0.7.2",
 		"shiki": "^0.14.3"
 	},
 	"devDependencies": {
 		"@types/markdown-it": "^13.0.1",
 		"@types/node": "^20.5.7",
 		"dts-buddy": "^0.2.4",
-		"prettier": "^3.0.2",
 		"prettier-plugin-sort-package-json": "^0.2.0",
 		"tsm": "^2.3.0",
-		"typescript": "^5.2.2",
 		"uvu": "^0.5.6"
 	}
 }

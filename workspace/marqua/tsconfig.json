@@ -1,7 +1,6 @@
 {
 	"extends": "mauss/tsconfig.json",
 	"compilerOptions": {
-		"module": "Node16",
 		"target": "ES2019"
 	},
 	"include": ["src/**/*"],
