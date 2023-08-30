@@ -4,6 +4,7 @@
 	"description": "Augmented Markdown Compiler",
 	"repository": "github:ignatiusmb/marqua",
 	"author": "Ignatius Bagus",
+	"license": "MIT",
 	"type": "module",
 	"scripts": {
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
@@ -48,17 +49,15 @@
 	],
 	"dependencies": {
 		"markdown-it": "^13.0.1",
-		"mauss": "^0.7.1",
+		"mauss": "^0.7.2",
 		"shiki": "^0.14.3"
 	},
 	"devDependencies": {
-		"@types/markdown-it": "^13.0.0",
-		"@types/node": "^20.5.3",
-		"dts-buddy": "^0.1.13",
-		"prettier": "^3.0.2",
-		"prettier-plugin-sort-package-json": "^0.1.1",
+		"@types/markdown-it": "^13.0.1",
+		"@types/node": "^20.5.7",
+		"dts-buddy": "^0.2.4",
+		"prettier-plugin-sort-package-json": "^0.2.0",
 		"tsm": "^2.3.0",
-		"typescript": "^5.1.6",
 		"uvu": "^0.5.6"
 	}
 }
