@@ -8,5 +8,4 @@ export interface MarquaTable {
 	id: string;
 	level: number;
 	title: string;
-	sections: MarquaTable[];
 }

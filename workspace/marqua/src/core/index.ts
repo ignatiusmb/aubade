@@ -28,28 +28,16 @@ export function parse(source: string) {
 			/** table of contents */
 			get table() {
 				const table: MarquaTable[] = [];
-				let parent = table; // reference to push
 				for (const line of stuffed.split('\n')) {
 					const match = /^(#{2,4}) (.+)/.exec(line.trim());
 					if (!match) continue;
 
 					const [, h, title] = match;
 					const [delimited] = /\$\(.*\)/.exec(title) || [''];
-
-					if (h.length === 2 || !table.length) {
-						parent = table;
-					} else {
-						parent = table[table.length - 1].sections;
-						if (h.length === 4) {
-							parent = parent[parent.length - 1].sections;
-						}
-					}
-
-					parent.push({
+					table.push({
 						id: generate.id(delimited.slice(2, -1) || title),
 						level: h.length,
 						title: title.replace(delimited, delimited.slice(2, -1)),
-						sections: [],
 					});
 				}
 
