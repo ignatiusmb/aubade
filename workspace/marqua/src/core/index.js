@@ -1,11 +1,5 @@
 import { generate } from '../utils.js';
 
-/**
- * @typedef {import('../types.js').MarquaTable} MarquaTable
- * @typedef {string | boolean | null} Primitives
- * @typedef {{ [key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[] }} FrontMatter
- */
-
 /** @param {string} source */
 export function parse(source) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
@@ -33,7 +27,7 @@ export function parse(source) {
 
 			/** table of contents */
 			get table() {
-				/** @type {MarquaTable[]} */
+				/** @type {import('../types.js').MarquaTable[]} */
 				const table = [];
 				let parent = table; // reference to push
 				for (const line of stuffed.split('\n')) {
@@ -67,10 +61,9 @@ export function parse(source) {
 }
 
 /**
- *
  * @param {string} raw
  * @param {Record<string, any>} [memo]
- * @returns {FrontMatter[string]}
+ * @returns {import('../types.js').FrontMatter [string]}
  */
 export function construct(raw, memo = {}) {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());

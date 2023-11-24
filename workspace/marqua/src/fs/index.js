@@ -4,28 +4,9 @@ import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 /**
- * @typedef {import('../types.js').MarquaTable} MarquaTable
- * @typedef {{
- * 	estimate: number;
- * 	table: MarquaTable[];
- * }} Metadata
- * @typedef {{
- * 	breadcrumb: string[]
- * 	buffer: Buffer;
- * 	parse: typeof parse;
- * }} HydrateChunk
- */
-
-// export function compile(entry: string): Metadata & { content: string };
-// export function compile<Output extends object>(
-// 	entry: string,
-// 	hydrate?: (chunk: HydrateChunk) => undefined | Output,
-// ): undefined | Output;
-/**
  * @template {object} Output
  * @param {string} entry
- * @param {(chunk: HydrateChunk) => undefined | Output} [hydrate]
- * @returns
+ * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
  */
 export function compile(entry, hydrate) {
 	const buffer = fs.readFileSync(entry);
@@ -33,7 +14,10 @@ export function compile(entry, hydrate) {
 		const breadcrumb = entry.split(/[/\\]/).reverse();
 		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
 		const { content, metadata } = parse(buffer.toString('utf-8'));
-		return /** @type {Metadata & { content: string }} */ ({ ...metadata, content });
+		return /** @type {import('../types.js').Metadata & { content: string }} */ ({
+			...metadata,
+			content,
+		});
 	});
 
 	if (!result /* hydrate returns nothing */) return;
@@ -45,17 +29,17 @@ export function compile(entry, hydrate) {
 }
 
 /**
- *
  * @template {{
  * 	entry: string;
  * 	compile?(path: string): boolean;
  * 	depth?: number;
  * }} Options
  * @template {object} Output
- * @template [Transformed=Array<Output & Metadata>]
+ * @template [Transformed = Array<Output & import('../types.js').Metadata>]
+ *
  * @param {Options} options
- * @param {(chunk: HydrateChunk) => undefined | Output} [hydrate]
- * @param {(items: Array<Output & Metadata>) => Transformed} [transform]
+ * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
+ * @param {(items: Array<Output & import('../types.js').Metadata>) => Transformed} [transform]
  * @returns {Transformed}
  */
 export function traverse(
@@ -87,11 +71,11 @@ export function traverse(
 	});
 
 	if (!transform) return /** @type {Transformed} */ (backpack);
-	return transform(/** @type {Array<Output & Metadata>} */ (backpack));
+	return transform(/** @type {Array<Output & import('../types.js').Metadata>} */ (backpack));
 
 	/**
 	 * adapted from https://github.com/alchemauss/mauss/pull/153
-	 * @param  {string[]} paths
+	 * @param {string[]} paths
 	 */
 	function join(...paths) {
 		if (!paths.length) return '.';
