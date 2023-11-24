@@ -2,8 +2,6 @@ import * as fs from 'node:fs';
 import { createBundle } from 'dts-buddy';
 import { exports } from '../package.json';
 
-walk('./src', (path) => path.endsWith('.js') && fs.unlinkSync(path));
-
 await createBundle({
 	output: 'index.d.ts',
 	modules: Object.keys(exports).reduce((acc, key) => {

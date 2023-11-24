@@ -1,5 +1,2 @@
-*.js
-*.d.ts
+index.d.ts
 *.map
-
-!test/**/*.js
