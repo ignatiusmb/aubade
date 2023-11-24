@@ -12,7 +12,7 @@
 		"test": "pnpm test:core && pnpm test:apps",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
-		"prepublishOnly": "tsm scripts/compile-types.ts"
+		"prepublish": "tsm scripts/compile-types.ts"
 	},
 	"typings": "index.d.ts",
 	"exports": {
