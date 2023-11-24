@@ -2,7 +2,7 @@ import MarkIt from 'markdown-it';
 import { generate } from '../utils.js';
 import { transform } from './brush.js';
 
-const marker = MarkIt({
+export const marker = MarkIt({
 	html: true,
 	typographer: true,
 	highlight(source, lang) {
@@ -86,5 +86,3 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 		return `<figure class="${classes.top.join(' ')}">${body}</figure>`;
 	}
 };
-
-export default marker;

@@ -12,7 +12,7 @@
 		"test": "pnpm test:core && pnpm test:apps",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
-		"prepublish": "tsm scripts/compile-types.ts"
+		"prepublishOnly": "tsm scripts/compile-types.ts"
 	},
 	"typings": "index.d.ts",
 	"exports": {
@@ -59,14 +59,14 @@
 		"preprocessor"
 	],
 	"dependencies": {
-		"markdown-it": "^13.0.1",
+		"markdown-it": "^13.0.2",
 		"mauss": "^0.7.2",
-		"shiki": "^0.14.3"
+		"shiki": "^0.14.5"
 	},
 	"devDependencies": {
-		"@types/markdown-it": "^13.0.1",
-		"@types/node": "^20.5.7",
-		"dts-buddy": "^0.2.4",
+		"@types/markdown-it": "^13.0.7",
+		"@types/node": "^20.9.5",
+		"dts-buddy": "^0.4.0",
 		"prettier-plugin-sort-package-json": "^0.2.0",
 		"tsm": "^2.3.0",
 		"uvu": "^0.5.6"
