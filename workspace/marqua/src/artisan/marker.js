@@ -2,12 +2,14 @@ import MarkIt from 'markdown-it';
 import { generate } from '../utils.js';
 import { transform } from './brush.js';
 
-const marker = MarkIt({
+export const marker = MarkIt({
 	html: true,
 	typographer: true,
 	highlight(source, lang) {
-		const content: string[] = [];
-		const dataset: Record<string, string> = { lang };
+		/** @type {string[]} */
+		const content = [];
+		/** @type {Record<string, string>} */
+		const dataset = { lang };
 		for (const line of source.split('\n')) {
 			const match = /^#\$ (\w+): (.+)/.exec(line);
 			if (!match) content.push(line);
@@ -17,7 +19,8 @@ const marker = MarkIt({
 	},
 });
 
-/** Renderer Override Rules */
+// Renderer Override Rules
+/** @type {typeof marker['renderer']['rules']['html_block']} */
 marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
@@ -25,6 +28,7 @@ marker.renderer.rules.heading_open = (tokens, idx) => {
 	const id = generate.id(delimited.slice(2, -1) || text);
 	return `<${token.tag} id="${id}">`;
 };
+/** @type {typeof marker['renderer']['rules']['image']} */
 marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];
 	const link = token.attrGet('src');
@@ -82,5 +86,3 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 		return `<figure class="${classes.top.join(' ')}">${body}</figure>`;
 	}
 };
-
-export default marker;

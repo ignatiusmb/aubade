@@ -1,10 +1,10 @@
-import type { MarquaTable } from '../types.js';
 import { generate } from '../utils.js';
 
-export function parse(source: string) {
+/** @param {string} source */
+export function parse(source) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
-	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
+	const memory = /** @type {Record<string, any>} */ (construct((match && match[1].trim()) || ''));
 	const stuffed = inject(crude, memory);
 
 	return {
@@ -27,7 +27,8 @@ export function parse(source: string) {
 
 			/** table of contents */
 			get table() {
-				const table: MarquaTable[] = [];
+				/** @type {import('../types.js').MarquaTable[]} */
+				const table = [];
 				let parent = table; // reference to push
 				for (const line of stuffed.split('\n')) {
 					const match = /^(#{2,4}) (.+)/.exec(line.trim());
@@ -59,14 +60,18 @@ export function parse(source: string) {
 	};
 }
 
-type Primitives = string | boolean | null;
-type FrontMatter = { [key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[] };
-export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
+/**
+ * @param {string} raw
+ * @param {Record<string, any>} [memo]
+ * @returns {import('../types.js').FrontMatter [string]}
+ */
+export function construct(raw, memo = {}) {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
 	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
 
 	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
-	let match: null | RegExpExecArray;
+	/** @type {null | RegExpExecArray} */
+	let match;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
 		const data = construct(outdent(value), memo[key]);
@@ -101,27 +106,35 @@ export function construct(raw: string, memo: Record<string, any> = {}): FrontMat
 
 // ---- internal functions ----
 
-function coerce(u: string) {
+/** @param {string} u */
+function coerce(u) {
 	const v = u.trim(); // argument can be passed as-is
 	const map = { true: true, false: false, null: null };
-	if (v in map) return map[v as keyof typeof map];
+	if (v in map) return map[/** @type {keyof typeof map} */ (v)];
 	// if (!Number.isNaN(Number(v))) return Number(v);
 	return /^(".*"|'.*')$/.test(v) ? v.slice(1, -1) : v;
 }
 
-function outdent(input: string) {
+/** @param {string} input */
+function outdent(input) {
 	const lines = input.split(/\r?\n/).filter((l) => l.trim());
 	const indent = (/^\s*/.exec(lines[0]) || [''])[0].length;
 	return lines.map((l) => l.slice(indent)).join('\n');
 }
 
-function inject(source: string, metadata: Record<string, any>) {
+/**
+ * @param {string} source
+ * @param {Record<string, any>} metadata
+ */
+function inject(source, metadata) {
 	const plane = compress(metadata);
 	return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c]) || s);
 }
 
-function compress(metadata: Record<string, any>, parent = '') {
-	const memo: typeof metadata = {};
+/** @param {Record<string, any>} metadata */
+function compress(metadata, parent = '') {
+	/** @type {typeof metadata} */
+	const memo = {};
 	const prefix = parent ? `${parent}:` : '';
 	for (const [k, v] of Object.entries(metadata)) {
 		if (typeof v !== 'object') memo[prefix + k] = v;
