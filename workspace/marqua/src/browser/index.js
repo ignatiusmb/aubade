@@ -1,6 +1,7 @@
 import { clipboard } from 'mauss/web';
 
-export function listen(node: HTMLElement) {
+/** @param {HTMLElement} node */
+export function listen(node) {
 	for (const block of node.querySelectorAll('.mrq[data-mrq="block"]')) {
 		const actions = block.querySelectorAll('.mrq[data-mrq-toolbar]');
 		const source = block.querySelector('.mrq[data-mrq="pre"]');
@@ -10,7 +11,8 @@ export function listen(node: HTMLElement) {
 			const action = item.getAttribute('data-mrq-toolbar');
 			if (action === 'clipboard') {
 				item.addEventListener('click', () => {
-					const tooltip = item.querySelector('.mrq[data-mrq="tooltip"]')!;
+					const tooltip = item.querySelector('.mrq[data-mrq="tooltip"]');
+					if (!tooltip) return;
 					const text = tooltip.textContent;
 					clipboard.copy(source.textContent || '', {
 						accept() {
@@ -34,6 +36,13 @@ export function listen(node: HTMLElement) {
 	}
 }
 
-export const hydrate = (node: HTMLElement, _?: any) => (
-	listen(node), { update: () => listen(node) }
-);
+/**
+ * @param {HTMLElement} node
+ * @param {any} [_]
+ */
+export function hydrate(node, _) {
+	listen(node);
+	return {
+		update: () => listen(node),
+	};
+}
