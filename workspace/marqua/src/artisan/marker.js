@@ -11,7 +11,7 @@ export const marker = MarkIt({
 		/** @type {Record<string, string>} */
 		const dataset = { lang };
 		for (const line of source.split('\n')) {
-			const match = /^#\$ (\w+): (.+)/.exec(line);
+			const match = line.match(/^#\$ (\w+): (.+)/);
 			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
 		}
@@ -24,7 +24,7 @@ export const marker = MarkIt({
 marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
-	const [delimited] = /\$\(.*\)/.exec(text) || [''];
+	const [delimited] = text.match(/\$\(.*\)/) || [''];
 	const id = generate.id(delimited.slice(2, -1) || text);
 	return `<${token.tag} id="${id}">`;
 };
@@ -43,15 +43,15 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const alt = token.attrGet('alt') || '';
 	const media = {
 		data: '',
-		type: (/^!(\w+[-\w]+)($|#)/.exec(alt) || [, ''])[1],
-		attrs: (/#(\w+)/g.exec(alt) || []).map((a) => a.slice(1)),
+		type: (alt.match(/^!(\w+[-\w]+)($|#)/) || [, ''])[1],
+		attrs: (alt.match(/#(\w+)/g) || []).map((a) => a.slice(1)),
 	};
 
 	if (media.type) {
 		const stripped = media.type.toLowerCase();
 		const [type, ...args] = stripped.split('-');
 		if (['yt', 'youtube'].includes(type)) {
-			const [, yid, params = ''] = /([-\w]+)\??(.+)?$/.exec(link) || [];
+			const [, yid, params = ''] = link.match(/([-\w]+)\??(.+)?$/) || [];
 			const prefix = args.length && args.includes('s') ? 'videoseries?list=' : '';
 			media.data = prefix
 				? `<iframe src="https://www.youtube-nocookie.com/embed/${prefix}${link}" frameborder="0" allowfullscreen title="${caption}"></iframe>`

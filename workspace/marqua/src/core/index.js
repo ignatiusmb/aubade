@@ -20,7 +20,7 @@ export function parse(source) {
 					const accumulated = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
 					return total + accumulated.length;
 				}, 0);
-				const images = /!\[.+\]\(.+\)/g.exec(stuffed);
+				const images = stuffed.match(/!\[.+\]\(.+\)/g);
 				const total = words + (images || []).length * 12;
 				return Math.round(total / 240) || 1;
 			},
@@ -31,11 +31,11 @@ export function parse(source) {
 				const table = [];
 				let parent = table; // reference to push
 				for (const line of stuffed.split('\n')) {
-					const match = /^(#{2,4}) (.+)/.exec(line.trim());
+					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
 
 					const [, h, title] = match;
-					const [delimited] = /\$\(.*\)/.exec(title) || [''];
+					const [delimited] = title.match(/\$\(.*\)/) || [''];
 
 					if (h.length === 2 || !table.length) {
 						parent = table;
@@ -118,8 +118,8 @@ function coerce(u) {
 /** @param {string} input */
 function outdent(input) {
 	const lines = input.split(/\r?\n/).filter((l) => l.trim());
-	const indent = (/^\s*/.exec(lines[0]) || [''])[0].length;
-	return lines.map((l) => l.slice(indent)).join('\n');
+	const { length } = (/^\s*/.exec(lines[0]) || [''])[0];
+	return lines.map((l) => l.slice(length)).join('\n');
 }
 
 /**
