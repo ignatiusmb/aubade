@@ -4,9 +4,10 @@ import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 /**
- * @template {object} Output
+ * @template {object} [Output = import('../types.js').Metadata & { content: string }]
  * @param {string} entry
  * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
+ * @returns {undefined | Output}
  */
 export function compile(entry, hydrate) {
 	const buffer = fs.readFileSync(entry);
@@ -14,10 +15,7 @@ export function compile(entry, hydrate) {
 		const breadcrumb = entry.split(/[/\\]/).reverse();
 		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
 		const { content, metadata } = parse(buffer.toString('utf-8'));
-		return /** @type {import('../types.js').Metadata & { content: string }} */ ({
-			...metadata,
-			content,
-		});
+		return { ...metadata, content };
 	});
 
 	if (!result /* hydrate returns nothing */) return;
@@ -25,7 +23,7 @@ export function compile(entry, hydrate) {
 		result.content = marker.render(result.content);
 	}
 
-	return result;
+	return /** @type {Output} */ (result);
 }
 
 /**
