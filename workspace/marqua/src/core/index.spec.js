@@ -6,7 +6,7 @@ const suites = {
 	'construct/': suite('core/construct'),
 	'construct/table': suite('core/construct:table'),
 	'parse/': suite('core/parse'),
-} as const;
+};
 
 suites['construct/']('construct simple index', () => {
 	const index = core.construct(

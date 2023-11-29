@@ -1,15 +1,22 @@
 import { getHighlighter } from 'shiki';
 import { escape, generate } from '../utils.js';
 
-export interface Dataset {
-	lang?: string;
-	file?: string;
-	[data: string]: string | undefined;
-}
+/**
+ * @typedef {{
+ * 	lang?: string;
+ * 	file?: string;
+ * 	[data: string]: string | undefined;
+ * }} Dataset
+ */
 
 export const highlighter = await getHighlighter({ theme: 'github-dark' });
 
-export function transform(source: string, dataset: Dataset) {
+/**
+ * @param {string} source
+ * @param {Dataset} dataset
+ * @returns {string} HTML code block
+ */
+export function transform(source, dataset) {
 	const { codeToThemedTokens } = highlighter;
 	const { file, ...rest } = dataset;
 

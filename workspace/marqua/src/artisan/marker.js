@@ -2,14 +2,16 @@ import MarkIt from 'markdown-it';
 import { generate } from '../utils.js';
 import { transform } from './brush.js';
 
-const marker = MarkIt({
+export const marker = MarkIt({
 	html: true,
 	typographer: true,
 	highlight(source, lang) {
-		const content: string[] = [];
-		const dataset: Record<string, string> = { lang };
+		/** @type {string[]} */
+		const content = [];
+		/** @type {Record<string, string>} */
+		const dataset = { lang };
 		for (const line of source.split('\n')) {
-			const match = /^#\$ (\w+): (.+)/.exec(line);
+			const match = line.match(/^#\$ (\w+): (.+)/);
 			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
 		}
@@ -17,14 +19,16 @@ const marker = MarkIt({
 	},
 });
 
-/** Renderer Override Rules */
+// Renderer Override Rules
+/** @type {typeof marker['renderer']['rules']['html_block']} */
 marker.renderer.rules.heading_open = (tokens, idx) => {
 	const [token, text] = [tokens[idx], tokens[idx + 1].content];
 	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
-	const [delimited] = /\$\(.*\)/.exec(text) || [''];
+	const [delimited] = text.match(/\$\(.*\)/) || [''];
 	const id = generate.id(delimited.slice(2, -1) || text);
 	return `<${token.tag} id="${id}">`;
 };
+/** @type {typeof marker['renderer']['rules']['image']} */
 marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];
 	const link = token.attrGet('src');
@@ -39,15 +43,15 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const alt = token.attrGet('alt') || '';
 	const media = {
 		data: '',
-		type: (/^!(\w+[-\w]+)($|#)/.exec(alt) || [, ''])[1],
-		attrs: (/#(\w+)/g.exec(alt) || []).map((a) => a.slice(1)),
+		type: (alt.match(/^!(\w+[-\w]+)($|#)/) || [, ''])[1],
+		attrs: (alt.match(/#(\w+)/g) || []).map((a) => a.slice(1)),
 	};
 
 	if (media.type) {
 		const stripped = media.type.toLowerCase();
 		const [type, ...args] = stripped.split('-');
 		if (['yt', 'youtube'].includes(type)) {
-			const [, yid, params = ''] = /([-\w]+)\??(.+)?$/.exec(link) || [];
+			const [, yid, params = ''] = link.match(/([-\w]+)\??(.+)?$/) || [];
 			const prefix = args.length && args.includes('s') ? 'videoseries?list=' : '';
 			media.data = prefix
 				? `<iframe src="https://www.youtube-nocookie.com/embed/${prefix}${link}" frameborder="0" allowfullscreen title="${caption}"></iframe>`
@@ -82,5 +86,3 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 		return `<figure class="${classes.top.join(' ')}">${body}</figure>`;
 	}
 };
-
-export default marker;
