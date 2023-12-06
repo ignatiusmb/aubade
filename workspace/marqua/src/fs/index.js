@@ -12,8 +12,16 @@ import { parse } from '../core/index.js';
 export function compile(entry, hydrate) {
 	const buffer = fs.readFileSync(entry);
 	const result = scope(() => {
-		const breadcrumb = entry.split(/[/\\]/).reverse();
-		if (hydrate) return hydrate({ breadcrumb, buffer, parse });
+		if (hydrate) {
+			const breadcrumb = entry.split(/[/\\]/).reverse();
+			const dirname = breadcrumb.slice(1).reverse().join('/');
+			/** @type {import('../types.js').HydrateChunk['siblings']} */
+			const siblings = fs.readdirSync(dirname).map((name) => {
+				const dir = fs.lstatSync(join(dirname, name)).isDirectory();
+				return { type: dir ? 'directory' : 'file', name };
+			});
+			return hydrate({ breadcrumb, buffer, parse, siblings });
+		}
 		const { content, metadata } = parse(buffer.toString('utf-8'));
 		return { ...metadata, content };
 	});
@@ -43,16 +51,22 @@ export function compile(entry, hydrate) {
 export function traverse(
 	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 },
 	hydrate,
-	transform,
+	transform = (v) => /** @type {Transformed} */ (v),
 ) {
 	if (!fs.existsSync(entry)) {
 		console.warn(`Skipping "${entry}", path does not exists`);
-		return transform ? transform([]) : /** @type {Transformed} */ ([]);
+		return transform([]);
 	}
 
-	const backpack = fs.readdirSync(entry).flatMap((name) => {
+	/** @type {import('../types.js').HydrateChunk['siblings']} */
+	const siblings = fs.readdirSync(entry).map((name) => {
+		const dir = fs.lstatSync(join(entry, name)).isDirectory();
+		return { type: dir ? 'directory' : 'file', name };
+	});
+
+	const backpack = siblings.flatMap(({ name, type }) => {
 		const pathname = join(entry, name);
-		if (level !== 0 && fs.lstatSync(pathname).isDirectory()) {
+		if (level !== 0 && type === 'directory') {
 			const depth = level < 0 ? level : level - 1;
 			const options = { entry: pathname, depth, compile: fn };
 			return traverse(options, hydrate);
@@ -63,34 +77,33 @@ export function traverse(
 			if (!hydrate) return; // no need to do anything else
 			const breadcrumb = pathname.split(/[/\\]/).reverse();
 			const buffer = fs.readFileSync(pathname);
-			return hydrate({ breadcrumb, buffer, parse });
+			return hydrate({ breadcrumb, buffer, parse, siblings });
 		});
 		return data && Object.keys(data).length ? [data] : [];
 	});
 
-	if (!transform) return /** @type {Transformed} */ (backpack);
 	return transform(/** @type {Array<Output & import('../types.js').Metadata>} */ (backpack));
+}
 
-	/**
-	 * adapted from https://github.com/alchemauss/mauss/pull/153
-	 * @param {string[]} paths
-	 */
-	function join(...paths) {
-		if (!paths.length) return '.';
-		const index = paths[0].replace(/\\/g, '/').trim();
-		if (paths.length === 1 && index === '') return '.';
-		const parts = index.replace(/[/]*$/g, '').split('/');
-		if (parts[0] === '') parts.shift();
+/**
+ * adapted from https://github.com/alchemauss/mauss/pull/153
+ * @param {string[]} paths
+ */
+function join(...paths) {
+	if (!paths.length) return '.';
+	const index = paths[0].replace(/\\/g, '/').trim();
+	if (paths.length === 1 && index === '') return '.';
+	const parts = index.replace(/[/]*$/g, '').split('/');
+	if (parts[0] === '') parts.shift();
 
-		for (let i = 1; i < paths.length; i += 1) {
-			const part = paths[i].replace(/\\/g, '/').trim();
-			for (const slice of part.split('/')) {
-				if (slice === '.') continue;
-				if (slice === '..') parts.pop();
-				else if (slice) parts.push(slice);
-			}
+	for (let i = 1; i < paths.length; i += 1) {
+		const part = paths[i].replace(/\\/g, '/').trim();
+		for (const slice of part.split('/')) {
+			if (slice === '.') continue;
+			if (slice === '..') parts.pop();
+			else if (slice) parts.push(slice);
 		}
-
-		return (index[0] === '/' ? '/' : '') + parts.join('/');
 	}
+
+	return (index[0] === '/' ? '/' : '') + parts.join('/');
 }
