@@ -5,11 +5,11 @@ import { transform } from './brush.js';
 export const marker = MarkIt({
 	html: true,
 	typographer: true,
-	highlight(source, lang) {
+	highlight(source, language) {
 		/** @type {string[]} */
 		const content = [];
 		/** @type {Record<string, string>} */
-		const dataset = { lang };
+		const dataset = { language };
 		for (const line of source.split('\n')) {
 			const match = line.match(/^#\$ (\w+): (.+)/);
 			if (!match) content.push(line);
