@@ -10,10 +10,10 @@ export interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
 	parse: typeof parse;
-	siblings: Array<{
-		name: string;
-		type: 'file' | 'directory';
-	}>;
+	siblings: Array<
+		| { type: 'directory'; name: string; path: string; buffer: undefined }
+		| { type: 'file'; name: string; path: string; buffer: Buffer }
+	>;
 }
 
 export interface Metadata {
