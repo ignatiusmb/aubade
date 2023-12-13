@@ -17,7 +17,7 @@ export function compile(entry, hydrate) {
 			const dirname = breadcrumb.slice(1).reverse().join('/');
 			/** @type {import('../types.js').HydrateChunk['siblings']} */
 			const tree = fs.readdirSync(dirname).map((name) => {
-				const path = join(entry, name);
+				const path = join(dirname, name);
 				if (fs.lstatSync(path).isDirectory()) {
 					return { type: 'directory', name, path };
 				}

@@ -10,9 +10,10 @@ export interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
 	parse: typeof parse;
+	// TODO: remove self from siblings
 	siblings: Array<
-		| { type: 'directory'; name: string; path: string; buffer: undefined }
 		| { type: 'file'; name: string; path: string; buffer: Buffer }
+		| { type: 'directory'; name: string; path: string; buffer: undefined }
 	>;
 }
 
