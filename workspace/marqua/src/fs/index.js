@@ -72,9 +72,7 @@ export function traverse(
 	});
 
 	const backpack = tree.flatMap(({ type, path, buffer }) => {
-		if (!files(path)) return [];
-
-		if (type === 'file') {
+		if (type === 'file' && files(path)) {
 			const breadcrumb = path.split(/[/\\]/).reverse();
 			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
 		} else if (level !== 0) {
