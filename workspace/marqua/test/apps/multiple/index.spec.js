@@ -25,7 +25,7 @@ basics.standard('standard traversal', () => {
 
 basics.depth('depth traversal', () => {
 	const output = traverse(
-		{ entry: `${target}/depth/input`, depth: 2 },
+		{ entry: `${target}/depth/input`, depth: 1 },
 		({ buffer, marker, parse }) => {
 			const { content, metadata } = parse(buffer.toString('utf-8'));
 			return { ...metadata, content: marker.render(content) };
