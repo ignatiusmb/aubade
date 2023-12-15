@@ -40,8 +40,8 @@ export function compile(entry, hydrate) {
 /**
  * @template {{
  * 	entry: string;
- * 	compile?(path: string): boolean;
  * 	depth?: number;
+ * 	files?(path: string): boolean;
  * }} Options
  * @template {object} Output
  * @template [Transformed = Array<Output & import('../types.js').Metadata>]
@@ -52,7 +52,7 @@ export function compile(entry, hydrate) {
  * @returns {Transformed}
  */
 export function traverse(
-	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 },
+	{ entry, depth: level = 0, files = (v) => v.endsWith('.md') },
 	hydrate,
 	transform = (v) => /** @type {Transformed} */ (v),
 ) {
@@ -72,16 +72,14 @@ export function traverse(
 	});
 
 	const backpack = tree.flatMap(({ type, path, buffer }) => {
+		if (!files(path)) return [];
+
 		if (type === 'file') {
-			const data = fn(path) && compile(path, hydrate);
-			if (data && Object.keys(data).length) return data;
-			if (!hydrate) return []; // skip this file
 			const breadcrumb = path.split(/[/\\]/).reverse();
 			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
-			const options = { entry: path, depth, compile: fn };
-			return traverse(options, hydrate);
+			return traverse({ entry: path, depth, files }, hydrate);
 		}
 		return [];
 	});
