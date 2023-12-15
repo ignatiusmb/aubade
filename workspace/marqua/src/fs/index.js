@@ -77,7 +77,8 @@ export function traverse(
 			if (data && Object.keys(data).length) return data;
 			if (!hydrate) return []; // skip this file
 			const breadcrumb = path.split(/[/\\]/).reverse();
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
+			const siblings = tree.filter(({ path: leaf }) => leaf !== path);
+			return hydrate({ breadcrumb, buffer, parse, siblings });
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
 			const options = { entry: path, depth, compile: fn };
