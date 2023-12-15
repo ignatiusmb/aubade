@@ -23,7 +23,7 @@ export function compile(entry, hydrate) {
 				}
 				return { type: 'file', name, path, buffer };
 			});
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
 		}
 		const { content, metadata } = parse(buffer.toString('utf-8'));
 		return { ...metadata, content };
@@ -47,7 +47,7 @@ export function compile(entry, hydrate) {
  * @template [Transformed = Array<Output & import('../types.js').Metadata>]
  *
  * @param {Options} options
- * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
+ * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} hydrate
  * @param {(items: Array<Output & import('../types.js').Metadata>) => Transformed} [transform]
  * @returns {Transformed}
  */
@@ -76,7 +76,7 @@ export function traverse(
 
 		if (type === 'file') {
 			const breadcrumb = path.split(/[/\\]/).reverse();
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
 			return traverse({ entry: path, depth, files }, hydrate);
