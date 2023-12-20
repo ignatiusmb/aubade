@@ -4,10 +4,10 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
-		"format": "prettier -w . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint": "svelte-kit sync && pnpm lint:style && pnpm lint:svelte",
-		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint:svelte": "svelte-check src --tsconfig ./tsconfig.json"
+		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
+		"lint": "pnpm run \"^lint:.*/\"",
+		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
+		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {

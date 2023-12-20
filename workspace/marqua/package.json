@@ -9,7 +9,7 @@
 	"scripts": {
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
 		"lint": "tsc && prettier -c . --plugin=prettier-plugin-sort-package-json",
-		"test": "pnpm test:core && pnpm test:apps",
+		"test": "pnpm run \"/^test:.*/\"",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
 		"prepublish": "tsm scripts/compile-types.ts"
