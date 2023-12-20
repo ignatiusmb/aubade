@@ -5,7 +5,7 @@
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
 		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
-		"lint": "pnpm run \"^lint:.*/\"",
+		"lint": "pnpm run \"/^lint:.*/\"",
 		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
 		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
