@@ -21,6 +21,7 @@ export function compile(entry, hydrate) {
 				if (fs.lstatSync(path).isDirectory()) {
 					return { type: 'directory', name, path };
 				}
+				const buffer = fs.readFileSync(path);
 				return { type: 'file', name, path, buffer };
 			});
 			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
