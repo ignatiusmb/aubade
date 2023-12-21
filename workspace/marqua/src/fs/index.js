@@ -18,10 +18,11 @@ export function compile(entry, hydrate) {
 			/** @type {import('../types.js').HydrateChunk['siblings']} */
 			const tree = fs.readdirSync(dirname).map((name) => {
 				const path = join(dirname, name);
+				const breadcrumb = path.split(/[/\\]/).reverse();
 				if (fs.lstatSync(path).isDirectory()) {
-					return { type: 'directory', name, path };
+					return { type: 'directory', breadcrumb };
 				}
-				return { type: 'file', name, path, buffer };
+				return { type: 'file', breadcrumb, buffer };
 			});
 			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
 		}
@@ -64,19 +65,20 @@ export function traverse(
 	/** @type {import('../types.js').HydrateChunk['siblings']} */
 	const tree = fs.readdirSync(entry).map((name) => {
 		const path = join(entry, name);
+		const breadcrumb = path.split(/[/\\]/).reverse();
 		if (fs.lstatSync(path).isDirectory()) {
-			return { type: 'directory', name, path };
+			return { type: 'directory', breadcrumb };
 		}
 		const buffer = fs.readFileSync(path);
-		return { type: 'file', name, path, buffer };
+		return { type: 'file', breadcrumb, buffer };
 	});
 
-	const backpack = tree.flatMap(({ type, path, buffer }) => {
+	const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
+		const path = [...breadcrumb].reverse().join('/');
 		if (type === 'file') {
 			const data = fn(path) && compile(path, hydrate);
 			if (data && Object.keys(data).length) return data;
 			if (!hydrate) return []; // skip this file
-			const breadcrumb = path.split(/[/\\]/).reverse();
 			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
