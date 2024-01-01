@@ -21,6 +21,7 @@ export function compile(entry, hydrate) {
 				if (fs.lstatSync(path).isDirectory()) {
 					return { type: 'directory', name, path };
 				}
+				const buffer = fs.readFileSync(path);
 				return { type: 'file', name, path, buffer };
 			});
 			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
@@ -74,7 +75,7 @@ export function traverse(
 	const backpack = tree.flatMap(({ type, path, buffer }) => {
 		if (type === 'file' && files(path)) {
 			const breadcrumb = path.split(/[/\\]/).reverse();
-			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
 			return traverse({ entry: path, depth, files }, hydrate);

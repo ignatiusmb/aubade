@@ -4,27 +4,27 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
-		"format": "prettier -w . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint": "svelte-kit sync && pnpm lint:style && pnpm lint:svelte",
-		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint:svelte": "svelte-check src --tsconfig ./tsconfig.json"
+		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
+		"lint": "pnpm run \"/^lint:.*/\"",
+		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
+		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@fontsource/fira-code": "^5.0.15",
-		"@fontsource/karla": "^5.0.17",
-		"@fontsource/rubik": "^5.0.17",
+		"@fontsource/fira-code": "^5.0.16",
+		"@fontsource/karla": "^5.0.18",
+		"@fontsource/rubik": "^5.0.18",
 		"@ignatiusmb/styles": "^0.1.1",
 		"@sveltejs/adapter-static": "^2.0.3",
-		"@sveltejs/kit": "^1.27.6",
-		"@types/node": "^20.9.5",
+		"@sveltejs/kit": "^1.30.0",
+		"@types/node": "^20.10.4",
 		"marqua": "workspace:^",
 		"mauss": "^0.7.2",
 		"prettier-plugin-sort-package-json": "^0.2.0",
 		"prettier-plugin-svelte": "^3.1.2",
-		"svelte": "^4.2.7",
-		"svelte-check": "^3.6.1",
+		"svelte": "^4.2.8",
+		"svelte-check": "^3.6.2",
 		"syv": "^0.0.30",
-		"vite": "^4.4.9"
+		"vite": "^4.5.1"
 	}
 }
