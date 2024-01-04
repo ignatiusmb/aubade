@@ -1,40 +1,15 @@
 import * as fs from 'fs';
-import { scope } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 /**
  * @template {object} [Output = import('../types.js').Metadata & { content: string }]
  * @param {string} entry
- * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
- * @returns {undefined | Output}
+ * @returns {Output}
  */
-export function compile(entry, hydrate) {
-	const buffer = fs.readFileSync(entry);
-	const result = scope(() => {
-		if (hydrate) {
-			const breadcrumb = entry.split(/[/\\]/).reverse();
-			const dirname = breadcrumb.slice(1).reverse().join('/');
-			/** @type {import('../types.js').HydrateChunk['siblings']} */
-			const tree = fs.readdirSync(dirname).map((name) => {
-				const path = join(dirname, name);
-				if (fs.lstatSync(path).isDirectory()) {
-					return { type: 'directory', name, path };
-				}
-				const buffer = fs.readFileSync(path);
-				return { type: 'file', name, path, buffer };
-			});
-			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree });
-		}
-		const { content, metadata } = parse(buffer.toString('utf-8'));
-		return { ...metadata, content };
-	});
-
-	if (!result /* hydrate returns nothing */) return;
-	if ('content' in result && typeof result.content === 'string') {
-		result.content = marker.render(result.content);
-	}
-
+export function compile(entry) {
+	const { content, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
+	const result = { ...metadata, content: marker.render(content) };
 	return /** @type {Output} */ (result);
 }
 
