@@ -1,3 +1,4 @@
+import type { marker } from './artisan/index.js';
 import type { parse } from './core/index.js';
 
 type Primitives = string | boolean | null;
@@ -9,6 +10,7 @@ export interface FrontMatter {
 export interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
+	marker: typeof marker;
 	parse: typeof parse;
 	// TODO: remove self from siblings
 	siblings: Array<

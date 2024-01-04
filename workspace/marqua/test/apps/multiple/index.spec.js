@@ -11,7 +11,10 @@ const basics = {
 const target = `${process.cwd()}/test/apps/multiple`;
 
 basics.standard('standard traversal', () => {
-	const output = traverse({ entry: `${target}/standard/input` });
+	const output = traverse({ entry: `${target}/standard/input` }, ({ buffer, marker, parse }) => {
+		const { content, metadata } = parse(buffer.toString('utf-8'));
+		return { ...metadata, content: marker.render(content) };
+	});
 	const expected = readJSON(`${target}/standard/expected.json`);
 
 	assert.type(output, 'object');
@@ -21,7 +24,13 @@ basics.standard('standard traversal', () => {
 });
 
 basics.depth('depth traversal', () => {
-	const output = traverse({ entry: `${target}/depth/input`, depth: 1 });
+	const output = traverse(
+		{ entry: `${target}/depth/input`, depth: 1 },
+		({ buffer, marker, parse }) => {
+			const { content, metadata } = parse(buffer.toString('utf-8'));
+			return { ...metadata, content: marker.render(content) };
+		},
+	);
 	const expected = readJSON(`${target}/depth/expected.json`);
 
 	assert.type(output, 'object');

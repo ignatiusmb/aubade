@@ -1,59 +1,34 @@
 import * as fs from 'fs';
-import { scope } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 /**
  * @template {object} [Output = import('../types.js').Metadata & { content: string }]
  * @param {string} entry
- * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
- * @returns {undefined | Output}
+ * @returns {Output}
  */
-export function compile(entry, hydrate) {
-	const buffer = fs.readFileSync(entry);
-	const result = scope(() => {
-		if (hydrate) {
-			const breadcrumb = entry.split(/[/\\]/).reverse();
-			const dirname = breadcrumb.slice(1).reverse().join('/');
-			/** @type {import('../types.js').HydrateChunk['siblings']} */
-			const tree = fs.readdirSync(dirname).map((name) => {
-				const path = join(dirname, name);
-				const breadcrumb = path.split(/[/\\]/).reverse();
-				if (fs.lstatSync(path).isDirectory()) {
-					return { type: 'directory', breadcrumb };
-				}
-				return { type: 'file', breadcrumb, buffer };
-			});
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
-		}
-		const { content, metadata } = parse(buffer.toString('utf-8'));
-		return { ...metadata, content };
-	});
-
-	if (!result /* hydrate returns nothing */) return;
-	if ('content' in result && typeof result.content === 'string') {
-		result.content = marker.render(result.content);
-	}
-
+export function compile(entry) {
+	const { content, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
+	const result = { ...metadata, content: marker.render(content) };
 	return /** @type {Output} */ (result);
 }
 
 /**
  * @template {{
  * 	entry: string;
- * 	compile?(path: string): boolean;
  * 	depth?: number;
+ * 	files?(path: string): boolean;
  * }} Options
  * @template {object} Output
  * @template [Transformed = Array<Output & import('../types.js').Metadata>]
  *
  * @param {Options} options
- * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
+ * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} hydrate
  * @param {(items: Array<Output & import('../types.js').Metadata>) => Transformed} [transform]
  * @returns {Transformed}
  */
 export function traverse(
-	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 },
+	{ entry, depth: level = 0, files = (v) => v.endsWith('.md') },
 	hydrate,
 	transform = (v) => /** @type {Transformed} */ (v),
 ) {
@@ -75,15 +50,12 @@ export function traverse(
 
 	const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
 		const path = [...breadcrumb].reverse().join('/');
-		if (type === 'file') {
-			const data = fn(path) && compile(path, hydrate);
-			if (data && Object.keys(data).length) return data;
-			if (!hydrate) return []; // skip this file
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
+		if (type === 'file' && files(path)) {
+			const breadcrumb = path.split(/[/\\]/).reverse();
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
-			const options = { entry: path, depth, compile: fn };
-			return traverse(options, hydrate);
+			return traverse({ entry: path, depth, files }, hydrate);
 		}
 		return [];
 	});
