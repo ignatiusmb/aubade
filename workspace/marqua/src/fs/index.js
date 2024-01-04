@@ -40,16 +40,19 @@ export function traverse(
 	/** @type {import('../types.js').HydrateChunk['siblings']} */
 	const tree = fs.readdirSync(entry).map((name) => {
 		const path = join(entry, name);
-		if (fs.lstatSync(path).isDirectory()) {
-			return { type: 'directory', name, path };
-		}
-		const buffer = fs.readFileSync(path);
-		return { type: 'file', name, path, buffer };
+		return {
+			/** @type {any} - discriminated union without multiple returns */
+			type: fs.lstatSync(path).isDirectory() ? 'directory' : 'file',
+			breadcrumb: path.split(/[/\\]/).reverse(),
+			get buffer() {
+				return this.type === 'file' ? fs.readFileSync(path) : void 0;
+			},
+		};
 	});
 
-	const backpack = tree.flatMap(({ type, path, buffer }) => {
+	const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
+		const path = [...breadcrumb].reverse().join('/');
 		if (type === 'file' && files(path)) {
-			const breadcrumb = path.split(/[/\\]/).reverse();
 			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
