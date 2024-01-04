@@ -18,7 +18,38 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
-  workspace/documentation:
+  workspace/marqua:
+    dependencies:
+      markdown-it:
+        specifier: ^13.0.2
+        version: 13.0.2
+      mauss:
+        specifier: ^0.7.2
+        version: 0.7.2
+      shikiji:
+        specifier: ^0.8.6
+        version: 0.8.6
+    devDependencies:
+      '@types/markdown-it':
+        specifier: ^13.0.7
+        version: 13.0.7
+      '@types/node':
+        specifier: ^20.10.4
+        version: 20.10.4
+      dts-buddy:
+        specifier: ^0.4.3
+        version: 0.4.3(typescript@5.3.3)
+      prettier-plugin-sort-package-json:
+        specifier: ^0.2.0
+        version: 0.2.0(prettier@3.1.1)
+      tsm:
+        specifier: ^2.3.0
+        version: 2.3.0
+      uvu:
+        specifier: ^0.5.6
+        version: 0.5.6
+
+  workspace/website:
     devDependencies:
       '@fontsource/fira-code':
         specifier: ^5.0.16
@@ -65,37 +96,6 @@ importers:
       vite:
         specifier: ^4.5.1
         version: 4.5.1(@types/node@20.10.4)
-
-  workspace/marqua:
-    dependencies:
-      markdown-it:
-        specifier: ^13.0.2
-        version: 13.0.2
-      mauss:
-        specifier: ^0.7.2
-        version: 0.7.2
-      shikiji:
-        specifier: ^0.8.6
-        version: 0.8.6
-    devDependencies:
-      '@types/markdown-it':
-        specifier: ^13.0.7
-        version: 13.0.7
-      '@types/node':
-        specifier: ^20.10.4
-        version: 20.10.4
-      dts-buddy:
-        specifier: ^0.4.3
-        version: 0.4.3(typescript@5.3.3)
-      prettier-plugin-sort-package-json:
-        specifier: ^0.2.0
-        version: 0.2.0(prettier@3.1.1)
-      tsm:
-        specifier: ^2.3.0
-        version: 2.3.0
-      uvu:
-        specifier: ^0.5.6
-        version: 0.5.6
 
 packages:
 
