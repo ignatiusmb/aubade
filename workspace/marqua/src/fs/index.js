@@ -16,19 +16,19 @@ export function compile(entry) {
 /**
  * @template {{
  * 	entry: string;
- * 	compile?(path: string): boolean;
  * 	depth?: number;
+ * 	files?(path: string): boolean;
  * }} Options
  * @template {object} Output
  * @template [Transformed = Array<Output & import('../types.js').Metadata>]
  *
  * @param {Options} options
- * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} [hydrate]
+ * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} hydrate
  * @param {(items: Array<Output & import('../types.js').Metadata>) => Transformed} [transform]
  * @returns {Transformed}
  */
 export function traverse(
-	{ entry, compile: fn = (v) => v.endsWith('.md'), depth: level = 0 },
+	{ entry, depth: level = 0, files = (v) => v.endsWith('.md') },
 	hydrate,
 	transform = (v) => /** @type {Transformed} */ (v),
 ) {
@@ -48,14 +48,12 @@ export function traverse(
 	});
 
 	const backpack = tree.flatMap(({ type, path, buffer }) => {
-		if (type === 'file') {
-			if (!hydrate) return []; // skip this file
+		if (type === 'file' && files(path)) {
 			const breadcrumb = path.split(/[/\\]/).reverse();
-			return hydrate({ breadcrumb, buffer, parse, siblings: tree });
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
-			const options = { entry: path, depth, compile: fn };
-			return traverse(options, hydrate);
+			return traverse({ entry: path, depth, files }, hydrate);
 		}
 		return [];
 	});
