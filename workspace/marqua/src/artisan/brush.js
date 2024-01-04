@@ -1,15 +1,18 @@
-import { getHighlighter } from 'shiki';
+import { getHighlighter, bundledLanguages } from 'shikiji';
 import { escape, generate } from '../utils.js';
 
 /**
  * @typedef {{
- * 	lang?: string;
  * 	file?: string;
+ * 	language?: string;
  * 	[data: string]: string | undefined;
  * }} Dataset
  */
 
-export const highlighter = await getHighlighter({ theme: 'github-dark' });
+export const highlighter = await getHighlighter({
+	themes: ['github-dark'],
+	langs: Object.keys(bundledLanguages),
+});
 
 /**
  * @param {string} source
@@ -22,7 +25,7 @@ export function transform(source, dataset) {
 
 	let highlighted = '';
 	let line = +(rest['line-start'] || 1);
-	for (const tokens of codeToThemedTokens(source, rest.lang)) {
+	for (const tokens of codeToThemedTokens(source, { lang: rest.language })) {
 		let code = `<code data-line="${line++}">`;
 		for (const { content, color } of tokens) {
 			const style = color ? `style="color: ${color}"` : '';
@@ -31,7 +34,6 @@ export function transform(source, dataset) {
 		highlighted += `${code}</code>\n`;
 	}
 
-	rest.language = dataset.lang || ''; // fallback for HTML attribute
 	const attrs = Object.entries(rest).map(
 		([k, v]) => `data-${k.toLowerCase().replace(/[^a-z\-]/g, '')}="${escape(v || '')}"`,
 	);
@@ -52,7 +54,7 @@ export function transform(source, dataset) {
 	<div
 		data-mrq="pre"
 		${attrs.join('\n\t\t')}
-		class="mrq language-${rest.lang || 'none'}"
+		class="mrq language-${rest.language || 'none'}"
 	>${highlighted.trim()}</div>
 </pre>`;
 }

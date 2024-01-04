@@ -1,3 +1,4 @@
+import type { marker } from './artisan/index.js';
 import type { parse } from './core/index.js';
 
 type Primitives = string | boolean | null;
@@ -9,10 +10,11 @@ export interface FrontMatter {
 export interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
+	marker: typeof marker;
 	parse: typeof parse;
 	siblings: Array<
-		| { type: 'file'; name: string; path: string; buffer: Buffer }
-		| { type: 'directory'; name: string; path: string; buffer: undefined }
+		| { type: 'file'; breadcrumb: string[]; buffer: Buffer }
+		| { type: 'directory'; breadcrumb: string[]; buffer: undefined }
 	>;
 }
 
