@@ -12,7 +12,6 @@ export interface HydrateChunk {
 	buffer: Buffer;
 	marker: typeof marker;
 	parse: typeof parse;
-	// TODO: remove self from siblings
 	siblings: Array<
 		| { type: 'file'; breadcrumb: string[]; buffer: Buffer }
 		| { type: 'directory'; breadcrumb: string[]; buffer: undefined }

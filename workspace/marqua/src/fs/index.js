@@ -53,7 +53,10 @@ export function traverse(
 	const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
 		const path = [...breadcrumb].reverse().join('/');
 		if (type === 'file' && files(path)) {
-			return hydrate({ breadcrumb, buffer, marker, parse, siblings: tree }) ?? [];
+			const siblings = tree.filter(
+				({ breadcrumb }) => [...breadcrumb].reverse().join('/') !== path,
+			);
+			return hydrate({ breadcrumb, buffer, marker, parse, siblings }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
 			return traverse({ entry: path, depth, files }, hydrate);
