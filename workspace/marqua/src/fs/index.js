@@ -52,7 +52,8 @@ export function traverse(
 
 	const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
 		const path = [...breadcrumb].reverse().join('/');
-		if (type === 'file' && files(path)) {
+		if (type === 'file') {
+			if (!files(path)) return [];
 			const siblings = tree.filter(
 				({ breadcrumb }) => [...breadcrumb].reverse().join('/') !== path,
 			);
