@@ -3,14 +3,14 @@ import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
 /**
- * @template {object} [Output = import('../types.js').Metadata & { content: string }]
+ * @template {object} Output
  * @param {string} entry
- * @returns {Output}
+ * @returns {Output & import('../types.js').Metadata & { content: string }}
  */
 export function compile(entry) {
 	const { content, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
 	const result = { ...metadata, content: marker.render(content) };
-	return /** @type {Output} */ (result);
+	return /** @type {any} */ (result);
 }
 
 /**
