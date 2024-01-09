@@ -43,9 +43,8 @@
 		"./package.json": "./package.json"
 	},
 	"files": [
-		"artisan/*.d.ts",
 		"src/**/*.js",
-		"styles/",
+		"styles/*.css",
 		"index.d.ts",
 		"index.d.ts.map"
 	],
