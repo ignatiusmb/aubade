@@ -29,7 +29,6 @@ export function parse(source) {
 			get table() {
 				/** @type {import('../types.js').MarquaTable[]} */
 				const table = [];
-				let parent = table; // reference to push
 				for (const line of stuffed.split('\n')) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
@@ -37,20 +36,10 @@ export function parse(source) {
 					const [, h, title] = match;
 					const [delimited] = title.match(/\$\(.*\)/) || [''];
 
-					if (h.length === 2 || !table.length) {
-						parent = table;
-					} else {
-						parent = table[table.length - 1].sections;
-						if (h.length === 4) {
-							parent = parent[parent.length - 1].sections;
-						}
-					}
-
-					parent.push({
+					table.push({
 						id: generate.id(delimited.slice(2, -1) || title),
-						level: h.length,
 						title: title.replace(delimited, delimited.slice(2, -1)),
-						sections: [],
+						level: h.length,
 					});
 				}
 
@@ -63,7 +52,7 @@ export function parse(source) {
 /**
  * @param {string} raw
  * @param {Record<string, any>} [memo]
- * @returns {import('../types.js').FrontMatter [string]}
+ * @returns {import('../types.js').FrontMatter[string]}
  */
 export function construct(raw, memo = {}) {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());

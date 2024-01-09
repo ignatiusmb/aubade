@@ -292,7 +292,6 @@ story and plot contents
 			id: 'story-plot',
 			level: 2,
 			title: '8/10 | story & plot',
-			sections: [],
 		},
 	]);
 });
@@ -329,33 +328,26 @@ something here
 			id: 'simple-heading',
 			level: 2,
 			title: 'simple heading',
-			sections: [],
 		},
 		{
 			id: 'story-plot',
 			level: 2,
 			title: 'story & plot',
-			sections: [
-				{
-					id: 'subsection-of-story-and-plot',
-					level: 3,
-					title: 'subsection of story and plot',
-					sections: [
-						{
-							id: 'smallest-heading',
-							level: 4,
-							title: 'smallest heading',
-							sections: [],
-						},
-					],
-				},
-				{
-					id: 'second-subsection',
-					level: 3,
-					title: 'second subsection',
-					sections: [],
-				},
-			],
+		},
+		{
+			id: 'subsection-of-story-and-plot',
+			level: 3,
+			title: 'subsection of story and plot',
+		},
+		{
+			id: 'smallest-heading',
+			level: 4,
+			title: 'smallest heading',
+		},
+		{
+			id: 'second-subsection',
+			level: 3,
+			title: 'second subsection',
 		},
 	]);
 });
