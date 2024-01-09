@@ -8,7 +8,7 @@ export function parse(source) {
 	const stuffed = inject(crude, memory);
 
 	return {
-		content: stuffed,
+		body: stuffed,
 		metadata: Object.assign(memory, {
 			/** estimated reading time */
 			get estimate() {
