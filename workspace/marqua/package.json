@@ -36,7 +36,10 @@
 			"types": "./index.d.ts",
 			"default": "./src/transform/index.js"
 		},
-		"./styles/*.css": "./styles/*.css",
+		"./styles/*.css": {
+			"types": "./styles/index.d.ts",
+			"default": "./styles/*.css"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [

@@ -1,3 +1,4 @@
+import * as fs from 'node:fs';
 import { createBundle } from 'dts-buddy';
 import { exports } from '../package.json';
 
@@ -8,3 +9,13 @@ await createBundle({
 		return { ...acc, ['marqua' + key.slice(1)]: exports[key].default };
 	}, {}),
 });
+
+for (const subpath of Object.keys(exports).filter((k) => k.includes('*'))) {
+	const parent = subpath.slice(0, subpath.lastIndexOf('/'));
+	const ext = subpath.slice(subpath.lastIndexOf('*') + 1);
+	const files = fs.readdirSync(parent).filter((f) => f.endsWith(ext));
+	fs.writeFileSync(
+		`${parent}/index.d.ts`,
+		files.map((f) => `declare module 'marqua/${parent.slice(2)}/${f}' {}`).join('\n'),
+	);
+}
