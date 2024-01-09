@@ -32,11 +32,6 @@ export function traverse(
 	hydrate,
 	transform = (v) => /** @type {Transformed} */ (v),
 ) {
-	if (!fs.existsSync(entry)) {
-		console.warn(`Skipping "${entry}", path does not exists`);
-		return transform([]);
-	}
-
 	/** @type {import('../types.js').HydrateChunk['siblings']} */
 	const tree = fs.readdirSync(entry).map((name) => {
 		const path = join(entry, name);
