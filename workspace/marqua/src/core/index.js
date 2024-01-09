@@ -49,7 +49,7 @@ export function parse(source) {
 					if (level === 2) parents = [id];
 					if (level === 3) parents = [parents[0], id];
 					if (level === 4) parents[2] = id;
-					table[i].id = parents.join('-');
+					table[i].id = parents.filter((p) => p).join('-');
 				}
 
 				return table;

@@ -35,7 +35,8 @@ marker.renderer.rules.heading_open = scope(() => {
 		if (level === 2) parents = [id];
 		if (level === 3) parents = [parents[0], id];
 		if (level === 4) parents[2] = id;
-		return `<${token.tag} id="${parents.join('-')}">`;
+		const uid = parents.filter((p) => p).join('-');
+		return `<${token.tag} id="${uid}">`;
 	};
 });
 /** @type {typeof marker['renderer']['rules']['image']} */
