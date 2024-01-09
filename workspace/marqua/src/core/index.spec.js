@@ -311,45 +311,43 @@ simple contents
 
 story and plot
 
-### subsection of story and plot
+### sub-story
 
-subsection contents
+sub-story contents
 
 #### smallest heading
 
 something here
 
-### second subsection
+### sub-plot
 		`.trim(),
 	);
 
-	assert.equal(metadata.table, [
-		{
-			id: 'simple-heading',
-			level: 2,
-			title: 'simple heading',
-		},
-		{
-			id: 'story-plot',
-			level: 2,
-			title: 'story & plot',
-		},
-		{
-			id: 'subsection-of-story-and-plot',
-			level: 3,
-			title: 'subsection of story and plot',
-		},
-		{
-			id: 'smallest-heading',
-			level: 4,
-			title: 'smallest heading',
-		},
-		{
-			id: 'second-subsection',
-			level: 3,
-			title: 'second subsection',
-		},
-	]);
+	assert.equal(metadata.table[0], {
+		id: 'simple-heading',
+		level: 2,
+		title: 'simple heading',
+	});
+	assert.equal(metadata.table[1], {
+		id: 'story-plot',
+		level: 2,
+		title: 'story & plot',
+	});
+	assert.equal(metadata.table[2], {
+		id: 'story-plot-sub-story',
+		level: 3,
+		title: 'sub-story',
+	});
+	assert.equal(metadata.table[3], {
+		id: 'story-plot-sub-story-smallest-heading',
+		level: 4,
+		title: 'smallest heading',
+	});
+	assert.equal(metadata.table[4], {
+		id: 'story-plot-sub-plot',
+		level: 3,
+		title: 'sub-plot',
+	});
 });
 
 suites['parse/']('parse markdown contents', () => {
