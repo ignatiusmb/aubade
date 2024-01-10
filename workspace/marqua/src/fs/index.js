@@ -60,7 +60,7 @@ export function traverse(
 		return [];
 	});
 
-	return transform(/** @type {Array<Output & import('../types.js').Metadata>} */ (backpack));
+	return transform(/** @type {any} */ (backpack));
 }
 
 /**
