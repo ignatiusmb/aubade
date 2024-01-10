@@ -1,4 +1,5 @@
 import MarkIt from 'markdown-it';
+import { scope } from 'mauss';
 import { generate } from '../utils.js';
 import { transform } from './brush.js';
 
@@ -21,13 +22,23 @@ export const marker = MarkIt({
 
 // Renderer Override Rules
 /** @type {typeof marker['renderer']['rules']['html_block']} */
-marker.renderer.rules.heading_open = (tokens, idx) => {
-	const [token, text] = [tokens[idx], tokens[idx + 1].content];
-	if (+token.tag.slice(-1) > 3) return `<${token.tag}>`;
-	const [delimited] = text.match(/\$\(.*\)/) || [''];
-	const id = generate.id(delimited.slice(2, -1) || text);
-	return `<${token.tag} id="${id}">`;
-};
+marker.renderer.rules.heading_open = scope(() => {
+	let parents = ['', ''];
+
+	return (tokens, idx) => {
+		const [token, text] = [tokens[idx], tokens[idx + 1].content];
+		const level = +token.tag.slice(-1);
+		if (level > 4) return `<${token.tag}>`;
+		const [delimited] = text.match(/\$\(.*\)/) || [''];
+		const id = generate.id(delimited.slice(2, -1) || text);
+
+		if (level === 2) parents = [id];
+		if (level === 3) parents = [parents[0], id];
+		if (level === 4) parents[2] = id;
+		const uid = parents.filter((p) => p).join('-');
+		return `<${token.tag} id="${uid}">`;
+	};
+});
 /** @type {typeof marker['renderer']['rules']['image']} */
 marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];

@@ -33,14 +33,23 @@ export function parse(source) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
 
-					const [, h, title] = match;
+					const [, hashes, title] = match;
 					const [delimited] = title.match(/\$\(.*\)/) || [''];
 
 					table.push({
 						id: generate.id(delimited.slice(2, -1) || title),
 						title: title.replace(delimited, delimited.slice(2, -1)),
-						level: h.length,
+						level: hashes.length,
 					});
+				}
+
+				let parents = ['', ''];
+				for (let i = 0; i < table.length; i++) {
+					const { id, level } = table[i];
+					if (level === 2) parents = [id];
+					if (level === 3) parents = [parents[0], id];
+					if (level === 4) parents[2] = id;
+					table[i].id = parents.filter((p) => p).join('-');
 				}
 
 				return table;
