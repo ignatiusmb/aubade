@@ -1,9 +1,9 @@
-import MarkIt from 'markdown-it';
+import markdown from 'markdown-it';
 import { scope } from 'mauss';
 import { generate } from '../utils.js';
 import { transform } from './brush.js';
 
-export const marker = MarkIt({
+export const marker = markdown({
 	html: true,
 	typographer: true,
 	highlight(source, language) {

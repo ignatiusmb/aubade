@@ -8,10 +8,10 @@
 		"format": "pnpm --filter \"./workspace/*\" format",
 		"postinstall": "cd ./workspace/marqua && pnpm prepublish"
 	},
-	"packageManager": "pnpm@8.12.1",
+	"packageManager": "pnpm@8.14.0",
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@types/node": "^20.10.4",
+		"@types/node": "^20.11.0",
 		"prettier": "^3.1.1",
 		"typescript": "^5.3.3"
 	}
