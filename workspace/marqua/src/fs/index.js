@@ -36,8 +36,8 @@ export function traverse(
 	const tree = fs.readdirSync(entry).map((name) => {
 		const path = join(entry, name);
 		return {
-			/** @type {any} - discriminated union without multiple returns */
-			type: fs.lstatSync(path).isDirectory() ? 'directory' : 'file',
+			/** @type {any} - trick TS to enable discriminated union */
+			type: fs.statSync(path).isDirectory() ? 'directory' : 'file',
 			breadcrumb: path.split(/[/\\]/).reverse(),
 			get buffer() {
 				return this.type === 'file' ? fs.readFileSync(path) : void 0;
