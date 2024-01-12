@@ -351,7 +351,7 @@ something here
 });
 
 suites['parse/']('parse markdown contents', () => {
-	const { content, metadata } = core.parse(
+	const { body, metadata } = core.parse(
 		`
 ---
 title: Hello Parser
@@ -367,7 +367,7 @@ Welcome to the contents
 		table: [],
 	});
 
-	assert.equal(content.trim(), 'Welcome to the contents');
+	assert.equal(body.trim(), 'Welcome to the contents');
 });
 
 Object.values(suites).forEach((v) => v.run());

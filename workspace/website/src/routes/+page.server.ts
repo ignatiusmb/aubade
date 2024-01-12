@@ -10,8 +10,8 @@ export const load: import('./$types').PageServerLoad = async () => {
 		({ breadcrumb: [filename], buffer, marker, parse }) => {
 			const path = `workspace/content/${filename}`;
 			const slug = filename.match(/^(\d{2})-(.+).md$/)![2];
-			const { content, metadata } = parse(buffer.toString('utf-8'));
-			return { slug, title: metadata.title, path, content: marker.render(content) };
+			const { body, metadata } = parse(buffer.toString('utf-8'));
+			return { slug, title: metadata.title, path, content: marker.render(body) };
 		},
 	);
 

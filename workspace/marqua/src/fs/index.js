@@ -8,8 +8,8 @@ import { parse } from '../core/index.js';
  * @returns {Output & import('../types.js').Metadata & { content: string }}
  */
 export function compile(entry) {
-	const { content, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
-	const result = { ...metadata, content: marker.render(content) };
+	const { body, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
+	const result = { ...metadata, content: marker.render(body) };
 	return /** @type {any} */ (result);
 }
 
