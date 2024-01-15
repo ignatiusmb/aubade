@@ -49,9 +49,7 @@ export function traverse(
 		const path = [...breadcrumb].reverse().join('/');
 		if (type === 'file') {
 			if (!files(path)) return [];
-			const siblings = tree.filter(
-				({ breadcrumb }) => [...breadcrumb].reverse().join('/') !== path,
-			);
+			const siblings = tree.filter(({ breadcrumb: [name] }) => name !== breadcrumb[0]);
 			return hydrate({ breadcrumb, buffer, marker, parse, siblings }) ?? [];
 		} else if (level !== 0) {
 			const depth = level < 0 ? level : level - 1;
