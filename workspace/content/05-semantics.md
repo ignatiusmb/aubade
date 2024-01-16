@@ -77,7 +77,7 @@ This article was originally published on !{date:published}
 Thoroughly updated through this website on !{date:updated}
 ```
 
-There should only be one `<h1>` heading per page, and it's usually declared in the front matter as `title`, which is why headings in the content starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
+There should only be one `<h1>` heading per page, and it's usually declared in the front matter as `title`, which is why headings in the body starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
 
 -   MD001: Heading levels should only increment by one level at a time
 -   MD003: Heading style; only ATX style

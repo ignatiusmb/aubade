@@ -44,35 +44,35 @@ The `files` property in `options` is an optional function that takes the full pa
 content
     ├── posts
     │   ├── draft.my-amazing-two-part-series-part-1
-	│   │   └── index.md
+    │   │   └── index.md
     │   ├── draft.my-amazing-two-part-series-part-2
-	│   │   └── index.md
+    │   │   └── index.md
     │   ├── my-first-post
-	│   │   ├── index.md
-	│   │   └── thumbnail.jpeg
+    │   │   ├── index.md
+    │   │   └── thumbnail.jpeg
     │   └── my-amazing-journey
-	│       ├── index.md
-	│       ├── photo.jpeg
-	│       └── thumbnail.jpeg
+    │       ├── index.md
+    │       ├── photo.jpeg
+    │       └── thumbnail.jpeg
     └── reviews
         ├── game
         │   └── doki-doki-literature-club
-		│       ├── index.md
-		│       └── thumbnail.jpeg
+        │       ├── index.md
+        │       └── thumbnail.jpeg
         ├── book
         │   ├── amazing-book-one
-		│   │   ├── index.md
-		│   │   └── thumbnail.jpeg
+        │   │   ├── index.md
+        │   │   └── thumbnail.jpeg
         │   └── manga-is-literature
-		│       ├── index.md
-		│       └── thumbnail.jpeg
+        │       ├── index.md
+        │       └── thumbnail.jpeg
         └── movie
             ├── spirited-away
-			│   ├── index.md
-			│   └── thumbnail.jpeg
+            │   ├── index.md
+            │   └── thumbnail.jpeg
             └── your-name
-				├── index.md
-				└── thumbnail.jpeg
+                ├── index.md
+                └── thumbnail.jpeg
 ```
 
 An example usage from a _hypothetical_ content folder structure above should look like

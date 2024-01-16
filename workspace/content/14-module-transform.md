@@ -9,7 +9,7 @@ This module provides a set of transformer functions for the [`traverse({ transfo
 import { traverse } from 'marqua/fs';
 import { pipe } from 'marqua/transform';
 
-traverse({ entry: 'content' }, () => {}, pipe(/* ... */));
+traverse({ entry: 'path/to/content' }, () => {}, pipe(/* ... */));
 ```
 
 ## chain
@@ -29,7 +29,7 @@ export function chain<T extends { slug?: string; title?: any }>(options: {
 
     ```typescript
     traverse(
-    	{ entry: 'content' },
+    	{ entry: 'path/to/content' },
     	({}) => {},
     	chain({
     		breakpoint(item) {

@@ -10,7 +10,7 @@ The easiest way to contribute! By just using the software, you're already helpin
 
 ## Documentation
 
-Documentation is especially helpful! You can add something that hasn't been covered or is missing in the docs and help guide others with your experience. The source for the documentation lives in the [content](content) directory.
+Documentation is especially helpful! You can add something that hasn't been covered or is missing in the docs and help guide others with your experience. The source for the documentation lives in the [workspace/content](workspace/content) directory.
 
 ## Developing
 
@@ -35,14 +35,14 @@ The first script to run is `"watch"` in `workspace/marqua`, this will compile an
 
 How the project and code is structured, and some entry points to be aware of
 
--   `content` - unprocessed markdown files containing all of the documentation
+-   `workspace/content` - unprocessed markdown files containing all of the documentation
 -   `workspace/marqua/src/core` - marqua core module, compiler components
 -   `workspace/marqua/src/artisan` - marqua artisan module, syntax highlighter and marker
 -   `workspace/marqua/src/browser` - marqua browser module, DOM hydrating function
 -   `workspace/marqua/src/fs` - marqua file system module, read markdown files from disk
 -   `workspace/marqua/src/transform` - marqua transform module, transformers for `traverse`
 -   `workspace/marqua/styles` - stylesheets used and exported
--   `workspace/documentation` - source code for the website
+-   `workspace/website` - source code for the website
 
 ## Maintaining
 
