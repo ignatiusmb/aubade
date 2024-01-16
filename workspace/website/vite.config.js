@@ -1,10 +1,17 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import { GET } from './src/routes/docs/content.json/+server';
 
-export default defineConfig({
-	plugins: [sveltekit()],
+export default defineConfig(({ command }) => {
+	if (command === 'build') {
+		GET(); // generate static assets
+	}
 
-	server: {
-		port: 3000,
-	},
+	return {
+		plugins: [sveltekit()],
+
+		server: {
+			port: 3000,
+		},
+	};
 });
