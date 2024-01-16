@@ -2,14 +2,14 @@
 title: Module / Artisan
 ---
 
-### transform
+## transform
 
 This isn't usually necessary, but in case you want to handle the markdown parsing and rendering by yourself, here's how you can tap into the `transform` function provided by the module.
 
 ```typescript
 export interface Dataset {
-	lang?: string;
 	file?: string;
+	language?: string;
 	[data: string]: string | undefined;
 }
 
@@ -39,16 +39,16 @@ transform(source, { lang: 'typescript' });
 Another one would be to use as a highlighter function.
 
 ```javascript
-import MarkdownIt from 'markdown-it';
+import markdown from 'markdown-it';
 import { transform } from 'marqua/artisan';
 
 // passing as a 'markdown-it' options
-const marker = MarkdownIt({
-	highlight: (source, lang) => transform(source, { lang });
+const marker = markdown({
+	highlight: (source, language) => transform(source, { language });
 });
 ```
 
-### marker
+## marker
 
 The artisan module also exposes the `marker` import that is a markdown-it object.
 

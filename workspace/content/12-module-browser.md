@@ -2,7 +2,7 @@
 title: Module / Browser
 ---
 
-### hydrate
+## hydrate
 
 This is the browser module to hydrate and give interactivity to your HTML.
 

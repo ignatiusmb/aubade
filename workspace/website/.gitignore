@@ -1,2 +1,5 @@
 .svelte-kit/
 build/
+
+# generated files
+/static/uploads/

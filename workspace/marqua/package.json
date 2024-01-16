@@ -1,7 +1,7 @@
 {
 	"name": "marqua",
 	"version": "0.5.8",
-	"description": "Augmented Markdown Compiler",
+	"description": "data authoring framework",
 	"repository": "github:ignatiusmb/marqua",
 	"author": "Ignatius Bagus",
 	"license": "MIT",

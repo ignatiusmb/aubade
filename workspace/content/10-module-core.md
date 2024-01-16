@@ -4,13 +4,13 @@ title: Module / Core
 
 Marqua provides a lightweight core module with minimal features and dependencies that does not rely on platform-specific modules so that it could be used anywhere safely.
 
-### parse
+## parse
 
-Where the parsing happens, it accepts a source string and returns a `{ content, metadata }` structure. This function is mainly used to separate the front matter from the content.
+Parse accepts a source string and returns a `{ body, metadata }` structure. This function is mainly used to separate the front matter from the content or in this case `body`.
 
 ```typescript
 export function parse(source: string): {
-	content: string;
+	body: string;
 	metadata: Record<string, any> & {
 		readonly estimate: number;
 		readonly table: MarquaTable[];
@@ -18,11 +18,9 @@ export function parse(source: string): {
 };
 ```
 
-<!-- markdownlint-disable MD051 -->
+If you need to read from a file or folder, use the `compile` and `traverse` functions from the [`/fs` module](/docs/module-fs).
 
-If you need to read from a file or folder, use the `compile` and `traverse` functions from the [FileSystem module](#module-fs).
-
-### construct
+## construct
 
 Where the `metadata` or front matter index gets constructed, it is used in the `parse` function.
 

@@ -4,18 +4,17 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
-		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
+		"format": "prettier -w . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
 		"lint": "pnpm run \"/^lint:.*/\"",
-		"lint:style": "prettier -c . --plugin=prettier-plugin-sort-package-json",
+		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
 		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@fontsource/fira-code": "^5.0.16",
-		"@fontsource/karla": "^5.0.18",
-		"@fontsource/rubik": "^5.0.18",
+		"@fontsource-variable/fira-code": "^5.0.16",
+		"@fontsource-variable/karla": "^5.0.19",
 		"@ignatiusmb/styles": "^0.1.1",
-		"@sveltejs/adapter-static": "^3.0.1",
+		"@sveltejs/adapter-vercel": "^4.0.4",
 		"@sveltejs/kit": "^2.3.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"@types/node": "^20.11.0",

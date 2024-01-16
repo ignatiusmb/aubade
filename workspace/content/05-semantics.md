@@ -2,7 +2,7 @@
 title: Semantics
 ---
 
-### Front Matter
+## Front Matter
 
 Marqua supports a minimal subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
 
@@ -45,9 +45,9 @@ The above front matter will output the following JSON object...
 
 Where we usually use indentation to represent the start of a nested maps, we can additionally denote them using a compressed syntax by combining the properties into one key separated by a colon without space, such as `key:x: value`. This should only be declared at the top-level and not inside nested maps.
 
-### Content
+## Body
 
-Everything after front matter will be considered as content and will be parsed as markdown. You can use the `!{}` syntax to access the metadata from the front matter.
+Everything after front matter will be considered as the body and will be parsed as markdown. You can use the `!{}` syntax to access the metadata from the front matter.
 
 ```yaml
 ---
@@ -77,7 +77,7 @@ This article was originally published on !{date:published}
 Thoroughly updated through this website on !{date:updated}
 ```
 
-There should only be one `<h1>` heading per page, and it's usually declared in the front matter as `title`, which is why headings in the content starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
+There should only be one `<h1>` heading per page, and it's usually declared in the front matter as `title`, which is why headings in the body starts at 2 `##` (equivalent to `<h2>`) with the lowest one being 4 `####` (equivalent to `<h4>`) and should conform with the [rules of markdownlint](https://github.com/DavidAnson/markdownlint#rules--aliases), with some essential ones to follow are
 
 -   MD001: Heading levels should only increment by one level at a time
 -   MD003: Heading style; only ATX style
