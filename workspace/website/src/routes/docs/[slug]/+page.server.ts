@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 export async function load({ fetch, params }) {
 	const { items, metadata }: Schema = await fetch('/docs/content.json').then((r) => r.json());
 	const docs = items.find(({ slug }) => slug === params.slug);
-	if (!docs) error(404);
+	if (!docs) error(404, "Sorry, we can't find that page");
 
 	return {
 		title: docs.title,
