@@ -49,7 +49,7 @@
 		"index.d.ts.map"
 	],
 	"engines": {
-		"node": ">=14.8"
+		"node": ">=16.13"
 	},
 	"prettier": "mauss/prettier.json",
 	"keywords": [
