@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Schema } from '../content.json/+server';
+	import type { Schema } from '$content/docs.json/+server';
 	export let flank: Schema['items'][number]['flank'];
 </script>
 

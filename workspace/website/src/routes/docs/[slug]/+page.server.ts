@@ -1,8 +1,8 @@
-import type { Schema } from '../content.json/+server';
+import type { Schema } from '$content/docs.json/+server';
 import { error } from '@sveltejs/kit';
 
 export async function load({ fetch, params }) {
-	const res = await fetch('/docs/content.json');
+	const res = await fetch('/content/docs.json');
 	// @ts-ignore - see what this results in
 	if (!res.ok) error(res.status, res.statusText);
 

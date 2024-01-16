@@ -8,6 +8,10 @@ const config = {
 	kit: {
 		adapter: adapter(),
 
+		alias: {
+			$content: './src/routes/content',
+		},
+
 		typescript: {
 			config: (settings) => ({ extends: 'mauss/tsconfig.json', ...settings }),
 		},
