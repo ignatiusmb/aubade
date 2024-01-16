@@ -51,15 +51,12 @@ importers:
 
   workspace/website:
     devDependencies:
-      '@fontsource/fira-code':
+      '@fontsource-variable/fira-code':
         specifier: ^5.0.16
         version: 5.0.16
-      '@fontsource/karla':
-        specifier: ^5.0.18
-        version: 5.0.18
-      '@fontsource/rubik':
-        specifier: ^5.0.18
-        version: 5.0.18
+      '@fontsource-variable/karla':
+        specifier: ^5.0.19
+        version: 5.0.19
       '@ignatiusmb/styles':
         specifier: ^0.1.1
         version: 0.1.1
@@ -335,16 +332,12 @@ packages:
     dev: true
     optional: true
 
-  /@fontsource/fira-code@5.0.16:
-    resolution: {integrity: sha512-mOAs/sgZz+ETOB4foFnOnbewQDJpByvR4h/pLmgkWVn/gbA8Tlb4wUSWK4QFc+SKmHaDJsT/wgWjDUcxssZn7w==}
+  /@fontsource-variable/fira-code@5.0.16:
+    resolution: {integrity: sha512-XcBZxdY8yEZ+lB314w6upoHKDWJuVWJUwTHxKeQo952MtV9Cf4mZkQ2z0FeHQ3n6h23pAjmq3FgK+k83/OzHLg==}
     dev: true
 
-  /@fontsource/karla@5.0.18:
-    resolution: {integrity: sha512-xdTbNdvdPzqxEme4aNZsw8x/kDi6yO8talFn7WcM06U00rXscgV7rf0PrlMEnKlZozKdFz1YViXB7SSrv0JJOw==}
-    dev: true
-
-  /@fontsource/rubik@5.0.18:
-    resolution: {integrity: sha512-AmEsTzBYA6PZCgCbSE/VC7asgtOtuLQrmcca210CcW+Yb+KYJQdut/jKQAEaSl889jDMyLfowmZe8r1GBzSCqQ==}
+  /@fontsource-variable/karla@5.0.19:
+    resolution: {integrity: sha512-55UQMubhCCbj3A7IeYOaD/VJbKZLlnza7eR8knDpg+cZYBxM7yESuQo9U/kga0KHIuEdjEpBTmHKyGEsM1k2pA==}
     dev: true
 
   /@ignatiusmb/styles@0.1.1:

@@ -1,7 +1,6 @@
 :root {
-	--font-default: 'Rubik', 'Ubuntu', 'Helvetica Neue', sans-serif;
-	--font-heading: 'Karla', sans-serif;
-	--font-monospace: 'Fira Code', 'Inconsolata', 'Consolas', monospace;
+	--font-default: 'Karla Variable', 'Karla', system-ui, sans-serif;
+	--font-monospace: 'Fira Code Variable', 'Fira Code', 'Inconsolata', monospace;
 
 	--mrq-tab-size: 2;
 	--mrq-rounding: 0.3rem;
@@ -55,7 +54,7 @@ code {
 	border-bottom-right-radius: var(--mrq-rounding);
 	background: var(--mrq-bg-dark);
 	color: var(--mrq-cl-light);
-	font-family: 'Fira Code', 'Inconsolata', 'Consolas', 'Ubuntu Mono', monospace;
+	font-family: var(--font-monospace);
 }
 .mrq[data-mrq='pre'] code {
 	top: 0;

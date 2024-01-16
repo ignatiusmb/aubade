@@ -1,25 +1,12 @@
-import type Docs from '$lib/Docs.svelte';
-import type { ComponentProps } from 'svelte';
-import { traverse } from 'marqua/fs';
+import { redirect } from '@sveltejs/kit';
 
-export const prerender = true;
-
-export const load: import('./$types').PageServerLoad = async () => {
-	const docs: ComponentProps<Docs>['sections'] = traverse(
-		{ entry: '../content' },
-		({ breadcrumb: [filename], buffer, marker, parse }) => {
-			const path = `workspace/content/${filename}`;
-			const slug = filename.match(/^(\d{2})-(.+).md$/)![2];
-			const { body, metadata } = parse(buffer.toString('utf-8'));
-			return { slug, title: metadata.title, path, content: marker.render(body) };
-		},
-	);
+export async function load() {
+	redirect(307, '/docs/introduction');
 
 	return {
-		docs,
 		meta: {
-			title: 'Augmented Markdown Compiler',
-			description: 'A markdown compiler with code syntax highlighting',
+			title: 'Data Authoring Framework',
+			description: 'A framework to manage your static content',
 		},
 	};
-};
+}

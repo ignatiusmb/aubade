@@ -42,11 +42,9 @@ html,
 body {
 	background: var(--stone-900);
 	color: var(--stone-200);
-	/* font-family: var(--mrq-default); */
-	font-family: 'Rubik', 'Ubuntu', 'Helvetica Neue', sans-serif;
+	font-family: var(--font-default);
 }
 
 a {
-	/* color: var(--mrq-primary); */
 	color: #34aeff;
 }

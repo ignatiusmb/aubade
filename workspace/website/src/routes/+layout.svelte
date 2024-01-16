@@ -1,10 +1,6 @@
 <script>
-	import '@fontsource/rubik/400.css';
-	import '@fontsource/rubik/500.css';
-	import '@fontsource/karla/400.css';
-	import '@fontsource/karla/600.css';
-	import '@fontsource/fira-code/400.css';
-
+	import '@fontsource-variable/karla';
+	import '@fontsource-variable/fira-code';
 	import '@ignatiusmb/styles/core.css';
 	import 'marqua/styles/code.css';
 	import '../app.css';
@@ -40,17 +36,15 @@
 
 <footer>
 	<p>
-		<span>Copyright &copy;</span>
-		<a href="https://mauss.dev">Ignatius Bagussuputra</a>
-		<span>2019 &ndash; {new Date().getFullYear()}</span>
+		<span>&Larr;</span>
+		<a href="https://github.com/ignatiusmb/marqua">Marqua</a>
+		<span style:color="var(--mrq-primary)">&#x2764;</span>
+		<a href="https://github.com/sveltejs/kit">SvelteKit</a>
+		<span>&Rarr;</span>
 	</p>
 	<p>
-		<span>Documentation made with</span>
-		<span style:color="var(--mrq-primary)">&#x2764;</span>
-		<span>using</span>
-		<a href="https://github.com/sveltejs/kit">SvelteKit</a>
-		<span>&plus;</span>
-		<a href="https://github.com/ignatiusmb/marqua">Marqua</a>
+		<span>&copy; 2019&ndash;{new Date().getFullYear()}</span>
+		<a href="https://mauss.dev">Ignatius Bagussuputra</a>
 	</p>
 </footer>
 
@@ -66,6 +60,6 @@
 
 		text-align: center;
 		font-family: var(--font-monospace);
-		font-size: clamp(0.8rem, 3vw, 1rem);
+		font-size: 0.875rem;
 	}
 </style>
