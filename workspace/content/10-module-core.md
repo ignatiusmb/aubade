@@ -18,9 +18,7 @@ export function parse(source: string): {
 };
 ```
 
-<!-- markdownlint-disable MD051 -->
-
-If you need to read from a file or folder, use the `compile` and `traverse` functions from the [FileSystem module](#module-fs).
+If you need to read from a file or folder, use the `compile` and `traverse` functions from the [`/fs` module](/docs/module-fs).
 
 ## construct
 
