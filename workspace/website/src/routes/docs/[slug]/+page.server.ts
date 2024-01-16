@@ -3,7 +3,8 @@ import { error } from '@sveltejs/kit';
 
 export async function load({ fetch, params }) {
 	const res = await fetch('/docs/content.json');
-	if (!res.ok) error(500, 'Could not load content');
+	// @ts-ignore - see what this results in
+	if (!res.ok) error(res.status, res.statusText);
 
 	const { items, metadata }: Schema = await res.json();
 	const docs = items.find(({ slug }) => slug === params.slug);

@@ -6,9 +6,7 @@ const config = {
 	preprocess: [vitePreprocess()],
 
 	kit: {
-		adapter: adapter({
-			split: true,
-		}),
+		adapter: adapter(),
 
 		typescript: {
 			config: (settings) => ({ extends: 'mauss/tsconfig.json', ...settings }),
