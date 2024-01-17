@@ -29,7 +29,7 @@ marker.renderer.rules.heading_open = scope(() => {
 		const [token, text] = [tokens[idx], tokens[idx + 1].content];
 		const level = +token.tag.slice(-1);
 		if (level > 4) return `<${token.tag}>`;
-		const [delimited] = text.match(/\$\(.*\)/) || [''];
+		const [delimited] = text.match(/\$\(.*?\)/) || [''];
 		const id = generate.id(delimited.slice(2, -1) || text);
 
 		if (level === 2) parents = [id];
