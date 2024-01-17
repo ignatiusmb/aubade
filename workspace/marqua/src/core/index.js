@@ -34,7 +34,7 @@ export function parse(source) {
 					if (!match) continue;
 
 					const [, hashes, title] = match;
-					const [delimited] = title.match(/\$\(.*\)/) || [''];
+					const [delimited] = title.match(/\$\(.*?\)/) || [''];
 
 					table.push({
 						id: generate.id(delimited.slice(2, -1) || title),
