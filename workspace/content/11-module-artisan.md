@@ -19,7 +19,7 @@ export function transform(source: string, dataset: Dataset): string;
 A simple example would be passing a raw source code as a string.
 
 ```javascript
-import { transform } from 'marqua/artisan';
+import { transform } from 'aubade/artisan';
 
 const source = `
 interface User {
@@ -40,7 +40,7 @@ Another one would be to use as a highlighter function.
 
 ```javascript
 import markdown from 'markdown-it';
-import { transform } from 'marqua/artisan';
+import { transform } from 'aubade/artisan';
 
 // passing as a 'markdown-it' options
 const marker = markdown({
@@ -53,7 +53,7 @@ const marker = markdown({
 The artisan module also exposes the `marker` import that is a markdown-it object.
 
 ```javascript
-import { marker } from 'marqua/artisan';
+import { marker } from 'aubade/artisan';
 import plugin from 'markdown-it-plugin'; // some markdown-it plugin
 marker.use(plugin); // add this before calling 'compile' or 'traverse'
 ```
@@ -61,8 +61,8 @@ marker.use(plugin); // add this before calling 'compile' or 'traverse'
 Importing `marker` to extend with plugins is optional, it is usually used to enable you to write [LaTeX](https://www.latex-project.org/) in your markdown for example, which is useful for math typesetting and writing abstract symbols using TeX functions. Here's a working example with a plugin that uses [KaTeX](https://katex.org/).
 
 ```javascript
-import { marker } from 'marqua/artisan';
-import { compile } from 'marqua/fs';
+import { marker } from 'aubade/artisan';
+import { compile } from 'aubade/fs';
 import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 

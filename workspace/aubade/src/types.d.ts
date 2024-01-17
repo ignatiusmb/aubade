@@ -20,16 +20,16 @@ export interface HydrateChunk {
 
 export interface Metadata {
 	estimate: number;
-	table: MarquaTable[];
+	table: AubadeTable[];
 }
 
-export interface MarquaData {
+export interface AubadeData {
 	type: string;
 	title: string;
-	body: string | MarquaData[];
+	body: string | AubadeData[];
 }
 
-export interface MarquaTable {
+export interface AubadeTable {
 	id: string;
 	level: number;
 	title: string;

@@ -3,7 +3,7 @@
 	import Index from '$lib/Index.svelte';
 	import Flank from './Flank.svelte';
 
-	import { version } from 'marqua/package.json';
+	import { version } from 'aubade/package.json';
 	import { page } from '$app/stores';
 
 	export let data;
@@ -11,7 +11,7 @@
 
 <aside>
 	<a
-		href="https://github.com/ignatiusmb/marqua/releases/v{version}"
+		href="https://github.com/ignatiusmb/aubade/releases/v{version}"
 		style:margin-bottom="0.5rem"
 		style:letter-spacing="2px"
 		style:font-size="1.25rem"

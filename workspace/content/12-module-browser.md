@@ -21,7 +21,7 @@ Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 
 ```svelte
 <script>
-	import { hydrate } from 'marqua/browser';
+	import { hydrate } from 'aubade/browser';
 	import { navigating } from '$app/stores';
 </script>
 

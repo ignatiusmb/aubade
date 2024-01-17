@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Edit from '$lib/Edit.svelte';
-	import { hydrate } from 'marqua/browser';
+	import { hydrate } from 'aubade/browser';
 	import { navigating, page } from '$app/stores';
 </script>
 
 <header>
 	<h1>{$page.data.title}</h1>
-	<p>Marqua • Data Authoring Framework</p>
-	<Edit repo="ignatiusmb/marqua" path={$page.data.path}>
+	<p>Aubade • Data Authoring Framework</p>
+	<Edit repo="ignatiusmb/aubade" path={$page.data.path}>
 		<span>Edit this page on GitHub</span>
 	</Edit>
 </header>

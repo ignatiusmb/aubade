@@ -2,12 +2,12 @@
 title: Module / FileSystem
 ---
 
-Marqua provides a couple of functions coupled with the FileSystem module to `compile` or `traverse` a directory, given an entry point.
+Aubade provides a couple of functions coupled with the FileSystem module to `compile` or `traverse` a directory, given an entry point.
 
 ## compile
 
 ```typescript
-interface MarquaTable {
+interface AubadeTable {
 	id: string;
 	level: number;
 	title: string;
@@ -15,7 +15,7 @@ interface MarquaTable {
 
 export function compile<Output>(entry: string): Output & {
 	readonly estimate: number;
-	readonly table: MarquaTable[];
+	readonly table: AubadeTable[];
 	content: string;
 };
 ```
@@ -78,7 +78,7 @@ content
 An example usage from a _hypothetical_ content folder structure above should look like
 
 ```javascript
-import { compile, traverse } from 'marqua/fs';
+import { compile, traverse } from 'aubade/fs';
 
 /* compile - parse a single source file */
 const article = compile('content/posts/draft.my-amazing-two-part-series-part-1/index.md'); 

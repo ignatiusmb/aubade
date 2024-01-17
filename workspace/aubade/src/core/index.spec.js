@@ -21,10 +21,10 @@ tags: [x, y, z]
 		tags: ['x', 'y', 'z'],
 	});
 });
-suites['construct/']('construct marqua rules', () => {
+suites['construct/']('construct aubade rules', () => {
 	const index = core.construct(
 		`
-title: Marqua Rules
+title: Aubade Rules
 date:published: 2023-02-01
 a:b:x: 0
 a:b:y: 1
@@ -33,7 +33,7 @@ a:b:z: 2
 	);
 
 	assert.equal(index, {
-		title: 'Marqua Rules',
+		title: 'Aubade Rules',
 		date: { published: '2023-02-01' },
 		a: { b: { x: '0', y: '1', z: '2' } },
 	});

@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import { json } from '@sveltejs/kit';
-import { traverse } from 'marqua/fs';
-import { chain } from 'marqua/transform';
+import { traverse } from 'aubade/fs';
+import { chain } from 'aubade/transform';
 
 export const prerender = true;
 

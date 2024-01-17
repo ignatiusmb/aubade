@@ -2,7 +2,7 @@
 title: Module / Core
 ---
 
-Marqua provides a lightweight core module with minimal features and dependencies that does not rely on platform-specific modules so that it could be used anywhere safely.
+Aubade provides a lightweight core module with minimal features and dependencies that does not rely on platform-specific modules so that it could be used anywhere safely.
 
 ## parse
 
@@ -13,7 +13,7 @@ export function parse(source: string): {
 	body: string;
 	metadata: Record<string, any> & {
 		readonly estimate: number;
-		readonly table: MarquaTable[];
+		readonly table: AubadeTable[];
 	};
 };
 ```

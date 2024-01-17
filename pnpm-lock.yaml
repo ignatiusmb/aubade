@@ -18,7 +18,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
-  workspace/marqua:
+  workspace/aubade:
     dependencies:
       '@types/markdown-it':
         specifier: ^13.0.7
@@ -72,9 +72,9 @@ importers:
       '@types/node':
         specifier: ^20.11.0
         version: 20.11.0
-      marqua:
+      aubade:
         specifier: workspace:^
-        version: link:../marqua
+        version: link:../aubade
       mauss:
         specifier: ^0.7.2
         version: 0.7.2

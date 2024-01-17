@@ -1,8 +1,8 @@
 {
-	"name": "marqua",
+	"name": "aubade",
 	"version": "0.6.1",
 	"description": "Data Authoring Framework",
-	"repository": "github:ignatiusmb/marqua",
+	"repository": "github:ignatiusmb/aubade",
 	"author": "Ignatius Bagus",
 	"license": "MIT",
 	"type": "module",
