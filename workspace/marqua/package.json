@@ -1,7 +1,7 @@
 {
 	"name": "marqua",
 	"version": "0.6.0",
-	"description": "data authoring framework",
+	"description": "Data Authoring Framework",
 	"repository": "github:ignatiusmb/marqua",
 	"author": "Ignatius Bagus",
 	"license": "MIT",
@@ -44,8 +44,9 @@
 	},
 	"files": [
 		"src/**/*.js",
+		"!**/*.spec.js",
 		"styles/*.css",
-		"index.d.ts",
+		"**/index.d.ts",
 		"index.d.ts.map"
 	],
 	"engines": {
