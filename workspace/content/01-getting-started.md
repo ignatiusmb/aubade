@@ -20,14 +20,14 @@ import 'aubade/styles/code.css';
 @import 'aubade/styles/code.css';
 ```
 
-Use the functions from the [`/fs` module](/docs/module-fs) to `compile` a file or `traverse` directories.
+Use the function from the [`/compass` module](/docs/modules#compass) to `visit` a file or `traverse` directories.
 
 ```javascript
-import { compile, traverse } from 'aubade/fs';
+import { visit, traverse } from 'aubade/compass';
 
-const article = compile(/* path to your file */);
+const article = visit(/* path to your file */);
 
-const data = traverse(/* options */, /* hydrate callback */);
+const data = traverse(/* entrypoint */).hydrate(/* callback */);
 ```
 
 Add interactivity to the code blocks with `hydrate` from `/browser` module.

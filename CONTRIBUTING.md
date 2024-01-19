@@ -39,7 +39,7 @@ How the project and code is structured, and some entry points to be aware of
 -   `workspace/aubade/src/core` - aubade core module, compiler components
 -   `workspace/aubade/src/artisan` - aubade artisan module, syntax highlighter and marker
 -   `workspace/aubade/src/browser` - aubade browser module, DOM hydrating function
--   `workspace/aubade/src/fs` - aubade file system module, read markdown files from disk
+-   `workspace/aubade/src/compass` - aubade compass module, read files from disk
 -   `workspace/aubade/src/transform` - aubade transform module, transformers for `traverse`
 -   `workspace/aubade/styles` - stylesheets used and exported
 -   `workspace/website` - source code for the website

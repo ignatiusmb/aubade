@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import { json } from '@sveltejs/kit';
-import { traverse } from 'aubade/fs';
+import { traverse } from 'aubade/compass';
 import { chain } from 'aubade/transform';
 
 export const prerender = true;
@@ -24,8 +24,7 @@ export interface Schema {
 const ROOT = `${process.cwd()}/static/uploads`;
 
 export async function GET() {
-	const items = traverse(
-		{ entry: '../content' },
+	const items = traverse('../content').hydrate(
 		({ breadcrumb: [filename], buffer, marker, parse, siblings }) => {
 			const { body, metadata } = parse(buffer.toString('utf-8'));
 
