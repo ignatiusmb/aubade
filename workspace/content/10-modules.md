@@ -246,7 +246,7 @@ const data = traverse(
 
 ## /transform
 
-This module provides a set of transformer functions for the [`traverse({ transform: ... })`](/docs/module-fs#traverse) parameter. These functions can be used in conjunction with each other, by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
+This module provides a set of transformer functions for the [`traverse({ transform: ... })`](/docs/modules#fs-traverse) parameter. These functions can be used in conjunction with each other, by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
 
 ```typescript
 import { traverse } from 'marqua/fs';
