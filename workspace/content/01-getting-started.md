@@ -20,7 +20,7 @@ import 'marqua/styles/code.css';
 @import 'marqua/styles/code.css';
 ```
 
-Use the functions from the [`/fs` module](/docs/module-fs) to `compile` a file or `traverse` directories.
+Use the functions from the [`/fs` module](/docs/modules#fs) to `compile` a file or `traverse` directories.
 
 ```javascript
 import { compile, traverse } from 'marqua/fs';
