@@ -31,7 +31,8 @@
 	<Divider type="horizontal" spacing="0.5rem" />
 
 	{#each data.table as { id, title, level }}
-		<a href="#{id}" style:padding-left="{level * 0.5}rem">{title}</a>
+		{@const indent = `${(level - 2) * 0.5}rem`}
+		<a href="#{id}" style:margin-left={indent}>{title}</a>
 	{/each}
 </aside>
 
