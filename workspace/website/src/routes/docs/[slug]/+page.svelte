@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Divider from '$lib/Divider.svelte';
+	import Edit from '$lib/Edit.svelte';
 	import Index from '$lib/Index.svelte';
 	import Flank from './Flank.svelte';
 
@@ -21,14 +22,16 @@
 		{version}
 	</a>
 
-	{#each data.pages as { slug, title }, i}
-		<a
-			href="/docs/{slug}"
-			data-index={`${i + 1}`.padStart(2, '0')}
-			class:current={$page.url.pathname === `/docs/${slug}`}
-		>
+	{#each data.pages as { slug, title }}
+		<a href="/docs/{slug}" class:current={$page.url.pathname === `/docs/${slug}`}>
 			{title}
 		</a>
+	{/each}
+
+	<Divider type="horizontal" spacing="0.5rem" />
+
+	{#each data.table as { id, title, level }}
+		<a href="#{id}" style:padding-left="{level * 0.5}rem">{title}</a>
 	{/each}
 </aside>
 
@@ -37,9 +40,15 @@
 
 	{@html data.content}
 
-	<Divider type="horizontal" spacing="1rem" />
+	<footer>
+		<Edit repo="ignatiusmb/marqua" path={data.path}>
+			<span>Suggest changes to this page</span>
+		</Edit>
 
-	<Flank flank={data.flank} />
+		<Divider type="horizontal" spacing="1rem" />
+
+		<Flank flank={data.flank} />
+	</footer>
 </article>
 
 <style>
@@ -52,22 +61,23 @@
 		align-content: flex-start;
 	}
 	aside a {
-		padding-left: 1rem;
+		padding: 0.25rem 0.375rem 0.25rem 1rem;
 		border-radius: 0.5rem;
-		line-height: 4ch;
+		line-height: 2;
 	}
 	aside a[data-prefix]::before {
 		content: attr(data-prefix);
 		margin: 0 0.75rem 0 0.25rem;
 	}
-	aside a[data-index]::before {
-		content: attr(data-index);
-		margin-right: 0.75rem;
-		font-family: var(--font-monospace);
+	aside a:hover {
+		background: rgba(255, 255, 255, 0.1);
 	}
-	aside a[data-index].current,
-	aside a[data-index]:hover {
-		background: rgba(255, 255, 255, 0.2);
+	aside a.current {
+		background: rgba(255, 255, 255, 0.15);
+	}
+
+	footer {
+		margin-top: 2rem;
 	}
 
 	/* ---- @html content ---- */
@@ -131,6 +141,10 @@
 		}
 		article > :global(#index) {
 			display: none;
+		}
+		aside,
+		article {
+			padding-top: 1rem;
 		}
 	}
 </style>

@@ -4,7 +4,7 @@
 </script>
 
 {#if flank}
-	<footer>
+	<div>
 		{#if flank.back}
 			<a href={flank.back.slug}>
 				<span class="chevron">&lsaquo;</span>
@@ -19,11 +19,11 @@
 				<span class="title">{flank.next.title}</span>
 			</a>
 		{/if}
-	</footer>
+	</div>
 {/if}
 
 <style>
-	footer {
+	div {
 		display: flex;
 		gap: 1rem;
 		justify-content: space-between;

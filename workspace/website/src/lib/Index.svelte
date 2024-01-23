@@ -11,24 +11,23 @@
 		<span>&ndash;</span>
 		<a href="https://github.com/ignatiusmb/marqua/releases/v{version}">Changelog</a>
 	</summary>
-	<p>
-		{#each items as { slug, title }, i}
-			<a
-				href={slug}
-				data-index={`${i + 1}`.padStart(2, '0')}
-				class:current={$page.url.pathname === `/docs/${slug}`}>{title}</a
-			>
+	<div>
+		{#each items as { slug, title }}
+			<a href={slug} class:current={$page.url.pathname === `/docs/${slug}`}>{title}</a>
 		{/each}
-	</p>
+	</div>
 </details>
 
 <style>
 	details {
 		--radius: calc(var(--mrq-rounding));
 
+		z-index: 2;
+		position: sticky;
+		top: 1rem;
 		margin-bottom: 1rem;
 		border-radius: var(--radius);
-		background: rgba(255, 255, 255, 0.1);
+		background: rgb(42, 42, 42);
 	}
 	summary {
 		padding: 0.5rem 1rem;
@@ -38,29 +37,20 @@
 		letter-spacing: 2px;
 		font-family: var(--font-monospace);
 	}
-	p {
+	div {
 		display: grid;
 		margin: 0;
 		font-size: 1rem;
 	}
-	p a {
+	div a {
 		padding: 0.5rem 1rem;
 	}
-	p a[data-index]::before {
-		content: attr(data-index);
-		margin-right: 0.75rem;
-		font-family: var(--font-monospace);
-	}
-	p a[data-index].current,
-	p a[data-index]:hover {
-		background: rgba(255, 255, 255, 0.2);
-	}
-	p a:last-child {
+	div a:last-child {
 		border-bottom-right-radius: var(--radius);
 		border-bottom-left-radius: var(--radius);
 	}
-	p a:hover {
-		background: rgba(255, 255, 255, 0.1);
+	div a.current {
+		background: rgba(255, 255, 255, 0.15);
 	}
 
 	details[open] {
