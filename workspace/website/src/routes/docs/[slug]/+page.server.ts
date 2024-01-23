@@ -15,6 +15,7 @@ export async function load({ fetch, params }) {
 		path: docs.path,
 		content: docs.content,
 		flank: docs.flank,
+		table: docs.table,
 		pages: metadata.pages,
 		meta: {
 			title: docs.title,
