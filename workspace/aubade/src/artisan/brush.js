@@ -1,5 +1,5 @@
 import { getHighlighter, bundledLanguages } from 'shikiji';
-import { escape, generate } from '../utils.js';
+import { escape } from '../utils.js';
 
 /**
  * @typedef {{
@@ -46,8 +46,8 @@ export function transform(source, dataset) {
 		class="mrq ${file ? '' : 'empty'}"
 	>${file ? `<span>${file}</span>` : ''}
 		<div data-mrq="toolbar" class="mrq">
-			${generate.icon('list', 'Toggle\nNumbering')}
-			${generate.icon('clipboard', 'Copy')}
+			${icon('list', 'Toggle\nNumbering')}
+			${icon('clipboard', 'Copy')}
 		</div>
 	</header>
 
@@ -57,4 +57,13 @@ export function transform(source, dataset) {
 		class="mrq language-${rest.language || 'none'}"
 	>${highlighted.trim()}</div>
 </pre>`;
+}
+
+/**
+ * @param {'clipboard' | 'list'} name
+ * @param {string} tooltip
+ */
+function icon(name, tooltip) {
+	const span = `<span data-mrq="tooltip" class="mrq">${tooltip}</span>`;
+	return `<button data-mrq-toolbar="${name}" class="mrq">${span}</button>`;
 }

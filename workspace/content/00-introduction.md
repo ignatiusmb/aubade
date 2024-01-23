@@ -4,7 +4,7 @@ title: Introduction
 
 ## What is Aubade?
 
-Aubade is a data authoring framework for writing and organizing your content away from your code, designed to be flexible and adaptable with any frameworks. It helps you focus on writing your content by collocating your articles with the assets, and providing you with the necessary tools to turn them into a data source for your website.
+Aubade is a data authoring framework for writing and organizing your content away from your code, designed to be flexible and adaptable with any frameworks. It helps you focus on writing your content by collocating your articles with their assets, and providing you with the necessary tools to turn them into a data source for your website.
 
 ## Why separate content from code
 
