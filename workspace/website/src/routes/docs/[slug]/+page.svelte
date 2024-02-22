@@ -131,6 +131,12 @@
 	article > :global(ul li:not(:first-child)) {
 		margin-top: 0.5rem;
 	}
+	article > :global(blockquote) {
+		padding: 1rem;
+		margin: 1rem 0;
+		border-left: 0.25rem solid var(--mrq-primary);
+		background: rgba(0, 112, 187, 0.1);
+	}
 	article :global(.mrq[data-mrq='block']) {
 		margin: 1rem 0 1.5rem;
 	}
