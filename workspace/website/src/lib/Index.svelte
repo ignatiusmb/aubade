@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { version } from 'marqua/package.json';
+	import { version } from 'aubade/package.json';
 	import { page } from '$app/stores';
 
 	export let items: Array<{ slug: string; title: string }>;
@@ -9,7 +9,7 @@
 	<summary>
 		<span>{version}</span>
 		<span>&ndash;</span>
-		<a href="https://github.com/ignatiusmb/marqua/releases/v{version}">Changelog</a>
+		<a href="https://github.com/ignatiusmb/aubade/releases/v{version}">Changelog</a>
 	</summary>
 	<div>
 		{#each items as { slug, title }}

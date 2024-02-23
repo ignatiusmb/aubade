@@ -1,8 +1,8 @@
 {
-	"name": "marqua",
+	"name": "aubade",
 	"version": "0.6.1",
 	"description": "Data Authoring Framework",
-	"repository": "github:ignatiusmb/marqua",
+	"repository": "github:ignatiusmb/aubade",
 	"author": "Ignatius Bagus",
 	"license": "MIT",
 	"type": "module",
@@ -28,9 +28,9 @@
 			"types": "./index.d.ts",
 			"default": "./src/browser/index.js"
 		},
-		"./fs": {
+		"./compass": {
 			"types": "./index.d.ts",
-			"default": "./src/fs/index.js"
+			"default": "./src/compass/index.js"
 		},
 		"./transform": {
 			"types": "./index.d.ts",

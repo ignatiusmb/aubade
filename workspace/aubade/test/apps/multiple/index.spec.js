@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import { traverse } from '../../../src/fs/index.js';
+import { traverse } from '../../../src/compass/index.js';
 import { readJSON } from '../utils.js';
 
 const basics = {
@@ -11,7 +11,7 @@ const basics = {
 const target = `${process.cwd()}/test/apps/multiple`;
 
 basics.standard('standard traversal', () => {
-	const output = traverse({ entry: `${target}/standard/input` }, ({ buffer, marker, parse }) => {
+	const output = traverse(`${target}/standard/input`).hydrate(({ buffer, marker, parse }) => {
 		const { body, metadata } = parse(buffer.toString('utf-8'));
 		return { ...metadata, content: marker.render(body) };
 	});
@@ -24,8 +24,7 @@ basics.standard('standard traversal', () => {
 });
 
 basics.depth('depth traversal', () => {
-	const output = traverse(
-		{ entry: `${target}/depth/input`, depth: 1 },
+	const output = traverse(`${target}/depth/input`, { depth: 1 }).hydrate(
 		({ buffer, marker, parse }) => {
 			const { body, metadata } = parse(buffer.toString('utf-8'));
 			return { ...metadata, content: marker.render(body) };

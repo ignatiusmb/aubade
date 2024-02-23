@@ -27,7 +27,7 @@ export function parse(source) {
 
 			/** table of contents */
 			get table() {
-				/** @type {import('../types.js').MarquaTable[]} */
+				/** @type {import('../types.js').AubadeTable[]} */
 				const table = [];
 				for (const line of stuffed.split('\n')) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);

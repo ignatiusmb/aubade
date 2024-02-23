@@ -2,7 +2,7 @@
 title: Modules
 ---
 
-Marqua provides a set of modules that can be used in conjunction with each other.
+Aubade provides a set of modules that can be used in conjunction with each other.
 
 ## core
 
@@ -17,12 +17,12 @@ export function parse(source: string): {
 	body: string;
 	metadata: Record<string, any> & {
 		readonly estimate: number;
-		readonly table: MarquaTable[];
+		readonly table: AubadeTable[];
 	};
 };
 ```
 
-If you need to read from a file or folder, use the `compile` and `traverse` function from the [`/fs` module](/docs/modules#fs).
+If you need to read from a file or folder, use the `visit` and `traverse` function from the [`/compass` module](/docs/modules#compass).
 
 ### construct
 
@@ -55,7 +55,7 @@ export function transform(source: string, dataset: Dataset): string;
 A simple example would be passing a raw source code as a string.
 
 ```javascript
-import { transform } from 'marqua/artisan';
+import { transform } from 'aubade/artisan';
 
 const source = `
 interface User {
@@ -76,7 +76,7 @@ Another one would be to use as a highlighter function.
 
 ```javascript
 import markdown from 'markdown-it';
-import { transform } from 'marqua/artisan';
+import { transform } from 'aubade/artisan';
 
 // passing as a 'markdown-it' options
 const marker = markdown({
@@ -89,16 +89,16 @@ const marker = markdown({
 The artisan module also exposes the `marker` import that is a markdown-it object.
 
 ```javascript
-import { marker } from 'marqua/artisan';
+import { marker } from 'aubade/artisan';
 import plugin from 'markdown-it-plugin'; // some markdown-it plugin
-marker.use(plugin); // add this before calling 'compile' or 'traverse'
+marker.use(plugin); // add this before calling 'visit' or 'traverse'
 ```
 
 Importing `marker` to extend with plugins is optional, it is usually used to enable you to write [LaTeX](https://www.latex-project.org/) in your markdown for example, which is useful for math typesetting and writing abstract symbols using TeX function. Here's a working example with a plugin that uses [KaTeX](https://katex.org/).
 
 ```javascript
-import { marker } from 'marqua/artisan';
-import { compile } from 'marqua/fs';
+import { marker } from 'aubade/artisan';
+import { visit } from 'aubade/compass';
 import TexMath from 'markdown-it-texmath';
 import KaTeX from 'katex';
 
@@ -107,7 +107,7 @@ marker.use(TexMath, {
 	delimiters: 'dollars',
 });
 
-const data = compile(/* source path */);
+const data = visit(/* source path */);
 ```
 
 ## /browser
@@ -131,7 +131,7 @@ Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 
 ```svelte
 <script>
-	import { hydrate } from 'marqua/browser';
+	import { hydrate } from 'aubade/browser';
 	import { navigating } from '$app/stores';
 </script>
 
@@ -142,43 +142,46 @@ Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 
 Passing in the `navigating` store into the `key` parameter is used to trigger the update inside `hydrate` function and re-hydrate the DOM when the page changes but is not remounted.
 
-## /fs
+## /compass
 
-### compile
+### visit
 
 ```typescript
-interface MarquaTable {
+interface AubadeTable {
 	id: string;
 	level: number;
 	title: string;
 }
 
-export function compile<Output>(entry: string): Output & {
+export function visit<Output>(entry: string): Output & {
 	readonly estimate: number;
 	readonly table: AubadeTable[];
 	content: string;
 };
 ```
 
-The first argument of `compile` is the source entry point.
+The first argument of `visit` is the source entry point.
 
 ### traverse
 
 ```typescript
 export function traverse(
+	entry: string,
 	options: {
-		entry: string;
 		depth?: number;
 		files?(path: string): boolean;
 	},
-	hydrate: (chunk: HydrateChunk) => undefined | Output,
-	transform?: (items: Output[]) => Transformed,
-): Transformed;
+): {
+	hydrate(
+		load: (chunk: HydrateChunk) => undefined | Output,
+		transform?: (items: Output[]) => Transformed,
+	): Transformed;
+};
 ```
 
-The first argument of `traverse` is its `typeof options`, the second argument is the `hydrate` callback function, and the third argument is an optional `transform` callback function.
+The first argument of `traverse` is the directory entrypoint, and the second argument is its `options`. It returns an object with the `hydrate` method that accepts a `load` callback and an optional `transform` callback function.
 
-The `files` property in `options` is an optional function that takes the full path of a file and returns a boolean. If the function returns `true`, the `hydrate` function will be called upon the file, else it will ignored and filtered out from the final output.
+The `files` property in `options` is an optional function that takes the full path of a file and returns a boolean. If the function returns `true`, the `load` callback will be called upon the file, else it will ignored and filtered out from the final output.
 
 ```
 content
@@ -218,15 +221,14 @@ content
 An example usage from a _hypothetical_ content folder structure above should look like
 
 ```javascript
-import { compile, traverse } from 'marqua/fs';
+import { visit, traverse } from 'aubade/compass';
 
-/* compile - parse a single source file */
-const article = compile('content/posts/draft.my-amazing-two-part-series-part-1/index.md'); 
-	// ^- { content: '...', metadata: { ... } }
+/* visit - parse a single source file */
+const article = visit('content/posts/draft.my-amazing-two-part-series-part-1/index.md');
+// ^- { content: '...', metadata: { ... } }
 
 /* traverse - scans a directory for sources */
-const data = traverse(
-	{ entry: 'content/posts', depth: -1 },
+const data = traverse('content/posts', { depth: -1 }).hydrate(
 	({ breadcrumb: [file, slug], buffer, marker, parse }) => {
 		if (file.startsWith('draft')) return;
 		const { body, metadata } = parse(buffer.toString('utf-8'));
@@ -235,8 +237,7 @@ const data = traverse(
 );
 
 /* traverse - nested directories infinite recursive traversal */
-const data = traverse(
-	{ entry: 'content/reviews', depth: -1 },
+const data = traverse('content/reviews', { depth: -1 }).hydrate(
 	({ breadcrumb: [file, slug, category], buffer, parse }) => {
 		const { body, metadata } = parse(buffer.toString('utf-8'));
 		return { ...metadata, slug, category, content: marker.render(body) };
@@ -246,13 +247,13 @@ const data = traverse(
 
 ## /transform
 
-This module provides a set of transformer functions for the [`traverse({ transform: ... })`](/docs/modules#fs-traverse) parameter. These functions can be used in conjunction with each other, by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
+This module provides a set of transformer function for the [`traverse(...).hydrate(..., /* transform */)` parameter](/docs/modules#compass-traverse). These function can be used in conjunction with each other, by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
 
 ```typescript
-import { traverse } from 'marqua/fs';
-import { pipe } from 'marqua/transform';
+import { traverse } from 'aubade/compass';
+import { pipe } from 'aubade/transform';
 
-traverse({ entry: 'path/to/content' }, () => {}, pipe(/* ... */));
+traverse('path/to/content').hydrate(() => {}, pipe(/* ... */));
 ```
 
 ### chain
@@ -271,8 +272,7 @@ export function chain<T extends { slug?: string; title?: any }>(options: {
 -   A `breakpoint` function can be passed to stop the chain on a certain condition.
 
     ```typescript
-    traverse(
-    	{ entry: 'path/to/content' },
+    traverse('path/to/content').hydrate(
     	({}) => {},
     	chain({
     		breakpoint(item) {

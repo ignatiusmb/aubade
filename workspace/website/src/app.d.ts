@@ -1,5 +1,5 @@
 /// <reference types="@sveltejs/kit" />
-/// <reference types="../../marqua" />
+/// <reference types="../../aubade" />
 
 namespace App {
 	// interface Error {}
