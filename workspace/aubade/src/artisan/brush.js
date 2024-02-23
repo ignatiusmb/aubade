@@ -1,4 +1,4 @@
-import { getHighlighter, bundledLanguages } from 'shikiji';
+import { getHighlighter, bundledLanguages } from 'shiki';
 import { escape } from '../utils.js';
 
 /**
@@ -20,12 +20,14 @@ export const highlighter = await getHighlighter({
  * @returns {string} HTML code block
  */
 export function transform(source, dataset) {
-	const { codeToThemedTokens } = highlighter;
+	const { codeToTokensBase } = highlighter;
 	const { file, ...rest } = dataset;
 
 	let highlighted = '';
 	let line = +(rest['line-start'] || 1);
-	for (const tokens of codeToThemedTokens(source, { lang: rest.language })) {
+	for (const tokens of codeToTokensBase(source, {
+		lang: /** @type {import('shiki').BundledLanguage} */ (rest.language),
+	})) {
 		let code = `<code data-line="${line++}">`;
 		for (const { content, color } of tokens) {
 			const style = color ? `style="color: ${color}"` : '';

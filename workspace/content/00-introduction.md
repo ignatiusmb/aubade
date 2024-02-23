@@ -16,7 +16,7 @@ It will not only help the future you, but also your team and anyone who is going
 
 ## How it works
 
-Aubade includes a markdown compiler with code syntax highlighting and built-in front matter parser that splits your markdown into two parts, `body` and `metadata`. The markdown compiler is powered by [markdown-it](https://github.com/markdown-it/markdown-it) and code syntax highlighter is powered by [Shikiji](https://github.com/antfu/shikiji). The [front matter parser](/docs/modules#core-parse) for the `metadata` is powered by a lightweight in-house implementation, which supports a minimal subset of [YAML](https://yaml.org/) syntax and can be used as a standalone module.
+Aubade includes a markdown compiler with code syntax highlighting and built-in front matter parser that splits your markdown into two parts, `body` and `metadata`. The markdown compiler is powered by [markdown-it](https://github.com/markdown-it/markdown-it) and code syntax highlighter is powered by [Shiki](https://github.com/shikijs/shiki). The [front matter parser](/docs/modules#core-parse) for the `metadata` is powered by a lightweight in-house implementation, which supports a minimal subset of [YAML](https://yaml.org/) syntax and can be used as a standalone module.
 
 Aubade only provides the necessary tools to help you with the initial layout and for you to create your own architecture and workflow, so you can have full control over your project. Simply start writing in a markdown file or use your existing markdown files and Aubade will help you easily turn them into a data source for your website.
 
