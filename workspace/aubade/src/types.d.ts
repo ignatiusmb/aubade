@@ -7,15 +7,23 @@ export interface FrontMatter {
 	[key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[];
 }
 
+export interface FileChunk {
+	type: 'file';
+	path: string;
+	buffer: Buffer;
+}
+
+export interface DirChunk {
+	type: 'directory';
+	path: string;
+}
+
 export interface HydrateChunk {
 	breadcrumb: string[];
 	buffer: Buffer;
 	marker: typeof marker;
 	parse: typeof parse;
-	siblings: Array<
-		| { type: 'file'; breadcrumb: string[]; buffer: Buffer }
-		| { type: 'directory'; breadcrumb: string[]; buffer: undefined }
-	>;
+	siblings: Array<FileChunk | DirChunk>;
 }
 
 export interface Metadata {
