@@ -1,13 +1,12 @@
 import * as fs from 'node:fs';
-import { traverse } from 'marqua/fs';
-import { chain } from 'marqua/transform';
+import { traverse } from 'aubade/compass';
+import { chain } from 'aubade/transform';
 
 const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
 	get 'docs/'() {
-		return traverse(
-			{ entry: '../content' },
+		return traverse('../content').hydrate(
 			({ breadcrumb: [filename], buffer, marker, parse, siblings }) => {
 				const { body, metadata } = parse(buffer.toString('utf-8'));
 

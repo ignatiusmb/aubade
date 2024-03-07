@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { hydrate } from 'marqua/browser';
+	import { hydrate } from 'aubade/browser';
 	import { navigating, page } from '$app/stores';
 </script>
 
 <header>
 	<h1>{$page.data.title}</h1>
-	<p>Marqua • Data Authoring Framework</p>
+	<p>Aubade • Data Authoring Framework</p>
 	<div class="links">
-		<a href="https://github.com/ignatiusmb/marqua">
+		<a href="https://github.com/ignatiusmb/aubade">
 			<svg
 				width="34"
 				height="34"

@@ -4,7 +4,7 @@ title: Semantics
 
 ## Front Matter
 
-Marqua supports a minimal subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
+Aubade supports a minimal subset of [YAML](https://yaml.org/) syntax for the front matter, which is semantically placed at the start of the file between two `---` lines, and it will be parsed as a JSON object.
 
 All values will be attempted to be parsed into the supported types, which are `null`, `true`, and `false`. Any other values will go through the following checks and the first one to pass will be used.
 
