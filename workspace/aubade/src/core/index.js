@@ -1,4 +1,4 @@
-import { generate } from '../utils.js';
+import { uhi } from '../utils.js';
 
 /** @param {string} source */
 export function parse(source) {
@@ -37,7 +37,7 @@ export function parse(source) {
 					const [delimited] = title.match(/\$\(.*?\)/) || [''];
 
 					table.push({
-						id: generate.id(delimited.slice(2, -1) || title),
+						id: uhi(delimited.slice(2, -1) || title),
 						title: title.replace(delimited, delimited.slice(2, -1)),
 						level: hashes.length,
 					});
