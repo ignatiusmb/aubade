@@ -10,12 +10,15 @@ export interface FrontMatter {
 export interface FileChunk {
 	type: 'file';
 	path: string;
+	breadcrumb: string[];
 	buffer: Buffer;
 }
 
 export interface DirChunk {
 	type: 'directory';
 	path: string;
+	breadcrumb: string[];
+	buffer: undefined;
 }
 
 export interface HydrateChunk {
