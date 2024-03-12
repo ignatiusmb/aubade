@@ -62,13 +62,13 @@ export function traverse(entry, { depth: level = 0 } = {}) {
 		 *
 		 * @template {object} Output
 		 * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} load
-		 * @param {(path: string) => boolean} [filter] files to process with `load`
+		 * @param {(path: string) => boolean} [files] filter item to process with `load`
 		 * @returns {Output[]}
 		 */
-		hydrate(load, filter = (v) => v.endsWith('.md')) {
+		hydrate(load, files = (v) => v.endsWith('.md')) {
 			const items = [];
 			for (const { path, breadcrumb, buffer } of entries) {
-				if (!filter(path)) continue;
+				if (!files(path)) continue;
 				const item = load({
 					breadcrumb,
 					buffer,
