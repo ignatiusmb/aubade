@@ -25,9 +25,7 @@ export const DATA = {
 					content: marker.render(content),
 				};
 			},
-			chain({
-				base: '/docs/',
-			}),
+			(items) => chain(items, { base: '/docs/' }),
 		);
 	},
 };
