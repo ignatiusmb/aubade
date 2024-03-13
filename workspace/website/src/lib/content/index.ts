@@ -6,7 +6,7 @@ const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
 	get 'docs/'() {
-		return traverse('../content').hydrate(
+		const items = traverse('../content').hydrate(
 			({ breadcrumb: [filename], buffer, marker, parse, siblings }) => {
 				const { body, metadata } = parse(buffer.toString('utf-8'));
 
@@ -25,7 +25,8 @@ export const DATA = {
 					content: marker.render(content),
 				};
 			},
-			(items) => chain(items, { base: '/docs/' }),
 		);
+
+		return chain(items, { base: '/docs/' });
 	},
 };

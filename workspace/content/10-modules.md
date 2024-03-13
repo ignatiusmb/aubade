@@ -162,26 +162,49 @@ export function visit<Output>(entry: string): Output & {
 
 The first argument of `visit` is the source entry point.
 
+### scan
+
+```typescript
+interface FileChunk {
+	type: 'file';
+	path: string;
+	breadcrumb: string[];
+	buffer: Buffer;
+}
+
+interface DirChunk {
+	type: 'directory';
+	path: string;
+	breadcrumb: string[];
+	buffer: undefined;
+}
+
+export function scan<T extends 'all' | 'files' | 'directories'>(
+	type: T,
+	entry: string,
+): FileChunk[] | DirChunk[];
+```
+
+The first argument of `scan` is the type of item to scan, and the second argument is the entrypoint. It returns an array of `FileChunk` when `type` is `'files'`, `DirChunk` when `type` is `'directories'`, and both when `type` is `'all'`. The `entry` argument can be anything as long as it exists in the filesystem, though it would return an empty array if it's not a directory.
+
 ### traverse
 
 ```typescript
 export function traverse(
 	entry: string,
-	options: {
+	options?: {
 		depth?: number;
-		files?(path: string): boolean;
 	},
 ): {
+	files: FileChunk[];
 	hydrate(
 		load: (chunk: HydrateChunk) => undefined | Output,
-		transform?: (items: Output[]) => Transformed,
-	): Transformed;
+		filter?: (path: string) => boolean,
+	): Output[];
 };
 ```
 
-The first argument of `traverse` is the directory entrypoint, and the second argument is its `options`. It returns an object with the `hydrate` method that accepts a `load` callback and an optional `transform` callback function.
-
-The `files` property in `options` is an optional function that takes the full path of a file and returns a boolean. If the function returns `true`, the `load` callback will be called upon the file, else it will ignored and filtered out from the final output.
+The first argument of `traverse` is the directory entrypoint, and the second argument is its `options`. It returns an object with the `hydrate` method that accepts a `load` callback and an optional `files` function to filter item to process into `load`, it takes the full path of a file and returns a boolean. If the function returns `true`, the `load` callback will be called upon the file, else it will ignored and filtered out from the final output.
 
 ```
 content
@@ -247,13 +270,15 @@ const data = traverse('content/reviews', { depth: -1 }).hydrate(
 
 ## /transform
 
-This module provides a set of transformer function for the [`traverse(...).hydrate(..., /* transform */)` parameter](/docs/modules#compass-traverse). These function can be used in conjunction with each other, by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
+This is a standalone module which provides a set of transformer function. They can be used in conjunction with each other by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
 
 ```typescript
 import { traverse } from 'aubade/compass';
-import { pipe } from 'aubade/transform';
+import { chain } from 'aubade/transform';
 
-traverse('path/to/content').hydrate(() => {}, pipe(/* ... */));
+const items = traverse('path/to/content').hydrate(() => {});
+
+chain(items, { ... });
 ```
 
 ### chain
