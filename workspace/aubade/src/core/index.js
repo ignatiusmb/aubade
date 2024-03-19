@@ -29,7 +29,7 @@ export function parse(source) {
 			get table() {
 				/** @type {import('../types.js').AubadeTable[]} */
 				const table = [];
-				for (const line of stuffed.split('\n')) {
+				for (const line of stuffed.replace(/<!--[\s\S]+?-->/g, '').split('\n')) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
 

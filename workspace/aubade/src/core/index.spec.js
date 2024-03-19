@@ -349,6 +349,29 @@ something here
 		title: 'sub-plot',
 	});
 });
+suites['construct/table']('trim comments correctly', () => {
+	const { metadata } = core.parse(
+		`
+---
+title: headings inside comments
+---
+
+## simple heading
+
+### story
+
+<!--
+### plot
+-->
+
+### sub-story
+
+### sub-plot
+		`.trim(),
+	);
+
+	assert.equal(metadata.table.length, 4);
+});
 
 suites['parse/']('parse markdown contents', () => {
 	const { body, metadata } = core.parse(
