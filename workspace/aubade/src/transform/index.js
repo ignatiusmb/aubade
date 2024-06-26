@@ -1,7 +1,5 @@
 import { ntv } from 'mauss/std';
 
-export { pipe } from 'mauss';
-
 /**
  * @template {{ slug?: string; title?: any }} T
  * @param {T[]} items
