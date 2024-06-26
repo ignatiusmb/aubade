@@ -270,7 +270,7 @@ const data = traverse('content/reviews', { depth: -1 }).hydrate(
 
 ## /transform
 
-This is a standalone module which provides a set of transformer function. They can be used in conjunction with each other by utilizing the `pipe` function provided from the `'mauss'` package and re-exported by this module, you can do the following
+This is a standalone module which provides a set of transformer function, you can do the following
 
 ```typescript
 import { traverse } from 'aubade/compass';
