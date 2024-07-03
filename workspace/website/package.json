@@ -9,7 +9,6 @@
 		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
 		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
-	"prettier": "mauss/prettier.json",
 	"devDependencies": {
 		"@fontsource-variable/fira-code": "^5.0.17",
 		"@fontsource-variable/karla": "^5.0.20",
@@ -18,7 +17,6 @@
 		"@sveltejs/kit": "^2.5.6",
 		"@sveltejs/vite-plugin-svelte": "^3.1.0",
 		"aubade": "workspace:^",
-		"mauss": "^0.7.2",
 		"prettier-plugin-svelte": "^3.2.3",
 		"svelte": "^4.2.14",
 		"svelte-check": "^3.6.9",

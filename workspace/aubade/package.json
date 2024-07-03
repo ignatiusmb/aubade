@@ -52,7 +52,6 @@
 	"engines": {
 		"node": ">=16.13"
 	},
-	"prettier": "mauss/prettier.json",
 	"keywords": [
 		"markdown",
 		"compiler",
