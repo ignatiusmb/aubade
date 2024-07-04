@@ -3,6 +3,7 @@
 	"version": "0.8.0",
 	"description": "Data Authoring Framework",
 	"repository": "github:ignatiusmb/aubade",
+	"homepage": "https://aubade.mauss.dev",
 	"author": "Ignatius Bagus",
 	"license": "MIT",
 	"type": "module",
@@ -62,13 +63,13 @@
 		"preprocessor"
 	],
 	"dependencies": {
-		"@types/markdown-it": "^14.0.1",
+		"@types/markdown-it": "^14.1.1",
 		"markdown-it": "^14.1.0",
 		"mauss": "^0.7.2",
 		"shikiji": "0.9.2"
 	},
 	"devDependencies": {
-		"dts-buddy": "^0.4.7",
+		"dts-buddy": "^0.5.1",
 		"tsm": "^2.3.0",
 		"uvu": "^0.5.6"
 	}
