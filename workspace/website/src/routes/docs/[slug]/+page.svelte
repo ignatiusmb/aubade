@@ -124,7 +124,7 @@
 		background: rgba(0, 112, 187, 0.6);
 	}
 	article > :global(p) {
-		line-height: 1.5;
+		line-height: 1.65;
 	}
 	article > :global(p:not(:first-child)) {
 		margin-top: 1rem;
