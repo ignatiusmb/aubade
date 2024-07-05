@@ -12,9 +12,9 @@
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
 		"@types/node": "^20.12.7",
-		"mauss": "^0.7.2",
+		"mauss": "^0.8.1",
 		"prettier": "^3.2.5",
 		"prettier-plugin-sort-package-json": "^0.2.0",
-		"typescript": "^5.4.5"
+		"typescript": "^5.5.3"
 	}
 }
