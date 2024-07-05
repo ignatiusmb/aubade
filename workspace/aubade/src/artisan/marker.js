@@ -1,6 +1,6 @@
 import markdown from 'markdown-it';
 import { scope } from 'mauss';
-import { generate } from '../utils.js';
+import { uhi } from '../utils.js';
 import { transform } from './brush.js';
 
 export const marker = markdown({
@@ -30,7 +30,7 @@ marker.renderer.rules.heading_open = scope(() => {
 		const level = +token.tag.slice(-1);
 		if (level > 4) return `<${token.tag}>`;
 		const [delimited] = text.match(/\$\(.*?\)/) || [''];
-		const id = generate.id(delimited.slice(2, -1) || text);
+		const id = uhi(delimited.slice(2, -1) || text);
 
 		if (level === 2) parents = [id];
 		if (level === 3) parents = [parents[0], id];

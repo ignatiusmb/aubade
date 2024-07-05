@@ -14,50 +14,75 @@ export function visit(entry) {
 }
 
 /**
+ * @template {'all' | 'files' | 'directories'} T
+ * @param {T} type
+ * @param {string} entry
+ * @returns {T extends 'all'
+ * 		? import('../types.js').HydrateChunk['siblings'] : T extends 'files'
+ * 		? import('../types.js').FileChunk[] : import('../types.js').DirChunk[]}
+ */
+export function scan(type, entry) {
+	/** @type {import('../types.js').HydrateChunk['siblings']} */
+	const entries = [];
+	for (const name of fs.statSync(entry).isDirectory() ? fs.readdirSync(entry) : []) {
+		const path = join(entry, name);
+		/** @type {any} - trick TS to enable discriminated union */
+		const stat = fs.statSync(path).isDirectory() ? 'directory' : 'file';
+		if (type === 'files' && stat === 'directory') continue;
+		if (type === 'directories' && stat === 'file') continue;
+		entries.push({
+			type: stat,
+			path,
+			breadcrumb: path.split(/[/\\]/).reverse(),
+			get buffer() {
+				return stat === 'file' ? fs.readFileSync(path) : void 0;
+			},
+		});
+	}
+	return /** @type {any} */ (entries);
+}
+
+/**
  * @param {string} entry
  * @param {{
  * 	depth?: number;
- * 	files?(path: string): boolean;
  * }} [options]
  */
-export function traverse(entry, { depth: level = 0, files = (v) => v.endsWith('.md') } = {}) {
-	/** @type {import('../types.js').HydrateChunk['siblings']} */
-	const tree = fs.readdirSync(entry).map((name) => {
-		const path = join(entry, name);
-		return {
-			/** @type {any} - trick TS to enable discriminated union */
-			type: fs.statSync(path).isDirectory() ? 'directory' : 'file',
-			breadcrumb: path.split(/[/\\]/).reverse(),
-			get buffer() {
-				return this.type === 'file' ? fs.readFileSync(path) : void 0;
-			},
-		};
-	});
+export function traverse(entry, { depth: level = 0 } = {}) {
+	const entries = scan('files', entry);
+	for (const { path } of level ? scan('directories', entry) : []) {
+		entries.push(...traverse(path, { depth: level - 1 }).files);
+	}
 
 	return {
-		/**
-		 * @template {object} Output
-		 * @template Transformed
-		 *
-		 * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} load
-		 * @param {(items: Output[]) => Transformed} [transform]
-		 * @returns {Transformed}
-		 */
-		hydrate(load, transform = (v) => /** @type {Transformed} */ (v)) {
-			const backpack = tree.flatMap(({ type, breadcrumb, buffer }) => {
-				const path = [...breadcrumb].reverse().join('/');
-				if (type === 'file') {
-					if (!files(path)) return [];
-					const siblings = tree.filter(({ breadcrumb: [name] }) => name !== breadcrumb[0]);
-					return load({ breadcrumb, buffer, marker, parse, siblings }) ?? [];
-				} else if (level !== 0) {
-					const depth = level < 0 ? level : level - 1;
-					return traverse(path, { depth, files }).hydrate(load);
-				}
-				return [];
-			});
+		files: entries,
 
-			return transform(/** @type {any} */ (backpack));
+		/**
+		 * Hydrate `files` scanned on to the shelf with the `load` function.
+		 *
+		 * @template {object} Output
+		 * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} load
+		 * @param {(path: string) => boolean} [files] filter item to process with `load`
+		 * @returns {Output[]}
+		 */
+		hydrate(load, files = (v) => v.endsWith('.md')) {
+			const items = [];
+			for (const { path, breadcrumb, buffer } of entries) {
+				if (!files(path)) continue;
+				const item = load({
+					breadcrumb,
+					buffer,
+					marker,
+					parse,
+					get siblings() {
+						const parent = breadcrumb.slice(1).reverse();
+						const tree = scan('all', parent.join('/'));
+						return tree.filter(({ path: file }) => file !== path);
+					},
+				});
+				item && items.push(item);
+			}
+			return items;
 		},
 	};
 }

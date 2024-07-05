@@ -1,4 +1,4 @@
-import { generate } from '../utils.js';
+import { uhi } from '../utils.js';
 
 /** @param {string} source */
 export function parse(source) {
@@ -29,7 +29,7 @@ export function parse(source) {
 			get table() {
 				/** @type {import('../types.js').AubadeTable[]} */
 				const table = [];
-				for (const line of stuffed.split('\n')) {
+				for (const line of stuffed.replace(/<!--[\s\S]+?-->/g, '').split('\n')) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
 
@@ -37,7 +37,7 @@ export function parse(source) {
 					const [delimited] = title.match(/\$\(.*?\)/) || [''];
 
 					table.push({
-						id: generate.id(delimited.slice(2, -1) || title),
+						id: uhi(delimited.slice(2, -1) || title),
 						title: title.replace(delimited, delimited.slice(2, -1)),
 						level: hashes.length,
 					});

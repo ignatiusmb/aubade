@@ -31,7 +31,8 @@
 	<Divider type="horizontal" spacing="0.5rem" />
 
 	{#each data.table as { id, title, level }}
-		<a href="#{id}" style:padding-left="{level * 0.5}rem">{title}</a>
+		{@const indent = `${(level - 2) * 0.5}rem`}
+		<a href="#{id}" style:margin-left={indent}>{title}</a>
 	{/each}
 </aside>
 
@@ -123,7 +124,7 @@
 		background: rgba(0, 112, 187, 0.6);
 	}
 	article > :global(p) {
-		line-height: 1.5;
+		line-height: 1.65;
 	}
 	article > :global(p:not(:first-child)) {
 		margin-top: 1rem;

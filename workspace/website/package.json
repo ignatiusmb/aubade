@@ -9,22 +9,18 @@
 		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
 		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
-	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@fontsource-variable/fira-code": "^5.0.16",
-		"@fontsource-variable/karla": "^5.0.19",
+		"@fontsource-variable/fira-code": "^5.0.17",
+		"@fontsource-variable/karla": "^5.0.20",
 		"@ignatiusmb/styles": "^0.1.1",
-		"@sveltejs/adapter-vercel": "^4.0.4",
-		"@sveltejs/kit": "^2.3.0",
-		"@sveltejs/vite-plugin-svelte": "^3.0.1",
-		"@types/node": "^20.11.0",
+		"@sveltejs/adapter-vercel": "^5.3.0",
+		"@sveltejs/kit": "^2.5.6",
+		"@sveltejs/vite-plugin-svelte": "^3.1.0",
 		"aubade": "workspace:^",
-		"mauss": "^0.7.2",
-		"prettier-plugin-sort-package-json": "^0.2.0",
-		"prettier-plugin-svelte": "^3.1.2",
-		"svelte": "^4.2.8",
-		"svelte-check": "^3.6.2",
+		"prettier-plugin-svelte": "^3.2.3",
+		"svelte": "^4.2.14",
+		"svelte-check": "^3.6.9",
 		"syv": "^0.0.31",
-		"vite": "^5.0.11"
+		"vite": "^5.2.9"
 	}
 }
