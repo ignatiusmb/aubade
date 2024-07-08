@@ -1,4 +1,4 @@
-import { ntv } from 'mauss/std';
+import { augment } from 'mauss/std';
 
 /**
  * @template {{ slug?: string; title?: any }} T
@@ -18,20 +18,20 @@ export function chain(items, options) {
 	 * @typedef {{ flank?: Flank }} Attachment
 	 */
 
-	if (sort) items = items.sort(sort);
+	sort && items.sort(sort);
 	const array = /** @type {Array<T & Attachment>} */ (items);
-	const unwrap = ntv.pick(['slug', 'title']);
+	const flank = /** @type {const} */ (['slug', 'title']);
 	for (let idx = 0; idx < array.length; idx++) {
 		const [back, next] = [array[idx - 1], array[idx + 1]];
 		if (back) {
-			const unwrapped = unwrap(back);
+			const unwrapped = augment(back).filter(flank);
 			unwrapped.slug = base + unwrapped.slug;
 			array[idx].flank = { back: unwrapped };
 		}
 		if (breakpoint && breakpoint(next)) return array;
 		if (next) {
 			if (!array[idx].flank) array[idx].flank = {};
-			const unwrapped = unwrap(next);
+			const unwrapped = augment(next).filter(flank);
 			unwrapped.slug = base + unwrapped.slug;
 			// @ts-expect-error - `flank` definitely exists
 			array[idx].flank.next = unwrapped;
