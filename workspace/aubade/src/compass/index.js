@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { catenate } from 'mauss/sys';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
@@ -25,7 +26,7 @@ export function scan(type, entry) {
 	/** @type {import('../types.js').HydrateChunk['siblings']} */
 	const entries = [];
 	for (const name of fs.statSync(entry).isDirectory() ? fs.readdirSync(entry) : []) {
-		const path = join(entry, name);
+		const path = catenate(entry, name);
 		/** @type {any} - trick TS to enable discriminated union */
 		const stat = fs.statSync(path).isDirectory() ? 'directory' : 'file';
 		if (type === 'files' && stat === 'directory') continue;
@@ -85,27 +86,4 @@ export function traverse(entry, { depth: level = 0 } = {}) {
 			return items;
 		},
 	};
-}
-
-/**
- * adapted from https://github.com/alchemauss/mauss/pull/153
- * @param {string[]} paths
- */
-function join(...paths) {
-	if (!paths.length) return '.';
-	const index = paths[0].replace(/\\/g, '/').trim();
-	if (paths.length === 1 && index === '') return '.';
-	const parts = index.replace(/[/]*$/g, '').split('/');
-	if (parts[0] === '') parts.shift();
-
-	for (let i = 1; i < paths.length; i += 1) {
-		const part = paths[i].replace(/\\/g, '/').trim();
-		for (const slice of part.split('/')) {
-			if (slice === '.') continue;
-			if (slice === '..') parts.pop();
-			else if (slice) parts.push(slice);
-		}
-	}
-
-	return (index[0] === '/' ? '/' : '') + parts.join('/');
 }
