@@ -92,7 +92,7 @@ If you're using VSCode, you can install the [markdownlint extension](https://mar
 
 ### Code Blocks
 
-Code blocks are fenced with 3 backticks and can optionally be assigned a language for syntax highlighting. The language must be a valid [shikiji supported language](https://github.com/antfu/shikiji/blob/main/docs/languages.md) and is case-insensitive.
+Code blocks are fenced with 3 backticks and can optionally be assigned a language for syntax highlighting. The language must be a valid [shiki supported language](https://github.com/shikijs/shiki/blob/main/docs/languages.md) and is case-insensitive.
 
 ````markdown
 ```language
