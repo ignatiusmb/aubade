@@ -1,6 +1,11 @@
 <script lang="ts">
 	import type { Schema } from '$content/docs.json/+server';
-	export let flank: Schema['items'][number]['flank'];
+
+	interface Props {
+		flank: Schema['items'][number]['flank'];
+	}
+
+	let { flank }: Props = $props();
 </script>
 
 {#if flank}
@@ -34,12 +39,13 @@
 		grid-template-columns: auto auto;
 		grid-template-rows: auto auto;
 		align-items: center;
-	}
-	a .chevron {
-		grid-row: 1 / -1;
-		font-size: 2rem;
-	}
-	a :not(.title) {
-		color: rgba(255, 255, 255, 0.7);
+
+		.chevron {
+			grid-row: 1 / -1;
+			font-size: 2rem;
+		}
+		:not(.title) {
+			color: rgba(255, 255, 255, 0.7);
+		}
 	}
 </style>

@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let type: 'horizontal' | 'vertical';
-	export let spacing = '0';
-	export let weight = '2px';
+	interface Props {
+		type: 'horizontal' | 'vertical';
+		spacing?: string;
+		weight?: string;
+	}
+
+	let { type, spacing = '0', weight = '2px' }: Props = $props();
 </script>
 
 <div style:--weight={weight} style:--spacing={spacing} class="divider {type}"></div>

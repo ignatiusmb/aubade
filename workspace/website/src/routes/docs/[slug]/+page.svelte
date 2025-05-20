@@ -7,7 +7,7 @@
 	import { version } from 'aubade/package.json';
 	import { page } from '$app/state';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <aside>
@@ -60,21 +60,23 @@
 		top: 0;
 		gap: 0.25rem;
 		align-content: flex-start;
-	}
-	aside a {
-		padding: 0.25rem 0.375rem 0.25rem 1rem;
-		border-radius: 0.5rem;
-		line-height: 2;
-	}
-	aside a[data-prefix]::before {
-		content: attr(data-prefix);
-		margin: 0 0.75rem 0 0.25rem;
-	}
-	aside a:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-	aside a.current {
-		background: rgba(255, 255, 255, 0.15);
+
+		a {
+			padding: 0.25rem 0.375rem 0.25rem 1rem;
+			border-radius: 0.5rem;
+			line-height: 2;
+
+			&[data-prefix]::before {
+				content: attr(data-prefix);
+				margin: 0 0.75rem 0 0.25rem;
+			}
+			&:hover {
+				background: rgba(255, 255, 255, 0.1);
+			}
+			&.current {
+				background: rgba(255, 255, 255, 0.15);
+			}
+		}
 	}
 
 	footer {
@@ -82,67 +84,69 @@
 	}
 
 	/* ---- @html content ---- */
-	article > :global([id]) {
-		scroll-margin-top: 2rem;
-	}
-	article > :global(h2),
-	article > :global(h3) {
-		display: grid;
-		gap: 0.75rem;
-		grid-template-columns: auto 1fr;
-		align-items: center;
-		margin-top: 1.5rem;
-		font-size: 1.5rem;
-	}
-	article > :global(h2) {
-		position: relative;
-		grid-template-columns: 1.25rem auto 1fr;
-		margin: 2rem 0 1.5rem;
-		font-size: 2rem;
-		font-weight: 500;
-	}
-	article > :global(h3) {
-		grid-template-columns: auto 1fr;
-		margin-top: 1.5rem;
-		font-size: 1.5rem;
-		font-weight: 500;
-	}
-	article > :global(h2::before) {
-		content: '';
-		width: 0.75rem;
-		height: 0.75rem;
-		border-radius: 50%;
-		margin-left: 0.25rem;
-		box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
-		background: var(--mrq-primary);
-	}
-	article > :global(h2::after),
-	article > :global(h3::after) {
-		content: '';
-		width: 100%;
-		height: 0.15rem;
-		background: rgba(0, 112, 187, 0.6);
-	}
-	article > :global(p) {
-		line-height: 1.65;
-	}
-	article > :global(p:not(:first-child)) {
-		margin-top: 1rem;
-	}
-	article > :global(ul li:not(:first-child)) {
-		margin-top: 0.5rem;
-	}
-	article > :global(blockquote) {
-		padding: 1rem;
-		margin: 1rem 0;
-		border-left: 0.25rem solid var(--mrq-primary);
-		background: rgba(0, 112, 187, 0.1);
-	}
-	article :global(.mrq[data-mrq='block']) {
-		margin: 1rem 0 1.5rem;
+	article :global {
+		> [id] {
+			scroll-margin-top: 2rem;
+		}
+		> h2,
+		> h3 {
+			display: grid;
+			gap: 0.75rem;
+			grid-template-columns: auto 1fr;
+			align-items: center;
+			margin-top: 1.5rem;
+			font-size: 1.5rem;
+		}
+		> h2 {
+			position: relative;
+			grid-template-columns: 1.25rem auto 1fr;
+			margin: 2rem 0 1.5rem;
+			font-size: 2rem;
+			font-weight: 500;
+		}
+		> h3 {
+			grid-template-columns: auto 1fr;
+			margin-top: 1.5rem;
+			font-size: 1.5rem;
+			font-weight: 500;
+		}
+		> h2::before {
+			content: '';
+			width: 0.75rem;
+			height: 0.75rem;
+			border-radius: 50%;
+			margin-left: 0.25rem;
+			box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
+			background: var(--mrq-primary);
+		}
+		> h2::after,
+		> h3::after {
+			content: '';
+			width: 100%;
+			height: 0.15rem;
+			background: rgba(0, 112, 187, 0.6);
+		}
+		> p {
+			line-height: 1.65;
+		}
+		> p:not(:first-child) {
+			margin-top: 1rem;
+		}
+		> ul li:not(:first-child) {
+			margin-top: 0.5rem;
+		}
+		> blockquote {
+			padding: 1rem;
+			margin: 1rem 0;
+			border-left: 0.25rem solid var(--mrq-primary);
+			background: rgba(0, 112, 187, 0.1);
+		}
+		.mrq[data-mrq='block'] {
+			margin: 1rem 0 1.5rem;
+		}
 	}
 
-	@media only screen and (min-width: 769px) {
+	@media (min-width: 769px) {
 		aside {
 			display: grid;
 		}

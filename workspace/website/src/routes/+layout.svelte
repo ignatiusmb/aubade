@@ -6,6 +6,8 @@
 	import '../app.css';
 
 	import { page } from '$app/state';
+
+	const { children } = $props();
 </script>
 
 <svelte:head>
@@ -32,7 +34,7 @@
 	{/if}
 </svelte:head>
 
-<slot />
+{@render children()}
 
 <footer>
 	<p>

@@ -1,22 +1,29 @@
 <script lang="ts">
-	export let repo: string;
-	export let path: string;
+	interface Props {
+		repo: string;
+		path: string;
+		children: import('svelte').Snippet;
+	}
+
+	let { repo, path, children }: Props = $props();
 </script>
 
 <a href="https://github.com/{repo}/blob/master/{path}">
 	<svg
-		width="14"
-		height="14"
-		viewBox="0 0 24 24"
+		viewBox="0 0 256 256"
 		fill="none"
 		stroke="currentColor"
-		stroke-width="1.5"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		stroke-width="16"
 	>
-		<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-		<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+		<circle cx="128" cy="128" r="96" />
+		<path d="M176,211.16V176a8,8,0,0,0-8-8H88a8,8,0,0,0-8,8v35.16" />
+		<path d="M96,168V144a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v24" />
+		<path d="M147.84,136l-12-57.63c-1.77-8.49-13.89-8.49-15.66,0l-12,57.63" />
 	</svg>
 
-	<slot />
+	{@render children()}
 </a>
 
 <style>
@@ -26,5 +33,10 @@
 		align-items: center;
 		justify-content: inherit;
 		font-size: 0.875rem;
+
+		svg {
+			width: 1.25rem;
+			height: 1.25rem;
+		}
 	}
 </style>
