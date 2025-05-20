@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { version } from 'aubade/package.json';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	export let items: Array<{ slug: string; title: string }>;
 </script>
@@ -13,7 +13,7 @@
 	</summary>
 	<div>
 		{#each items as { slug, title }}
-			<a href={slug} class:current={$page.url.pathname === `/docs/${slug}`}>{title}</a>
+			<a href={slug} class:current={page.url.pathname === `/docs/${slug}`}>{title}</a>
 		{/each}
 	</div>
 </details>

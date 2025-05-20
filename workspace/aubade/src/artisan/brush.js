@@ -1,4 +1,4 @@
-import { getHighlighter, bundledLanguages } from 'shiki';
+import { createHighlighter, bundledLanguages } from 'shiki';
 import { escape } from '../utils.js';
 
 /**
@@ -9,7 +9,7 @@ import { escape } from '../utils.js';
  * }} Dataset
  */
 
-export const highlighter = await getHighlighter({
+export const highlighter = await createHighlighter({
 	themes: ['github-dark'],
 	langs: Object.keys(bundledLanguages),
 });

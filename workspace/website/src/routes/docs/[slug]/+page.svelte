@@ -5,7 +5,7 @@
 	import Flank from './Flank.svelte';
 
 	import { version } from 'aubade/package.json';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	export let data;
 </script>
@@ -23,7 +23,7 @@
 	</a>
 
 	{#each data.pages as { slug, title }}
-		<a href="/docs/{slug}" class:current={$page.url.pathname === `/docs/${slug}`}>
+		<a href="/docs/{slug}" class:current={page.url.pathname === `/docs/${slug}`}>
 			{title}
 		</a>
 	{/each}

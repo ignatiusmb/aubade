@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { hydrate } from 'aubade/browser';
-	import { navigating, page } from '$app/stores';
+	import { navigating, page } from '$app/state';
 </script>
 
 <header>
-	<h1>{$page.data.title}</h1>
+	<h1>{page.data.title}</h1>
 	<p>Aubade • Data Authoring Framework</p>
 	<div class="links">
-		<a href="https://github.com/ignatiusmb/aubade">
+		<a href="https://github.com/ignatiusmb/aubade" aria-label="GitHub">
 			<svg
 				width="34"
 				height="34"
@@ -24,7 +24,7 @@
 	</div>
 </header>
 
-<main use:hydrate={$navigating}>
+<main use:hydrate={navigating.from}>
 	<slot />
 </main>
 

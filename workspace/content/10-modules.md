@@ -132,10 +132,10 @@ Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 ```svelte
 <script>
 	import { hydrate } from 'aubade/browser';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 </script>
 
-<main use:hydrate={$navigating}>
+<main use:hydrate={navigating.from}>
 	<!-- content here -->
 </main>
 ```

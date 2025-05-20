@@ -5,22 +5,22 @@
 	import 'aubade/styles/code.css';
 	import '../app.css';
 
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 </script>
 
 <svelte:head>
-	<title>{$page.data.meta?.title || `Error ${$page.status}`} • Aubade</title>
+	<title>{page.data.meta?.title || `Error ${page.status}`} • Aubade</title>
 	<meta name="author" content="ignatiusmb" />
 
-	{#if $page.data.meta?.description}
-		<meta name="description" content={$page.data.meta.description} />
+	{#if page.data.meta?.description}
+		<meta name="description" content={page.data.meta.description} />
 	{/if}
 
 	<meta property="og:site_name" content="Aubade" />
 	<meta property="og:locale" content="en_ID" />
 
-	{#if $page.data.meta?.og}
-		{@const { title, url, description } = $page.data.meta.og}
+	{#if page.data.meta?.og}
+		{@const { title, url, description } = page.data.meta.og}
 		<meta property="og:title" content={title} />
 		<meta property="og:type" content="article" />
 		{#if url}

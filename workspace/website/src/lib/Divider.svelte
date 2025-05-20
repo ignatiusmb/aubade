@@ -4,7 +4,7 @@
 	export let weight = '2px';
 </script>
 
-<div style:--weight={weight} style:--spacing={spacing} class="divider {type}" />
+<div style:--weight={weight} style:--spacing={spacing} class="divider {type}"></div>
 
 <style>
 	div {
