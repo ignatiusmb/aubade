@@ -10,17 +10,17 @@
 		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
 	"devDependencies": {
-		"@fontsource-variable/fira-code": "^5.0.17",
-		"@fontsource-variable/karla": "^5.0.20",
+		"@fontsource-variable/fira-code": "^5.2.6",
+		"@fontsource-variable/karla": "^5.2.5",
 		"@ignatiusmb/styles": "^0.1.1",
-		"@sveltejs/adapter-vercel": "^5.3.0",
-		"@sveltejs/kit": "^2.5.6",
-		"@sveltejs/vite-plugin-svelte": "^3.1.0",
+		"@sveltejs/adapter-vercel": "^5.7.2",
+		"@sveltejs/kit": "^2.21.1",
+		"@sveltejs/vite-plugin-svelte": "^3.1.2",
 		"aubade": "workspace:^",
-		"prettier-plugin-svelte": "^3.2.3",
-		"svelte": "^4.2.14",
-		"svelte-check": "^3.6.9",
+		"prettier-plugin-svelte": "^3.4.0",
+		"svelte": "^4.2.19",
+		"svelte-check": "^3.8.6",
 		"syv": "^0.0.31",
-		"vite": "^5.2.9"
+		"vite": "^5.4.19"
 	}
 }

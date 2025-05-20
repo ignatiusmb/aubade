@@ -62,13 +62,13 @@
 		"preprocessor"
 	],
 	"dependencies": {
-		"@types/markdown-it": "^14.1.1",
+		"@types/markdown-it": "^14.1.2",
 		"markdown-it": "^14.1.0",
-		"mauss": "^0.8.1",
-		"shiki": "^1.1.6"
+		"mauss": "^0.8.2",
+		"shiki": "^1.29.2"
 	},
 	"devDependencies": {
-		"dts-buddy": "^0.5.1",
+		"dts-buddy": "^0.5.5",
 		"tsm": "^2.3.0",
 		"uvu": "^0.5.6"
 	}

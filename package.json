@@ -8,13 +8,13 @@
 		"format": "pnpm --filter \"./workspace/*\" format",
 		"postinstall": "cd ./workspace/aubade && pnpm prepublish"
 	},
-	"packageManager": "pnpm@9.4.0",
+	"packageManager": "pnpm@10.11.0",
 	"prettier": "mauss/prettier.json",
 	"devDependencies": {
-		"@types/node": "^20.12.7",
-		"mauss": "^0.8.1",
-		"prettier": "^3.2.5",
+		"@types/node": "^20.17.48",
+		"mauss": "^0.8.2",
+		"prettier": "^3.5.3",
 		"prettier-plugin-sort-package-json": "^0.2.0",
-		"typescript": "^5.5.3"
+		"typescript": "^5.8.3"
 	}
 }
