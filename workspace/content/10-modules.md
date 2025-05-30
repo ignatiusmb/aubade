@@ -124,8 +124,8 @@ export function hydrate(node: HTMLElement, key: any): ActionReturn;
 
 The `hydrate` function can be used to make the rendered code blocks from your markdown interactive, some of which are
 
--   toggle code line numbers
--   copy block to clipboard
+- toggle code line numbers
+- copy block to clipboard
 
 Usage using [SvelteKit](https://kit.svelte.dev/) would simply be
 
@@ -296,6 +296,6 @@ export function chain<T extends { slug?: string; title?: any }>(
 ): Array<T & Attachment>;
 ```
 
--   A `base` string can be passed as a prefix in the `slug` property of each items.
--   A `breakpoint` function can be passed to stop the chain on a certain condition.
--   A `sort` function can be passed to sort the items before chaining them.
+- A `base` string can be passed as a prefix in the `slug` property of each items.
+- A `breakpoint` function can be passed to stop the chain on a certain condition.
+- A `sort` function can be passed to sort the items before chaining them.
