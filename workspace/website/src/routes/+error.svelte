@@ -1,10 +1,10 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 </script>
 
 <main>
-	<h1>{$page.status}</h1>
-	<h2>{$page.error?.message}</h2>
+	<h1>{page.status}</h1>
+	<h2>{page.error?.message}</h2>
 
 	<a href="/">Click here to get back to the home page</a>
 </main>

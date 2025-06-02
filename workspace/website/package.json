@@ -4,23 +4,19 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
-		"format": "prettier -w . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint": "pnpm run \"/^lint:.*/\"",
-		"lint:style": "prettier -c . --plugin=prettier-plugin-svelte --plugin=prettier-plugin-sort-package-json",
-		"lint:svelte": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
+		"lint": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
 	},
 	"devDependencies": {
-		"@fontsource-variable/fira-code": "^5.0.17",
-		"@fontsource-variable/karla": "^5.0.20",
+		"@fontsource-variable/fira-code": "^5.2.6",
+		"@fontsource-variable/karla": "^5.2.5",
 		"@ignatiusmb/styles": "^0.1.1",
-		"@sveltejs/adapter-vercel": "^5.3.0",
-		"@sveltejs/kit": "^2.5.6",
-		"@sveltejs/vite-plugin-svelte": "^3.1.0",
+		"@sveltejs/adapter-vercel": "^5.7.2",
+		"@sveltejs/kit": "^2.21.1",
+		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"aubade": "workspace:^",
-		"prettier-plugin-svelte": "^3.2.3",
-		"svelte": "^4.2.14",
-		"svelte-check": "^3.6.9",
-		"syv": "^0.0.31",
-		"vite": "^5.2.9"
+		"svelte": "^5.33.13",
+		"svelte-check": "^4.2.1",
+		"syv": "^0.0.42",
+		"vite": "^6.3.5"
 	}
 }

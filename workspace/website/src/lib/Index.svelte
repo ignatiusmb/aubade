@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { version } from 'aubade/package.json';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let items: Array<{ slug: string; title: string }>;
+	interface Props {
+		items: Array<{ slug: string; title: string }>;
+	}
+
+	let { items }: Props = $props();
 </script>
 
 <details id="index">
@@ -13,7 +17,7 @@
 	</summary>
 	<div>
 		{#each items as { slug, title }}
-			<a href={slug} class:current={$page.url.pathname === `/docs/${slug}`}>{title}</a>
+			<a href={slug} class:current={page.url.pathname === `/docs/${slug}`}>{title}</a>
 		{/each}
 	</div>
 </details>
@@ -28,6 +32,18 @@
 		margin-bottom: 1rem;
 		border-radius: var(--radius);
 		background: rgb(42, 42, 42);
+
+		&[open] {
+			border: 1px solid rgba(124, 124, 124, 0.7);
+
+			summary {
+				margin-bottom: 0;
+				border-width: 0;
+				border-bottom-width: 1px;
+				border-bottom-right-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+		}
 	}
 	summary {
 		padding: 0.5rem 1rem;
@@ -41,26 +57,17 @@
 		display: grid;
 		margin: 0;
 		font-size: 1rem;
-	}
-	div a {
-		padding: 0.5rem 1rem;
-	}
-	div a:last-child {
-		border-bottom-right-radius: var(--radius);
-		border-bottom-left-radius: var(--radius);
-	}
-	div a.current {
-		background: rgba(255, 255, 255, 0.15);
-	}
 
-	details[open] {
-		border: 1px solid rgba(124, 124, 124, 0.7);
-	}
-	details[open] summary {
-		margin-bottom: 0;
-		border-width: 0;
-		border-bottom-width: 1px;
-		border-bottom-right-radius: 0;
-		border-bottom-left-radius: 0;
+		a {
+			padding: 0.5rem 1rem;
+
+			&:last-child {
+				border-bottom-right-radius: var(--radius);
+				border-bottom-left-radius: var(--radius);
+			}
+			&.current {
+				background: rgba(255, 255, 255, 0.15);
+			}
+		}
 	}
 </style>

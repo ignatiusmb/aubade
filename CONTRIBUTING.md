@@ -35,14 +35,14 @@ The first script to run is `"watch"` in `workspace/aubade`, this will compile an
 
 How the project and code is structured, and some entry points to be aware of
 
--   `workspace/content` - unprocessed markdown files containing all of the documentation
--   `workspace/aubade/src/core` - aubade core module, compiler components
--   `workspace/aubade/src/artisan` - aubade artisan module, syntax highlighter and marker
--   `workspace/aubade/src/browser` - aubade browser module, DOM hydrating function
--   `workspace/aubade/src/compass` - aubade compass module, read files from disk
--   `workspace/aubade/src/transform` - aubade transform module, transformers for `traverse`
--   `workspace/aubade/styles` - stylesheets used and exported
--   `workspace/website` - source code for the website
+- `workspace/aubade/src/core` - aubade core module, compiler components
+- `workspace/aubade/src/artisan` - aubade artisan module, syntax highlighter and marker
+- `workspace/aubade/src/browser` - aubade browser module, DOM hydrating function
+- `workspace/aubade/src/compass` - aubade compass module, read files from disk
+- `workspace/aubade/src/transform` - aubade transform module, transformers for `traverse`
+- `workspace/aubade/styles` - stylesheets used and exported
+- `workspace/content` - unprocessed markdown files containing all of the documentation
+- `workspace/website` - source code for the website
 
 ## Maintaining
 

@@ -8,8 +8,7 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"format": "prettier -w . --plugin=prettier-plugin-sort-package-json",
-		"lint": "tsc && prettier -c . --plugin=prettier-plugin-sort-package-json",
+		"lint": "tsc",
 		"test": "pnpm run \"/^test:.*/\"",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
@@ -62,13 +61,13 @@
 		"preprocessor"
 	],
 	"dependencies": {
-		"@types/markdown-it": "^14.1.1",
+		"@types/markdown-it": "^14.1.2",
 		"markdown-it": "^14.1.0",
-		"mauss": "^0.8.1",
-		"shiki": "^1.1.6"
+		"mauss": "^0.9.1",
+		"shiki": "^3.4.2"
 	},
 	"devDependencies": {
-		"dts-buddy": "^0.5.1",
+		"dts-buddy": "^0.6.2",
 		"tsm": "^2.3.0",
 		"uvu": "^0.5.6"
 	}

@@ -1,2 +1,11 @@
 node_modules
 .DS_Store
+
+# workspace/aubade
+index.d.ts
+*.map
+
+# workspace/website
+.svelte-kit/
+build/
+uploads/
