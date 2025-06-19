@@ -1,7 +1,7 @@
 {
 	"name": "aubade",
 	"version": "0.9.1",
-	"description": "Data Authoring Framework",
+	"description": "a local-first framework for personal publishing",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
 	"author": "Ignatius Bagus",
@@ -56,15 +56,17 @@
 		"markdown",
 		"compiler",
 		"parser",
-		"syntax",
-		"highlighter",
-		"preprocessor"
+		"local-first",
+		"content-framework",
+		"publishing",
+		"code-highlighter",
+		"typescript"
 	],
 	"dependencies": {
 		"@types/markdown-it": "^14.1.2",
 		"markdown-it": "^14.1.0",
-		"mauss": "^0.9.1",
-		"shiki": "^3.4.2"
+		"mauss": "^0.10.0",
+		"shiki": "^3.6.0"
 	},
 	"devDependencies": {
 		"dts-buddy": "^0.6.2",

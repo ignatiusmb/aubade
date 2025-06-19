@@ -8,15 +8,15 @@
 	},
 	"devDependencies": {
 		"@fontsource-variable/fira-code": "^5.2.6",
-		"@fontsource-variable/karla": "^5.2.5",
+		"@fontsource-variable/karla": "^5.2.6",
 		"@ignatiusmb/styles": "^0.1.1",
 		"@sveltejs/adapter-vercel": "^5.7.2",
-		"@sveltejs/kit": "^2.21.1",
-		"@sveltejs/vite-plugin-svelte": "^5.0.3",
+		"@sveltejs/kit": "^2.21.5",
+		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"aubade": "workspace:^",
-		"svelte": "^5.33.13",
-		"svelte-check": "^4.2.1",
-		"syv": "^0.0.42",
+		"svelte": "^5.34.6",
+		"svelte-check": "^4.2.2",
+		"syv": "^0.0.46",
 		"vite": "^6.3.5"
 	}
 }
