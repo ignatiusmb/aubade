@@ -6,8 +6,10 @@ const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
 	async 'docs/'() {
+		fs.mkdirSync(ROOT, { recursive: true });
+
 		const items = await traverse('../content', ({ breadcrumb: [name] }) => {
-			fs.mkdirSync(ROOT, { recursive: true });
+			if (!name.endsWith('.md')) return; // skip non-md files
 
 			return async ({ buffer, marker, parse, siblings, queue }) => {
 				const { body, metadata } = parse(buffer.toString('utf-8'));
@@ -16,7 +18,6 @@ export const DATA = {
 				for (const { filename, buffer } of siblings) {
 					if (filename.endsWith('.md')) continue;
 					queue(async ({ fs }) => {
-						await fs.mkdir(ROOT, { recursive: true });
 						fs.writeFile(`${ROOT}/${filename}`, await buffer);
 					});
 				}
