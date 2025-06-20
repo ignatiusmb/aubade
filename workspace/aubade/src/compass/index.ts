@@ -16,11 +16,7 @@ interface Options {
 	depth: number;
 	parent: string;
 	path: string;
-	is: {
-		directory: boolean;
-		file: boolean;
-		symlink: boolean;
-	};
+	symlink: boolean;
 }
 
 type Falsy = false | null | undefined;
@@ -33,7 +29,8 @@ export async function traverse<Output extends Record<string, any>>(
 		if (!path.endsWith('.md')) return;
 		return async ({ buffer, parse }) => {
 			const { body, metadata } = parse(buffer.toString('utf-8'));
-			const result = { ...metadata, content: marker.render(body) };
+			if (!metadata) return;
+			const result = { ...metadata, content: marker.render(body).trim() };
 			return result as any;
 		};
 	},
@@ -57,6 +54,7 @@ export async function traverse<Output extends Record<string, any>>(
 			const path = catenate(current, item.name);
 			if (item.isDirectory()) {
 				pending.push(scan(path, { depth: depth + 1 }));
+				continue;
 			}
 
 			const hydrate = inspect({
@@ -64,11 +62,7 @@ export async function traverse<Output extends Record<string, any>>(
 				depth,
 				path,
 				parent: current,
-				is: {
-					directory: item.isDirectory(),
-					file: item.isFile(),
-					symlink: item.isSymbolicLink(),
-				},
+				symlink: item.isSymbolicLink(),
 			});
 
 			if (hydrate) {
@@ -84,7 +78,7 @@ export async function traverse<Output extends Record<string, any>>(
 		}
 	}
 
-	pending.push(scan(entry));
+	await scan(entry); // await the initial scan
 	await Promise.all(pending);
 	const output = await Promise.all(results);
 	return output.filter((i) => !!i);
