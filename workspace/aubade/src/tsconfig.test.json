@@ -1,0 +1,4 @@
+{
+	"extends": "mauss/tsconfig.json",
+	"include": ["**/*.spec.ts", "**/*.test.ts"]
+}

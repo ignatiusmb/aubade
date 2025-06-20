@@ -4,11 +4,10 @@
 	"scripts": {
 		"clean": "git add * && git clean -dfx -e node_modules",
 		"format": "prettier --write .",
-		"lint": "pnpm run \"/^lint:.*/\"",
-		"lint:style": "prettier --check .",
-		"lint:workspace": "pnpm --filter \"./workspace/*\" lint",
-		"test": "pnpm --filter \"./workspace/*\" test",
-		"postinstall": "cd ./workspace/aubade && pnpm build:files"
+		"check": "pnpm run \"/^check:.*/\"",
+		"check:style": "prettier --check .",
+		"check:workspace": "pnpm --filter \"./workspace/*\" check",
+		"test": "pnpm --filter \"./workspace/*\" test"
 	},
 	"packageManager": "pnpm@10.12.1",
 	"prettier": "mauss/prettier.config.js",

@@ -1,15 +1,15 @@
-name: REL
+name: PUB
 
 on:
-  push:
-    tags: ['v*']
-    branches-ignore: ['**']
+  release:
+    types: [published]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

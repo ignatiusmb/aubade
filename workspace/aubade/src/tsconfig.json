@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.json",
+	"extends": "mauss/tsconfig.json",
 	"exclude": ["**/*.spec.ts", "**/*.test.ts"],
 	"compilerOptions": { "noEmit": false }
 }

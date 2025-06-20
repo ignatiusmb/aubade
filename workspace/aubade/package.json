@@ -1,20 +1,20 @@
 {
 	"name": "aubade",
 	"version": "0.9.1",
-	"description": "a local-first framework for personal publishing",
+	"description": "filesystem-based content processor",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
 	"author": "Ignatius Bagus",
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"lint": "tsc",
 		"test": "pnpm run \"/^test:.*/\"",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
+		"test:types": "tsc -p src/tsconfig.test.json",
 		"build:types": "tsm scripts/compile-types.ts",
 		"build:files": "tsc --project src",
-		"prepublishOnly": "pnpm run \"/^build:.*/\""
+		"prepublish": "pnpm run \"/^build:.*/\""
 	},
 	"typings": "index.d.ts",
 	"exports": {
@@ -46,22 +46,22 @@
 	},
 	"files": [
 		"src/**/*.js",
-		"!**/*.spec.js",
-		"styles/*.css",
-		"**/index.d.ts",
+		"styles/",
+		"index.d.ts",
 		"index.d.ts.map"
 	],
 	"engines": {
 		"node": ">=16.13"
 	},
 	"keywords": [
+		"filesystem",
 		"markdown",
 		"compiler",
+		"yaml",
 		"parser",
-		"local-first",
-		"content-framework",
-		"publishing",
+		"front-matter",
 		"code-highlighter",
+		"content-processor",
 		"typescript"
 	],
 	"dependencies": {
