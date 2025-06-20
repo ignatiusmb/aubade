@@ -1,43 +1,48 @@
 import { clipboard } from 'mauss/web';
 
-export function listen(node: HTMLElement) {
-	for (const block of node.querySelectorAll('.mrq[data-mrq="block"]')) {
-		const actions = block.querySelectorAll('.mrq[data-mrq-toolbar]');
-		const source = block.querySelector('.mrq[data-mrq="pre"]');
-		if (!actions.length || !source) continue;
+export function hydrate(signal?: any) {
+	signal; // listen to signal changes and re-run the function if needed
+	return (node: HTMLElement) => {
+		const active: Array<() => void> = [];
+		for (const block of node.querySelectorAll('[data-aubade="block"]')) {
+			const actions = block.querySelectorAll('[data-aubade-toolbar]');
+			const source = block.querySelector('[data-aubade="pre"]');
+			if (!actions.length || !source) continue;
 
-		for (const item of actions) {
-			const action = item.getAttribute('data-mrq-toolbar');
-			if (action === 'clipboard') {
-				item.addEventListener('click', () => {
-					const tooltip = item.querySelector('.mrq[data-mrq="tooltip"]');
-					if (!tooltip) return;
-					const text = tooltip.textContent;
-					clipboard.copy(source.textContent || '', {
-						accept() {
-							tooltip.textContent = 'Copied to clipboard!';
-						},
-						reject() {
-							tooltip.textContent = `Failed to copy code`;
-						},
-					});
+			for (const item of actions) {
+				const action = item.getAttribute('data-aubade-toolbar');
+				if (action === 'clipboard') {
+					const tooltip = item.querySelector('[data-aubade="tooltip"]');
+					if (!tooltip) continue;
+					const original = tooltip.textContent;
 
-					setTimeout(() => {
-						tooltip.textContent = text;
-					}, 5000);
-				});
-			} else if (action === 'list') {
-				item.addEventListener('click', () => {
-					source.classList.toggle('numbered');
-				});
+					const handler = () => {
+						clipboard.copy(source.textContent || '', {
+							accept() {
+								tooltip.textContent = 'Copied to clipboard!';
+							},
+							reject() {
+								tooltip.textContent = `Failed to copy code`;
+							},
+						});
+
+						setTimeout(() => {
+							tooltip.textContent = original;
+						}, 5000);
+					};
+
+					item.addEventListener('click', handler);
+					active.push(() => item.removeEventListener('click', handler));
+				} else if (action === 'list') {
+					const handler = () => source.classList.toggle('numbered');
+					item.addEventListener('click', handler);
+					active.push(() => item.removeEventListener('click', handler));
+				}
 			}
 		}
-	}
-}
-
-export function hydrate(node: HTMLElement, _: any) {
-	listen(node);
-	return {
-		update: () => listen(node),
+		return () => {
+			active.forEach((fn) => fn());
+			active.length = 0;
+		};
 	};
 }
