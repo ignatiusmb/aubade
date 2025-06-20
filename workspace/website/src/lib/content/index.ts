@@ -27,6 +27,8 @@ export const DATA = {
 			},
 		);
 
-		return chain(items, { base: '/docs/' });
+		return chain(items, {
+			transform: ({ slug, title }) => ({ slug: '/docs/' + slug, title }),
+		});
 	},
 };

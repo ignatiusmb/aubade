@@ -1,4 +1,4 @@
-import { FrontMatter } from '../types.js';
+import type { FrontMatter } from '../types.js';
 import { uhi } from '../utils.js';
 
 export function parse(source: string) {
