@@ -14,7 +14,7 @@
 		"test:types": "tsc -p src/tsconfig.test.json",
 		"build:types": "tsm scripts/compile-types.ts",
 		"build:files": "tsc --project src",
-		"prepublish": "pnpm run \"/^build:.*/\""
+		"prepublishOnly": "pnpm run \"/^build:.*/\""
 	},
 	"typings": "index.d.ts",
 	"exports": {
