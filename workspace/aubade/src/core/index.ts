@@ -1,10 +1,10 @@
+import type { FrontMatter } from '../types.js';
 import { uhi } from '../utils.js';
 
-/** @param {string} source */
-export function parse(source) {
+export function parse(source: string) {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
 	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
-	const memory = /** @type {Record<string, any>} */ (construct((match && match[1].trim()) || ''));
+	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
 	const stuffed = inject(crude, memory);
 
 	return {
@@ -58,12 +58,7 @@ export function parse(source) {
 	};
 }
 
-/**
- * @param {string} raw
- * @param {Record<string, any>} [memo]
- * @returns {import('../types.js').FrontMatter[string]}
- */
-export function construct(raw, memo = {}) {
+export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
 	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
 
@@ -104,35 +99,27 @@ export function construct(raw, memo = {}) {
 
 // ---- internal functions ----
 
-/** @param {string} u */
-function coerce(u) {
+function coerce(u: string) {
 	const v = u.trim(); // argument can be passed as-is
 	const map = { true: true, false: false, null: null };
-	if (v in map) return map[/** @type {keyof typeof map} */ (v)];
+	if (v in map) return map[v as keyof typeof map];
 	// if (!Number.isNaN(Number(v))) return Number(v);
 	return /^(".*"|'.*')$/.test(v) ? v.slice(1, -1) : v;
 }
 
-/** @param {string} input */
-function outdent(input) {
+function outdent(input: string) {
 	const lines = input.split(/\r?\n/).filter((l) => l.trim());
 	const { length } = (/^\s*/.exec(lines[0]) || [''])[0];
 	return lines.map((l) => l.slice(length)).join('\n');
 }
 
-/**
- * @param {string} source
- * @param {Record<string, any>} metadata
- */
-function inject(source, metadata) {
+function inject(source: string, metadata: Record<string, any>) {
 	const plane = compress(metadata);
-	return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c]) || s);
+	return source.replace(/!{(.+)}/g, (s, c) => (c && plane[c as keyof typeof plane]) || s);
 }
 
-/** @param {Record<string, any>} metadata */
-function compress(metadata, parent = '') {
-	/** @type {typeof metadata} */
-	const memo = {};
+function compress(metadata: Record<string, any>, parent = '') {
+	const memo: typeof metadata = {};
 	const prefix = parent ? `${parent}:` : '';
 	for (const [k, v] of Object.entries(metadata)) {
 		if (typeof v !== 'object') memo[prefix + k] = v;

@@ -1,15 +1,15 @@
-name: REL
+name: PUB
 
 on:
-  push:
-    tags: ['v*']
-    branches-ignore: ['**']
+  release:
+    types: [published]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -19,7 +19,8 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: pnpm install
-      - run: pnpm publish ./workspace/aubade --no-git-checks
+      - working-directory: ./workspace/aubade
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true

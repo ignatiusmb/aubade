@@ -1,32 +1,25 @@
 import { createHighlighter, bundledLanguages } from 'shiki';
 import { escape } from '../utils.js';
 
-/**
- * @typedef {{
- * 	file?: string;
- * 	language?: string;
- * 	[data: string]: string | undefined;
- * }} Dataset
- */
+interface Dataset {
+	file?: string;
+	language?: string;
+	[data: string]: string | undefined;
+}
 
 export const highlighter = await createHighlighter({
 	themes: ['github-dark'],
 	langs: Object.keys(bundledLanguages),
 });
 
-/**
- * @param {string} source
- * @param {Dataset} dataset
- * @returns {string} HTML code block
- */
-export function transform(source, dataset) {
+export function transform(source: string, dataset: Dataset): string {
 	const { codeToTokensBase } = highlighter;
 	const { file, ...rest } = dataset;
 
 	let highlighted = '';
 	let line = +(rest['line-start'] || 1);
 	for (const tokens of codeToTokensBase(source, {
-		lang: /** @type {import('shiki').BundledLanguage} */ (rest.language),
+		lang: rest.language as import('shiki').BundledLanguage,
 	})) {
 		let code = `<code data-line="${line++}">`;
 		for (const { content, color } of tokens) {
@@ -40,6 +33,7 @@ export function transform(source, dataset) {
 		([k, v]) => `data-${k.toLowerCase().replace(/[^a-z\-]/g, '')}="${escape(v || '')}"`,
 	);
 
+	// @TODO: rename `data-mrq` to `data-aubade`
 	// needs to be /^<pre/ to prevent added wrapper from markdown-it
 	return `<pre data-mrq="block" class="mrq">
 	<header
@@ -61,11 +55,7 @@ export function transform(source, dataset) {
 </pre>`;
 }
 
-/**
- * @param {'clipboard' | 'list'} name
- * @param {string} tooltip
- */
-function icon(name, tooltip) {
+function icon(name: 'clipboard' | 'list', tooltip: string) {
 	const span = `<span data-mrq="tooltip" class="mrq">${tooltip}</span>`;
 	return `<button data-mrq-toolbar="${name}" class="mrq">${span}</button>`;
 }

@@ -1,17 +1,15 @@
+import type { DirChunk, FileChunk, HydrateChunk, Metadata } from '../types.js';
 import * as fs from 'fs';
-import { catenate } from 'mauss/sys';
+import { catenate } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
-/**
- * @template {object} Output
- * @param {string} entry
- * @returns {Output & import('../types.js').Metadata & { content: string }}
- */
-export function visit(entry) {
+export function visit<T extends Record<string, any>>(
+	entry: string,
+): T & Metadata & { content: string } {
 	const { body, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
 	const result = { ...metadata, content: marker.render(body) };
-	return /** @type {any} */ (result);
+	return result as any;
 }
 
 /**
@@ -22,13 +20,15 @@ export function visit(entry) {
  * 		? import('../types.js').HydrateChunk['siblings'] : T extends 'files'
  * 		? import('../types.js').FileChunk[] : import('../types.js').DirChunk[]}
  */
-export function scan(type, entry) {
-	/** @type {import('../types.js').HydrateChunk['siblings']} */
-	const entries = [];
+export function scan<T extends 'all' | 'files' | 'directories'>(
+	type: T,
+	entry: string,
+): T extends 'all' ? HydrateChunk['siblings'] : T extends 'files' ? FileChunk[] : DirChunk[] {
+	const entries: HydrateChunk['siblings'] = [];
 	for (const name of fs.statSync(entry).isDirectory() ? fs.readdirSync(entry) : []) {
 		const path = catenate(entry, name);
-		/** @type {any} - trick TS to enable discriminated union */
-		const stat = fs.statSync(path).isDirectory() ? 'directory' : 'file';
+		// trick TS to enable discriminated union
+		const stat: any = fs.statSync(path).isDirectory() ? 'directory' : 'file';
 		if (type === 'files' && stat === 'directory') continue;
 		if (type === 'directories' && stat === 'file') continue;
 		entries.push({
@@ -40,16 +40,10 @@ export function scan(type, entry) {
 			},
 		});
 	}
-	return /** @type {any} */ (entries);
+	return entries as any;
 }
 
-/**
- * @param {string} entry
- * @param {{
- * 	depth?: number;
- * }} [options]
- */
-export function traverse(entry, { depth: level = 0 } = {}) {
+export function traverse(entry: string, { depth: level = 0 } = {}) {
 	const entries = scan('files', entry);
 	for (const { path } of level ? scan('directories', entry) : []) {
 		entries.push(...traverse(path, { depth: level - 1 }).files);
@@ -58,15 +52,11 @@ export function traverse(entry, { depth: level = 0 } = {}) {
 	return {
 		files: entries,
 
-		/**
-		 * Hydrate `files` scanned on to the shelf with the `load` function.
-		 *
-		 * @template {object} Output
-		 * @param {(chunk: import('../types.js').HydrateChunk) => undefined | Output} load
-		 * @param {(path: string) => boolean} [files] filter item to process with `load`
-		 * @returns {Output[]}
-		 */
-		hydrate(load, files = (v) => v.endsWith('.md')) {
+		/** hydrate `files` scanned on to the shelf with the `load` function. */
+		hydrate<T>(
+			load: (chunk: HydrateChunk) => undefined | T,
+			files = (v: string) => v.endsWith('.md'),
+		): T[] {
 			const items = [];
 			for (const { path, breadcrumb, buffer } of entries) {
 				if (!files(path)) continue;

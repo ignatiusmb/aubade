@@ -4,20 +4,20 @@
 	"scripts": {
 		"clean": "git add * && git clean -dfx -e node_modules",
 		"format": "prettier --write .",
-		"lint": "pnpm run \"/^lint:.*/\"",
-		"lint:style": "prettier --check .",
-		"lint:workspace": "pnpm --filter \"./workspace/*\" lint",
-		"test": "pnpm --filter \"./workspace/*\" test",
-		"postinstall": "cd ./workspace/aubade && pnpm prepublish"
+		"check": "pnpm run \"/^check:.*/\"",
+		"check:style": "prettier --check .",
+		"check:workspace": "pnpm --filter \"./workspace/*\" check",
+		"test": "pnpm --filter \"./workspace/*\" test"
 	},
-	"packageManager": "pnpm@10.11.0",
+	"packageManager": "pnpm@10.12.1",
 	"prettier": "mauss/prettier.config.js",
 	"devDependencies": {
-		"@types/node": "^22.15.29",
-		"mauss": "^0.9.1",
+		"@types/node": "^24.0.3",
+		"mauss": "^0.10.0",
 		"prettier": "^3.5.3",
-		"prettier-plugin-sort-package-json": "^1.0.1",
+		"prettier-plugin-sort-package-json": "^1.1.0",
 		"prettier-plugin-svelte": "^3.4.0",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
 	}
 }
