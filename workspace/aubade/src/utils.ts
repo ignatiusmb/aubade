@@ -1,13 +1,11 @@
 const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
 
-/** @param {string} source */
-export function escape(source) {
+export function escape(source: string) {
 	const symbols = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-	return source.replace(/[&<>"']/g, (s) => symbols[/** @type {keyof typeof symbols} */ (s)]);
+	return source.replace(/[&<>"']/g, (s) => symbols[s as keyof typeof symbols]);
 }
 
-/** @param {string} title */
-export function uhi(title) {
+export function uhi(title: string) {
 	const cleaned = title.toLowerCase().replace(separators, '-');
 	const normalized = cleaned.replace(/`/g, '').replace(/-+/g, '-');
 	return normalized.replace(/^-*(.+?)-*$/, '$1'); // hyphen at the sides

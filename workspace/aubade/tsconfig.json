@@ -1,6 +1,5 @@
 {
 	"extends": "mauss/tsconfig.json",
-	"compilerOptions": { "target": "ES2019" },
 	"include": ["src/**/*", "test/**/*"],
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }

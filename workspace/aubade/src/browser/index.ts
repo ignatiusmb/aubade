@@ -1,7 +1,6 @@
 import { clipboard } from 'mauss/web';
 
-/** @param {HTMLElement} node */
-export function listen(node) {
+export function listen(node: HTMLElement) {
 	for (const block of node.querySelectorAll('.mrq[data-mrq="block"]')) {
 		const actions = block.querySelectorAll('.mrq[data-mrq-toolbar]');
 		const source = block.querySelector('.mrq[data-mrq="pre"]');
@@ -36,11 +35,7 @@ export function listen(node) {
 	}
 }
 
-/**
- * @param {HTMLElement} node
- * @param {any} [_]
- */
-export function hydrate(node, _) {
+export function hydrate(node: HTMLElement, _: any) {
 	listen(node);
 	return {
 		update: () => listen(node),

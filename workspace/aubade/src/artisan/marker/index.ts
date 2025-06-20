@@ -1,16 +1,14 @@
 import markdown from 'markdown-it';
 import { scope } from 'mauss';
-import { uhi } from '../utils.js';
-import { transform } from './brush.js';
+import { uhi } from '../../utils.js';
+import { transform } from '../palette/index.js';
 
 export const marker = markdown({
 	html: true,
 	typographer: true,
 	highlight(source, language) {
-		/** @type {string[]} */
-		const content = [];
-		/** @type {Record<string, string>} */
-		const dataset = { language };
+		const content: string[] = [];
+		const dataset: Record<string, string> = { language };
 		for (const line of source.split('\n')) {
 			const match = line.match(/^#\$ (\w+): (.+)/);
 			if (!match) content.push(line);
@@ -78,13 +76,13 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const classMap = new Map([
 		['d', 'disclosure'],
 		['f', 'flexible'],
+		['bo', 'breakout'],
 		['fb', 'full-bleed'],
-		['hb', 'half-bleed'],
 	]);
 	const mAttrs = new Set(media.attrs.map((a) => classMap.get(a) || a));
 	const classes = {
 		div: ['captioned', ['flexible'].filter((c) => mAttrs.has(c))].flat(),
-		top: ['half-bleed', 'full-bleed'].filter((c) => mAttrs.has(c)),
+		top: ['breakout', 'full-bleed'].filter((c) => mAttrs.has(c)),
 	};
 
 	media.data = `<div class="${classes.div.join(' ')}">${media.data}</div>`;

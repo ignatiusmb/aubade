@@ -12,7 +12,9 @@
 		"test": "pnpm run \"/^test:.*/\"",
 		"test:core": "uvu src \"(spec\\.js)\"",
 		"test:apps": "uvu test/apps",
-		"prepublish": "tsm scripts/compile-types.ts"
+		"build:types": "tsm scripts/compile-types.ts",
+		"build:files": "tsc --project src",
+		"prepublishOnly": "pnpm run \"/^build:.*/\""
 	},
 	"typings": "index.d.ts",
 	"exports": {
