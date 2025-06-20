@@ -8,9 +8,9 @@
 		"lint:style": "prettier --check .",
 		"lint:workspace": "pnpm --filter \"./workspace/*\" lint",
 		"test": "pnpm --filter \"./workspace/*\" test",
-		"postinstall": "cd ./workspace/aubade && pnpm prepublish"
+		"postinstall": "cd ./workspace/aubade && pnpm build:files"
 	},
-	"packageManager": "pnpm@10.11.0",
+	"packageManager": "pnpm@10.12.1",
 	"prettier": "mauss/prettier.config.js",
 	"devDependencies": {
 		"@types/node": "^24.0.3",
