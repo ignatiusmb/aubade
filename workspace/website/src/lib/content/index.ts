@@ -5,30 +5,43 @@ import { chain } from 'aubade/transform';
 const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
-	get 'docs/'() {
-		const items = traverse('../content').hydrate(
-			({ breadcrumb: [filename], buffer, marker, parse, siblings }) => {
-				const { body, metadata } = parse(buffer.toString('utf-8'));
+	async 'docs/'() {
+		const items = await traverse('../content', ({ breadcrumb: [name] }) => {
+			fs.mkdirSync(ROOT, { recursive: true });
 
-				fs.mkdirSync(ROOT, { recursive: true });
-				const content = siblings.reduce((content, { type, breadcrumb: [name], buffer }) => {
-					if (type !== 'file' || name.endsWith('.md')) return content;
-					fs.writeFileSync(`${ROOT}/${name}`, buffer);
-					return content.replace(`./${name}`, `/uploads/${name}`);
-				}, body);
+			return async ({ buffer, marker, parse, siblings, queue }) => {
+				const { body, metadata } = parse(buffer.toString('utf-8'));
+				if (!metadata) return; // skip if no metadata
+
+				for (const { filename, buffer } of siblings) {
+					if (filename.endsWith('.md')) continue;
+					queue(async ({ fs }) => {
+						await fs.mkdir(ROOT, { recursive: true });
+						fs.writeFile(`${ROOT}/${filename}`, await buffer);
+					});
+				}
+
+				const content = body.replace(/\.\.?\/*([\w.-]+\.\w+)/g, (m, path) =>
+					siblings.some(({ filename }) => filename === path) ? `/uploads/${path}` : m,
+				);
 
 				return {
-					slug: filename.match(/^(\d{2})-(.+).md$/)![2],
+					slug: name.match(/^(\d{2})-(.+).md$/)![2],
 					title: metadata.title,
+					description: metadata.description,
 					table: metadata.table,
-					path: `workspace/content/${filename}`,
+					path: `workspace/content/${name}`,
 					content: marker.render(content),
 				};
-			},
-		);
+			};
+		});
 
 		return chain(items, {
 			transform: ({ slug, title }) => ({ slug: '/docs/' + slug, title }),
 		});
 	},
+};
+
+export type Items = {
+	[K in keyof typeof DATA]: Awaited<ReturnType<(typeof DATA)[K]>>;
 };

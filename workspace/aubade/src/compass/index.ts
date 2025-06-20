@@ -1,79 +1,91 @@
-import type { DirChunk, FileChunk, HydrateChunk, Metadata } from '../types.js';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import { catenate } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
 
-export function visit<T extends Record<string, any>>(
-	entry: string,
-): T & Metadata & { content: string } {
-	const { body, metadata } = parse(fs.readFileSync(entry, 'utf-8'));
-	const result = { ...metadata, content: marker.render(body) };
-	return result as any;
+interface Chunk {
+	buffer: Buffer;
+	marker: typeof marker;
+	parse: typeof parse;
+	queue(task: (tools: { fs: typeof fs }) => Promise<void>): void;
+	siblings: Array<{ filename: string; buffer: Promise<Buffer> }>;
 }
 
-/**
- * @template {'all' | 'files' | 'directories'} T
- * @param {T} type
- * @param {string} entry
- * @returns {T extends 'all'
- * 		? import('../types.js').HydrateChunk['siblings'] : T extends 'files'
- * 		? import('../types.js').FileChunk[] : import('../types.js').DirChunk[]}
- */
-export function scan<T extends 'all' | 'files' | 'directories'>(
-	type: T,
+interface Options {
+	breadcrumb: string[];
+	depth: number;
+	parent: string;
+	path: string;
+	is: {
+		directory: boolean;
+		file: boolean;
+		symlink: boolean;
+	};
+}
+
+type Falsy = false | null | undefined;
+interface Inspect<Output extends Record<string, any>> {
+	(options: Options): Falsy | ((chunk: Chunk) => Promise<Falsy | Output>);
+}
+export async function traverse<Output extends Record<string, any>>(
 	entry: string,
-): T extends 'all' ? HydrateChunk['siblings'] : T extends 'files' ? FileChunk[] : DirChunk[] {
-	const entries: HydrateChunk['siblings'] = [];
-	for (const name of fs.statSync(entry).isDirectory() ? fs.readdirSync(entry) : []) {
-		const path = catenate(entry, name);
-		// trick TS to enable discriminated union
-		const stat: any = fs.statSync(path).isDirectory() ? 'directory' : 'file';
-		if (type === 'files' && stat === 'directory') continue;
-		if (type === 'directories' && stat === 'file') continue;
-		entries.push({
-			type: stat,
-			path,
-			breadcrumb: path.split(/[/\\]/).reverse(),
-			get buffer() {
-				return stat === 'file' ? fs.readFileSync(path) : void 0;
-			},
+	inspect: Inspect<Output> = ({ path }) => {
+		if (!path.endsWith('.md')) return;
+		return async ({ buffer, parse }) => {
+			const { body, metadata } = parse(buffer.toString('utf-8'));
+			const result = { ...metadata, content: marker.render(body) };
+			return result as any;
+		};
+	},
+): Promise<Output[]> {
+	const results: Promise<Falsy | Output>[] = [];
+	const pending: Promise<void>[] = [];
+
+	async function scan(current: string, { depth = 0 } = {}) {
+		const tree = await fs.readdir(current, { withFileTypes: true });
+		const files = tree.flatMap((i) => {
+			if (i.isDirectory()) return [];
+			return {
+				filename: i.name,
+				get buffer() {
+					return fs.readFile(catenate(current, i.name));
+				},
+			};
 		});
-	}
-	return entries as any;
-}
 
-export function traverse(entry: string, { depth: level = 0 } = {}) {
-	const entries = scan('files', entry);
-	for (const { path } of level ? scan('directories', entry) : []) {
-		entries.push(...traverse(path, { depth: level - 1 }).files);
-	}
+		for (const item of tree) {
+			const path = catenate(current, item.name);
+			if (item.isDirectory()) {
+				pending.push(scan(path, { depth: depth + 1 }));
+			}
 
-	return {
-		files: entries,
+			const hydrate = inspect({
+				breadcrumb: path.split(/[/\\]/).reverse(),
+				depth,
+				path,
+				parent: current,
+				is: {
+					directory: item.isDirectory(),
+					file: item.isFile(),
+					symlink: item.isSymbolicLink(),
+				},
+			});
 
-		/** hydrate `files` scanned on to the shelf with the `load` function. */
-		hydrate<T>(
-			load: (chunk: HydrateChunk) => undefined | T,
-			files = (v: string) => v.endsWith('.md'),
-		): T[] {
-			const items = [];
-			for (const { path, breadcrumb, buffer } of entries) {
-				if (!files(path)) continue;
-				const item = load({
-					breadcrumb,
-					buffer,
+			if (hydrate) {
+				const transformed = hydrate({
+					buffer: await fs.readFile(path),
 					marker,
 					parse,
-					get siblings() {
-						const parent = breadcrumb.slice(1).reverse();
-						const tree = scan('all', parent.join('/'));
-						return tree.filter(({ path: file }) => file !== path);
-					},
+					siblings: files.filter(({ filename }) => filename !== item.name),
+					queue: (task) => pending.push(task({ fs })),
 				});
-				item && items.push(item);
+				results.push(transformed);
 			}
-			return items;
-		},
-	};
+		}
+	}
+
+	pending.push(scan(entry));
+	await Promise.all(pending);
+	const output = await Promise.all(results);
+	return output.filter((i) => !!i);
 }
