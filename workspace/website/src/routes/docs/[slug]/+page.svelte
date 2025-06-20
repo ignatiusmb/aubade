@@ -117,7 +117,7 @@
 			border-radius: 50%;
 			margin-left: 0.25rem;
 			box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
-			background: var(--mrq-primary);
+			background: var(--aubade-primary);
 		}
 		> h2::after,
 		> h3::after {
@@ -138,10 +138,10 @@
 		> blockquote {
 			padding: 1rem;
 			margin: 1rem 0;
-			border-left: 0.25rem solid var(--mrq-primary);
+			border-left: 0.25rem solid var(--aubade-primary);
 			background: rgba(0, 112, 187, 0.1);
 		}
-		.mrq[data-mrq='block'] {
+		[data-aubade='block'] {
 			margin: 1rem 0 1.5rem;
 		}
 	}

@@ -33,29 +33,28 @@ export function transform(source: string, dataset: Dataset): string {
 		([k, v]) => `data-${k.toLowerCase().replace(/[^a-z\-]/g, '')}="${escape(v || '')}"`,
 	);
 
-	// @TODO: rename `data-mrq` to `data-aubade`
 	// needs to be /^<pre/ to prevent added wrapper from markdown-it
-	return `<pre data-mrq="block" class="mrq">
+	return `<pre data-aubade="block">
 	<header
-		data-mrq="header"
+		data-aubade="header"
 		${attrs.join('\n\t\t')}
-		class="mrq ${file ? '' : 'empty'}"
+		class="aubade ${file ? '' : 'empty'}"
 	>${file ? `<span>${file}</span>` : ''}
-		<div data-mrq="toolbar" class="mrq">
+		<div data-aubade="toolbar">
 			${icon('list', 'Toggle\nNumbering')}
 			${icon('clipboard', 'Copy')}
 		</div>
 	</header>
 
 	<div
-		data-mrq="pre"
+		data-aubade="pre"
 		${attrs.join('\n\t\t')}
-		class="mrq language-${rest.language || 'none'}"
+		class="aubade language-${rest.language || 'none'}"
 	>${highlighted.trim()}</div>
 </pre>`;
 }
 
 function icon(name: 'clipboard' | 'list', tooltip: string) {
-	const span = `<span data-mrq="tooltip" class="mrq">${tooltip}</span>`;
-	return `<button data-mrq-toolbar="${name}" class="mrq">${span}</button>`;
+	const span = `<span data-aubade="tooltip">${tooltip}</span>`;
+	return `<button data-aubade-toolbar="${name}">${span}</button>`;
 }

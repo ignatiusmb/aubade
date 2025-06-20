@@ -13,7 +13,7 @@
 <style>
 	div {
 		padding: 0;
-		background: var(--mrq-primary);
+		background: var(--aubade-primary);
 	}
 	.horizontal {
 		width: 100%;

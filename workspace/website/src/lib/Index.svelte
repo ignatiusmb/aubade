@@ -24,7 +24,7 @@
 
 <style>
 	details {
-		--radius: calc(var(--mrq-rounding));
+		--radius: calc(var(--aubade-rounding));
 
 		z-index: 2;
 		position: sticky;

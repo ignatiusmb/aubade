@@ -40,6 +40,7 @@
 
 html,
 body {
+	height: 100%;
 	background: var(--stone-900);
 	color: var(--stone-200);
 	font-family: var(--font-default);

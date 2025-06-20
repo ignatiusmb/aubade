@@ -2,20 +2,22 @@
 	import { page } from '$app/state';
 </script>
 
-<main>
+<div>
 	<h1>{page.status}</h1>
 	<h2>{page.error?.message}</h2>
 
-	<a href="/">Click here to get back to the home page</a>
-</main>
+	<a href="/docs/introduction">back to the docs</a>
+</div>
 
 <style>
-	main {
+	div {
+		height: 100%;
 		display: grid;
-		margin: 2rem auto;
+		align-content: center;
 		text-align: center;
 	}
 	h1 {
+		font-family: var(--font-monospace);
 		font-size: 5rem;
 	}
 	a {

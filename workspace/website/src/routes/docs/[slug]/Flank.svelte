@@ -11,14 +11,14 @@
 {#if flank}
 	<div>
 		{#if flank.back}
-			<a href={flank.back.slug}>
+			<a href={flank.back.slug} style:padding-right="1rem">
 				<span class="chevron">&lsaquo;</span>
 				<small>Previous</small>
 				<span class="title">{flank.back.title}</span>
 			</a>
 		{/if}
 		{#if flank.next}
-			<a href={flank.next.slug} style:margin-left="auto">
+			<a href={flank.next.slug} style:padding-left="1rem" style:margin-left="auto">
 				<span class="chevron" style:grid-column="2">&rsaquo;</span>
 				<small style:text-align="right">Next</small>
 				<span class="title">{flank.next.title}</span>
@@ -39,6 +39,13 @@
 		grid-template-columns: auto auto;
 		grid-template-rows: auto auto;
 		align-items: center;
+		padding: 0.5rem;
+		border-radius: var(--aubade-rounding);
+
+		&:focus-within,
+		&:hover {
+			background: var(--stone-700);
+		}
 
 		.chevron {
 			grid-row: 1 / -1;

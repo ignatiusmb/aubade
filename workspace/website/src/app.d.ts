@@ -1,18 +1,23 @@
-/// <reference types="@sveltejs/kit" />
-/// <reference types="../../aubade" />
+declare global {
+	namespace App {
+		// interface Locals {}
 
-namespace App {
-	// interface Error {}
-	// interface Locals {}
-	interface PageData {
-		meta: {
-			title: string;
-			description?: string;
-			og?: {
+		interface PageData {
+			meta: {
 				title: string;
-				url?: string;
+				canonical: `/${string}`;
 				description?: string;
+				og?: {
+					title: string;
+					url?: string;
+					description?: string;
+					// TODO
+				};
 			};
-		};
+		}
+
+		// interface PageState {}
 	}
 }
+
+export {};
