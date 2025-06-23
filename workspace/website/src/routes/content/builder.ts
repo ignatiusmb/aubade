@@ -22,7 +22,7 @@ export const DATA = {
 					});
 				}
 
-				const content = body.replace(/\.\.?\/*([\w.-]+\.\w+)/g, (m, path) =>
+				const content = body.replace(/\.\/([^\s)]+)/g, (m, path) =>
 					siblings.some(({ filename }) => filename === path) ? `/uploads/${path}` : m,
 				);
 
