@@ -1,15 +1,29 @@
-import type { FrontMatter } from '../types.js';
+import { matter } from '../artisan/index.js';
 import { uhi } from '../utils.js';
 
-export function parse(source: string) {
+export function parse(source: string): {
+	body: string;
+	frontmatter?: {
+		[key: string]: any;
+		estimate: number;
+		table: Array<{
+			id: string;
+			title: string;
+			level: number;
+		}>;
+	};
+} {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
-	const crude = source.slice(match ? match.index + match[0].length + 1 : 0);
-	const memory = construct((match && match[1].trim()) || '') as Record<string, any>;
+	if (!match) return { body: source };
+
+	const crude = source.slice(match.index + match[0].length);
+	const memory = matter(match[1].trim()) as Record<string, any>;
 	const stuffed = inject(crude, memory);
 
 	return {
-		body: stuffed,
-		metadata: Object.assign(memory, {
+		// @TODO: return AST (after implementing `markdown()`)
+		body: stuffed.trim(),
+		frontmatter: Object.assign(memory, {
 			/** estimated reading time */
 			get estimate() {
 				const paragraphs = stuffed.split('\n').filter(
@@ -27,8 +41,11 @@ export function parse(source: string) {
 
 			/** table of contents */
 			get table() {
-				/** @type {import('../types.js').AubadeTable[]} */
-				const table = [];
+				const table: Array<{
+					id: string;
+					level: number;
+					title: string;
+				}> = [];
 				for (const line of stuffed.replace(/<!--[\s\S]+?-->/g, '').split('\n')) {
 					const match = line.trim().match(/^(#{2,4}) (.+)/);
 					if (!match) continue;
@@ -56,61 +73,6 @@ export function parse(source: string) {
 			},
 		}),
 	};
-}
-
-export function construct(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
-	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
-	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
-
-	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
-	/** @type {null | RegExpExecArray} */
-	let match;
-	while ((match = PATTERN.exec(raw))) {
-		const [, key, value] = match;
-		const data = construct(outdent(value), memo[key]);
-		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
-		else memo[key] = { ...memo[key], ...data };
-	}
-
-	if (Object.keys(memo).length) return memo;
-
-	const cleaned = raw.replace(/#.*$/gm, '').trim();
-	switch (cleaned[0]) {
-		case '-': {
-			const sequence = cleaned.split(/^- /gm).filter((v) => v);
-			const tabbed = sequence.map((v) =>
-				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2)),
-			);
-			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => construct(outdent(` ${v}`)));
-		}
-		case '[': {
-			const pruned = cleaned.slice(1, -1);
-			return pruned.split(',').map(coerce);
-		}
-		case '|': {
-			return outdent(cleaned.slice(1).replace('\n', ''));
-		}
-		default: {
-			return coerce(cleaned.trim());
-		}
-	}
-}
-
-// ---- internal functions ----
-
-function coerce(u: string) {
-	const v = u.trim(); // argument can be passed as-is
-	const map = { true: true, false: false, null: null };
-	if (v in map) return map[v as keyof typeof map];
-	// if (!Number.isNaN(Number(v))) return Number(v);
-	return /^(".*"|'.*')$/.test(v) ? v.slice(1, -1) : v;
-}
-
-function outdent(input: string) {
-	const lines = input.split(/\r?\n/).filter((l) => l.trim());
-	const { length } = (/^\s*/.exec(lines[0]) || [''])[0];
-	return lines.map((l) => l.slice(length)).join('\n');
 }
 
 function inject(source: string, metadata: Record<string, any>) {

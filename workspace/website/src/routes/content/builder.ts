@@ -12,8 +12,8 @@ export const DATA = {
 			if (!name.endsWith('.md')) return; // skip non-md files
 
 			return async ({ buffer, marker, parse, siblings, task }) => {
-				const { body, metadata } = parse(buffer.toString('utf-8'));
-				if (!metadata) return; // skip if no metadata
+				const { body, frontmatter } = parse(buffer.toString('utf-8'));
+				if (!frontmatter) return; // skip if no frontmatter
 
 				for (const { filename, buffer } of siblings) {
 					if (filename.endsWith('.md')) continue;
@@ -28,9 +28,9 @@ export const DATA = {
 
 				return {
 					slug: name.match(/^(\d{2})-(.+).md$/)![2],
-					title: metadata.title,
-					description: metadata.description,
-					table: metadata.table,
+					title: frontmatter.title,
+					description: frontmatter.description,
+					table: frontmatter.table,
 					path: `workspace/content/${name}`,
 					content: marker.render(content),
 				};

@@ -13,10 +13,12 @@
 	"prettier": "mauss/prettier.config.js",
 	"devDependencies": {
 		"@types/node": "^24.0.3",
+		"dts-buddy": "^0.6.2",
 		"mauss": "^0.10.0",
 		"prettier": "^3.5.3",
 		"prettier-plugin-sort-package-json": "^1.1.0",
 		"prettier-plugin-svelte": "^3.4.0",
+		"tsm": "^2.3.0",
 		"typescript": "^5.8.3",
 		"vitest": "^3.2.4"
 	}

@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
-import { catenate } from 'mauss';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
+import { catenate } from './utils.js';
 
 interface Chunk {
 	buffer: Buffer;
@@ -28,9 +28,9 @@ export async function traverse<Output extends Record<string, any>>(
 	inspect: Inspect<Output> = ({ path }) => {
 		if (!path.endsWith('.md')) return;
 		return async ({ buffer, parse }) => {
-			const { body, metadata } = parse(buffer.toString('utf-8'));
-			if (!metadata) return;
-			const result = { ...metadata, content: marker.render(body).trim() };
+			const { body, frontmatter } = parse(buffer.toString('utf-8'));
+			if (!frontmatter) return;
+			const result = { ...frontmatter, content: marker.render(body).trim() };
 			return result as any;
 		};
 	},
@@ -68,7 +68,7 @@ export async function traverse<Output extends Record<string, any>>(
 				const transformed = hydrate({
 					buffer: await fs.readFile(path),
 					marker,
-					parse,
+					parse: parse,
 					siblings: files.filter(({ filename }) => filename !== item.name),
 					task: (fn) => pending.push(fn({ fs })),
 				});
