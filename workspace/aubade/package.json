@@ -13,7 +13,7 @@
 		"test:core": "vitest run src",
 		"test:apps": "vitest run test/apps",
 		"test:types": "tsc -p src/tsconfig.test.json",
-		"build:types": "tsm scripts/compile-types.ts",
+		"build:types": "tsm scripts/dts-buddy.js",
 		"build:files": "tsc --project src",
 		"prepublishOnly": "pnpm run \"/^build:.*/\""
 	},

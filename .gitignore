@@ -2,7 +2,8 @@ node_modules
 .DS_Store
 
 # workspace/aubade
-index.d.ts
+*.js
+*.d.ts
 *.map
 
 # workspace/website
