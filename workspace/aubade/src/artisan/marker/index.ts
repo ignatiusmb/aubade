@@ -1,5 +1,4 @@
 import markdown from 'markdown-it';
-import { scope } from 'mauss';
 import { uhi } from '../../utils.js';
 import { transform } from '../palette/index.js';
 
@@ -20,7 +19,7 @@ export const marker = markdown({
 
 // Renderer Override Rules
 /** @type {typeof marker['renderer']['rules']['html_block']} */
-marker.renderer.rules.heading_open = scope(() => {
+marker.renderer.rules.heading_open = (() => {
 	let parents = ['', ''];
 
 	return (tokens, idx) => {
@@ -36,7 +35,7 @@ marker.renderer.rules.heading_open = scope(() => {
 		const uid = parents.filter((p) => p).join('-');
 		return `<${token.tag} id="${uid}">`;
 	};
-});
+})();
 /** @type {typeof marker['renderer']['rules']['image']} */
 marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 	const token = tokens[idx];

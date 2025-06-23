@@ -38,9 +38,6 @@ importers:
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
-      mauss:
-        specifier: ^0.10.0
-        version: 0.10.0
       shiki:
         specifier: ^3.6.0
         version: 3.6.0

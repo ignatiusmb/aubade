@@ -1,5 +1,3 @@
-import { clipboard } from 'mauss/web';
-
 export function hydrate(signal?: any) {
 	signal; // listen to signal changes and re-run the function if needed
 	return (node: HTMLElement) => {
@@ -17,7 +15,7 @@ export function hydrate(signal?: any) {
 					const original = tooltip.textContent;
 
 					const handler = () => {
-						clipboard.copy(source.textContent || '', {
+						copy(source.textContent || '', {
 							accept() {
 								tooltip.textContent = 'Copied to clipboard!';
 							},
@@ -45,4 +43,27 @@ export function hydrate(signal?: any) {
 			active.length = 0;
 		};
 	};
+}
+
+function copy(
+	data: string | Blob,
+	handler: {
+		accept?(): void | Promise<void>;
+		reject?(): void | Promise<void>;
+	} = {},
+) {
+	const ncb = navigator.clipboard;
+
+	// check for compatibility/permissions
+
+	let process: Promise<void>;
+	if (typeof data === 'string') {
+		process = ncb.writeText(data);
+	} else {
+		// https://developer.mozilla.org/en-US/docs/Web/API/Clipboard/write
+		process = ncb.write([new ClipboardItem({ [data.type]: data })]);
+	}
+
+	const { accept = () => {}, reject = () => {} } = handler;
+	return process.then(accept, reject);
 }
