@@ -11,14 +11,14 @@ export const DATA = {
 		const items = await traverse('../content', ({ breadcrumb: [name] }) => {
 			if (!name.endsWith('.md')) return; // skip non-md files
 
-			return async ({ buffer, marker, parse, siblings, queue }) => {
+			return async ({ buffer, marker, parse, siblings, task }) => {
 				const { body, metadata } = parse(buffer.toString('utf-8'));
 				if (!metadata) return; // skip if no metadata
 
 				for (const { filename, buffer } of siblings) {
 					if (filename.endsWith('.md')) continue;
-					queue(async ({ fs }) => {
-						fs.writeFile(`${ROOT}/${filename}`, await buffer);
+					task(async ({ fs }) => {
+						await fs.writeFile(`${ROOT}/${filename}`, await buffer);
 					});
 				}
 

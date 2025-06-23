@@ -7,8 +7,9 @@ interface Chunk {
 	buffer: Buffer;
 	marker: typeof marker;
 	parse: typeof parse;
-	queue(task: (tools: { fs: typeof fs }) => Promise<void>): void;
 	siblings: Array<{ filename: string; buffer: Promise<Buffer> }>;
+	/** register an async task to be executed in parallel with the traversal. */
+	task(fn: (tools: { fs: typeof fs }) => Promise<void>): void;
 }
 
 interface Options {
@@ -16,7 +17,6 @@ interface Options {
 	depth: number;
 	parent: string;
 	path: string;
-	symlink: boolean;
 }
 
 type Falsy = false | null | undefined;
@@ -62,7 +62,6 @@ export async function traverse<Output extends Record<string, any>>(
 				depth,
 				path,
 				parent: current,
-				symlink: item.isSymbolicLink(),
 			});
 
 			if (hydrate) {
@@ -71,15 +70,14 @@ export async function traverse<Output extends Record<string, any>>(
 					marker,
 					parse,
 					siblings: files.filter(({ filename }) => filename !== item.name),
-					queue: (task) => pending.push(task({ fs })),
+					task: (fn) => pending.push(fn({ fs })),
 				});
 				results.push(transformed);
 			}
 		}
 	}
 
-	await scan(entry); // await the initial scan
-	await Promise.all(pending);
-	const output = await Promise.all(results);
-	return output.filter((i) => !!i);
+	await scan(entry); // await for the initial scan to complete
+	while (pending.length) await Promise.all(pending.splice(0));
+	return (await Promise.all(results)).filter((i) => !!i);
 }
