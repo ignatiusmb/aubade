@@ -2,24 +2,11 @@ import { describe } from 'vitest';
 import { traverse } from '../../src/compass/index.js';
 import { readJSON } from './utils.js';
 
-describe('singular', ({ concurrent: it }) => {
-	const target = `${process.cwd()}/test/apps/singular`;
-
-	it('standard', ({ expect }) => {
-		const expected = readJSON(`${target}/standard/expected.json`);
-		expect(expected).toBeTypeOf('object');
-	});
-});
-
+const target = `${process.cwd()}/test/apps`;
 describe('traverse', ({ concurrent: it }) => {
-	const target = `${process.cwd()}/test/apps/multiple`;
-
-	it('standard', ({ expect }) => {
-		const output = traverse(`${target}/standard/input`).hydrate(({ buffer, marker, parse }) => {
-			const { body, metadata } = parse(buffer.toString('utf-8'));
-			return { ...metadata, content: marker.render(body) };
-		});
-		const expected = readJSON(`${target}/standard/expected.json`);
+	it('metadata', async ({ expect }) => {
+		const output = await traverse(`${target}/metadata/input`);
+		const expected = readJSON(`${target}/metadata/expected.json`);
 
 		expect(output).toBeTypeOf('object');
 		expect(expected).toBeTypeOf('object');
@@ -27,14 +14,23 @@ describe('traverse', ({ concurrent: it }) => {
 		expect(output).toEqual(expected);
 	});
 
-	it('depth=1', ({ expect }) => {
-		const output = traverse(`${target}/depth/input`, { depth: 1 }).hydrate(
-			({ buffer, marker, parse }) => {
-				const { body, metadata } = parse(buffer.toString('utf-8'));
-				return { ...metadata, content: marker.render(body) };
-			},
-		);
-		const expected = readJSON(`${target}/depth/expected.json`);
+	it('multiple', async ({ expect }) => {
+		const output = await traverse(`${target}/multiple/input`);
+		const expected = readJSON(`${target}/multiple/expected.json`);
+
+		output.sort((x, y) => x.title.localeCompare(y.title));
+
+		expect(output).toBeTypeOf('object');
+		expect(expected).toBeTypeOf('object');
+
+		expect(output).toEqual(expected);
+	});
+
+	it('nested-1', async ({ expect }) => {
+		const output = await traverse(`${target}/nested-1/input`);
+		const expected = readJSON(`${target}/nested-1/expected.json`);
+
+		output.sort((x, y) => x.title.localeCompare(y.title));
 
 		expect(output).toBeTypeOf('object');
 		expect(expected).toBeTypeOf('object');
