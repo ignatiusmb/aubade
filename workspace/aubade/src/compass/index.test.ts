@@ -2,30 +2,27 @@ import { traverse } from './index.js';
 
 declare function expect<T>(v: T): void;
 
-interface Metadata {
-	estimate: number;
-	table: Array<{
-		id: string;
-		title: string;
-		level: number;
-	}>;
-}
-
 async (/* traverse */) => {
 	expect<Record<string, any>>(await traverse('.'));
 
-	const transformed = await traverse('.', ({ breadcrumb: [, slug] }) => {
+	const [item] = await traverse('.', ({ breadcrumb: [, slug] }) => {
 		if (!slug.endsWith('.md')) return;
 		return async ({ buffer, marker, parse }) => {
-			const { body, metadata } = parse(buffer.toString('utf-8'));
-			if (!metadata) return;
+			const { body, frontmatter } = parse(buffer.toString('utf-8'));
+			if (!frontmatter) return;
 			return {
+				...frontmatter,
 				hello: 'world',
-				...metadata,
 				content: marker.render(body),
 			};
 		};
 	});
 
-	expect<Metadata & { content: string; hello: string }>(transformed[0]);
+	expect<number>(item.estimate);
+	expect<string>(item.table[0].id);
+	expect<string>(item.table[0].title);
+	expect<number>(item.table[0].level);
+
+	expect<string>(item.hello);
+	expect<string>(item.content);
 };
