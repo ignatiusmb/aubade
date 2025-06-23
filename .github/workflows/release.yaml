@@ -1,0 +1,58 @@
+name: REL
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.head_commit.message, 'release ~')
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # to diff the changed versions
+
+      - id: set
+        run: |
+          MATRIX=()
+          for f in workspace/*/package.json; do
+            if jq -e '.private == true' "$f" > /dev/null; then
+              continue
+            fi
+
+            PREV=$(git show HEAD^:"$f" 2>/dev/null | jq -r .version || echo "")
+            CURR=$(jq -r .version "$f")
+            NAME=$(jq -r .name "$f")
+
+            if [ "$PREV" != "$CURR" ]; then
+              MATRIX+=("{\"name\":\"$NAME\",\"version\":\"$CURR\"}")
+            fi
+          done
+
+          if [ ${#MATRIX[@]} -eq 0 ]; then
+            echo "matrix=" >> "$GITHUB_OUTPUT"
+          else
+            JSON="{\"include\":[$(IFS=,; echo "${MATRIX[*]}")]}"
+            echo "matrix=$JSON" >> "$GITHUB_OUTPUT"
+          fi
+
+  release:
+    needs: detect
+    if: needs.detect.outputs.matrix != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: | # gh will create the matching git tag
+          gh release create "${{ matrix.name }}@${{ matrix.version }}" --draft \
+            --title "${{ matrix.name }}@${{ matrix.version }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
