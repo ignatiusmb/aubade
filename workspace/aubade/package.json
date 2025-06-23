@@ -71,7 +71,6 @@
 		"shiki": "^3.6.0"
 	},
 	"devDependencies": {
-		"dts-buddy": "^0.6.2",
-		"tsm": "^2.3.0"
+		"mauss": "^0.10.0"
 	}
 }

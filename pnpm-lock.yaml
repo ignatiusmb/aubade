@@ -11,6 +11,9 @@ importers:
       '@types/node':
         specifier: ^24.0.3
         version: 24.0.3
+      dts-buddy:
+        specifier: ^0.6.2
+        version: 0.6.2(typescript@5.8.3)
       mauss:
         specifier: ^0.10.0
         version: 0.10.0
@@ -23,6 +26,9 @@ importers:
       prettier-plugin-svelte:
         specifier: ^3.4.0
         version: 3.4.0(prettier@3.5.3)(svelte@5.34.6)
+      tsm:
+        specifier: ^2.3.0
+        version: 2.3.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -42,12 +48,9 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0
     devDependencies:
-      dts-buddy:
-        specifier: ^0.6.2
-        version: 0.6.2(typescript@5.8.3)
-      tsm:
-        specifier: ^2.3.0
-        version: 2.3.0
+      mauss:
+        specifier: ^0.10.0
+        version: 0.10.0
 
   workspace/website:
     devDependencies:
