@@ -1,0 +1,7 @@
+{
+	"extends": "mauss/tsconfig.json",
+	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
+	}
+}
