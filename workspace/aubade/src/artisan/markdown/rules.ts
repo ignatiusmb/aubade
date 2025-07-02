@@ -51,6 +51,7 @@ const rules = {
 		tree.push({
 			type: 'parent:html',
 			text: html,
+			attr: {},
 			meta: { source: `<${tag}>${html}</${tag}>` },
 			children: [],
 		});
@@ -82,7 +83,7 @@ const rules = {
 		const parent = stack.find(
 			(token): token is Block => token.type === 'parent:heading' && token.meta.level === level - 1,
 		);
-		const id = `${parent?.attr?.id || ''}-${title.toLowerCase()}`
+		const id = `${parent?.attr.id || ''}-${title.toLowerCase()}`
 			.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
 			.replace(/^-+|-+$|(?<=-)-+/g, '');
 
@@ -102,6 +103,7 @@ const rules = {
 		const child = {
 			type: 'parent:paragraph',
 			text: source.slice(1).trim(),
+			attr: {},
 			meta: { source },
 			children: [],
 		} satisfies Token;
@@ -113,6 +115,7 @@ const rules = {
 
 		tree.push({
 			type: 'parent:quote',
+			attr: {},
 			meta: { source },
 			children: [child],
 		});
@@ -218,6 +221,7 @@ const rules = {
 		tree.push({
 			type: 'parent:paragraph',
 			text: text,
+			attr: {},
 			meta: { source },
 			children: [],
 		});
@@ -315,7 +319,13 @@ const rules = {
 			return null; // last token is block
 		}
 
-		tree.push({ type: 'inline:strong', text: '', meta: { source: '**' }, children: [] });
+		tree.push({
+			type: 'inline:strong',
+			text: '',
+			attr: {},
+			meta: { source: '**' },
+			children: [],
+		});
 		stack.push(tree[tree.length - 1]);
 		return tree[tree.length - 1];
 	},
@@ -335,7 +345,13 @@ const rules = {
 			return stack.splice(opened, 1)[0];
 		}
 
-		tree.push({ type: 'inline:emphasis', text: '', meta: { source: char }, children: [] });
+		tree.push({
+			type: 'inline:emphasis',
+			text: '',
+			attr: {},
+			meta: { source: char },
+			children: [],
+		});
 		opened !== -1 ? stack.splice(opened, 1) : stack.push(tree[tree.length - 1]);
 		return tree[tree.length - 1];
 	},
@@ -353,7 +369,13 @@ const rules = {
 			return stack.splice(opened, 1)[0];
 		}
 
-		tree.push({ type: 'inline:strike', text: '', meta: { source: '~~' }, children: [] });
+		tree.push({
+			type: 'inline:strike',
+			text: '',
+			attr: {},
+			meta: { source: '~~' },
+			children: [],
+		});
 		opened !== -1 ? stack.splice(opened, 1) : stack.push(tree[tree.length - 1]);
 		return tree[tree.length - 1];
 	},

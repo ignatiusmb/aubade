@@ -1,15 +1,24 @@
+interface WithAttr {
+	'parent:heading': { id: string };
+	'inline:link': { href: string; title: string };
+	'inline:autolink': { href: string };
+}
+
+interface TokenMeta {
+	'parent:heading': { level: number };
+}
+
 export interface BaseToken<T> {
 	type: T;
 	text?: string;
-	attr?: Record<string, string>;
-	meta: {
-		source: string;
-		level?: number;
-		[key: string]: any;
-	};
+	meta: { source: string } & (T extends keyof TokenMeta ? TokenMeta[T] : {});
 }
 
-export interface BlockToken<T> extends BaseToken<T> {
+export interface AttrToken<T> extends BaseToken<T> {
+	attr: T extends keyof WithAttr ? WithAttr[T] : Record<string, string>;
+}
+
+export interface BlockToken<T> extends AttrToken<T> {
 	children: Token[];
 }
 
@@ -38,7 +47,7 @@ export type Token =
 	// --- inline tokens ---
 	| BaseToken<'inline:text'>
 	| BaseToken<'inline:code'>
-	| BaseToken<'inline:link'>
+	| AttrToken<'inline:link'>
 	// | BaseToken<'inline:image'>
-	| BaseToken<'inline:autolink'>;
+	| AttrToken<'inline:autolink'>;
 // | BaseToken<'inline:break'>;
