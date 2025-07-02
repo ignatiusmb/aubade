@@ -6,10 +6,10 @@ const marker = markdown();
 describe('spec', ({ concurrent: it }) => {
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43
-		expect(marker('***').html()).toBe('<hr>');
-		expect(marker('---').html()).toBe('<hr>');
-		expect(marker('___').html()).toBe('<hr>');
-		expect(marker('***\n---\n___').html()).toBe('<hr>\n<hr>\n<hr>');
+		expect(marker('***').html()).toBe('<hr />');
+		expect(marker('---').html()).toBe('<hr />');
+		expect(marker('___').html()).toBe('<hr />');
+		expect(marker('***\n---\n___').html()).toBe('<hr />\n<hr />\n<hr />');
 	});
 
 	it('#44', ({ expect }) => {
@@ -29,7 +29,7 @@ describe('spec', ({ concurrent: it }) => {
 
 	it('#58', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-58
-		expect(marker('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr>\n<p>bar</p>');
+		expect(marker('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
 	});
 
 	it.skip('#149', ({ expect }) => {

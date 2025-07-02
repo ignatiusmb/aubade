@@ -27,13 +27,16 @@ describe('inline', ({ concurrent: it }) => {
 	});
 	it('link | hyperlinks with bare URLs', ({ expect }) => {
 		// expected: <a href="url">url</a>
+		expect;
 	});
 
 	it('image | ![alt](src)', ({ expect }) => {
 		// expected: <img src="src" alt="alt">
+		expect;
 	});
 	it('image | titled', ({ expect }) => {
 		// expected: <img src="src" alt="alt" aria-title="title">
+		expect;
 	});
 
 	it('modifiers | markers for italics and/or bold', ({ expect }) => {
@@ -85,12 +88,13 @@ describe('block', ({ concurrent: it }) => {
 		expect(marker('```js\ncode\n```').html()).toBe(
 			'<pre data-language="js"><code>code</code></pre>',
 		);
-		expect(marker('```\ncode\nline```').html()).toBe(
+		expect(marker('```\ncode\nline\n```').html()).toBe(
 			'<pre><code>code</code>\n<code>line</code></pre>',
 		);
 	});
 	it('list | unordered and ordered', ({ expect }) => {
 		// expected: <ul> and <ol> tags with <li> children
+		expect;
 	});
 	it.skip('list | precedence over inline constructs', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-42
@@ -103,13 +107,16 @@ describe('block', ({ concurrent: it }) => {
 	});
 	it('table', ({ expect }) => {
 		// expected: <table> with its children
+		expect;
 	});
 	it('HTML entities', ({ expect }) => {
 		// expected: entities should be rendered as their corresponding characters
+		expect;
 	});
 
 	it('reference links', ({ expect }) => {
 		// expected: links should be correctly resolved
+		expect;
 	});
 	it.skip('backslash escapes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-12

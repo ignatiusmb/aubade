@@ -1,36 +1,44 @@
-export interface TextToken<T> {
+export interface BaseToken<T> {
 	type: T;
-	tag: string;
-	text: string;
-	render(): string;
+	text?: string;
+	attr?: Record<string, string>;
+	meta: {
+		source: string;
+		level?: number;
+		[key: string]: any;
+	};
 }
 
-export interface DataToken<T> extends TextToken<T> {
-	data: Record<string, any>;
+export interface BlockToken<T> extends BaseToken<T> {
+	children: Token[];
 }
+
+export type Block =
+	| BlockToken<':document'>
+	| BlockToken<'parent:html'>
+	| BlockToken<'parent:heading'>
+	| BlockToken<'parent:quote'>
+	| BlockToken<'block:code'>
+	| BlockToken<'block:list'>
+	// | BlockToken<'parent:item'>
+	| BlockToken<'parent:paragraph'>
+	// | BlockToken<'block:table'>
+	// | BlockToken<'block:row'>
+	// | BlockToken<'parent:cell'>
+	// | BlockToken<'parent:footnote'>
+	| BlockToken<'inline:strong'>
+	| BlockToken<'inline:emphasis'>
+	| BlockToken<'inline:strike'>;
 
 export type Token =
-	| TextToken<':linefeed'>
-	| TextToken<':comment'>
-	// | DataToken<':document'>
-	| TextToken<'block:html'>
-	| DataToken<'block:heading'>
-	| TextToken<'block:paragraph'>
-	| TextToken<'block:quote'>
-	| DataToken<'block:code'>
-	| DataToken<'block:list'>
-	// | DataToken<'block:list:item'>
-	| TextToken<'block:break'>
-	// | TextToken<'block:table'>
-	// | TextToken<'block:table:row'>
-	// | TextToken<'block:table:cell'>
+	| Block
+	// | BaseToken<':linefeed'>
+	| BaseToken<':comment'>
+	| BaseToken<'block:break'>
 	// --- inline tokens ---
-	| TextToken<'inline:text'>
-	| TextToken<'inline:strong'>
-	| TextToken<'inline:emphasis'>
-	| TextToken<'inline:strike'>
-	| TextToken<'inline:code'>
-	| TextToken<'inline:link'>
-	// | TextToken<'inline:image'>
-	| TextToken<'inline:autolink'>;
-// | TextToken<'inline:break'>;
+	| BaseToken<'inline:text'>
+	| BaseToken<'inline:code'>
+	| BaseToken<'inline:link'>
+	// | BaseToken<'inline:image'>
+	| BaseToken<'inline:autolink'>;
+// | BaseToken<'inline:break'>;

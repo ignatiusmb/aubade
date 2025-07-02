@@ -1,85 +1,127 @@
-import type { Token } from './types.js';
-import { close, system } from './rules.js';
+import type { Tokenizer } from './rules.js';
+import type { BlockToken, Block, Token } from './types.js';
+import { system } from './rules.js';
 
 export class Parser {
 	readonly source: string;
 
 	index = 0;
-
-	tokens: Token[] = [];
+	tree: Token[] = [];
+	stack: Token[] = [];
+	root: BlockToken<':document'>;
 
 	constructor(source: string) {
 		this.source = source.trim();
+		this.root = { type: ':document', meta: { source: '!' }, children: [] };
+		this.tree = this.root.children;
+	}
+
+	close() {
+		while (this.stack.length) {
+			const opened = this.stack[this.stack.length - 1];
+			switch (opened.type) {
+				// case 'parent:quote':
+				case 'block:code':
+					break;
+				case 'inline:emphasis':
+				case 'inline:strong':
+				case 'inline:strike':
+				case 'inline:code': {
+					if (!opened.text) {
+						opened.type = 'inline:text' as any;
+						opened.text = opened.meta.source;
+						// this.tree.push(this.stack.pop()!);
+					}
+					// break
+				}
+				default:
+					this.stack.pop();
+			}
+		}
 	}
 
 	tokenize() {
-		// const system = Object.values(rules);
-		const tokens = this.tokens.slice();
-		const opened = this.tokens.slice();
-
-		let escaped = false;
-		while (this.index < this.source.length) {
-			const source = this.source;
-			let index = this.index;
-			let token: null | Token = null;
-
-			// const char = source[index] as keyof typeof dispatch;
-			// const system = dispatch[char] || dispatch.fallback;
-			escaped = !escaped && source[index] === '\\' && !!++this.index;
-			// const system = escaped ? dispatch.escaped : rule;
-
-			for (const tokenize of escaped ? system['\\'] : system.fallback) {
-				token = tokenize({
-					tree: tokens,
-					stack: opened,
-
-					eat(text) {
-						if (text.length === 1) return source[index] === text && !!++index;
-						if (text !== source.slice(index, index + text.length)) return false;
-						index += text.length;
-						return true;
-					},
-					read(length) {
-						if (length === 1) return source[index++];
-						const text = source.slice(index, index + length);
-						index += text.length;
-						return text;
-					},
-					locate(pattern) {
-						const start = index;
-						const match = pattern.exec(source.slice(index));
-						if (match) {
-							index = start + match.index;
-							return source.slice(start, index);
-						}
-						return '';
-					},
-					peek(pattern) {
-						const match = pattern.exec(source.slice(index));
-						return match ? source.slice(index, index + match.index) : '';
-					},
-					trim() {
-						while (index < source.length && /\s/.test(source[index])) {
-							index++;
-						}
-					},
-				});
-
-				if (token) break;
-				index = this.index;
+		// 1. first-pass: block parsing
+		for (const line of this.source.split('\n')) {
+			const trimmed = line.trim();
+			if (!trimmed) {
+				// 1.1. clear the stack
+				this.close();
+				continue;
 			}
 
-			if (token == null) {
-				throw new Error(`Unexpected character: ${source[index]}`);
-			}
-
-			const same = token === tokens[tokens.length - 1];
-			!same && tokens.push(token);
-			this.index = index;
+			this.index = 0;
+			const start = trimmed[0] as keyof typeof system;
+			this.parse(trimmed, system[start] || system.fallback);
 		}
 
-		close(opened, tokens);
-		this.tokens = tokens;
-		return tokens;
+		// 2. second-pass: inline parsing
+		const queue = this.root.children.filter((t): t is Block => t.type.startsWith('parent:'));
+		while (queue.length) {
+			const block = queue.pop()!;
+			if (!block.text) continue;
+			this.tree = block.children;
+			this.stack = [];
+			this.index = 0;
+			while (this.index < block.text.length) {
+				this.parse(block.text, system.inline);
+			}
+			this.close();
+		}
+
+		return this.root;
+	}
+
+	parse(line: string, tokenizers: Tokenizer[]): Token {
+		let index = this.index;
+		let token: null | Token = null;
+		for (const parse of tokenizers) {
+			token = parse({
+				source: line,
+				tree: this.tree,
+				stack: this.stack,
+
+				eat(text) {
+					if (text.length === 1) return line[index] === text && !!++index;
+					if (text !== line.slice(index, index + text.length)) return false;
+					index += text.length;
+					return true;
+				},
+				read(length) {
+					if (length === 1) return line[index++];
+					const text = line.slice(index, index + length);
+					index += text.length;
+					return text;
+				},
+				locate(pattern) {
+					const start = index;
+					const match = pattern.exec(line.slice(index));
+					if (match) {
+						index = start + match.index;
+						return line.slice(start, index);
+					}
+					return '';
+				},
+				peek(pattern) {
+					const match = pattern.exec(line.slice(index));
+					return match ? line.slice(index, index + match.index) : '';
+				},
+				trim() {
+					while (index < line.length && /\s/.test(line[index])) {
+						index++;
+					}
+				},
+			});
+
+			if (token) break;
+			index = this.index;
+		}
+
+		if (!token) {
+			throw new Error(`Unexpected character: ${line[index]}`);
+		}
+
+		this.index = index;
+		return token;
 	}
 }
