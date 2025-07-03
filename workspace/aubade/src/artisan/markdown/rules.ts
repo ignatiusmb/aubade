@@ -128,58 +128,8 @@ const rules = {
 		const bullet = char === '-' || char === '*';
 		const number = /^\d/.test(char);
 		if (!bullet && !number) return null;
-
-		// const list = /** @type {import('./types.js').DataToken<'block:list'>} */ (
-		// 	stack[stack.length - 1]
-		// );
-
+		// @TODO: implement
 		return null;
-
-		// TODO: implement
-
-		// const ordered = list?.data.ordered;
-		// const type = number ? 'ol' : 'ul';
-		// const prefix = list?.data.prefix || 0;
-		// const level = list?.data.level || 0;
-
-		// if (number && !ordered) {
-		// 	const start = parseInt(read(peek(/\s/).length) || '1');
-		// 	stack.push({
-		// 		type: 'block:list',
-		// 		tag: 'ol',
-		// 		text: '',
-		// 		data: {
-		// 			ordered: true,
-		// 			prefix: start,
-		// 			level: 0,
-		// 		},
-		// 		render() {
-		// 			return `<${this.tag}>`;
-		// 		},
-		// 	});
-		// }
-
-		// if (level > 0 && level > stack[stack.length - 1].data.level) {
-		// 	stack.push({
-		// 		type: 'block:list',
-		// 		tag: type,
-		// 		text: '',
-		// 		data: { ordered, prefix, level },
-		// 		render() {
-		// 			return `<${this.tag}>`;
-		// 		},
-		// 	});
-		// }
-
-		// return {
-		// 	type: 'block:list:item',
-		// 	tag: 'li',
-		// 	text: '',
-		// 	data: {},
-		// 	render() {
-		// 		return `<li>`;
-		// 	},
-		// };
 	},
 
 	'block:code'({ source, tree, stack }) {
@@ -294,7 +244,7 @@ const rules = {
 		trim(); // eat whitespace between link and optionally title
 
 		const title = (eat('"') && locate(/"/)) || '';
-		trim(); // eat whitespace between optionally title and closing `)`
+		eat('"'), trim(); // eat the closing quote and whitespace
 
 		// includes backticks that invalidates "](" pattern
 		const invalid = alt.includes('`') && src.includes('`');
@@ -435,7 +385,7 @@ export const system = {
 	'#': [rules['parent:heading'], rules['parent:paragraph']],
 	'>': [rules['parent:quote'], rules['parent:paragraph']],
 	'`': [rules['block:code'], rules['parent:paragraph']],
-	'!': [rules['inline:image'], rules['parent:paragraph']],
+	'!': [rules['parent:paragraph']],
 	'-': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
 	'*': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
 	_: [rules['block:break'], rules['parent:paragraph']],
@@ -443,8 +393,9 @@ export const system = {
 	'\\': [rules['parent:paragraph']],
 	fallback: [rules['parent:paragraph']],
 	inline: [
-		rules['inline:autolink'],
 		rules['inline:code'],
+		rules['inline:autolink'],
+		rules['inline:image'],
 		rules['inline:link'],
 		rules['inline:strong'],
 		rules['inline:emphasis'],

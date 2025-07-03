@@ -36,6 +36,7 @@ export type Block =
 	// | BlockToken<'block:row'>
 	// | BlockToken<'parent:cell'>
 	// | BlockToken<'parent:footnote'>
+	// --- inline with children ---
 	| BlockToken<'inline:strong'>
 	| BlockToken<'inline:emphasis'>
 	| BlockToken<'inline:strike'>;
@@ -45,10 +46,11 @@ export type Token =
 	// | BaseToken<':linefeed'>
 	| BaseToken<':comment'>
 	| BaseToken<'block:break'>
+	// | AttrToken<'block:image'>
 	// --- inline tokens ---
 	| BaseToken<'inline:text'>
 	| BaseToken<'inline:code'>
-	| AttrToken<'inline:link'>
+	| AttrToken<'inline:autolink'>
 	| AttrToken<'inline:image'>
-	| AttrToken<'inline:autolink'>;
-// | BaseToken<'inline:break'>;
+	| AttrToken<'inline:link'>;
+// | BaseToken<'inline:break'>

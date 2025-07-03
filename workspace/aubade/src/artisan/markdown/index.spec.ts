@@ -17,6 +17,17 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
 	});
 
+	it('image | ![alt](src)', ({ expect }) => {
+		expect(marker('hello ![wave emoji](wave.png)').html()).toBe(
+			'<p>hello <img src="wave.png" alt="wave emoji" /></p>',
+		);
+	});
+	it('image | titled', ({ expect }) => {
+		expect(marker('hello ![wave](wave.png "emoji")').html()).toBe(
+			'<p>hello <img src="wave.png" alt="wave" title="emoji" /></p>',
+		);
+	});
+
 	it('autolink | bracketed links', ({ expect }) => {
 		expect(marker('<https://mauss.dev>').html()).toBe(
 			'<p><a href="https://mauss.dev">https://mauss.dev</a></p>',
@@ -75,15 +86,6 @@ describe('block', ({ concurrent: it }) => {
 	it('header | ATX headings automatic id prefix', ({ expect }) => {
 		expect(marker('## main\n### sub').html()).toBe(
 			'<h2 id="main">main</h2>\n<h3 id="main-sub">sub</h3>',
-		);
-	});
-
-	it.skip('image | ![alt](src)', ({ expect }) => {
-		expect(marker('![text](src.png)').html()).toBe('<img src="src.png" alt="text" />');
-	});
-	it.skip('image | titled', ({ expect }) => {
-		expect(marker('![text](src.png "title")').html()).toBe(
-			'<img src="src.png" alt="text" title="title" />',
 		);
 	});
 
