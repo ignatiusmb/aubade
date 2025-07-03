@@ -12,7 +12,7 @@ export class Parser {
 
 	constructor(source: string) {
 		this.source = source.trim();
-		this.root = { type: ':document', attr: {}, meta: { source: '!' }, children: [] };
+		this.root = { type: ':document', attr: {}, meta: { source: '<!>' }, children: [] };
 		this.tree = this.root.children;
 	}
 

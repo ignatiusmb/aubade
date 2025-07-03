@@ -23,7 +23,7 @@ export function markdown({ renderer = {} }: Options = {}) {
 				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
 				.join(' ');
 			const children = token.children.map(render).join('');
-			return `<${tag}${attributes ? ' ' + attributes : ''}>${children}</${tag}>`;
+			return `<${tag} ${attributes}>${children}</${tag}>`;
 		},
 		'parent:quote': ({ token, render }) => {
 			return `<blockquote>${token.children.map(render).join('')}</blockquote>`;
@@ -42,14 +42,24 @@ export function markdown({ renderer = {} }: Options = {}) {
 			return `<p>${children || sanitize(token.text || '')}</p>`;
 		},
 		'block:break': () => `<hr />`,
-		'inline:autolink': ({ token, sanitize }) =>
-			`<a href="${sanitize(token.text || '')}">${sanitize(token.text || '')}</a>`,
+		'inline:autolink': ({ token, sanitize }) => {
+			const attributes = Object.entries(token.attr || {})
+				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
+				.join(' ');
+			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
+		},
 		'inline:code': ({ token, sanitize }) => `<code>${sanitize(token.text || '')}</code>`,
+		'inline:image': ({ token, sanitize }) => {
+			const attributes = Object.entries(token.attr || {})
+				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
+				.join(' ');
+			return `<img ${attributes} />`;
+		},
 		'inline:link': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr || {})
 				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
 				.join(' ');
-			return `<a${attributes ? ' ' + attributes : ''}>${sanitize(token.text || '')}</a>`;
+			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
 		},
 		'inline:strong': ({ token, render, sanitize }) => {
 			const children = token.children.map(render).join('');

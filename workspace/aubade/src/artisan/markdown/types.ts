@@ -1,7 +1,8 @@
 interface WithAttr {
 	'parent:heading': { id: string };
-	'inline:link': { href: string; title: string };
 	'inline:autolink': { href: string };
+	'inline:image': { src: string; alt: string; title: string };
+	'inline:link': { href: string; title: string };
 }
 
 interface TokenMeta {
@@ -48,6 +49,6 @@ export type Token =
 	| BaseToken<'inline:text'>
 	| BaseToken<'inline:code'>
 	| AttrToken<'inline:link'>
-	// | BaseToken<'inline:image'>
+	| AttrToken<'inline:image'>
 	| AttrToken<'inline:autolink'>;
 // | BaseToken<'inline:break'>;

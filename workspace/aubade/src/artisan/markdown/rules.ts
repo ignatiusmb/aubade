@@ -230,7 +230,7 @@ const rules = {
 	},
 
 	// only parse http[s]:// links for safety
-	'inline:autolink'({ eat, locate }) {
+	'inline:autolink'({ tree, eat, locate }) {
 		const token: Token = {
 			type: 'inline:autolink',
 			text: '',
@@ -239,15 +239,26 @@ const rules = {
 		};
 
 		if (eat('<')) {
-			if (!eat('http://') || !eat('https://')) return null;
-			token.text = locate(/[^\\]>/);
-			if (!token.text.length || /\s/.test(token.text)) return null;
-			return token;
+			token.text = locate(/(?=>)/);
+			if (!token.text || /\s/.test(token.text)) return null;
+			token.meta.source = `<${token.text}>`;
+			eat('>'); // eat closing `>`
+		} else {
+			token.text = locate(/\s|$/);
+			token.meta.source = token.text;
 		}
 
-		if (!eat('http://') || !eat('https://')) return null;
-		token.text = locate(/\s/);
-		return token;
+		if (/^https?:\/\//.test(token.text)) {
+			token.attr.href = token.text;
+		} else if (/^mailto:/.test(token.text)) {
+			token.attr.href = token.text;
+		} else if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(token.text)) {
+			token.attr.href = `mailto:${token.text}`;
+		} else {
+			return null;
+		}
+
+		return tree.push(token), token;
 	},
 
 	// code span backticks have higher precedence than any other inline constructs
@@ -269,6 +280,31 @@ const rules = {
 			type: 'inline:code',
 			text: code,
 			meta: { source },
+		});
+		return tree[tree.length - 1];
+	},
+
+	'inline:image'({ tree, eat, locate, trim }) {
+		if (!eat('![')) return null;
+		const alt = locate(/]/);
+		if (!eat('](')) return null;
+		trim(); // eat whitespace between opening `(` and link
+
+		const src = locate(/\s|\)/);
+		trim(); // eat whitespace between link and optionally title
+
+		const title = (eat('"') && locate(/"/)) || '';
+		trim(); // eat whitespace between optionally title and closing `)`
+
+		// includes backticks that invalidates "](" pattern
+		const invalid = alt.includes('`') && src.includes('`');
+		if (invalid || !eat(')')) return null; // closing `)` is required
+
+		tree.push({
+			type: 'inline:image',
+			text: alt,
+			attr: { src, alt, title: title.trim() },
+			meta: { source: `![${alt}](${src}${title ? ` "${title}"` : ''})` },
 		});
 		return tree[tree.length - 1];
 	},
@@ -399,6 +435,7 @@ export const system = {
 	'#': [rules['parent:heading'], rules['parent:paragraph']],
 	'>': [rules['parent:quote'], rules['parent:paragraph']],
 	'`': [rules['block:code'], rules['parent:paragraph']],
+	'!': [rules['inline:image'], rules['parent:paragraph']],
 	'-': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
 	'*': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
 	_: [rules['block:break'], rules['parent:paragraph']],

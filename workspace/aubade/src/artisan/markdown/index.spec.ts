@@ -17,26 +17,22 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
 	});
 
+	it('autolink | bracketed links', ({ expect }) => {
+		expect(marker('<https://mauss.dev>').html()).toBe(
+			'<p><a href="https://mauss.dev">https://mauss.dev</a></p>',
+		);
+		expect(marker('<no-reply@github.com>').html()).toBe(
+			'<p><a href="mailto:no-reply@github.com">no-reply@github.com</a></p>',
+		);
+	});
+
 	it('link | hyperlinks [text](url)', ({ expect }) => {
-		expect(marker('[link](https://example.com)').html()).toBe(
-			'<p><a href="https://example.com">link</a></p>',
+		expect(marker('[link](https://mauss.dev)').html()).toBe(
+			'<p><a href="https://mauss.dev">link</a></p>',
 		);
 	});
 	it('link | invalid hyperlinks', ({ expect }) => {
 		expect(marker('[foo`]`(bar)').html()).toBe('<p>[foo<code>]</code>(bar)</p>');
-	});
-	it('link | hyperlinks with bare URLs', ({ expect }) => {
-		// expected: <a href="url">url</a>
-		expect;
-	});
-
-	it('image | ![alt](src)', ({ expect }) => {
-		// expected: <img src="src" alt="alt">
-		expect;
-	});
-	it('image | titled', ({ expect }) => {
-		// expected: <img src="src" alt="alt" aria-title="title">
-		expect;
 	});
 
 	it('modifiers | markers for italics and/or bold', ({ expect }) => {
@@ -79,6 +75,15 @@ describe('block', ({ concurrent: it }) => {
 	it('header | ATX headings automatic id prefix', ({ expect }) => {
 		expect(marker('## main\n### sub').html()).toBe(
 			'<h2 id="main">main</h2>\n<h3 id="main-sub">sub</h3>',
+		);
+	});
+
+	it.skip('image | ![alt](src)', ({ expect }) => {
+		expect(marker('![text](src.png)').html()).toBe('<img src="src.png" alt="text" />');
+	});
+	it.skip('image | titled', ({ expect }) => {
+		expect(marker('![text](src.png "title")').html()).toBe(
+			'<img src="src.png" alt="text" title="title" />',
 		);
 	});
 
