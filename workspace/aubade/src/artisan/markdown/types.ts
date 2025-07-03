@@ -23,19 +23,21 @@ export interface BlockToken<T> extends AttrToken<T> {
 	children: Token[];
 }
 
+// ordered by precedence
 export type Block =
 	| BlockToken<':document'>
 	| BlockToken<'parent:html'>
+	| BlockToken<'block:code'> // swallows everything until closing fence
 	| BlockToken<'parent:heading'>
 	| BlockToken<'parent:quote'>
-	| BlockToken<'block:code'>
+	// | BlockToken<'block:image'>
 	| BlockToken<'block:list'>
 	// | BlockToken<'parent:item'>
-	| BlockToken<'parent:paragraph'>
 	// | BlockToken<'block:table'>
 	// | BlockToken<'block:row'>
 	// | BlockToken<'parent:cell'>
 	// | BlockToken<'parent:footnote'>
+	| BlockToken<'parent:paragraph'>
 	// --- inline with children ---
 	| BlockToken<'inline:strong'>
 	| BlockToken<'inline:emphasis'>
