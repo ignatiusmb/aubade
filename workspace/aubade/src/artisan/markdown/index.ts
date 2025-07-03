@@ -1,6 +1,6 @@
 import type { Token } from './types.js';
 import { escape as sanitize } from '../utils.js';
-import { Parser } from './parser.js';
+import { Parser } from './engine.js';
 
 interface Panel<T extends Token = Token> {
 	render(token: Token): string;

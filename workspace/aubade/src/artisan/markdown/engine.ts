@@ -1,6 +1,6 @@
-import type { Tokenizer } from './rules.js';
+import type { Tokenizer } from './core.js';
 import type { BlockToken, Block, Token } from './types.js';
-import { system } from './rules.js';
+import { dispatch, registry } from './core.js';
 
 export class Parser {
 	readonly source: string;
@@ -51,8 +51,8 @@ export class Parser {
 			}
 
 			this.index = 0;
-			const start = trimmed[0] as keyof typeof system;
-			this.parse(trimmed, system[start] || system.fallback);
+			const tokenizer = dispatch.get(trimmed[0]);
+			this.parse(trimmed, tokenizer || [registry['parent:paragraph']]);
 		}
 
 		// 2. second-pass: inline parsing
@@ -64,7 +64,7 @@ export class Parser {
 			this.stack = [];
 			this.index = 0;
 			while (this.index < block.text.length) {
-				this.parse(block.text, system.inline);
+				this.parse(block.text, dispatch.get('inline')!);
 			}
 			this.close();
 		}
@@ -75,8 +75,8 @@ export class Parser {
 	parse(line: string, tokenizers: Tokenizer[]): Token {
 		let index = this.index;
 		let token: null | Token = null;
-		for (const parse of tokenizers) {
-			token = parse({
+		for (const rule of tokenizers) {
+			token = rule({
 				source: line,
 				tree: this.tree,
 				stack: this.stack,

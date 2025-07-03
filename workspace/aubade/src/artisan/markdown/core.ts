@@ -18,7 +18,9 @@ interface Context {
 
 	trim(): void;
 }
-const rules = {
+
+export const registry = {
+	// block
 	':comment'({ tree, stack, eat, locate }) {
 		if (!eat('<!--')) return null;
 		const comment = locate(/-->/);
@@ -379,27 +381,33 @@ const rules = {
 		return tree[tree.length - 1];
 	},
 } satisfies Record<Exclude<Token['type'], ':document'>, Tokenizer>;
-export type Tokenizer = (context: Context) => null | Token;
 
-export const system = {
-	'#': [rules['parent:heading'], rules['parent:paragraph']],
-	'>': [rules['parent:quote'], rules['parent:paragraph']],
-	'`': [rules['block:code'], rules['parent:paragraph']],
-	'!': [rules['parent:paragraph']],
-	'-': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
-	'*': [rules['block:break'], rules['block:list'], rules['parent:paragraph']],
-	_: [rules['block:break'], rules['parent:paragraph']],
-	// '[': [rules['inline:link']],
-	'\\': [rules['parent:paragraph']],
-	fallback: [rules['parent:paragraph']],
-	inline: [
-		rules['inline:code'],
-		rules['inline:autolink'],
-		rules['inline:image'],
-		rules['inline:link'],
-		rules['inline:strong'],
-		rules['inline:emphasis'],
-		rules['inline:strike'],
-		rules['inline:text'],
+export type Tokenizer = (context: Context) => null | Token;
+export const dispatch = new Map<string, Tokenizer[]>([
+	['<', [registry['parent:html']]],
+	['`', [registry['block:code']]],
+	['#', [registry['parent:heading']]],
+	['>', [registry['parent:quote']]],
+	['-', [registry['block:break'], registry['block:list']]],
+	['*', [registry['block:break'], registry['block:list']]],
+	['_', [registry['block:break']]],
+	['\\', [registry['parent:paragraph']]],
+	[
+		'inline',
+		[
+			registry['inline:code'],
+			registry['inline:autolink'],
+			registry['inline:image'],
+			registry['inline:link'],
+			registry['inline:strong'],
+			registry['inline:emphasis'],
+			registry['inline:strike'],
+			registry['inline:text'],
+		],
 	],
-} satisfies Record<string, Tokenizer[]>;
+]);
+
+// add paragraph tokenizer as fallback for dispatchers
+dispatch.forEach(
+	(tokenizers, key) => key.length === 1 && tokenizers.push(registry['parent:paragraph']),
+);
