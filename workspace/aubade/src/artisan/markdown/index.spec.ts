@@ -46,26 +46,36 @@ describe('block', ({ concurrent: it }) => {
 			'<pre><code>code</code>\n<code>line</code></pre>',
 		);
 	});
-	it('list | unordered and ordered', ({ expect }) => {
+	it.skip('list | unordered and ordered', ({ expect }) => {
 		// expected: <ul> and <ol> tags with <li> children
-		expect;
+		expect(marker('- a\n- b\n- c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
+		expect(marker('* a\n* b\n* c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
+		expect(marker('1. one\n2. two\n3. three').html()).toBe(
+			'<ol><li>one</li><li>two</li><li>three</li></ol>',
+		);
+		expect(marker('1. a\n- b\n- c').html()).toBe(
+			'<ol><li>a<ul><li>b</li><li>c</li></ul></li></ol>',
+		);
 	});
 	it.skip('list | precedence over inline constructs', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-42
 		expect(marker('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
 	});
 
-	it('quote', ({ expect }) => {
+	it('quote | basic quoted text', ({ expect }) => {
 		// expected: <blockquote> tags
 		expect(marker('> quote').html()).toBe('<blockquote><p>quote</p></blockquote>');
 	});
-	it('table', ({ expect }) => {
+	it.skip('table | basic markdown table', ({ expect }) => {
 		// expected: <table> with its children
-		expect;
+		expect(marker('| a | b |\n|---|---|\n| 1 | 2 |').html()).toBe(
+			'<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>',
+		);
 	});
-	it('HTML entities', ({ expect }) => {
+	it.skip('HTML entities', ({ expect }) => {
 		// expected: entities should be rendered as their corresponding characters
-		expect;
+		expect(marker('&amp; &lt; &gt;').html()).toBe('<p>& < ></p>');
+		expect(marker('&copy; 2025').html()).toBe('<p>© 2025</p>');
 	});
 
 	it('reference links', ({ expect }) => {
@@ -75,6 +85,11 @@ describe('block', ({ concurrent: it }) => {
 });
 
 describe('inline', ({ concurrent: it }) => {
+	it('escape | backslash escape', ({ expect }) => {
+		expect(marker('\\*not italic\\*').html()).toBe('<p>*not italic*</p>');
+		expect(marker('\\\\').html()).toBe('<p>\\</p>');
+	});
+
 	it('text', ({ expect }) => {
 		// expected: the same text without any modifications
 		expect(marker('hello world').html()).toBe('<p>hello world</p>');
@@ -87,6 +102,10 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('`*foo*`').html()).toBe('<p><code>*foo*</code></p>');
 		expect(marker('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
 	});
+	it('code | edge cases', ({ expect }) => {
+		expect(marker('``backtick``').html()).toBe('<p><code>backtick</code></p>');
+		expect(marker('`` ` ``').html()).toBe('<p><code>`</code></p>');
+	});
 
 	it('image | ![alt](src)', ({ expect }) => {
 		expect(marker('hello ![wave emoji](wave.png)').html()).toBe(
@@ -96,6 +115,11 @@ describe('inline', ({ concurrent: it }) => {
 	it('image | titled', ({ expect }) => {
 		expect(marker('hello ![wave](wave.png "emoji")').html()).toBe(
 			'<p>hello <img src="wave.png" alt="wave" title="emoji" /></p>',
+		);
+	});
+	it('image | complex alt text', ({ expect }) => {
+		expect(marker('![*italic* alt](img.png)').html()).toBe(
+			'<p><img src="img.png" alt="*italic* alt" /></p>',
 		);
 	});
 
@@ -116,6 +140,14 @@ describe('inline', ({ concurrent: it }) => {
 	it('link | invalid hyperlinks', ({ expect }) => {
 		expect(marker('[foo`]`(bar)').html()).toBe('<p>[foo<code>]</code>(bar)</p>');
 	});
+	it('link | nested and multiline links', ({ expect }) => {
+		expect(marker('[a **b** c](https://example.com)').html()).toBe(
+			'<p><a href="https://example.com">a <strong>b</strong> c</a></p>',
+		);
+		expect(marker('[line\nbreak](https://example.com)').html()).toBe(
+			'<p><a href="https://example.com">line break</a></p>',
+		);
+	});
 
 	it('modifiers | markers for italics and/or bold', ({ expect }) => {
 		expect(marker('*italic*').html()).toBe('<p><em>italic</em></p>');
@@ -125,5 +157,15 @@ describe('inline', ({ concurrent: it }) => {
 	});
 	it('modifiers | markers for strikethrough', ({ expect }) => {
 		expect(marker('~~strike~~').html()).toBe('<p><s>strike</s></p>');
+	});
+	it('modifiers | modified links', ({ expect }) => {
+		expect(marker('**[a b c](https://example.com)**').html()).toBe(
+			'<p><strong><a href="https://example.com">a b c</a></strong></p>',
+		);
+	});
+	it.skip('modifiers | incomplete or broken', ({ expect }) => {
+		expect(marker('**not closed').html()).toBe('<p>**not closed</p>');
+		expect(marker('*in **out*').html()).toBe('<p><em>in **out</em></p>');
+		expect(marker('~~strike').html()).toBe('<p>~~strike</p>');
 	});
 });
