@@ -194,7 +194,7 @@ okay.`).html(),
 		expect(marker('*(*foo)').html()).toBe('<p>*(*foo)</p>');
 	});
 
-	it.skip('#369', ({ expect }) => {
+	it('#369', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-369
 		expect(marker('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
 	});
