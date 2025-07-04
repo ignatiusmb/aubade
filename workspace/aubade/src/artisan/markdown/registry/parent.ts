@@ -31,7 +31,7 @@ export function heading({ cursor, stack }: Context): null | {
 	});
 }
 
-export function html({ cursor, parse }: Context): null | {
+export function html({ cursor, compose }: Context): null | {
 	type: 'parent:html';
 	text: string;
 	attr: Record<string, string>;
@@ -45,7 +45,7 @@ export function html({ cursor, parse }: Context): null | {
 	cursor.eat('>');
 
 	// TODO: handle elements without closing tags
-	parse; // recursive call to parse the inner HTML
+	compose; // recursive call to parse the inner HTML
 
 	const html = cursor.locate(new RegExp(`</${tag}>`));
 	if (!html.length) return null;
@@ -80,7 +80,7 @@ export function paragraph({ cursor, stack }: Context): null | {
 	});
 }
 
-export function quote({ cursor, parse, stack }: Context): null | {
+export function quote({ cursor, stack, compose }: Context): null | {
 	type: 'parent:quote';
 	children: Token[];
 } {
@@ -88,7 +88,7 @@ export function quote({ cursor, parse, stack }: Context): null | {
 	if (!match) return null;
 
 	const body = cursor.locate(/\n|$/).trim();
-	const { children } = parse(body);
+	const { children } = compose(body);
 	const last = stack.peek();
 	if (last?.type === 'parent:quote') {
 		last.children.push(...children);

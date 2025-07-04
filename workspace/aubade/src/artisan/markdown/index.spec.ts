@@ -121,6 +121,7 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('*italic*').html()).toBe('<p><em>italic</em></p>');
 		expect(marker('**bold**').html()).toBe('<p><strong>bold</strong></p>');
 		expect(marker('***bold italic***').html()).toBe('<p><strong><em>bold italic</em></strong></p>');
+		expect(marker('_**italic bold**_').html()).toBe('<p><em><strong>italic bold</strong></em></p>');
 	});
 	it('modifiers | markers for strikethrough', ({ expect }) => {
 		expect(marker('~~strike~~').html()).toBe('<p><s>strike</s></p>');

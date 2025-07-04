@@ -27,13 +27,13 @@ export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R
 export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
-	['<', [parent.html, parent.paragraph]],
-	['`', [block.code, parent.paragraph]],
-	['#', [parent.heading, parent.paragraph]],
-	['>', [parent.quote, parent.paragraph]],
-	['-', [block.linebreak, block.list, parent.paragraph]],
-	['*', [block.linebreak, block.list, parent.paragraph]],
-	['_', [block.linebreak, parent.paragraph]],
+	['<', [parent.html]],
+	['`', [block.code]],
+	['#', [parent.heading]],
+	['>', [parent.quote]],
+	['-', [block.linebreak, block.list]],
+	['*', [block.linebreak, block.list]],
+	['_', [block.linebreak]],
 	['\\', [parent.paragraph]],
 ] as ReadonlyArray<readonly [string, Registry[]]>);
 
@@ -65,8 +65,6 @@ export interface Context {
 		trim(): void;
 	};
 
-	parse: typeof parse;
-
 	stack: {
 		push<T extends Token>(token: T): T;
 		pop(): Token | undefined;
@@ -77,6 +75,9 @@ export interface Context {
 		remove(token: Token): Token | undefined;
 		peek(): Token | undefined;
 	};
+
+	compose: typeof compose;
+	annotate: typeof annotate;
 }
 
 function contextualize(source: string, stack: Token[]): Context {
@@ -126,7 +127,6 @@ function contextualize(source: string, stack: Token[]): Context {
 				}
 			},
 		},
-		parse,
 		stack: {
 			peek() {
 				return stack[stack.length - 1];
@@ -147,12 +147,18 @@ function contextualize(source: string, stack: Token[]): Context {
 				return stack.splice(index, 1)[0];
 			},
 		},
+
+		compose,
+		annotate,
 	};
 }
 
-type Document = { type: ':document'; children: Token[] };
-export function parse(source: string): Document {
-	const root: Document = { type: ':document', children: [] };
+/** create the root document from the source */
+export function compose(source: string): {
+	type: ':document';
+	children: Token[];
+} {
+	const root = { type: ':document' as const, children: [] as Token[] };
 	const input = source.trim();
 	const tree = root.children;
 	const stack: Token[] = [];
@@ -168,7 +174,7 @@ export function parse(source: string): Document {
 		}
 
 		const start = input[index + context.cursor.index];
-		const rules = dispatch.get(start) || [parent.paragraph];
+		const rules = [...(dispatch.get(start) || []), parent.paragraph];
 		const token = match({ ...context, rules });
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
 		index += context.cursor.index;
@@ -184,37 +190,39 @@ export function parse(source: string): Document {
 			continue;
 
 		index = stack.length = 0;
-		const tree = parent.children;
-		while (index < parent.text.length) {
-			if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
-			const context = contextualize(parent.text.slice(index), stack);
-			const token = match({ ...context, rules: tidbits });
-			if (token && token !== tree[tree.length - 1]) tree.push(token);
-			index += context.cursor.index;
-		}
+		parent.children = annotate(parent.text);
 		// @ts-expect-error - why does it need to be optional?
 		delete parent.text; // cleanup text after inline parsing
-
-		for (const token of stack) {
-			if (!token.type.startsWith('modifier:')) continue;
-			token.type = 'inline:text';
-			// @ts-expect-error - trust me bro
-			token.text = token.meta.delimiter;
-		}
 	}
 
 	return root;
 }
 
+/** construct inline tokens from the source */
+export function annotate(source: string): Token[] {
+	const tree: Token[] = [];
+	const stack: Token[] = [];
+
+	let index = 0;
+	while (index < source.length) {
+		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
+		const context = contextualize(source.slice(index), stack);
+		const token = match({ ...context, rules: tidbits });
+		if (token && token !== tree[tree.length - 1]) tree.push(token);
+		index += context.cursor.index;
+	}
+	return tree;
+}
+
 interface MatchContext extends Context {
 	rules: Registry[];
 }
-function match({ cursor, parse, rules, stack }: MatchContext) {
-	const start = cursor.index;
+function match({ rules, ...context }: MatchContext) {
+	const start = context.cursor.index;
 	for (const rule of rules) {
-		const token = rule({ cursor, parse, stack });
+		const token = rule(context);
 		if (token) return token;
-		cursor.index = start;
+		context.cursor.index = start;
 	}
 	return null;
 }

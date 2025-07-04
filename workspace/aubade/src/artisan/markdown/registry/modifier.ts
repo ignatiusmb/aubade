@@ -1,71 +1,52 @@
-import type { Context } from '../engine.js';
+import type { Context, Token } from '../engine.js';
 
-export function emphasis({ cursor, stack }: Context): null | {
+export function emphasis({ cursor, annotate }: Context): null | {
 	type: 'modifier:emphasis';
-	meta: { delimiter: string; type: 'open' | 'close' };
+	children: Token[];
 } {
 	// double asterisk handled by `modifier:strong`
 	const char = cursor.read(1);
 	if (char !== '*' && char !== '_') return null;
-	const last = stack.peek();
-	const opened = stack.find('modifier:emphasis');
-	if (opened) {
-		stack.remove(opened);
-		if (last?.type !== 'inline:text') {
-			// @ts-expect-error - is there a better way?
-			opened.type = 'inline:text';
-			// @ts-expect-error - see above
-			opened.text = char + char;
-			// @ts-expect-error - remove excess
-			delete opened.meta;
-			return opened;
-		}
-		return {
-			type: 'modifier:emphasis',
-			meta: { delimiter: char, type: 'close' },
-		};
-	}
-	return stack.push({
-		type: 'modifier:emphasis',
-		meta: { delimiter: char, type: 'open' },
-	});
+	const body = cursor.locate(char === '*' ? /\*/ : /_/);
+	const invalid = body.includes('`') && cursor.peek(/`/);
+	if (!body.length || invalid) return null;
+	cursor.eat(char);
+	const children = annotate(body);
+	return { type: 'modifier:emphasis', children };
 }
 
-export function strike({ cursor, stack }: Context): null | {
+export function strike({ cursor, annotate }: Context): null | {
 	type: 'modifier:strike';
-	meta: { delimiter: string; type: 'open' | 'close' };
+	children: Token[];
 } {
 	if (!cursor.eat('~~')) return null;
-	const opened = stack.find('modifier:strike');
-	if (opened) {
-		stack.remove(opened);
-		return {
-			type: 'modifier:strike',
-			meta: { delimiter: '~~', type: 'close' },
-		};
-	}
-	return stack.push({
-		type: 'modifier:strike',
-		meta: { delimiter: '~~', type: 'open' },
-	});
+	const body = cursor.locate(/~~/);
+	const invalid = body.includes('`') && cursor.peek(/`/);
+	if (!body.length || invalid) return null;
+	cursor.eat('~~');
+	const children = annotate(body);
+	return { type: 'modifier:strike', children };
 }
 
-export function strong({ cursor, stack }: Context): null | {
+export function strong({ cursor, annotate }: Context): null | {
 	type: 'modifier:strong';
-	meta: { delimiter: string; type: 'open' | 'close' };
+	children: Token[];
 } {
 	if (!cursor.eat('**')) return null;
-	if (stack.find('modifier:emphasis')) return null;
-	const opened = stack.find('modifier:strong');
-	if (opened) {
-		stack.remove(opened);
-		return {
-			type: 'modifier:strong',
-			meta: { delimiter: '**', type: 'close' },
-		};
+	// prettier-ignore
+	let body = '', emphasized = false, char, closed = false;
+	while ((char = cursor.read(1))) {
+		if (char === '*' && cursor.peek('*') && !emphasized) {
+			closed = true;
+			break;
+		}
+
+		if (char === '*') emphasized = !emphasized;
+		body += char;
 	}
-	return stack.push({
-		type: 'modifier:strong',
-		meta: { delimiter: '**', type: 'open' },
-	});
+	const invalid = body.includes('`') && cursor.peek(/`/);
+	if (!body.length || !closed || invalid) return null;
+	cursor.eat('*');
+	const children = annotate(body);
+	return { type: 'modifier:strong', children };
 }

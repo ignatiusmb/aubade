@@ -1,5 +1,5 @@
 import { escape as sanitize } from '../utils.js';
-import { parse, type Token } from './engine.js';
+import { compose, type Token } from './engine.js';
 
 interface Resolver<T extends Token = Token> {
 	(panel: { token: T; render(token: Token): string; sanitize(text: string): string }): string;
@@ -56,9 +56,10 @@ export function markdown({ renderer = {} }: Options = {}) {
 				.join(' ');
 			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
 		},
-		'modifier:strong': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}strong>`,
-		'modifier:emphasis': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}em>`,
-		'modifier:strike': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}s>`,
+		'modifier:strong': ({ token, render }) =>
+			`<strong>${token.children.map(render).join('')}</strong>`,
+		'modifier:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
+		'modifier:strike': ({ token, render }) => `<s>${token.children.map(render).join('')}</s>`,
 		'inline:text': ({ token, sanitize }) => sanitize(token.text || ''),
 		...renderer,
 	} satisfies Options['renderer'];
@@ -70,7 +71,7 @@ export function markdown({ renderer = {} }: Options = {}) {
 	}
 
 	return (input: string) => {
-		const root = parse(input);
+		const root = compose(input);
 		return {
 			root,
 			html: () => root.children.map(render).join('\n'),
