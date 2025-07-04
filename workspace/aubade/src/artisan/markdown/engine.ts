@@ -166,10 +166,10 @@ function contextualize(source: string, stack: Token[]): Context {
 		},
 
 		punctuation(char) {
-			return /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(char);
+			return /\p{P}|\p{S}/u.test(char);
 		},
 		whitespace(char) {
-			return /\s/.test(char);
+			return /\p{Zs}/u.test(char) || /\s/.test(char);
 		},
 	};
 
