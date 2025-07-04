@@ -107,7 +107,99 @@ okay.`).html(),
 		);
 	});
 
-	it.skip('#379', ({ expect }) => {
+	it('#351', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-351
+		expect(marker('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
+	});
+
+	it('#352', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-352
+		expect(marker('a*"foo"*').html()).toBe('<p>a*&quot;foo&quot;*</p>');
+	});
+
+	it('#353', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-353
+		expect(marker('* a *').html()).toBe('<p>* a *</p>');
+	});
+
+	it('#354', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-354
+		expect(marker('*$*alpha.').html()).toBe('<p>*$*alpha.</p>');
+		expect(marker('*£*bravo.').html()).toBe('<p>*£*bravo.</p>');
+		expect(marker('*€*charlie.').html()).toBe('<p>*€*charlie.</p>');
+	});
+
+	it('#355', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-355
+		expect(marker('foo*bar*').html()).toBe('<p>foo<em>bar</em></p>');
+	});
+
+	it('#356', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-356
+		expect(marker('5*6*78').html()).toBe('<p>5<em>6</em>78</p>');
+	});
+
+	it('#358', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-358
+		expect(marker('_ foo bar_').html()).toBe('<p>_ foo bar_</p>');
+	});
+
+	it('#359', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-359
+		expect(marker('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
+	});
+
+	it('#360', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-360
+		expect(marker('foo_bar_').html()).toBe('<p>foo_bar_</p>');
+	});
+
+	it('#361', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-361
+		expect(marker('5_6_78').html()).toBe('<p>5_6_78</p>');
+	});
+
+	it('#362', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-362
+		expect(marker('пристаням_стремятся_').html()).toBe('<p>пристаням_стремятся_</p>');
+	});
+
+	it('#363', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-363
+		expect(marker('aa_"bb"_cc').html()).toBe('<p>aa_&quot;bb&quot;_cc</p>');
+	});
+
+	it('#364', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-364
+		expect(marker('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
+	});
+
+	it('#365', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-365
+		expect(marker('_foo*').html()).toBe('<p>_foo*</p>');
+	});
+
+	it('#366', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-366
+		expect(marker('*foo bar *').html()).toBe('<p>*foo bar *</p>');
+	});
+
+	it('#367', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-367
+		expect(marker('*foo bar\n*').html()).toBe('<p>*foo bar\n*</p>');
+	});
+
+	it('#368', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-368
+		expect(marker('*(*foo)').html()).toBe('<p>*(*foo)</p>');
+	});
+
+	it.skip('#369', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-369
+		expect(marker('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
+	});
+
+	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
 		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
 	});

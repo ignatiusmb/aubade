@@ -141,11 +141,11 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('[foo`]`(bar)').html()).toBe('<p>[foo<code>]</code>(bar)</p>');
 	});
 	it('link | nested and multiline links', ({ expect }) => {
-		expect(marker('[a **b** c](https://example.com)').html()).toBe(
-			'<p><a href="https://example.com">a <strong>b</strong> c</a></p>',
+		expect(marker('[a **b** c](https://mauss.dev)').html()).toBe(
+			'<p><a href="https://mauss.dev">a <strong>b</strong> c</a></p>',
 		);
-		expect(marker('[line\nbreak](https://example.com)').html()).toBe(
-			'<p><a href="https://example.com">line break</a></p>',
+		expect(marker('[line\nbreak](https://mauss.dev)').html()).toBe(
+			'<p><a href="https://mauss.dev">line break</a></p>',
 		);
 	});
 
@@ -159,8 +159,8 @@ describe('inline', ({ concurrent: it }) => {
 		expect(marker('~~strike~~').html()).toBe('<p><s>strike</s></p>');
 	});
 	it('modifiers | modified links', ({ expect }) => {
-		expect(marker('**[a b c](https://example.com)**').html()).toBe(
-			'<p><strong><a href="https://example.com">a b c</a></strong></p>',
+		expect(marker('**[a b c](https://mauss.dev)**').html()).toBe(
+			'<p><strong><a href="https://mauss.dev">a b c</a></strong></p>',
 		);
 	});
 	it.skip('modifiers | incomplete or broken', ({ expect }) => {

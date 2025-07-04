@@ -62,7 +62,19 @@ export interface Context {
 		locate(pattern: RegExp): string;
 		/** see the `pattern` ahead */
 		peek(pattern: string | RegExp): string;
+		/** see the `n`-th character before/after */
+		see(n: number): string;
+
 		trim(): void;
+	};
+
+	is: {
+		'left-flanking'(delimiter: number): boolean;
+		'right-flanking'(delimiter: number): boolean;
+
+		alphanumeric(char: string): boolean;
+		punctuation(char: string): boolean;
+		whitespace(char: string): boolean;
 	};
 
 	stack: {
@@ -82,51 +94,92 @@ export interface Context {
 
 function contextualize(source: string, stack: Token[]): Context {
 	let pointer = 0;
-	return {
-		cursor: {
-			get index() {
-				return pointer;
-			},
-			set index(value) {
-				pointer = value;
-			},
 
-			eat(text) {
-				if (text.length === 1) return source[pointer] === text && !!++pointer;
-				if (text !== source.slice(pointer, pointer + text.length)) return false;
-				pointer += text.length;
-				return true;
-			},
-			read(length) {
-				if (length === 1) return source[pointer++];
-				const text = source.slice(pointer, pointer + length);
-				pointer += text.length;
-				return text;
-			},
-			/** eat until `pattern` is found */
-			locate(pattern) {
-				const start = pointer;
-				const match = pattern.exec(source.slice(pointer));
-				if (match) {
-					pointer = start + match.index;
-					return source.slice(start, pointer);
-				}
-				return '';
-			},
-			/** see the `pattern` ahead */
-			peek(pattern) {
-				if (typeof pattern === 'string') {
-					return source[pointer] === pattern ? pattern : '';
-				}
-				const match = pattern.exec(source.slice(pointer));
-				return match ? source.slice(pointer, pointer + match.index) : '';
-			},
-			trim() {
-				while (pointer < source.length && /\s/.test(source[pointer])) {
-					pointer++;
-				}
-			},
+	const cursor: Context['cursor'] = {
+		get index() {
+			return pointer;
 		},
+		set index(value) {
+			pointer = value;
+		},
+
+		eat(text) {
+			if (text.length === 1) return source[pointer] === text && !!++pointer;
+			if (text !== source.slice(pointer, pointer + text.length)) return false;
+			pointer += text.length;
+			return true;
+		},
+		read(length) {
+			if (length === 1) return source[pointer++];
+			const text = source.slice(pointer, pointer + length);
+			pointer += text.length;
+			return text;
+		},
+		locate(pattern) {
+			const start = pointer;
+			const match = pattern.exec(source.slice(pointer));
+			if (match) {
+				pointer = start + match.index;
+				return source.slice(start, pointer);
+			}
+			return '';
+		},
+		peek(pattern) {
+			if (typeof pattern === 'string') {
+				if (pattern.length === 1) return source[pointer] === pattern ? pattern : '';
+				return source.slice(pointer, pointer + pattern.length) === pattern ? pattern : '';
+			}
+			const match = pattern.exec(source.slice(pointer));
+			return match ? source.slice(pointer, pointer + match.index) : '';
+		},
+		see(n) {
+			if (n === 0) return source[pointer];
+			const index = pointer + n;
+			// treat out-of-bounds as whitespace
+			if (n < 0 && index < 0) return ' ';
+			if (index >= source.length) return ' ';
+			return source[index];
+		},
+
+		trim() {
+			while (pointer < source.length && /\s/.test(source[pointer])) {
+				pointer++;
+			}
+		},
+	};
+
+	const is: Context['is'] = {
+		'left-flanking'(n) {
+			const before = cursor.see(-1);
+			const after = cursor.see(n);
+			return (
+				!is.whitespace(after) &&
+				(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
+			);
+		},
+		'right-flanking'(n) {
+			const before = cursor.see(-n);
+			const after = cursor.see(1);
+			return (
+				!is.whitespace(before) &&
+				(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
+			);
+		},
+
+		alphanumeric(char) {
+			return /\p{L}|\p{N}|_/u.test(char);
+		},
+		punctuation(char) {
+			return /\p{P}|\p{S}/u.test(char);
+		},
+		whitespace(char) {
+			return /\p{Zs}/u.test(char) || /\s/.test(char);
+		},
+	};
+
+	return {
+		cursor,
+		is,
 		stack: {
 			peek() {
 				return stack[stack.length - 1];
@@ -206,10 +259,11 @@ export function annotate(source: string): Token[] {
 	let index = 0;
 	while (index < source.length) {
 		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
-		const context = contextualize(source.slice(index), stack);
+		const context = contextualize(source, stack);
+		context.cursor.index = index;
 		const token = match({ ...context, rules: tidbits });
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
-		index += context.cursor.index;
+		index = context.cursor.index;
 	}
 	return tree;
 }
