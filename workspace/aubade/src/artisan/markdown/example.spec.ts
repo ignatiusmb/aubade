@@ -129,6 +129,31 @@ okay.`).html(),
 		expect(marker('*€*charlie.').html()).toBe('<p>*€*charlie.</p>');
 	});
 
+	it('#355', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-355
+		expect(marker('foo*bar*').html()).toBe('<p>foo<em>bar</em></p>');
+	});
+
+	it('#356', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-356
+		expect(marker('5*6*78').html()).toBe('<p>5<em>6</em>78</p>');
+	});
+
+	it('#358', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-358
+		expect(marker('_ foo bar_').html()).toBe('<p>_ foo bar_</p>');
+	});
+
+	it('#359', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-359
+		expect(marker('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
+	});
+
+	it.skip('#360', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-359
+		expect(marker('foo_bar_').html()).toBe('<p>foo_bar_</p>');
+	});
+
 	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
 		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
