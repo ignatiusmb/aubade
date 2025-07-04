@@ -5,7 +5,7 @@ const marker = markdown();
 
 describe('spec', ({ concurrent: it }) => {
 	it.skip('#12', ({ expect }) => {
-		const { root, html } = marker(
+		const { html } = marker(
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
 		);
 
