@@ -56,7 +56,7 @@ export interface Context {
 		index: number;
 
 		/** greedily consume until the last matching character */
-		consume(char: string, update: (i: number) => boolean): string;
+		consume(delimiter: string, update: (i: number) => boolean): string;
 		/** consume the input if it matches */
 		eat(text: string): boolean;
 		/** read a fixed number of characters */
@@ -106,14 +106,14 @@ function contextualize(source: string, stack: Token[]): Context {
 			pointer = value;
 		},
 
-		consume(char, update) {
+		consume(delimiter, update) {
 			let i = pointer;
 			let last = -1;
 
 			while (i < source.length) {
-				if (source[i] === char && update(i)) {
-					last = i;
-				}
+				if (i + delimiter.length > source.length) break;
+				const text = delimiter.length === 1 ? source[i] : source.slice(i, i + delimiter.length);
+				if (text === delimiter && update(i)) last = i;
 				i++;
 			}
 
