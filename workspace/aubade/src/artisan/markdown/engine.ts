@@ -134,8 +134,9 @@ function contextualize(source: string, stack: Token[]): Context {
 		see(n) {
 			if (n === 0) return source[pointer];
 			const index = pointer + n;
-			if (n < 0 && index < 0) return '';
-			if (index >= source.length) return '';
+			// treat out-of-bounds as whitespace
+			if (n < 0 && index < 0) return ' ';
+			if (index >= source.length) return ' ';
 			return source[index];
 		},
 
@@ -150,17 +151,17 @@ function contextualize(source: string, stack: Token[]): Context {
 		'left-flanking'(n) {
 			const before = cursor.see(-1);
 			const after = cursor.see(n);
-			return !(
-				is.whitespace(after) ||
-				(is.punctuation(after) && !is.whitespace(before) && is.punctuation(before))
+			return (
+				!is.whitespace(after) &&
+				(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
 			);
 		},
 		'right-flanking'(n) {
 			const before = cursor.see(-n);
 			const after = cursor.see(1);
-			return !(
-				is.whitespace(before) ||
-				(is.punctuation(before) && !is.whitespace(after) && is.punctuation(after))
+			return (
+				!is.whitespace(before) &&
+				(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
 			);
 		},
 

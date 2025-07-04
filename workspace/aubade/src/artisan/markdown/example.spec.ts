@@ -112,6 +112,11 @@ okay.`).html(),
 		expect(marker('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
 	});
 
+	it('#352', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-352
+		expect(marker('a*"foo"*').html()).toBe('<p>a*&quot;foo&quot;*</p>');
+	});
+
 	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
 		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
