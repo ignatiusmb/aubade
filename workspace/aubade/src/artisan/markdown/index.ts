@@ -54,7 +54,8 @@ export function markdown({ renderer = {} }: Options = {}) {
 			const attributes = Object.entries(token.attr || {})
 				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
 				.join(' ');
-			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
+			const children = token.children.map(render).join('');
+			return `<a ${attributes}>${children}</a>`;
 		},
 		'modifier:strong': ({ token, render }) =>
 			`<strong>${token.children.map(render).join('')}</strong>`,

@@ -1,4 +1,4 @@
-import type { Context } from '../engine.js';
+import type { Context, Token } from '../engine.js';
 
 // only parse http[s]:// and mails for safety
 export function autolink({ cursor }: Context): null | {
@@ -38,15 +38,16 @@ export function code({ cursor }: Context): null | {
 } {
 	if (!cursor.eat('`')) return null;
 
-	const n = 1 + cursor.locate(/[^`]/).length;
-
 	let code = '';
 	let char = '';
+	const n = 1 + cursor.locate(/[^`]/).length;
 	while (!cursor.eat('`'.repeat(n)) && (char = cursor.read(1))) {
 		code += char;
 	}
 	if (!char) return null;
-
+	if (code[0] === ' ' && code[0] === code[code.length - 1]) {
+		code = code.slice(1, -1); // trim the single space
+	}
 	return { type: 'inline:code', text: code };
 }
 
@@ -103,13 +104,13 @@ export function image({ cursor }: Context): null | {
 	};
 }
 
-export function link({ cursor }: Context): null | {
+export function link({ cursor, annotate }: Context): null | {
 	type: 'inline:link';
-	text: string;
 	attr: { href: string; title: string };
+	children: Token[];
 } {
 	if (!cursor.eat('[')) return null;
-	const name = cursor.locate(/]/);
+	const name = cursor.locate(/]/).replace(/\n/g, ' ');
 	if (!cursor.eat('](')) return null;
 	cursor.trim(); // eat whitespace between opening `(` and link
 
@@ -125,8 +126,8 @@ export function link({ cursor }: Context): null | {
 
 	return {
 		type: 'inline:link',
-		text: name,
 		attr: { href, title: title.trim() },
+		children: annotate(name),
 	};
 }
 

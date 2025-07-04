@@ -80,9 +80,14 @@ okay.`).html(),
 
 	it('#329', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-329
-		expect(marker('``code with `backticks``').html()).toBe(
+		expect(marker('`` code with `backticks ``').html()).toBe(
 			'<p><code>code with `backticks</code></p>',
 		);
+	});
+
+	it.skip('#330', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-330
+		expect(marker('` `` `').html()).toBe('<p><code>``</code></p>');
 	});
 
 	it('#341', ({ expect }) => {
@@ -100,6 +105,11 @@ okay.`).html(),
 		expect(marker('`<a href="`">`').html()).toBe(
 			'<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>',
 		);
+	});
+
+	it.skip('#379', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-379
+		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
 	});
 
 	it('#482', ({ expect }) => {
