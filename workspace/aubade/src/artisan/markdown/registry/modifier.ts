@@ -6,9 +6,15 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 } {
 	if (!is['left-flanking'](1)) return null;
 
-	// double asterisk handled by `modifier:strong`
+	const before = cursor.see(-1);
+	const after = cursor.see(1);
 	const char = cursor.read(1);
+	// double asterisk handled by `modifier:strong`
 	if (char !== '*' && char !== '_') return null;
+
+	// underscore cannot be used for emphasis inside words
+	// https://spec.commonmark.org/0.31.2/#example-360
+	if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return null;
 
 	const body = cursor.locate(char === '*' ? /\*/ : /_/);
 	const invalid = body.includes('`') && cursor.peek(/`/);

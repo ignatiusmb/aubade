@@ -72,6 +72,7 @@ export interface Context {
 		'left-flanking'(delimiter: number): boolean;
 		'right-flanking'(delimiter: number): boolean;
 
+		alphanumeric(char: string): boolean;
 		punctuation(char: string): boolean;
 		whitespace(char: string): boolean;
 	};
@@ -165,6 +166,9 @@ function contextualize(source: string, stack: Token[]): Context {
 			);
 		},
 
+		alphanumeric(char) {
+			return /\p{L}|\p{N}|_/u.test(char);
+		},
 		punctuation(char) {
 			return /\p{P}|\p{S}/u.test(char);
 		},

@@ -149,9 +149,29 @@ okay.`).html(),
 		expect(marker('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
 	});
 
-	it.skip('#360', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-359
+	it('#360', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-360
 		expect(marker('foo_bar_').html()).toBe('<p>foo_bar_</p>');
+	});
+
+	it('#361', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-361
+		expect(marker('5_6_78').html()).toBe('<p>5_6_78</p>');
+	});
+
+	it('#362', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-362
+		expect(marker('пристаням_стремятся_').html()).toBe('<p>пристаням_стремятся_</p>');
+	});
+
+	it('#363', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-363
+		expect(marker('aa_"bb"_cc').html()).toBe('<p>aa_&quot;bb&quot;_cc</p>');
+	});
+
+	it('#364', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-364
+		expect(marker('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
 	});
 
 	it('#379', ({ expect }) => {
