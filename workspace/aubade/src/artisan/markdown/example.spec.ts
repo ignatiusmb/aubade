@@ -174,6 +174,31 @@ okay.`).html(),
 		expect(marker('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
 	});
 
+	it('#365', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-365
+		expect(marker('_foo*').html()).toBe('<p>_foo*</p>');
+	});
+
+	it('#366', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-366
+		expect(marker('*foo bar *').html()).toBe('<p>*foo bar *</p>');
+	});
+
+	it('#367', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-367
+		expect(marker('*foo bar\n*').html()).toBe('<p>*foo bar\n*</p>');
+	});
+
+	it('#368', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-368
+		expect(marker('*(*foo)').html()).toBe('<p>*(*foo)</p>');
+	});
+
+	it.skip('#369', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-369
+		expect(marker('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
+	});
+
 	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
 		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
