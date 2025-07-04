@@ -20,6 +20,8 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 	const body = cursor.consume(char, (i) => {
 		const before = cursor.see(i - cursor.index - 1);
 		const after = cursor.see(i - cursor.index + 1);
+		// https://spec.commonmark.org/0.31.2/#example-374
+		if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return false;
 		return is['right-flanking'](before, after);
 	});
 	const invalid = body.includes('`') && cursor.peek(/`/);
