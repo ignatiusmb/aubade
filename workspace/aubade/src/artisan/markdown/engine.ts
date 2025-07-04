@@ -54,6 +54,9 @@ export interface Context {
 	cursor: {
 		/** current index in the source */
 		index: number;
+
+		/** greedily consume until the last matching character */
+		consume(char: string, update: (i: number) => boolean): string;
 		/** consume the input if it matches */
 		eat(text: string): boolean;
 		/** read a fixed number of characters */
@@ -69,8 +72,8 @@ export interface Context {
 	};
 
 	is: {
-		'left-flanking'(delimiter: number): boolean;
-		'right-flanking'(delimiter: number): boolean;
+		'left-flanking'(before: string, after: string): boolean;
+		'right-flanking'(before: string, after: string): boolean;
 
 		alphanumeric(char: string): boolean;
 		punctuation(char: string): boolean;
@@ -103,6 +106,22 @@ function contextualize(source: string, stack: Token[]): Context {
 			pointer = value;
 		},
 
+		consume(char, update) {
+			let i = pointer;
+			let last = -1;
+
+			while (i < source.length) {
+				if (source[i] === char && update(i)) {
+					last = i;
+				}
+				i++;
+			}
+
+			if (last === -1) return '';
+			const result = source.slice(pointer, last);
+			pointer = last;
+			return result;
+		},
 		eat(text) {
 			if (text.length === 1) return source[pointer] === text && !!++pointer;
 			if (text !== source.slice(pointer, pointer + text.length)) return false;
@@ -149,17 +168,13 @@ function contextualize(source: string, stack: Token[]): Context {
 	};
 
 	const is: Context['is'] = {
-		'left-flanking'(n) {
-			const before = cursor.see(-1);
-			const after = cursor.see(n);
+		'left-flanking'(before, after) {
 			return (
 				!is.whitespace(after) &&
 				(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
 			);
 		},
-		'right-flanking'(n) {
-			const before = cursor.see(-n);
-			const after = cursor.see(1);
+		'right-flanking'(before, after) {
 			return (
 				!is.whitespace(before) &&
 				(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
