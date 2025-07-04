@@ -107,7 +107,12 @@ okay.`).html(),
 		);
 	});
 
-	it.skip('#379', ({ expect }) => {
+	it('#351', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-351
+		expect(marker('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
+	});
+
+	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
 		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
 	});
