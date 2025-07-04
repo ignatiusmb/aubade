@@ -1,127 +1,220 @@
-import type { Tokenizer } from './core.js';
-import type { BlockToken, Block, Token } from './types.js';
-import { dispatch, registry } from './core.js';
+import * as block from './registry/block.js';
+import * as inline from './registry/inline.js';
+import * as modifier from './registry/modifier.js';
+import * as parent from './registry/parent.js';
 
-export class Parser {
-	readonly source: string;
+type Registry = [
+	typeof parent.html,
+	typeof block.linebreak,
+	typeof parent.heading,
+	typeof parent.quote,
+	typeof block.list,
+	typeof block.code,
+	typeof parent.paragraph,
 
-	index = 0;
-	tree: Token[] = [];
-	stack: Token[] = [];
-	root: BlockToken<':document'>;
+	typeof inline.comment,
+	typeof inline.escape,
+	typeof inline.autolink,
+	typeof inline.code,
+	typeof inline.image,
+	typeof inline.link,
+	typeof modifier.strong,
+	typeof modifier.emphasis,
+	typeof modifier.strike,
+	typeof inline.text,
+][number];
+export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
+export type Dispatch = { [T in Token as T['type']]: T };
 
-	constructor(source: string) {
-		this.source = source.trim();
-		this.root = { type: ':document', attr: {}, meta: { source: '<!>' }, children: [] };
-		this.tree = this.root.children;
-	}
+const dispatch = new Map([
+	['<', [parent.html, parent.paragraph]],
+	['`', [block.code, parent.paragraph]],
+	['#', [parent.heading, parent.paragraph]],
+	['>', [parent.quote, parent.paragraph]],
+	['-', [block.linebreak, block.list, parent.paragraph]],
+	['*', [block.linebreak, block.list, parent.paragraph]],
+	['_', [block.linebreak, parent.paragraph]],
+	['\\', [parent.paragraph]],
+] as ReadonlyArray<readonly [string, Registry[]]>);
 
-	close() {
-		while (this.stack.length) {
-			const opened = this.stack[this.stack.length - 1];
-			switch (opened.type) {
-				// case 'parent:quote':
-				case 'block:code':
-					break;
-				case 'inline:emphasis':
-				case 'inline:strong':
-				case 'inline:strike':
-				case 'inline:code': {
-					if (!opened.text) {
-						opened.type = 'inline:text' as any;
-						opened.text = opened.meta.source;
-						// this.tree.push(this.stack.pop()!);
-					}
-					// break
+const tidbits = [
+	inline.escape,
+	inline.comment,
+	inline.code,
+	inline.autolink,
+	inline.image,
+	inline.link,
+	modifier.strong,
+	modifier.emphasis,
+	modifier.strike,
+	inline.text,
+];
+
+export interface Context {
+	cursor: {
+		/** current index in the source */
+		index: number;
+		/** consume the input if it matches */
+		eat(text: string): boolean;
+		/** read a fixed number of characters */
+		read(length: number): string;
+		/** eat until `pattern` is found */
+		locate(pattern: RegExp): string;
+		/** see the `pattern` ahead */
+		peek(pattern: string | RegExp): string;
+		trim(): void;
+	};
+
+	parse: typeof parse;
+
+	stack: {
+		push<T extends Token>(token: T): T;
+		pop(): Token | undefined;
+		find<T extends Token['type']>(
+			type: T,
+			predicate?: (token: Extract<Token, { type: T }>) => boolean,
+		): Extract<Token, { type: T }> | undefined;
+		remove(token: Token): Token | undefined;
+		peek(): Token | undefined;
+	};
+}
+
+function contextualize(source: string, stack: Token[]): Context {
+	let pointer = 0;
+	return {
+		cursor: {
+			get index() {
+				return pointer;
+			},
+			set index(value) {
+				pointer = value;
+			},
+
+			eat(text) {
+				if (text.length === 1) return source[pointer] === text && !!++pointer;
+				if (text !== source.slice(pointer, pointer + text.length)) return false;
+				pointer += text.length;
+				return true;
+			},
+			read(length) {
+				if (length === 1) return source[pointer++];
+				const text = source.slice(pointer, pointer + length);
+				pointer += text.length;
+				return text;
+			},
+			/** eat until `pattern` is found */
+			locate(pattern) {
+				const start = pointer;
+				const match = pattern.exec(source.slice(pointer));
+				if (match) {
+					pointer = start + match.index;
+					return source.slice(start, pointer);
 				}
-				default:
-					this.stack.pop();
+				return '';
+			},
+			/** see the `pattern` ahead */
+			peek(pattern) {
+				if (typeof pattern === 'string') {
+					return source[pointer] === pattern ? pattern : '';
+				}
+				const match = pattern.exec(source.slice(pointer));
+				return match ? source.slice(pointer, pointer + match.index) : '';
+			},
+			trim() {
+				while (pointer < source.length && /\s/.test(source[pointer])) {
+					pointer++;
+				}
+			},
+		},
+		parse,
+		stack: {
+			peek() {
+				return stack[stack.length - 1];
+			},
+			push(token) {
+				stack.push(token);
+				return token;
+			},
+			pop() {
+				return stack.pop();
+			},
+			find(type, predicate = () => true) {
+				return stack.find((token): token is any => token.type === type && predicate(token as any));
+			},
+			remove(token) {
+				const index = stack.indexOf(token);
+				if (index === -1) return undefined;
+				return stack.splice(index, 1)[0];
+			},
+		},
+	};
+}
+
+type Document = { type: ':document'; children: Token[] };
+export function parse(source: string): Document {
+	const root: Document = { type: ':document', children: [] };
+	const input = source.trim();
+	const tree = root.children;
+	const stack: Token[] = [];
+
+	let index = 0;
+	while (index < input.length) {
+		const context = contextualize(input.slice(index), stack);
+		if (context.cursor.eat('\n')) {
+			let current: Token | undefined = stack[stack.length - 1];
+			while (current?.type === 'parent:paragraph' || current?.type === 'parent:quote') {
+				current = stack.pop();
 			}
+		}
+
+		const start = input[index + context.cursor.index];
+		const rules = dispatch.get(start) || [parent.paragraph];
+		const token = match({ ...context, rules });
+		if (token && token !== tree[tree.length - 1]) tree.push(token);
+		index += context.cursor.index;
+	}
+
+	for (const parent of tree) {
+		if (
+			!parent.type.startsWith('parent:') ||
+			!('children' in parent) ||
+			!('text' in parent) ||
+			!parent.text
+		)
+			continue;
+
+		index = stack.length = 0;
+		const tree = parent.children;
+		while (index < parent.text.length) {
+			if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
+			const context = contextualize(parent.text.slice(index), stack);
+			const token = match({ ...context, rules: tidbits });
+			if (token && token !== tree[tree.length - 1]) tree.push(token);
+			index += context.cursor.index;
+		}
+		// @ts-expect-error - why does it need to be optional?
+		delete parent.text; // cleanup text after inline parsing
+
+		for (const token of stack) {
+			if (!token.type.startsWith('modifier:')) continue;
+			token.type = 'inline:text';
+			// @ts-expect-error - trust me bro
+			token.text = token.meta.delimiter;
 		}
 	}
 
-	tokenize() {
-		// 1. first-pass: block parsing
-		for (const line of this.source.split('\n')) {
-			const trimmed = line.trim();
-			if (!trimmed) {
-				// 1.1. clear the stack
-				this.close();
-				continue;
-			}
+	return root;
+}
 
-			this.index = 0;
-			const tokenizer = dispatch.get(trimmed[0]);
-			this.parse(trimmed, tokenizer || [registry['parent:paragraph']]);
-		}
-
-		// 2. second-pass: inline parsing
-		const queue = this.root.children.filter((t): t is Block => t.type.startsWith('parent:'));
-		while (queue.length) {
-			const block = queue.pop()!;
-			if (!block.text) continue;
-			this.tree = block.children;
-			this.stack = [];
-			this.index = 0;
-			while (this.index < block.text.length) {
-				this.parse(block.text, dispatch.get('inline')!);
-			}
-			this.close();
-		}
-
-		return this.root;
+interface MatchContext extends Context {
+	rules: Registry[];
+}
+function match({ cursor, parse, rules, stack }: MatchContext) {
+	const start = cursor.index;
+	for (const rule of rules) {
+		const token = rule({ cursor, parse, stack });
+		if (token) return token;
+		cursor.index = start;
 	}
-
-	parse(line: string, tokenizers: Tokenizer[]): Token {
-		let index = this.index;
-		let token: null | Token = null;
-		for (const rule of tokenizers) {
-			token = rule({
-				source: line,
-				tree: this.tree,
-				stack: this.stack,
-
-				eat(text) {
-					if (text.length === 1) return line[index] === text && !!++index;
-					if (text !== line.slice(index, index + text.length)) return false;
-					index += text.length;
-					return true;
-				},
-				read(length) {
-					if (length === 1) return line[index++];
-					const text = line.slice(index, index + length);
-					index += text.length;
-					return text;
-				},
-				locate(pattern) {
-					const start = index;
-					const match = pattern.exec(line.slice(index));
-					if (match) {
-						index = start + match.index;
-						return line.slice(start, index);
-					}
-					return '';
-				},
-				peek(pattern) {
-					const match = pattern.exec(line.slice(index));
-					return match ? line.slice(index, index + match.index) : '';
-				},
-				trim() {
-					while (index < line.length && /\s/.test(line[index])) {
-						index++;
-					}
-				},
-			});
-
-			if (token) break;
-			index = this.index;
-		}
-
-		if (!token) {
-			throw new Error(`Unexpected character: ${line[index]}`);
-		}
-
-		this.index = index;
-		return token;
-	}
+	return null;
 }

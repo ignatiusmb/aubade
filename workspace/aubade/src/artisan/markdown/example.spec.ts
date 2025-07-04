@@ -4,6 +4,23 @@ import { markdown } from './index.js';
 const marker = markdown();
 
 describe('spec', ({ concurrent: it }) => {
+	it.skip('#12', ({ expect }) => {
+		const { root, html } = marker(
+			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
+		);
+
+		// const { text } = root.children[0]?.children[0];
+		// expect(text).toBe("<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>");
+
+		// https://spec.commonmark.org/0.31.2/#example-12 - adjusted test
+		expect(html()).toBe('<p>!&quot;#$%&amp;&#39;()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>');
+	});
+
+	it('#13', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-13
+		expect(marker('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
+	});
+
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43
 		expect(marker('***').html()).toBe('<hr />');

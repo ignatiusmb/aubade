@@ -3,59 +3,6 @@ import { markdown } from './index.js';
 
 const marker = markdown();
 
-describe('inline', ({ concurrent: it }) => {
-	it('text', ({ expect }) => {
-		// expected: the same text without any modifications
-		expect(marker('hello world').html()).toBe('<p>hello world</p>');
-	});
-
-	it('code | with literal backslash', ({ expect }) => {
-		expect(marker('`\\`').html()).toBe('<p><code>\\</code></p>');
-	});
-	it('code | takes precedence over other constructs', ({ expect }) => {
-		expect(marker('`*foo*`').html()).toBe('<p><code>*foo*</code></p>');
-		expect(marker('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
-	});
-
-	it('image | ![alt](src)', ({ expect }) => {
-		expect(marker('hello ![wave emoji](wave.png)').html()).toBe(
-			'<p>hello <img src="wave.png" alt="wave emoji" /></p>',
-		);
-	});
-	it('image | titled', ({ expect }) => {
-		expect(marker('hello ![wave](wave.png "emoji")').html()).toBe(
-			'<p>hello <img src="wave.png" alt="wave" title="emoji" /></p>',
-		);
-	});
-
-	it('autolink | bracketed links', ({ expect }) => {
-		expect(marker('<https://mauss.dev>').html()).toBe(
-			'<p><a href="https://mauss.dev">https://mauss.dev</a></p>',
-		);
-		expect(marker('<no-reply@github.com>').html()).toBe(
-			'<p><a href="mailto:no-reply@github.com">no-reply@github.com</a></p>',
-		);
-	});
-
-	it('link | hyperlinks [text](url)', ({ expect }) => {
-		expect(marker('[link](https://mauss.dev)').html()).toBe(
-			'<p><a href="https://mauss.dev">link</a></p>',
-		);
-	});
-	it('link | invalid hyperlinks', ({ expect }) => {
-		expect(marker('[foo`]`(bar)').html()).toBe('<p>[foo<code>]</code>(bar)</p>');
-	});
-
-	it('modifiers | markers for italics and/or bold', ({ expect }) => {
-		expect(marker('*italic*').html()).toBe('<p><em>italic</em></p>');
-		expect(marker('**bold**').html()).toBe('<p><strong>bold</strong></p>');
-		expect(marker('***bold italic***').html()).toBe('<p><strong><em>bold italic</em></strong></p>');
-	});
-	it('modifiers | markers for strikethrough', ({ expect }) => {
-		expect(marker('~~strike~~').html()).toBe('<p><s>strike</s></p>');
-	});
-});
-
 describe('block', ({ concurrent: it }) => {
 	it('header | ATX headings from 1 to 6 #', ({ expect }) => {
 		// expected: corresponding HTML <h1> to <h6> tags
@@ -125,14 +72,57 @@ describe('block', ({ concurrent: it }) => {
 		// expected: links should be correctly resolved
 		expect;
 	});
-	it.skip('backslash escapes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-12
-		expect(
-			marker(
-				'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
-			).html(),
-		).toBe("<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>");
-		// https://spec.commonmark.org/0.31.2/#example-13
-		expect(marker('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
+});
+
+describe('inline', ({ concurrent: it }) => {
+	it('text', ({ expect }) => {
+		// expected: the same text without any modifications
+		expect(marker('hello world').html()).toBe('<p>hello world</p>');
+	});
+
+	it('code | with literal backslash', ({ expect }) => {
+		expect(marker('`\\`').html()).toBe('<p><code>\\</code></p>');
+	});
+	it('code | takes precedence over other constructs', ({ expect }) => {
+		expect(marker('`*foo*`').html()).toBe('<p><code>*foo*</code></p>');
+		expect(marker('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
+	});
+
+	it('image | ![alt](src)', ({ expect }) => {
+		expect(marker('hello ![wave emoji](wave.png)').html()).toBe(
+			'<p>hello <img src="wave.png" alt="wave emoji" /></p>',
+		);
+	});
+	it('image | titled', ({ expect }) => {
+		expect(marker('hello ![wave](wave.png "emoji")').html()).toBe(
+			'<p>hello <img src="wave.png" alt="wave" title="emoji" /></p>',
+		);
+	});
+
+	it('autolink | bracketed links', ({ expect }) => {
+		expect(marker('<https://mauss.dev>').html()).toBe(
+			'<p><a href="https://mauss.dev">https://mauss.dev</a></p>',
+		);
+		expect(marker('<no-reply@github.com>').html()).toBe(
+			'<p><a href="mailto:no-reply@github.com">no-reply@github.com</a></p>',
+		);
+	});
+
+	it('link | hyperlinks [text](url)', ({ expect }) => {
+		expect(marker('[link](https://mauss.dev)').html()).toBe(
+			'<p><a href="https://mauss.dev">link</a></p>',
+		);
+	});
+	it('link | invalid hyperlinks', ({ expect }) => {
+		expect(marker('[foo`]`(bar)').html()).toBe('<p>[foo<code>]</code>(bar)</p>');
+	});
+
+	it('modifiers | markers for italics and/or bold', ({ expect }) => {
+		expect(marker('*italic*').html()).toBe('<p><em>italic</em></p>');
+		expect(marker('**bold**').html()).toBe('<p><strong>bold</strong></p>');
+		expect(marker('***bold italic***').html()).toBe('<p><strong><em>bold italic</em></strong></p>');
+	});
+	it('modifiers | markers for strikethrough', ({ expect }) => {
+		expect(marker('~~strike~~').html()).toBe('<p><s>strike</s></p>');
 	});
 });

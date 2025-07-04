@@ -1,21 +1,16 @@
-import type { Token } from './types.js';
 import { escape as sanitize } from '../utils.js';
-import { Parser } from './engine.js';
+import { parse, type Token } from './engine.js';
 
-interface Panel<T extends Token = Token> {
-	render(token: Token): string;
-	sanitize(text: string): string;
-	token: T;
+interface Resolver<T extends Token = Token> {
+	(panel: { token: T; render(token: Token): string; sanitize(text: string): string }): string;
 }
-
-type Resolver<T extends Token = Token> = (panel: Panel<T>) => string;
 
 export interface Options {
 	renderer?: { [T in Token as T['type']]?: Resolver<T> };
 }
+
 export function markdown({ renderer = {} }: Options = {}) {
 	const resolver = {
-		':document': ({ token, render }) => token.children.map(render).join('\n'),
 		'parent:html': ({ token, render }) => `<div>${token.children.map(render).join('')}</div>`,
 		'parent:heading': ({ token, render }) => {
 			const tag = `h${token.meta.level}`;
@@ -61,18 +56,9 @@ export function markdown({ renderer = {} }: Options = {}) {
 				.join(' ');
 			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
 		},
-		'inline:strong': ({ token, render, sanitize }) => {
-			const children = token.children.map(render).join('');
-			return `<strong>${children || sanitize(token.text || '')}</strong>`;
-		},
-		'inline:emphasis': ({ token, render, sanitize }) => {
-			const children = token.children.map(render).join('');
-			return `<em>${children || sanitize(token.text || '')}</em>`;
-		},
-		'inline:strike': ({ token, render, sanitize }) => {
-			const children = token.children.map(render).join('');
-			return `<s>${children || sanitize(token.text || '')}</s>`;
-		},
+		'modifier:strong': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}strong>`,
+		'modifier:emphasis': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}em>`,
+		'modifier:strike': ({ token }) => `<${token.meta.type === 'open' ? '' : '/'}s>`,
 		'inline:text': ({ token, sanitize }) => sanitize(token.text || ''),
 		...renderer,
 	} satisfies Options['renderer'];
@@ -84,10 +70,10 @@ export function markdown({ renderer = {} }: Options = {}) {
 	}
 
 	return (input: string) => {
-		const system = new Parser(input);
+		const root = parse(input);
 		return {
-			root: system.tokenize(),
-			html: () => system.root.children.map(render).join('\n'),
+			root,
+			html: () => root.children.map(render).join('\n'),
 		};
 	};
 }
