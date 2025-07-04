@@ -30,7 +30,7 @@ export function linebreak({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
-export function list({ cursor, parse }: Context): null | {
+export function list({ cursor, compose }: Context): null | {
 	type: 'block:list';
 	children: [];
 } {
@@ -39,6 +39,6 @@ export function list({ cursor, parse }: Context): null | {
 	const number = /^\d/.test(char);
 	if (!bullet && !number) return null;
 	// @TODO: implement
-	parse; // recursive call to parse the list items
+	compose; // recursive call to parse the list items
 	return null;
 }
