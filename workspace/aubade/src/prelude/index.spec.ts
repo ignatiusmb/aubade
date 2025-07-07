@@ -1,9 +1,9 @@
 import { describe } from 'vitest';
-import { matter } from './index.js';
+import { emit, extract } from './index.js';
 
 describe('matter', ({ concurrent: it }) => {
 	it('simple index', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Simple Index
 tags: [x, y, z]
@@ -17,7 +17,7 @@ tags: [x, y, z]
 	});
 
 	it('aubade rules', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Aubade Rules
 date:published: 2023-02-01
@@ -35,7 +35,7 @@ a:b:z: 2
 	});
 
 	it('boolean values', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Casting Boolean
 draft: false
@@ -51,7 +51,7 @@ hex: ["x", true, 0, false]
 	});
 
 	it('literal block', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Literal Block
 data: |
@@ -66,7 +66,7 @@ data: |
 		});
 	});
 	it('sequences', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: List Sequence
 hex:
@@ -82,7 +82,7 @@ hex:
 		});
 	});
 	it('nested sequences', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Nested Sequences
 colors:
@@ -116,7 +116,7 @@ colors:
 		});
 	});
 	it('indents', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Indented Objects
 jobs:
@@ -137,7 +137,7 @@ jobs:
 		});
 	});
 	it('indented sequences', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 title: Indented Objects and Arrays
 jobs:
@@ -162,18 +162,18 @@ jobs:
 	});
 	it('handle carriage returns', ({ expect }) => {
 		// with tabs
-		expect(matter(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`)).toEqual({
+		expect(extract(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`)).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 
 		// with spaces
-		expect(matter(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`)).toEqual({
+		expect(extract(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`)).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 	});
 	it('handle edge cases', ({ expect }) => {
 		expect(
-			matter(
+			extract(
 				`
 title: Edge Cases
 empty:
@@ -202,7 +202,7 @@ link:
 		});
 
 		expect(
-			matter(
+			extract(
 				`
 trailing:\t
 	- tab
@@ -222,7 +222,7 @@ voyager:
 		});
 	});
 	it('construct with spaces indents', ({ expect }) => {
-		const index = matter(
+		const index = extract(
 			`
 jobs:
   test:
@@ -266,5 +266,44 @@ link:
 				'search-engines': ['https://duckduckgo.com', 'https://google.com', 'https://bing.com'],
 			},
 		});
+	});
+});
+
+describe('print', ({ concurrent: it }) => {
+	it('serializes flat object with primitives', ({ expect }) => {
+		expect(emit({ title: 'Hello World', published: true, count: null })).toBe(
+			['title: Hello World', 'published: true', 'count: null'].join('\n'),
+		);
+	});
+
+	it.skip('quotes strings with special characters', ({ expect }) => {
+		expect(emit({ title: 'a: b', note: ' needs quotes ', escape: 'say "hi"' })).toBe(
+			['title: "a: b"', 'note: " needs quotes "', 'escape: "say \\"hi\\""'].join('\n'),
+		);
+	});
+
+	it('serializes arrays of primitives', ({ expect }) => {
+		expect(emit({ tags: ['a', 'b', 'c'] })).toBe('tags: [a, b, c]');
+	});
+
+	it('serializes arrays of objects', ({ expect }) => {
+		expect(emit({ list: [{ foo: 'bar' }, { foo: 'baz' }] })).toBe(
+			['list:', '  - foo: bar', '  - foo: baz'].join('\n'),
+		);
+		expect(emit({ list: [{ foo: 'bar', bar: 'baz' }] })).toBe(
+			['list:', '  - foo: bar', '    bar: baz'].join('\n'),
+		);
+	});
+
+	it('serializes nested objects', ({ expect }) => {
+		expect(emit({ meta: { author: 'igna', draft: true } })).toBe(
+			['meta:', '  author: igna', '  draft: true'].join('\n'),
+		);
+	});
+
+	it('serializes multiline strings as block literals', ({ expect }) => {
+		expect(emit({ note: 'line one\nline two\nline three' })).toBe(
+			['note: |', '  line one', '  line two', '  line three'].join('\n'),
+		);
 	});
 });

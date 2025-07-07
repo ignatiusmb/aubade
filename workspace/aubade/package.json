@@ -35,6 +35,10 @@
 			"types": "./index.d.ts",
 			"default": "./src/compass/index.js"
 		},
+		"./prelude": {
+			"types": "./index.d.ts",
+			"default": "./src/prelude/index.js"
+		},
 		"./transform": {
 			"types": "./index.d.ts",
 			"default": "./src/transform/index.js"

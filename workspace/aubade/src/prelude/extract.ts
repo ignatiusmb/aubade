@@ -1,10 +1,6 @@
-type Primitives = string | boolean | null;
+import { FrontMatter } from './types.js';
 
-export interface FrontMatter {
-	[key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[];
-}
-
-export function matter(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
+export function extract(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
 	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
 
@@ -12,7 +8,7 @@ export function matter(raw: string, memo: Record<string, any> = {}): FrontMatter
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
-		const data = matter(outdent(value), memo[key]);
+		const data = extract(outdent(value), memo[key]);
 		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
 		else memo[key] = { ...memo[key], ...data };
 	}
@@ -27,7 +23,7 @@ export function matter(raw: string, memo: Record<string, any> = {}): FrontMatter
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2)),
 			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => matter(outdent(` ${v}`)));
+			return tabbed.map((v) => extract(outdent(` ${v}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
