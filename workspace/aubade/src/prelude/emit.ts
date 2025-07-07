@@ -38,8 +38,8 @@ function format(value: Primitives): string {
 	if (value === null) return 'null';
 	if (typeof value === 'boolean') return value ? 'true' : 'false';
 
-	if (/[:{}\[\],&*#?|<>=!%@\\]/.test(value) || /^\s|\s$/.test(value)) {
-		return `"${value.replace(/"/g, '\\"')}"`;
+	if (/[:{}\[\],&*#?|<>=!%@\\"]/.test(value) || /^\s|\s$/.test(value)) {
+		return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 	}
 
 	return value;

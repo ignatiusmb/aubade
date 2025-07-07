@@ -1,7 +1,7 @@
 import { describe } from 'vitest';
 import { emit, extract } from './index.js';
 
-describe('matter', ({ concurrent: it }) => {
+describe('extract', ({ concurrent: it }) => {
 	it('simple index', ({ expect }) => {
 		const index = extract(
 			`
@@ -269,16 +269,10 @@ link:
 	});
 });
 
-describe('print', ({ concurrent: it }) => {
+describe('emit', ({ concurrent: it }) => {
 	it('serializes flat object with primitives', ({ expect }) => {
 		expect(emit({ title: 'Hello World', published: true, count: null })).toBe(
 			['title: Hello World', 'published: true', 'count: null'].join('\n'),
-		);
-	});
-
-	it.skip('quotes strings with special characters', ({ expect }) => {
-		expect(emit({ title: 'a: b', note: ' needs quotes ', escape: 'say "hi"' })).toBe(
-			['title: "a: b"', 'note: " needs quotes "', 'escape: "say \\"hi\\""'].join('\n'),
 		);
 	});
 
@@ -301,9 +295,63 @@ describe('print', ({ concurrent: it }) => {
 		);
 	});
 
+	it('quotes strings with special characters', ({ expect }) => {
+		expect(emit({ title: 'a: b', note: ' needs quotes ' })).toBe(
+			['title: "a: b"', 'note: " needs quotes "'].join('\n'),
+		);
+		expect(emit({ text: 'say "hi"' })).toBe('text: "say \\"hi\\""');
+		expect(emit({ text: 'C:\\Users\\mauss' })).toBe('text: "C:\\\\Users\\\\mauss"');
+	});
+
 	it('serializes multiline strings as block literals', ({ expect }) => {
 		expect(emit({ note: 'line one\nline two\nline three' })).toBe(
 			['note: |', '  line one', '  line two', '  line three'].join('\n'),
+		);
+	});
+
+	it('serializes the review', ({ expect }) => {
+		const review = {
+			title: 'review title',
+			genres: ['tag1', 'tag2'],
+			alias: ['alias'],
+			verdict: 'verdict',
+			rating: { category: [{ type: '10' }] },
+			seen: { first: 'date' },
+			image: { en: 'link' },
+			backdrop: 'link',
+			link: { MyAnimeList: 'link' },
+			soundtracks: [
+				{ name: 'name', type: 'OP', artist: 'artist', youtube: 'id' },
+				{ name: 'name', type: 'ED', artist: 'artist', youtube: 'id' },
+			],
+		};
+
+		expect(emit(review)).toBe(
+			[
+				'title: review title',
+				'genres: [tag1, tag2]',
+				'alias: [alias]',
+				'verdict: verdict',
+				'rating:',
+				'  category:',
+				'    - type: 10',
+				'seen:',
+				'  first: date',
+				'image:',
+				'  en: link',
+				'backdrop: link',
+				'link:',
+				'  MyAnimeList: link',
+				'soundtracks:',
+				'  - name: name',
+				'    type: OP',
+				'    artist: artist',
+				'    youtube: id',
+				'  - name: name',
+				'    type: ED',
+				'    artist: artist',
+				'    youtube: id',
+			].join('\n'),
 		);
 	});
 });
