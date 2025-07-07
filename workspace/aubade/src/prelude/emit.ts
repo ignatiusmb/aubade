@@ -1,4 +1,4 @@
-import { FrontMatter, Primitives } from './types.js';
+import type { FrontMatter, Primitives } from './types.js';
 
 export function emit(data: FrontMatter, indent = 0): string {
 	const TAB = '  '.repeat(indent);

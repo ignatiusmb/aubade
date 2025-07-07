@@ -1,4 +1,4 @@
-import { FrontMatter } from './types.js';
+import type { FrontMatter } from './types.js';
 
 export function extract(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
