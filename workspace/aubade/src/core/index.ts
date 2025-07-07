@@ -21,7 +21,6 @@ export function parse(source: string): {
 	const stuffed = inject(crude, memory);
 
 	return {
-		// @TODO: return AST (after implementing `markdown()`)
 		body: stuffed.trim(),
 		frontmatter: Object.assign(memory, {
 			/** estimated reading time */
@@ -88,4 +87,38 @@ function compress(metadata: Record<string, any>, parent = '') {
 		else Object.assign(memo, compress(v, k));
 	}
 	return memo;
+}
+
+function meta(source: string) {
+	return {
+		source: source.trim(),
+		get words() {
+			let words = 0;
+			for (const line of source.split('\n').filter(
+				(p) => !!p && !/^[!*]/.test(p), // remove empty and not sentences
+			)) {
+				if (/^[\t\s]*<.+>/.test(line.trim())) words += 1;
+				else {
+					const count = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
+					words += count.length;
+				}
+			}
+			return words;
+		},
+	};
+}
+
+export function cue(source: string): {
+	prelude?: Record<string, any>;
+	meta: { source: string; words: number };
+	score: string; // @TODO: return the markdown AST
+} {
+	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
+	if (!match) return { meta: meta(source), score: source };
+
+	const prelude = matter(match[1].trim()) as Record<string, any>;
+	const body = source.slice(match.index + match[0].length);
+	const stuffed = inject(body, prelude);
+
+	return { prelude, meta: meta(stuffed), score: stuffed.trim() };
 }
