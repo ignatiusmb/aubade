@@ -11,6 +11,7 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 	const char = cursor.read(1);
 	// double asterisk handled by `modifier:strong`
 	if (char !== '*' && char !== '_') return null;
+	if (before === char) return null; // failed strong rule
 	if (cursor.peek(char)) return null; // immediately closed
 
 	// underscore cannot be used for emphasis inside words

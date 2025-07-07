@@ -34,6 +34,9 @@ describe('block', ({ concurrent: it }) => {
 		expect(marker('## main\n### sub').html()).toBe(
 			'<h2 id="main">main</h2>\n<h3 id="main-sub">sub</h3>',
 		);
+		expect(marker('## first\n### sub\n#### four\n## second\n### sub').html()).toBe(
+			'<h2 id="first">first</h2>\n<h3 id="first-sub">sub</h3>\n<h4 id="first-sub-four">four</h4>\n<h2 id="second">second</h2>\n<h3 id="second-sub">sub</h3>',
+		);
 	});
 
 	it('codeblock | fenced code blocks', ({ expect }) => {
