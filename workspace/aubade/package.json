@@ -35,6 +35,10 @@
 			"types": "./index.d.ts",
 			"default": "./src/compass/index.js"
 		},
+		"./conductor": {
+			"types": "./index.d.ts",
+			"default": "./src/conductor/index.js"
+		},
 		"./manifest": {
 			"types": "./index.d.ts",
 			"default": "./src/manifest/index.js"
