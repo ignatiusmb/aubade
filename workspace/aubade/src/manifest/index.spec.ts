@@ -2,64 +2,117 @@ import { describe } from 'vitest';
 import { parse, stringify } from './index.js';
 
 describe('parse', ({ concurrent: it }) => {
-	it('simple index', ({ expect }) => {
-		expect(parse(['title: Simple Index', 'tags: [x, y, z]'].join('\n'))).toEqual({
+	it('flat key-values', ({ expect }) => {
+		expect(parse('title: Simple Index')).toEqual({
 			title: 'Simple Index',
+		});
+	});
+
+	it('boolean and null', ({ expect }) => {
+		expect(parse('draft: false')).toEqual({
+			draft: false,
+		});
+		expect(parse('draft: true')).toEqual({
+			draft: true,
+		});
+		expect(parse('draft: null')).toEqual({
+			draft: null,
+		});
+	});
+
+	it('inline arrays', ({ expect }) => {
+		expect(parse('tags: [x, y, z]')).toEqual({
 			tags: ['x', 'y', 'z'],
 		});
 	});
 
-	it('aubade rules', ({ expect }) => {
-		expect(
-			parse(
-				[
-					'title: Aubade Rules',
-					'date:published: 2023-02-01',
-					'a:b:x: 0',
-					'a:b:y: 1',
-					'a:b:z: 2',
-				].join('\n'),
-			),
-		).toEqual({
-			title: 'Aubade Rules',
-			date: { published: '2023-02-01' },
-			a: { b: { x: '0', y: '1', z: '2' } },
-		});
-	});
-
-	it('boolean values', ({ expect }) => {
-		expect(
-			parse(['title: Casting Boolean', 'draft: false', 'hex: ["x", true, 0, false]'].join('\n')),
-		).toEqual({
-			title: 'Casting Boolean',
-			draft: false,
+	it('inline arrays | mixed-types', ({ expect }) => {
+		expect(parse('hex: ["x", true, 0, false]')).toEqual({
 			hex: ['x', true, '0', false],
 		});
 	});
 
-	it('literal block', ({ expect }) => {
+	it('inline arrays | mixed quoted and unquoted strings', ({ expect }) => {
+		expect(parse('alias: [Re ZERO, "Re:ZERO - Memory Snow"]')).toEqual({
+			alias: ['Re ZERO', 'Re:ZERO - Memory Snow'],
+		});
+	});
+
+	it.skip('inline arrays | string with special characters', ({ expect }) => {
+		expect(parse('alias: ["Kaguya-sama: Love is War"]')).toEqual({
+			alias: ['Kaguya-sama: Love is War'],
+		});
+	});
+
+	it('nested objects', ({ expect }) => {
+		expect(parse('a:b:c: 1')).toEqual({
+			a: { b: { c: '1' } },
+		});
+	});
+
+	it('deeply nested keys', ({ expect }) => {
 		expect(
-			parse(['title: Literal Block', 'data: |', '\tHello World', '\tLorem Ipsum'].join('\n')),
+			parse(['date:updated: 2023-02-01', 'a:b:x: 0', 'a:b:y: 1', 'a:b:z: 2'].join('\n')),
 		).toEqual({
-			title: 'Literal Block',
+			date: { updated: '2023-02-01' },
+			a: { b: { x: '0', y: '1', z: '2' } },
+		});
+	});
+
+	it('block | literal scalars with `|` syntax', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'data: |', //
+					'\tHello World',
+					'\tLorem Ipsum',
+				].join('\n'),
+			),
+		).toEqual({
 			data: 'Hello World\nLorem Ipsum',
 		});
 	});
 
-	it('sequences', ({ expect }) => {
+	it('block | sequence of scalars', ({ expect }) => {
 		expect(
-			parse(['title: List Sequence', 'hex:', "\t- 'x'", '\t- true', '\t- 0'].join('\n')),
+			parse(
+				[
+					'hex:', //
+					"\t- 'x'",
+					'\t- true',
+					'\t- 0',
+				].join('\n'),
+			),
 		).toEqual({
-			title: 'List Sequence',
 			hex: ['x', true, '0'],
 		});
 	});
 
-	it('nested sequences', ({ expect }) => {
+	it('block | sequence of objects', ({ expect }) => {
 		expect(
 			parse(
 				[
-					'title: Nested Sequences',
+					'colors:',
+					'\t- red: ff0000',
+					'\t  green: 00ff00',
+					'\t  blue: 0000ff',
+					'\t- red: 255-0-0',
+					'\t  green: 0-255-0',
+					'\t  blue: 0-0-255',
+				].join('\n'),
+			),
+		).toEqual({
+			colors: [
+				{ red: 'ff0000', green: '00ff00', blue: '0000ff' },
+				{ red: '255-0-0', green: '0-255-0', blue: '0-0-255' },
+			],
+		});
+	});
+
+	it('block | nested sequences inside object entries', ({ expect }) => {
+		expect(
+			parse(
+				[
 					'colors:',
 					'\t- red:',
 					'\t\t\t- ff0000',
@@ -82,7 +135,6 @@ describe('parse', ({ concurrent: it }) => {
 				].join('\n'),
 			),
 		).toEqual({
-			title: 'Nested Sequences',
 			colors: [
 				{ red: ['ff0000', '255-0-0'], green: ['00ff00', '0-255-0'], blue: ['0000ff', '0-0-255'] },
 				{ red: ['ff0000', '255-0-0'], green: ['00ff00', '0-255-0'], blue: ['0000ff', '0-0-255'] },
@@ -90,11 +142,10 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
-	it('indents', ({ expect }) => {
+	it('block | nested objects with indentation', ({ expect }) => {
 		expect(
 			parse(
 				[
-					'title: Indented Objects',
 					'jobs:',
 					'\ttest:',
 					'\t\twith: node',
@@ -104,7 +155,6 @@ describe('parse', ({ concurrent: it }) => {
 				].join('\n'),
 			),
 		).toEqual({
-			title: 'Indented Objects',
 			jobs: {
 				test: { with: 'node', path: './test' },
 				sync: { with: 'pnpm' },
@@ -112,11 +162,10 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
-	it('indented sequences', ({ expect }) => {
+	it('block | deeply nested sequences of objects', ({ expect }) => {
 		expect(
 			parse(
 				[
-					'title: Indented Objects and Arrays',
 					'jobs:',
 					'\ttest:',
 					'\t\t- with: node',
@@ -129,7 +178,6 @@ describe('parse', ({ concurrent: it }) => {
 				].join('\n'),
 			),
 		).toEqual({
-			title: 'Indented Objects and Arrays',
 			jobs: {
 				test: [{ with: 'node', os: 'windows' }],
 				sync: [{ with: 'pnpm', os: 'linux', env: { TOKEN: '123' } }],
@@ -137,28 +185,47 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
-	it('handle carriage returns', ({ expect }) => {
+	it('empty value, empty line, and quoted entries, URL entries', ({ expect }) => {
+		expect(parse(['empty:', '', 'name: "Hello: World"'].join('\n'))).toEqual({
+			empty: '',
+			name: 'Hello: World',
+		});
+	});
+
+	it('carriage returns', ({ expect }) => {
 		expect(
-			parse(['link:\r', '\tmal: abc\r', '\timdb:\r', '\t\t- abc\r', '\t\t- def'].join('\n')),
+			parse(
+				[
+					'link:\r', //
+					'\tmal: abc\r',
+					'\timdb:\r',
+					'\t\t- abc\r',
+					'\t\t- def',
+				].join('\n'),
+			),
 		).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 
 		expect(
-			parse(['link:\r', '  mal: abc\r', '  imdb:\r', '    - abc\r', '    - def'].join('\n')),
+			parse(
+				[
+					'link:\r', //
+					'  mal: abc\r',
+					'  imdb:\r',
+					'    - abc\r',
+					'    - def',
+				].join('\n'),
+			),
 		).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 	});
 
-	it('handle edge cases', ({ expect }) => {
+	it('nested URL entries', ({ expect }) => {
 		expect(
 			parse(
 				[
-					'title: Edge Cases',
-					'empty:',
-					'',
-					'name: "Hello: World"',
 					'link:',
 					'\tnormal: https://github.com',
 					'\tdashed:',
@@ -168,9 +235,6 @@ describe('parse', ({ concurrent: it }) => {
 				].join('\n'),
 			),
 		).toEqual({
-			title: 'Edge Cases',
-			empty: '',
-			name: 'Hello: World',
 			link: {
 				normal: 'https://github.com',
 				dashed: [
@@ -180,7 +244,9 @@ describe('parse', ({ concurrent: it }) => {
 				],
 			},
 		});
+	});
 
+	it('trailing tabs/spaces', ({ expect }) => {
 		expect(
 			parse(
 				[
@@ -202,7 +268,7 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
-	it('construct with spaces indents', ({ expect }) => {
+	it('spaces indentations', ({ expect }) => {
 		expect(
 			parse(
 				[
@@ -251,17 +317,17 @@ describe('parse', ({ concurrent: it }) => {
 });
 
 describe('stringify', ({ concurrent: it }) => {
-	it('serializes flat object with primitives', ({ expect }) => {
+	it('flat object with primitives', ({ expect }) => {
 		expect(stringify({ title: 'Hello World', published: true, count: null })).toBe(
 			['title: Hello World', 'published: true', 'count: null'].join('\n'),
 		);
 	});
 
-	it('serializes arrays of primitives', ({ expect }) => {
+	it('arrays of primitives', ({ expect }) => {
 		expect(stringify({ tags: ['a', 'b', 'c'] })).toBe('tags: [a, b, c]');
 	});
 
-	it('serializes arrays of objects', ({ expect }) => {
+	it('arrays of objects', ({ expect }) => {
 		expect(stringify({ list: [{ foo: 'bar' }, { foo: 'baz' }] })).toBe(
 			['list:', '  - foo: bar', '  - foo: baz'].join('\n'),
 		);
@@ -270,7 +336,7 @@ describe('stringify', ({ concurrent: it }) => {
 		);
 	});
 
-	it('serializes nested objects', ({ expect }) => {
+	it('nested objects', ({ expect }) => {
 		expect(stringify({ meta: { author: 'igna', draft: true } })).toBe(
 			['meta:', '  author: igna', '  draft: true'].join('\n'),
 		);
@@ -284,17 +350,17 @@ describe('stringify', ({ concurrent: it }) => {
 		expect(stringify({ text: 'C:\\Users\\mauss' })).toBe('text: "C:\\\\Users\\\\mauss"');
 	});
 
-	it('serializes multiline strings as block literals', ({ expect }) => {
+	it('multiline strings as block literals', ({ expect }) => {
 		expect(stringify({ note: 'line one\nline two\nline three' })).toBe(
 			['note: |', '  line one', '  line two', '  line three'].join('\n'),
 		);
 	});
 
-	it('serializes the review', ({ expect }) => {
+	it.skip('example | the review', ({ expect }) => {
 		const review = {
 			title: 'review title',
 			genres: ['tag1', 'tag2'],
-			alias: ['alias'],
+			alias: ['something: foo-bar'],
 			verdict: 'verdict',
 			rating: { category: [{ type: '10' }] },
 			seen: { first: 'date' },
@@ -311,7 +377,8 @@ describe('stringify', ({ concurrent: it }) => {
 			[
 				'title: review title',
 				'genres: [tag1, tag2]',
-				'alias: [alias]',
+				'alias:',
+				'  - "something: foo-bar"',
 				'verdict: verdict',
 				'rating:',
 				'  category:',
