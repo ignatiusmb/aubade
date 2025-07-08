@@ -1,4 +1,5 @@
-import { matter } from '../artisan/index.js';
+import type { Token } from '../artisan/markdown/engine.js';
+import { engrave, matter } from '../artisan/index.js';
 import { uhi } from '../utils.js';
 
 export function parse(source: string): {
@@ -89,36 +90,40 @@ function compress(metadata: Record<string, any>, parent = '') {
 	return memo;
 }
 
-function meta(source: string) {
+export function assemble(source: string): {
+	manifest?: Record<string, any>;
+	md: ReturnType<typeof engrave>;
+	meta: { body: string; words: number };
+} {
+	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
+	if (!match) {
+		const document = engrave(source);
+		const meta = { body: source, words: words(document.tokens) };
+		return { md: document, meta };
+	}
+
+	const manifest = matter(match[1].trim()) as Record<string, any>;
+	const body = source.slice(match.index + match[0].length);
+	const document = engrave(body);
 	return {
-		source: source.trim(),
-		get words() {
-			let words = 0;
-			for (const line of source.split('\n').filter(
-				(p) => !!p && !/^[!*]/.test(p), // remove empty and not sentences
-			)) {
-				if (/^[\t\s]*<.+>/.test(line.trim())) words += 1;
-				else {
-					const count = line.split(' ').filter((w) => !!w && /\w|\d/.test(w) && w.length > 1);
-					words += count.length;
-				}
-			}
-			return words;
-		},
+		manifest,
+		md: document,
+		meta: { body, words: words(document.tokens) },
 	};
 }
 
-export function cue(source: string): {
-	prelude?: Record<string, any>;
-	meta: { source: string; words: number };
-	score: string; // @TODO: return the markdown AST
-} {
-	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
-	if (!match) return { meta: meta(source), score: source };
-
-	const prelude = matter(match[1].trim()) as Record<string, any>;
-	const body = source.slice(match.index + match[0].length);
-	const stuffed = inject(body, prelude);
-
-	return { prelude, meta: meta(stuffed), score: stuffed.trim() };
+function words(tokens: Token[]): number {
+	let count = 0;
+	for (const token of tokens) {
+		switch (token.type) {
+			case 'inline:text':
+				count += token.text.split(/\s+/).length;
+				break;
+			case 'parent:paragraph':
+				count += words(token.children);
+			default:
+				break;
+		}
+	}
+	return count;
 }

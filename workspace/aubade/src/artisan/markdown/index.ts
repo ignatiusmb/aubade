@@ -9,22 +9,22 @@ export interface Options {
 	renderer?: { [T in Token as T['type']]?: Resolver<T> };
 }
 
-export function markdown({ renderer = {} }: Options = {}) {
+export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
 		'parent:html': ({ token, render }) => `<div>${token.children.map(render).join('')}</div>`,
 		'parent:heading': ({ token, render }) => {
 			const tag = `h${token.meta.level}`;
-			const attributes = Object.entries(token.attr || {})
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
+			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
+				v.length ? `${k}="${sanitize(v)}"` : [],
+			);
 			const children = token.children.map(render).join('');
-			return `<${tag} ${attributes}>${children}</${tag}>`;
+			return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
 		},
 		'parent:quote': ({ token, render }) => {
 			return `<blockquote>${token.children.map(render).join('')}</blockquote>`;
 		},
 		'block:code': ({ token, render, sanitize }) => {
-			const attributes = Object.entries(token.attr || {})
+			const attributes = Object.entries(token.attr)
 				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
 				.join(' ');
 			const children = token.children.map(render).join('\n');
@@ -38,24 +38,24 @@ export function markdown({ renderer = {} }: Options = {}) {
 		},
 		'block:break': () => `<hr />`,
 		'inline:autolink': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr || {})
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
-			return `<a ${attributes}>${sanitize(token.text || '')}</a>`;
+			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
+				v.length ? `${k}="${sanitize(v)}"` : [],
+			);
+			return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
 		},
 		'inline:code': ({ token, sanitize }) => `<code>${sanitize(token.text || '')}</code>`,
 		'inline:image': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr || {})
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
-			return `<img ${attributes} />`;
+			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
+				v.length ? `${k}="${sanitize(v)}"` : [],
+			);
+			return `<img ${attributes.join(' ')} />`;
 		},
 		'inline:link': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr || {})
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
+			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
+				v.length ? `${k}="${sanitize(v)}"` : [],
+			);
 			const children = token.children.map(render).join('');
-			return `<a ${attributes}>${children}</a>`;
+			return `<a ${attributes.join(' ')}>${children}</a>`;
 		},
 		'modifier:strong': ({ token, render }) =>
 			`<strong>${token.children.map(render).join('')}</strong>`,
@@ -72,10 +72,10 @@ export function markdown({ renderer = {} }: Options = {}) {
 	}
 
 	return (input: string) => {
-		const root = compose(input);
-		return {
-			root,
-			html: () => root.children.map(render).join('\n'),
-		};
+		const { children: tokens } = compose(input);
+		return { tokens, html: () => tokens.map(render).join('\n') };
 	};
 }
+
+export const engrave = forge();
+export { forge as markdown };

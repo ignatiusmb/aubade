@@ -1,11 +1,9 @@
 import { describe } from 'vitest';
-import { markdown } from './index.js';
-
-const marker = markdown();
+import { engrave } from './index.js';
 
 describe('spec', ({ concurrent: it }) => {
 	it.skip('#12', ({ expect }) => {
-		const { html } = marker(
+		const { html } = engrave(
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
 		);
 
@@ -18,41 +16,41 @@ describe('spec', ({ concurrent: it }) => {
 
 	it('#13', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-13
-		expect(marker('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
+		expect(engrave('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
 	});
 
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43
-		expect(marker('***').html()).toBe('<hr />');
-		expect(marker('---').html()).toBe('<hr />');
-		expect(marker('___').html()).toBe('<hr />');
-		expect(marker('***\n---\n___').html()).toBe('<hr />\n<hr />\n<hr />');
+		expect(engrave('***').html()).toBe('<hr />');
+		expect(engrave('---').html()).toBe('<hr />');
+		expect(engrave('___').html()).toBe('<hr />');
+		expect(engrave('***\n---\n___').html()).toBe('<hr />\n<hr />\n<hr />');
 	});
 
 	it('#44', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-44
-		expect(marker('+++').html()).toBe('<p>+++</p>');
+		expect(engrave('+++').html()).toBe('<p>+++</p>');
 	});
 
 	it('#45', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-45
-		expect(marker('===').html()).toBe('<p>===</p>');
+		expect(engrave('===').html()).toBe('<p>===</p>');
 	});
 
 	it('#46', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-46
-		expect(marker('**\n--\n__').html()).toBe('<p>**\n--\n__</p>');
+		expect(engrave('**\n--\n__').html()).toBe('<p>**\n--\n__</p>');
 	});
 
 	it('#58', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-58
-		expect(marker('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
+		expect(engrave('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
 	});
 
 	it.skip('#149', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-149
 		expect(
-			marker(`<table>
+			engrave(`<table>
   <tr>
     <td>
            hi
@@ -75,187 +73,187 @@ okay.`).html(),
 
 	it('#328', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-328
-		expect(marker('`code`').html()).toBe('<p><code>code</code></p>');
+		expect(engrave('`code`').html()).toBe('<p><code>code</code></p>');
 	});
 
 	it('#329', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-329
-		expect(marker('`` code with `backticks ``').html()).toBe(
+		expect(engrave('`` code with `backticks ``').html()).toBe(
 			'<p><code>code with `backticks</code></p>',
 		);
 	});
 
 	it.skip('#330', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-330
-		expect(marker('` `` `').html()).toBe('<p><code>``</code></p>');
+		expect(engrave('` `` `').html()).toBe('<p><code>``</code></p>');
 	});
 
 	it('#341', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-341
-		expect(marker('*foo`*`').html()).toBe('<p>*foo<code>*</code></p>');
+		expect(engrave('*foo`*`').html()).toBe('<p>*foo<code>*</code></p>');
 	});
 
 	it('#342', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-342
-		expect(marker('[not a `link](/foo`)').html()).toBe('<p>[not a <code>link](/foo</code>)</p>');
+		expect(engrave('[not a `link](/foo`)').html()).toBe('<p>[not a <code>link](/foo</code>)</p>');
 	});
 
 	it('#343', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-343
-		expect(marker('`<a href="`">`').html()).toBe(
+		expect(engrave('`<a href="`">`').html()).toBe(
 			'<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>',
 		);
 	});
 
 	it('#351', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-351
-		expect(marker('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
+		expect(engrave('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
 	});
 
 	it('#352', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-352
-		expect(marker('a*"foo"*').html()).toBe('<p>a*&quot;foo&quot;*</p>');
+		expect(engrave('a*"foo"*').html()).toBe('<p>a*&quot;foo&quot;*</p>');
 	});
 
 	it('#353', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-353
-		expect(marker('* a *').html()).toBe('<p>* a *</p>');
+		expect(engrave('* a *').html()).toBe('<p>* a *</p>');
 	});
 
 	it('#354', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-354
-		expect(marker('*$*alpha.').html()).toBe('<p>*$*alpha.</p>');
-		expect(marker('*£*bravo.').html()).toBe('<p>*£*bravo.</p>');
-		expect(marker('*€*charlie.').html()).toBe('<p>*€*charlie.</p>');
+		expect(engrave('*$*alpha.').html()).toBe('<p>*$*alpha.</p>');
+		expect(engrave('*£*bravo.').html()).toBe('<p>*£*bravo.</p>');
+		expect(engrave('*€*charlie.').html()).toBe('<p>*€*charlie.</p>');
 	});
 
 	it('#355', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-355
-		expect(marker('foo*bar*').html()).toBe('<p>foo<em>bar</em></p>');
+		expect(engrave('foo*bar*').html()).toBe('<p>foo<em>bar</em></p>');
 	});
 
 	it('#356', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-356
-		expect(marker('5*6*78').html()).toBe('<p>5<em>6</em>78</p>');
+		expect(engrave('5*6*78').html()).toBe('<p>5<em>6</em>78</p>');
 	});
 
 	it('#358', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-358
-		expect(marker('_ foo bar_').html()).toBe('<p>_ foo bar_</p>');
+		expect(engrave('_ foo bar_').html()).toBe('<p>_ foo bar_</p>');
 	});
 
 	it('#359', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-359
-		expect(marker('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
+		expect(engrave('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
 	});
 
 	it('#360', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-360
-		expect(marker('foo_bar_').html()).toBe('<p>foo_bar_</p>');
+		expect(engrave('foo_bar_').html()).toBe('<p>foo_bar_</p>');
 	});
 
 	it('#361', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-361
-		expect(marker('5_6_78').html()).toBe('<p>5_6_78</p>');
+		expect(engrave('5_6_78').html()).toBe('<p>5_6_78</p>');
 	});
 
 	it('#362', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-362
-		expect(marker('пристаням_стремятся_').html()).toBe('<p>пристаням_стремятся_</p>');
+		expect(engrave('пристаням_стремятся_').html()).toBe('<p>пристаням_стремятся_</p>');
 	});
 
 	it('#363', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-363
-		expect(marker('aa_"bb"_cc').html()).toBe('<p>aa_&quot;bb&quot;_cc</p>');
+		expect(engrave('aa_"bb"_cc').html()).toBe('<p>aa_&quot;bb&quot;_cc</p>');
 	});
 
 	it('#364', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-364
-		expect(marker('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
+		expect(engrave('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
 	});
 
 	it('#365', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-365
-		expect(marker('_foo*').html()).toBe('<p>_foo*</p>');
+		expect(engrave('_foo*').html()).toBe('<p>_foo*</p>');
 	});
 
 	it('#366', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-366
-		expect(marker('*foo bar *').html()).toBe('<p>*foo bar *</p>');
+		expect(engrave('*foo bar *').html()).toBe('<p>*foo bar *</p>');
 	});
 
 	it('#367', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-367
-		expect(marker('*foo bar\n*').html()).toBe('<p>*foo bar\n*</p>');
+		expect(engrave('*foo bar\n*').html()).toBe('<p>*foo bar\n*</p>');
 	});
 
 	it('#368', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-368
-		expect(marker('*(*foo)').html()).toBe('<p>*(*foo)</p>');
+		expect(engrave('*(*foo)').html()).toBe('<p>*(*foo)</p>');
 	});
 
 	it('#369', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-369
-		expect(marker('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
+		expect(engrave('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
 	});
 
 	it('#370', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-370
-		expect(marker('*foo*bar').html()).toBe('<p><em>foo</em>bar</p>');
+		expect(engrave('*foo*bar').html()).toBe('<p><em>foo</em>bar</p>');
 	});
 
 	it('#371', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-371
-		expect(marker('_foo bar _').html()).toBe('<p>_foo bar _</p>');
+		expect(engrave('_foo bar _').html()).toBe('<p>_foo bar _</p>');
 	});
 
 	it('#372', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-372
-		expect(marker('_(_foo)').html()).toBe('<p>_(_foo)</p>');
+		expect(engrave('_(_foo)').html()).toBe('<p>_(_foo)</p>');
 	});
 
 	it('#373', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-373
-		expect(marker('_(_foo_)_').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
+		expect(engrave('_(_foo_)_').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
 	});
 
 	it('#374', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-374
-		expect(marker('_foo_bar').html()).toBe('<p>_foo_bar</p>');
+		expect(engrave('_foo_bar').html()).toBe('<p>_foo_bar</p>');
 	});
 
 	it('#375', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-375
-		expect(marker('_пристаням_стремятся').html()).toBe('<p>_пристаням_стремятся</p>');
+		expect(engrave('_пристаням_стремятся').html()).toBe('<p>_пристаням_стремятся</p>');
 	});
 
 	it('#376', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-376
-		expect(marker('_foo_bar_baz_').html()).toBe('<p><em>foo_bar_baz</em></p>');
+		expect(engrave('_foo_bar_baz_').html()).toBe('<p><em>foo_bar_baz</em></p>');
 	});
 
 	it('#377', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-377
-		expect(marker('_(bar)_.').html()).toBe('<p><em>(bar)</em>.</p>');
+		expect(engrave('_(bar)_.').html()).toBe('<p><em>(bar)</em>.</p>');
 	});
 
 	it('#378', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-378
-		expect(marker('**foo bar**').html()).toBe('<p><strong>foo bar</strong></p>');
+		expect(engrave('**foo bar**').html()).toBe('<p><strong>foo bar</strong></p>');
 	});
 
 	it('#379', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-379
-		expect(marker('** foo bar**').html()).toBe('<p>** foo bar**</p>');
+		expect(engrave('** foo bar**').html()).toBe('<p>** foo bar**</p>');
 	});
 
 	it('#380', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-380
-		expect(marker('a**"foo"**').html()).toBe('<p>a**&quot;foo&quot;**</p>');
+		expect(engrave('a**"foo"**').html()).toBe('<p>a**&quot;foo&quot;**</p>');
 	});
 
 	it('#482', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-482
-		expect(marker('[link](/uri "title")').html(), '<p><a href="/uri" title="title">link</a></p>');
+		expect(engrave('[link](/uri "title")').html(), '<p><a href="/uri" title="title">link</a></p>');
 	});
 });
