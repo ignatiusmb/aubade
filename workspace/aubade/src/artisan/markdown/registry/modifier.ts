@@ -57,8 +57,8 @@ export function strong({ cursor, is, annotate }: Context): null | {
 	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
 	if (!cursor.eat('**')) return null;
 	const body = cursor.consume('**', (i) => {
-		const before = cursor.see(i - cursor.index - 2);
-		const after = cursor.see(i - cursor.index + 1);
+		const before = cursor.see(i - cursor.index - 1);
+		const after = cursor.see(i - cursor.index + 2);
 		return is['right-flanking'](before, after);
 	});
 	const invalid = body.includes('`') && cursor.peek(/`/);
