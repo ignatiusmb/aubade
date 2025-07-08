@@ -1,4 +1,4 @@
-import { matter } from '../artisan/index.js';
+import { parse as manifest } from '../manifest/index.js';
 import { uhi } from '../utils.js';
 
 export function parse(source: string): {
@@ -17,7 +17,7 @@ export function parse(source: string): {
 	if (!match) return { body: source };
 
 	const crude = source.slice(match.index + match[0].length);
-	const memory = matter(match[1].trim()) as Record<string, any>;
+	const memory = manifest(match[1].trim()) as Record<string, any>;
 	const stuffed = inject(crude, memory);
 
 	return {
