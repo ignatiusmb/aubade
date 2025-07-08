@@ -7,22 +7,17 @@ async (/* traverse */) => {
 
 	const [item] = await orchestrate('.', ({ breadcrumb: [, slug] }) => {
 		if (!slug.endsWith('.md')) return;
-		return async ({ buffer, marker, parse }) => {
-			const { body, frontmatter } = parse(buffer.toString('utf-8'));
-			if (!frontmatter) return;
+		return async ({ assemble, buffer }) => {
+			const { manifest, md, meta } = assemble(buffer.toString('utf-8'));
+			if (!manifest) return;
 			return {
-				...frontmatter,
-				hello: 'world',
-				content: marker.render(body),
+				...manifest,
+				words: meta.words,
+				content: md.html(),
 			};
 		};
 	});
 
-	expect<number>(item.estimate);
-	expect<string>(item.table[0].id);
-	expect<string>(item.table[0].title);
-	expect<number>(item.table[0].level);
-
-	expect<string>(item.hello);
+	expect<number>(item.words);
 	expect<string>(item.content);
 };
