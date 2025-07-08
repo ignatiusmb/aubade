@@ -1,11 +1,11 @@
 import * as fs from 'fs/promises';
-import { marker } from '../artisan/index.js';
-import { parse } from '../core/index.js';
+import { engrave } from '../artisan/index.js';
+import { assemble } from '../core/index.js';
 
 interface Chunk {
+	assemble: typeof assemble;
 	buffer: Buffer;
-	marker: typeof marker;
-	parse: typeof parse;
+	engrave: typeof engrave;
 	siblings: Array<{ filename: string; buffer: Promise<Buffer> }>;
 	/** register an async task to be executed in parallel with the traversal. */
 	task(fn: (tools: { fs: typeof fs }) => Promise<void>): void;
@@ -26,11 +26,10 @@ export async function orchestrate<Output extends Record<string, any>>(
 	entry: string,
 	inspect: Inspect<Output> = ({ path }) => {
 		if (!path.endsWith('.md')) return;
-		return async ({ buffer, parse }) => {
-			const { body, frontmatter } = parse(buffer.toString('utf-8'));
-			if (!frontmatter) return;
-			const result = { ...frontmatter, content: marker.render(body).trim() };
-			return result as any;
+		return async ({ assemble, buffer }) => {
+			const { manifest, md, meta } = assemble(buffer.toString('utf-8'));
+			if (!manifest) return;
+			return { ...manifest, words: meta.words, content: md.html() } as any;
 		};
 	},
 ): Promise<Output[]> {
@@ -65,9 +64,9 @@ export async function orchestrate<Output extends Record<string, any>>(
 
 			if (hydrate) {
 				const transformed = hydrate({
+					assemble,
 					buffer: await fs.readFile(path),
-					marker,
-					parse: parse,
+					engrave,
 					siblings: files.filter(({ filename }) => filename !== item.name),
 					task: (fn) => pending.push(fn({ fs })),
 				});
