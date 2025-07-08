@@ -1,9 +1,9 @@
 import { describe } from 'vitest';
-import { emit, extract } from './index.js';
+import { parse, stringify } from './index.js';
 
-describe('extract', ({ concurrent: it }) => {
+describe('parse', ({ concurrent: it }) => {
 	it('simple index', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Simple Index
 tags: [x, y, z]
@@ -17,7 +17,7 @@ tags: [x, y, z]
 	});
 
 	it('aubade rules', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Aubade Rules
 date:published: 2023-02-01
@@ -35,7 +35,7 @@ a:b:z: 2
 	});
 
 	it('boolean values', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Casting Boolean
 draft: false
@@ -51,7 +51,7 @@ hex: ["x", true, 0, false]
 	});
 
 	it('literal block', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Literal Block
 data: |
@@ -66,7 +66,7 @@ data: |
 		});
 	});
 	it('sequences', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: List Sequence
 hex:
@@ -82,7 +82,7 @@ hex:
 		});
 	});
 	it('nested sequences', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Nested Sequences
 colors:
@@ -116,7 +116,7 @@ colors:
 		});
 	});
 	it('indents', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Indented Objects
 jobs:
@@ -137,7 +137,7 @@ jobs:
 		});
 	});
 	it('indented sequences', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 title: Indented Objects and Arrays
 jobs:
@@ -162,18 +162,18 @@ jobs:
 	});
 	it('handle carriage returns', ({ expect }) => {
 		// with tabs
-		expect(extract(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`)).toEqual({
+		expect(parse(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`)).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 
 		// with spaces
-		expect(extract(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`)).toEqual({
+		expect(parse(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`)).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 	});
 	it('handle edge cases', ({ expect }) => {
 		expect(
-			extract(
+			parse(
 				`
 title: Edge Cases
 empty:
@@ -202,7 +202,7 @@ link:
 		});
 
 		expect(
-			extract(
+			parse(
 				`
 trailing:\t
 	- tab
@@ -222,7 +222,7 @@ voyager:
 		});
 	});
 	it('construct with spaces indents', ({ expect }) => {
-		const index = extract(
+		const index = parse(
 			`
 jobs:
   test:
@@ -269,42 +269,42 @@ link:
 	});
 });
 
-describe('emit', ({ concurrent: it }) => {
+describe('stringify', ({ concurrent: it }) => {
 	it('serializes flat object with primitives', ({ expect }) => {
-		expect(emit({ title: 'Hello World', published: true, count: null })).toBe(
+		expect(stringify({ title: 'Hello World', published: true, count: null })).toBe(
 			['title: Hello World', 'published: true', 'count: null'].join('\n'),
 		);
 	});
 
 	it('serializes arrays of primitives', ({ expect }) => {
-		expect(emit({ tags: ['a', 'b', 'c'] })).toBe('tags: [a, b, c]');
+		expect(stringify({ tags: ['a', 'b', 'c'] })).toBe('tags: [a, b, c]');
 	});
 
 	it('serializes arrays of objects', ({ expect }) => {
-		expect(emit({ list: [{ foo: 'bar' }, { foo: 'baz' }] })).toBe(
+		expect(stringify({ list: [{ foo: 'bar' }, { foo: 'baz' }] })).toBe(
 			['list:', '  - foo: bar', '  - foo: baz'].join('\n'),
 		);
-		expect(emit({ list: [{ foo: 'bar', bar: 'baz' }] })).toBe(
+		expect(stringify({ list: [{ foo: 'bar', bar: 'baz' }] })).toBe(
 			['list:', '  - foo: bar', '    bar: baz'].join('\n'),
 		);
 	});
 
 	it('serializes nested objects', ({ expect }) => {
-		expect(emit({ meta: { author: 'igna', draft: true } })).toBe(
+		expect(stringify({ meta: { author: 'igna', draft: true } })).toBe(
 			['meta:', '  author: igna', '  draft: true'].join('\n'),
 		);
 	});
 
 	it('quotes strings with special characters', ({ expect }) => {
-		expect(emit({ title: 'a: b', note: ' needs quotes ' })).toBe(
+		expect(stringify({ title: 'a: b', note: ' needs quotes ' })).toBe(
 			['title: "a: b"', 'note: " needs quotes "'].join('\n'),
 		);
-		expect(emit({ text: 'say "hi"' })).toBe('text: "say \\"hi\\""');
-		expect(emit({ text: 'C:\\Users\\mauss' })).toBe('text: "C:\\\\Users\\\\mauss"');
+		expect(stringify({ text: 'say "hi"' })).toBe('text: "say \\"hi\\""');
+		expect(stringify({ text: 'C:\\Users\\mauss' })).toBe('text: "C:\\\\Users\\\\mauss"');
 	});
 
 	it('serializes multiline strings as block literals', ({ expect }) => {
-		expect(emit({ note: 'line one\nline two\nline three' })).toBe(
+		expect(stringify({ note: 'line one\nline two\nline three' })).toBe(
 			['note: |', '  line one', '  line two', '  line three'].join('\n'),
 		);
 	});
@@ -326,7 +326,7 @@ describe('emit', ({ concurrent: it }) => {
 			],
 		};
 
-		expect(emit(review)).toBe(
+		expect(stringify(review)).toBe(
 			[
 				'title: review title',
 				'genres: [tag1, tag2]',
