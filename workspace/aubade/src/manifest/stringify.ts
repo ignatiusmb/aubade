@@ -1,6 +1,6 @@
 import type { FrontMatter, Primitives } from './types.js';
 
-export function emit(data: FrontMatter, indent = 0): string {
+export function stringify(data: FrontMatter, indent = 0): string {
 	const TAB = '  '.repeat(indent);
 	const items = Object.entries(data).map(([key, value]) => {
 		if (Array.isArray(value)) {
@@ -13,7 +13,7 @@ export function emit(data: FrontMatter, indent = 0): string {
 					return `${TAB}- ${format(v)}`;
 				}
 				return modify(
-					emit(v, indent + 1),
+					stringify(v, indent + 1),
 					(line, i) => `${'  '.repeat(indent + 1)}${i === 0 ? '- ' : '  '}${line.trimStart()}`,
 				);
 			});
@@ -21,7 +21,7 @@ export function emit(data: FrontMatter, indent = 0): string {
 		}
 
 		if (typeof value === 'object' && value != null) {
-			return `${TAB}${key}:\n${emit(value, indent + 1)}`;
+			return `${TAB}${key}:\n${stringify(value, indent + 1)}`;
 		}
 
 		if (typeof value === 'string' && value.includes('\n')) {

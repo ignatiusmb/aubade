@@ -1,6 +1,6 @@
 import type { FrontMatter } from './types.js';
 
-export function extract(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
+export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
 	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
 
@@ -8,7 +8,7 @@ export function extract(raw: string, memo: Record<string, any> = {}): FrontMatte
 	let match: null | RegExpExecArray;
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
-		const data = extract(outdent(value), memo[key]);
+		const data = parse(outdent(value), memo[key]);
 		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
 		else memo[key] = { ...memo[key], ...data };
 	}
@@ -23,7 +23,7 @@ export function extract(raw: string, memo: Record<string, any> = {}): FrontMatte
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2)),
 			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => extract(outdent(` ${v}`)));
+			return tabbed.map((v) => parse(outdent(` ${v}`)));
 		}
 		case '[': {
 			const pruned = cleaned.slice(1, -1);
