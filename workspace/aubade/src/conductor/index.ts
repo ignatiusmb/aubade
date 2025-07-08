@@ -1,7 +1,6 @@
 import * as fs from 'fs/promises';
 import { marker } from '../artisan/index.js';
 import { parse } from '../core/index.js';
-import { catenate } from './utils.js';
 
 interface Chunk {
 	buffer: Buffer;
@@ -23,7 +22,7 @@ type Falsy = false | null | undefined;
 interface Inspect<Output extends Record<string, any>> {
 	(options: Options): Falsy | ((chunk: Chunk) => Promise<Falsy | Output>);
 }
-export async function assemble<Output extends Record<string, any>>(
+export async function orchestrate<Output extends Record<string, any>>(
 	entry: string,
 	inspect: Inspect<Output> = ({ path }) => {
 		if (!path.endsWith('.md')) return;
@@ -80,4 +79,23 @@ export async function assemble<Output extends Record<string, any>>(
 	await scan(entry); // await for the initial scan to complete
 	while (pending.length) await Promise.all(pending.splice(0));
 	return (await Promise.all(results)).filter((i) => !!i);
+}
+
+function catenate(...paths: string[]): string {
+	if (!paths.length) return '.';
+	const index = paths[0].replace(/\\/g, '/').trim();
+	if (paths.length === 1 && index === '') return '.';
+	const parts = index.replace(/[/]*$/g, '').split('/');
+	if (parts[0] === '') parts.shift();
+
+	for (let i = 1; i < paths.length; i += 1) {
+		const part = paths[i].replace(/\\/g, '/').trim();
+		for (const slice of part.split('/')) {
+			if (slice === '.') continue;
+			if (slice === '..') parts.pop();
+			else if (slice) parts.push(slice);
+		}
+	}
+
+	return (index[0] === '/' ? '/' : '') + parts.join('/');
 }

@@ -1,11 +1,11 @@
-import { assemble } from './index.js';
+import { orchestrate } from './index.js';
 
 declare function expect<T>(v: T): void;
 
 async (/* traverse */) => {
-	expect<Record<string, any>>(await assemble('.'));
+	expect<Record<string, any>>(await orchestrate('.'));
 
-	const [item] = await assemble('.', ({ breadcrumb: [, slug] }) => {
+	const [item] = await orchestrate('.', ({ breadcrumb: [, slug] }) => {
 		if (!slug.endsWith('.md')) return;
 		return async ({ buffer, marker, parse }) => {
 			const { body, frontmatter } = parse(buffer.toString('utf-8'));
