@@ -95,6 +95,31 @@ export interface Context {
 	annotate: typeof annotate;
 }
 
+const is: Context['is'] = {
+	'left-flanking'(before, after) {
+		return (
+			!is.whitespace(after) &&
+			(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
+		);
+	},
+	'right-flanking'(before, after) {
+		return (
+			!is.whitespace(before) &&
+			(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
+		);
+	},
+
+	alphanumeric(char) {
+		return /\p{L}|\p{N}|_/u.test(char);
+	},
+	punctuation(char) {
+		return /\p{P}|\p{S}/u.test(char);
+	},
+	whitespace(char) {
+		return /\p{Zs}/u.test(char) || /\s/.test(char);
+	},
+};
+
 function contextualize(source: string, stack: Token[]): Context {
 	let pointer = 0;
 
@@ -164,31 +189,6 @@ function contextualize(source: string, stack: Token[]): Context {
 			while (pointer < source.length && /\s/.test(source[pointer])) {
 				pointer++;
 			}
-		},
-	};
-
-	const is: Context['is'] = {
-		'left-flanking'(before, after) {
-			return (
-				!is.whitespace(after) &&
-				(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
-			);
-		},
-		'right-flanking'(before, after) {
-			return (
-				!is.whitespace(before) &&
-				(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
-			);
-		},
-
-		alphanumeric(char) {
-			return /\p{L}|\p{N}|_/u.test(char);
-		},
-		punctuation(char) {
-			return /\p{P}|\p{S}/u.test(char);
-		},
-		whitespace(char) {
-			return /\p{Zs}/u.test(char) || /\s/.test(char);
 		},
 	};
 

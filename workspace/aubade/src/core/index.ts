@@ -1,5 +1,6 @@
 import type { Token } from '../artisan/markdown/engine.js';
-import { engrave, matter } from '../artisan/index.js';
+import { engrave } from '../artisan/index.js';
+import { parse as manifest } from '../manifest/index.js';
 import { uhi } from '../utils.js';
 
 export function parse(source: string): {
@@ -18,7 +19,7 @@ export function parse(source: string): {
 	if (!match) return { body: source };
 
 	const crude = source.slice(match.index + match[0].length);
-	const memory = matter(match[1].trim()) as Record<string, any>;
+	const memory = manifest(match[1].trim()) as Record<string, any>;
 	const stuffed = inject(crude, memory);
 
 	return {
@@ -102,11 +103,10 @@ export function assemble(source: string): {
 		return { md: document, meta };
 	}
 
-	const manifest = matter(match[1].trim()) as Record<string, any>;
 	const body = source.slice(match.index + match[0].length);
 	const document = engrave(body);
 	return {
-		manifest,
+		manifest: manifest(match[1].trim()) as Record<string, any>,
 		md: document,
 		meta: { body, words: words(document.tokens) },
 	};

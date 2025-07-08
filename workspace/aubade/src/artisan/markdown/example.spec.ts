@@ -252,6 +252,37 @@ okay.`).html(),
 		expect(engrave('a**"foo"**').html()).toBe('<p>a**&quot;foo&quot;**</p>');
 	});
 
+	it('#381', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-381
+		expect(marker('foo**bar**').html()).toBe('<p>foo<strong>bar</strong></p>');
+	});
+
+	// 382-390 is N/A
+
+	it('#391', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-391
+		expect(marker('**foo bar **').html()).toBe('<p>**foo bar **</p>');
+	});
+
+	it('#392', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-392
+		expect(marker('**(**foo)').html()).toBe('<p>**(**foo)</p>');
+	});
+
+	it('#393', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-393
+		expect(marker('*(**foo**)*').html()).toBe('<p><em>(<strong>foo</strong>)</em></p>');
+	});
+
+	it.skip('#394', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-394
+		expect(
+			marker('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**').html(),
+		).toBe(
+			'<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>',
+		);
+	});
+
 	it('#482', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-482
 		expect(engrave('[link](/uri "title")').html(), '<p><a href="/uri" title="title">link</a></p>');
