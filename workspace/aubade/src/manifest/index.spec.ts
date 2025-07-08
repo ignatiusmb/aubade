@@ -3,31 +3,24 @@ import { parse, stringify } from './index.js';
 
 describe('parse', ({ concurrent: it }) => {
 	it('simple index', ({ expect }) => {
-		const index = parse(
-			`
-title: Simple Index
-tags: [x, y, z]
-		`.trim(),
-		);
-
-		expect(index).toEqual({
+		expect(parse(['title: Simple Index', 'tags: [x, y, z]'].join('\n'))).toEqual({
 			title: 'Simple Index',
 			tags: ['x', 'y', 'z'],
 		});
 	});
 
 	it('aubade rules', ({ expect }) => {
-		const index = parse(
-			`
-title: Aubade Rules
-date:published: 2023-02-01
-a:b:x: 0
-a:b:y: 1
-a:b:z: 2
-		`.trim(),
-		);
-
-		expect(index).toEqual({
+		expect(
+			parse(
+				[
+					'title: Aubade Rules',
+					'date:published: 2023-02-01',
+					'a:b:x: 0',
+					'a:b:y: 1',
+					'a:b:z: 2',
+				].join('\n'),
+			),
+		).toEqual({
 			title: 'Aubade Rules',
 			date: { published: '2023-02-01' },
 			a: { b: { x: '0', y: '1', z: '2' } },
@@ -35,15 +28,9 @@ a:b:z: 2
 	});
 
 	it('boolean values', ({ expect }) => {
-		const index = parse(
-			`
-title: Casting Boolean
-draft: false
-hex: ["x", true, 0, false]
-		`.trim(),
-		);
-
-		expect(index).toEqual({
+		expect(
+			parse(['title: Casting Boolean', 'draft: false', 'hex: ["x", true, 0, false]'].join('\n')),
+		).toEqual({
 			title: 'Casting Boolean',
 			draft: false,
 			hex: ['x', true, '0', false],
@@ -51,63 +38,50 @@ hex: ["x", true, 0, false]
 	});
 
 	it('literal block', ({ expect }) => {
-		const index = parse(
-			`
-title: Literal Block
-data: |
-	Hello World
-	Lorem Ipsum
-		`.trim(),
-		);
-
-		expect(index).toEqual({
+		expect(
+			parse(['title: Literal Block', 'data: |', '\tHello World', '\tLorem Ipsum'].join('\n')),
+		).toEqual({
 			title: 'Literal Block',
 			data: 'Hello World\nLorem Ipsum',
 		});
 	});
-	it('sequences', ({ expect }) => {
-		const index = parse(
-			`
-title: List Sequence
-hex:
-	- 'x'
-	- true
-	- 0
-		`.trim(),
-		);
 
-		expect(index).toEqual({
+	it('sequences', ({ expect }) => {
+		expect(
+			parse(['title: List Sequence', 'hex:', "\t- 'x'", '\t- true', '\t- 0'].join('\n')),
+		).toEqual({
 			title: 'List Sequence',
 			hex: ['x', true, '0'],
 		});
 	});
-	it('nested sequences', ({ expect }) => {
-		const index = parse(
-			`
-title: Nested Sequences
-colors:
-	- red:
-			- ff0000
-			- 255-0-0
-		green:
-			- 00ff00
-			- 0-255-0
-		blue:
-			- 0000ff
-			- 0-0-255
-	- red:
-			- ff0000
-			- 255-0-0
-		green:
-			- 00ff00
-			- 0-255-0
-		blue:
-			- 0000ff
-			- 0-0-255
-		`.trim(),
-		);
 
-		expect(index).toEqual({
+	it('nested sequences', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'title: Nested Sequences',
+					'colors:',
+					'\t- red:',
+					'\t\t\t- ff0000',
+					'\t\t\t- 255-0-0',
+					'\t\tgreen:',
+					'\t\t\t- 00ff00',
+					'\t\t\t- 0-255-0',
+					'\t\tblue:',
+					'\t\t\t- 0000ff',
+					'\t\t\t- 0-0-255',
+					'\t- red:',
+					'\t\t\t- ff0000',
+					'\t\t\t- 255-0-0',
+					'\t\tgreen:',
+					'\t\t\t- 00ff00',
+					'\t\t\t- 0-255-0',
+					'\t\tblue:',
+					'\t\t\t- 0000ff',
+					'\t\t\t- 0-0-255',
+				].join('\n'),
+			),
+		).toEqual({
 			title: 'Nested Sequences',
 			colors: [
 				{ red: ['ff0000', '255-0-0'], green: ['00ff00', '0-255-0'], blue: ['0000ff', '0-0-255'] },
@@ -115,20 +89,21 @@ colors:
 			],
 		});
 	});
-	it('indents', ({ expect }) => {
-		const index = parse(
-			`
-title: Indented Objects
-jobs:
-	test:
-		with: node
-		path: ./test
-	sync:
-		with: pnpm
-		`.trim(),
-		);
 
-		expect(index).toEqual({
+	it('indents', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'title: Indented Objects',
+					'jobs:',
+					'\ttest:',
+					'\t\twith: node',
+					'\t\tpath: ./test',
+					'\tsync:',
+					'\t\twith: pnpm',
+				].join('\n'),
+			),
+		).toEqual({
 			title: 'Indented Objects',
 			jobs: {
 				test: { with: 'node', path: './test' },
@@ -136,23 +111,24 @@ jobs:
 			},
 		});
 	});
-	it('indented sequences', ({ expect }) => {
-		const index = parse(
-			`
-title: Indented Objects and Arrays
-jobs:
-	test:
-		- with: node
-			os: windows
-	sync:
-		- with: pnpm
-			os: linux
-			env:
-				TOKEN: 123
-		`.trim(),
-		);
 
-		expect(index).toEqual({
+	it('indented sequences', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'title: Indented Objects and Arrays',
+					'jobs:',
+					'\ttest:',
+					'\t\t- with: node',
+					'\t\t\tos: windows',
+					'\tsync:',
+					'\t\t- with: pnpm',
+					'\t\t\tos: linux',
+					'\t\t\tenv:',
+					'\t\t\t\tTOKEN: 123',
+				].join('\n'),
+			),
+		).toEqual({
 			title: 'Indented Objects and Arrays',
 			jobs: {
 				test: [{ with: 'node', os: 'windows' }],
@@ -160,32 +136,36 @@ jobs:
 			},
 		});
 	});
+
 	it('handle carriage returns', ({ expect }) => {
-		// with tabs
-		expect(parse(`link:\r\n\tmal: abc\r\n\timdb:\r\n\t\t- abc\r\n\t\t- def`)).toEqual({
+		expect(
+			parse(['link:\r', '\tmal: abc\r', '\timdb:\r', '\t\t- abc\r', '\t\t- def'].join('\n')),
+		).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 
-		// with spaces
-		expect(parse(`link:\r\n  mal: abc\r\n  imdb:\r\n    - abc\r\n    - def`)).toEqual({
+		expect(
+			parse(['link:\r', '  mal: abc\r', '  imdb:\r', '    - abc\r', '    - def'].join('\n')),
+		).toEqual({
 			link: { mal: 'abc', imdb: ['abc', 'def'] },
 		});
 	});
+
 	it('handle edge cases', ({ expect }) => {
 		expect(
 			parse(
-				`
-title: Edge Cases
-empty:
-
-name: "Hello: World"
-link:
-	normal: https://github.com
-	dashed:
-		- https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower
-		- https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly
-		- https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song
-			`.trim(),
+				[
+					'title: Edge Cases',
+					'empty:',
+					'',
+					'name: "Hello: World"',
+					'link:',
+					'\tnormal: https://github.com',
+					'\tdashed:',
+					'\t\t- https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower',
+					'\t\t- https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly',
+					'\t\t- https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song',
+				].join('\n'),
 			),
 		).toEqual({
 			title: 'Edge Cases',
@@ -203,16 +183,16 @@ link:
 
 		expect(
 			parse(
-				`
-trailing:\t
-	- tab
-invisible: 
-	- trailing space
-multiple:\t\t\t
-	- tabs
-voyager:   
-	- multiple space
-			`.trim(),
+				[
+					'trailing:\t',
+					'\t- tab',
+					'invisible: ',
+					'\t- trailing space',
+					'multiple:\t\t\t',
+					'\t- tabs',
+					'voyager:   ',
+					'\t- multiple space',
+				].join('\n'),
 			),
 		).toEqual({
 			trailing: ['tab'],
@@ -221,34 +201,35 @@ voyager:
 			voyager: ['multiple space'],
 		});
 	});
+
 	it('construct with spaces indents', ({ expect }) => {
-		const index = parse(
-			`
-jobs:
-  test:
-    with: node
-    path: ./test
-    cache:
-      - ./.cache
-      - ~/.cache
-      - /tmp/cache
-  sync:
-    - with: npm
-      os: linux
-    - with: pnpm
-      os: windows
-
-link:
-  github: https://github.com
-  youtube: https://youtube.com
-  search-engines:
-    - https://duckduckgo.com
-    - https://google.com
-    - https://bing.com
-    `.trim(),
-		);
-
-		expect(index).toEqual({
+		expect(
+			parse(
+				[
+					'jobs:',
+					'  test:',
+					'    with: node',
+					'    path: ./test',
+					'    cache:',
+					'      - ./.cache',
+					'      - ~/.cache',
+					'      - /tmp/cache',
+					'  sync:',
+					'    - with: npm',
+					'      os: linux',
+					'    - with: pnpm',
+					'      os: windows',
+					'',
+					'link:',
+					'  github: https://github.com',
+					'  youtube: https://youtube.com',
+					'  search-engines:',
+					'    - https://duckduckgo.com',
+					'    - https://google.com',
+					'    - https://bing.com',
+				].join('\n'),
+			),
+		).toEqual({
 			jobs: {
 				test: {
 					with: 'node',
