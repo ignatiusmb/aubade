@@ -1,3 +1,5 @@
+import type { Token } from '../artisan/markdown/engine.js';
+import { engrave } from '../artisan/index.js';
 import { parse as manifest } from '../manifest/index.js';
 import { uhi } from '../utils.js';
 
@@ -21,7 +23,6 @@ export function parse(source: string): {
 	const stuffed = inject(crude, memory);
 
 	return {
-		// @TODO: return AST (after implementing `markdown()`)
 		body: stuffed.trim(),
 		frontmatter: Object.assign(memory, {
 			/** estimated reading time */
@@ -88,4 +89,41 @@ function compress(metadata: Record<string, any>, parent = '') {
 		else Object.assign(memo, compress(v, k));
 	}
 	return memo;
+}
+
+export function assemble(source: string): {
+	manifest?: Record<string, any>;
+	md: ReturnType<typeof engrave>;
+	meta: { body: string; words: number };
+} {
+	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
+	if (!match) {
+		const document = engrave(source);
+		const meta = { body: source, words: words(document.tokens) };
+		return { md: document, meta };
+	}
+
+	const body = source.slice(match.index + match[0].length);
+	const document = engrave(body);
+	return {
+		manifest: manifest(match[1].trim()) as Record<string, any>,
+		md: document,
+		meta: { body, words: words(document.tokens) },
+	};
+}
+
+function words(tokens: Token[]): number {
+	let count = 0;
+	for (const token of tokens) {
+		switch (token.type) {
+			case 'inline:text':
+				count += token.text.split(/\s+/).length;
+				break;
+			case 'parent:paragraph':
+				count += words(token.children);
+			default:
+				break;
+		}
+	}
+	return count;
 }
