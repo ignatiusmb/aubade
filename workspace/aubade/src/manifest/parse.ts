@@ -1,4 +1,4 @@
-import type { FrontMatter } from './types.js';
+import type { FrontMatter, Primitives } from './types.js';
 
 export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	raw = raw.trim();
@@ -7,11 +7,21 @@ export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[
 	if (raw.length > 2) {
 		const start = raw[0];
 		const end = raw[raw.length - 1];
-		if (start === end && (end === '"' || end === "'")) {
-			return raw.slice(1, -1);
-		}
+		if (start === end && (end === '"' || end === "'")) return raw.slice(1, -1);
+
 		if (start === '[' && end === ']') {
-			return raw.slice(1, -1).split(',').map(coerce);
+			const result: Primitives[] = [];
+			let current = '';
+			let quoted: '"' | "'" | null = null;
+			let escaped = false;
+			for (const char of raw.slice(1, -1)) {
+				quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
+				escaped = !escaped && char === '\\';
+				if (!quoted && char === ',') result.push(coerce(current));
+				current = quoted || escaped || char !== ',' ? current + char : '';
+			}
+			if (current) result.push(coerce(current));
+			return result;
 		}
 	}
 
@@ -33,14 +43,13 @@ export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[
 			const tabbed = sequence.map((v) =>
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2)),
 			);
-			// @ts-expect-error - `FrontMatter` is assignable to itself
-			return tabbed.map((v) => parse(outdent(` ${v}`)));
+			return tabbed.map((v) => parse(outdent(` ${v}`))) as FrontMatter[];
 		}
 		case '|': {
 			return outdent(cleaned.slice(1).replace('\n', ''));
 		}
 		default: {
-			return coerce(cleaned.trim());
+			return coerce(cleaned);
 		}
 	}
 }
