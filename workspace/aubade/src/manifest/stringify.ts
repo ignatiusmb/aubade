@@ -35,10 +35,11 @@ export function stringify(data: FrontMatter, indent = 0): string {
 }
 
 function format(value: Primitives): string {
+	value = String(value).trim();
 	if (value === null) return 'null';
 	if (typeof value === 'boolean') return value ? 'true' : 'false';
 
-	if (/[:{}\[\],&*#?|<>=!%@\\"]/.test(value) || /^\s|\s$/.test(value)) {
+	if (/[:{}\[\],&*#?|<>=!%@\\"]/.test(value) && !value.includes(':/')) {
 		return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 	}
 
