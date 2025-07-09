@@ -42,6 +42,9 @@ describe('parse', ({ concurrent: it }) => {
 		expect(parse('alias: ["Kaguya-sama: Love is War"]')).toEqual({
 			alias: ['Kaguya-sama: Love is War'],
 		});
+		expect(parse('alias: [first thing, "Hello, World", third]')).toEqual({
+			alias: ['first thing', 'Hello, World', 'third'],
+		});
 	});
 
 	it('nested objects', ({ expect }) => {
