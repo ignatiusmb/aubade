@@ -38,7 +38,7 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
-	it.skip('inline arrays | string with special characters', ({ expect }) => {
+	it('inline arrays | string with special characters', ({ expect }) => {
 		expect(parse('alias: ["Kaguya-sama: Love is War"]')).toEqual({
 			alias: ['Kaguya-sama: Love is War'],
 		});
@@ -77,14 +77,19 @@ describe('parse', ({ concurrent: it }) => {
 		expect(
 			parse(
 				[
-					'hex:', //
+					'values:',
 					"\t- 'x'",
 					'\t- true',
 					'\t- 0',
+					'something:',
+					'\t- random',
+					'\t- ', // empty
+					'\t- 1',
 				].join('\n'),
 			),
 		).toEqual({
-			hex: ['x', true, '0'],
+			values: ['x', true, '0'],
+			something: ['random', '', '1'],
 		});
 	});
 
