@@ -1,8 +1,19 @@
 import type { FrontMatter } from './types.js';
 
 export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
-	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw.trim());
-	if (/^(".*"|'.*')$/.test(raw.trim())) return raw.trim().slice(1, -1);
+	raw = raw.trim();
+
+	if (!/[:\-\[\]|#]/gm.test(raw)) return coerce(raw);
+	if (raw.length > 2) {
+		const start = raw[0];
+		const end = raw[raw.length - 1];
+		if (start === end && (end === '"' || end === "'")) {
+			return raw.slice(1, -1);
+		}
+		if (start === '[' && end === ']') {
+			return raw.slice(1, -1).split(',').map(coerce);
+		}
+	}
 
 	const PATTERN = /(^[^:\s]+):(?!\/)\r?\n?([\s\S]*?(?=^\S)|[\s\S]*$)/gm;
 	let match: null | RegExpExecArray;
@@ -24,10 +35,6 @@ export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[
 			);
 			// @ts-expect-error - `FrontMatter` is assignable to itself
 			return tabbed.map((v) => parse(outdent(` ${v}`)));
-		}
-		case '[': {
-			const pruned = cleaned.slice(1, -1);
-			return pruned.split(',').map(coerce);
 		}
 		case '|': {
 			return outdent(cleaned.slice(1).replace('\n', ''));
