@@ -8,6 +8,12 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
+	it('string with special characters', ({ expect }) => {
+		expect(parse('date: "2025-07-09T14:55:10+07:00"')).toEqual({
+			date: '2025-07-09T14:55:10+07:00',
+		});
+	});
+
 	it('boolean and null', ({ expect }) => {
 		expect(parse('draft: false')).toEqual({
 			draft: false,
@@ -351,8 +357,8 @@ describe('stringify', ({ concurrent: it }) => {
 	});
 
 	it('quotes strings with special characters', ({ expect }) => {
-		expect(stringify({ title: 'a: b', note: ' needs quotes ' })).toBe(
-			['title: "a: b"', 'note: " needs quotes "'].join('\n'),
+		expect(stringify({ title: 'a: b', note: ' trimmed ' })).toBe(
+			['title: "a: b"', 'note: trimmed'].join('\n'),
 		);
 		expect(stringify({ text: 'say "hi"' })).toBe('text: "say \\"hi\\""');
 		expect(stringify({ text: 'C:\\Users\\mauss' })).toBe('text: "C:\\\\Users\\\\mauss"');
@@ -364,7 +370,7 @@ describe('stringify', ({ concurrent: it }) => {
 		);
 	});
 
-	it.skip('example | the review', ({ expect }) => {
+	it('example | the review', ({ expect }) => {
 		const review = {
 			title: 'review title',
 			genres: ['tag1', 'tag2'],
@@ -373,8 +379,8 @@ describe('stringify', ({ concurrent: it }) => {
 			rating: { category: [{ type: '10' }] },
 			seen: { first: 'date' },
 			image: { en: 'link' },
-			backdrop: 'link',
-			link: { MyAnimeList: 'link' },
+			backdrop: 'https://www.themoviedb.org',
+			link: { MyAnimeList: 'https://myanimelist.net/anime' },
 			soundtracks: [
 				{ name: 'name', type: 'OP', artist: 'artist', youtube: 'id' },
 				{ name: 'name', type: 'ED', artist: 'artist', youtube: 'id' },
@@ -385,8 +391,7 @@ describe('stringify', ({ concurrent: it }) => {
 			[
 				'title: review title',
 				'genres: [tag1, tag2]',
-				'alias:',
-				'  - "something: foo-bar"',
+				'alias: ["something: foo-bar"]',
 				'verdict: verdict',
 				'rating:',
 				'  category:',
@@ -395,9 +400,9 @@ describe('stringify', ({ concurrent: it }) => {
 				'  first: date',
 				'image:',
 				'  en: link',
-				'backdrop: link',
+				'backdrop: https://www.themoviedb.org',
 				'link:',
-				'  MyAnimeList: link',
+				'  MyAnimeList: https://myanimelist.net/anime',
 				'soundtracks:',
 				'  - name: name',
 				'    type: OP',
