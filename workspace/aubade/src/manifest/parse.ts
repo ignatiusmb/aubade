@@ -9,7 +9,7 @@ export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[
 	while ((match = PATTERN.exec(raw))) {
 		const [, key, value] = match;
 		const data = parse(outdent(value), memo[key]);
-		if (Array.isArray(data) || typeof data !== 'object') memo[key] = data;
+		if (data === null || Array.isArray(data) || typeof data !== 'object') memo[key] = data;
 		else memo[key] = { ...memo[key], ...data };
 	}
 
