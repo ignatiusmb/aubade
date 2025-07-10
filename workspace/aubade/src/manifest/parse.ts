@@ -1,4 +1,8 @@
-import type { FrontMatter, Primitives } from './types.js';
+type Primitives = string | boolean | null;
+
+export interface FrontMatter {
+	[key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[];
+}
 
 export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	raw = raw.trim();
