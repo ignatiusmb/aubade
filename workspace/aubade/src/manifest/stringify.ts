@@ -1,8 +1,8 @@
-import type { FrontMatter, Primitives } from './types.js';
-
-export function stringify(data: FrontMatter, indent = 0): string {
+export function stringify(data: object, indent = 0): string {
 	const TAB = '  '.repeat(indent);
 	const items = Object.entries(data).map(([key, value]) => {
+		if (value === undefined) return undefined;
+
 		if (Array.isArray(value)) {
 			if (value.every((v) => typeof v === 'string' || typeof v === 'boolean' || v === null)) {
 				return `${TAB}${key}: [${value.map(format).join(', ')}]`;
@@ -31,18 +31,14 @@ export function stringify(data: FrontMatter, indent = 0): string {
 		return `${TAB}${key}: ${format(value)}`;
 	});
 
-	return items.join('\n');
+	return items.filter(Boolean).join('\n');
 }
 
-function format(value: Primitives): string {
-	value = String(value).trim();
-	if (value === null) return 'null';
-	if (typeof value === 'boolean') return value ? 'true' : 'false';
-
+function format(input: unknown): string {
+	const value = String(input).trim();
 	if (/[:{}\[\],&*#?|<>=!%@\\"]/.test(value) && !value.includes(':/')) {
 		return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 	}
-
 	return value;
 }
 

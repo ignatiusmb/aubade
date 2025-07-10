@@ -331,6 +331,20 @@ describe('parse', ({ concurrent: it }) => {
 });
 
 describe('stringify', ({ concurrent: it }) => {
+	it('empty object', ({ expect }) => {
+		expect(stringify({})).toBe('');
+	});
+
+	it('empty value', ({ expect }) => {
+		expect(stringify({ empty: '' })).toBe('empty: ');
+	});
+
+	it('skip undefined values', ({ expect }) => {
+		expect(stringify({ title: 'foo', draft: undefined, description: 'bar' })).toBe(
+			['title: foo', 'description: bar'].join('\n'),
+		);
+	});
+
 	it('flat object with primitives', ({ expect }) => {
 		expect(stringify({ title: 'Hello World', published: true, count: null })).toBe(
 			['title: Hello World', 'published: true', 'count: null'].join('\n'),
