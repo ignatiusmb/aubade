@@ -1,6 +1,6 @@
 type Primitives = string | boolean | null;
 
-interface FrontMatter {
+export interface FrontMatter {
 	[key: string]: Primitives | Primitives[] | FrontMatter | FrontMatter[];
 }
 
