@@ -3,12 +3,15 @@ import { parse, stringify } from './index.js';
 declare function expect<T>(v: T): void;
 
 (/* parse */) => {
-	// expect<object>(parse(''));
+	// const castable: Record<string, any> = parse('');
+	const castable = parse('') as Record<string, any>;
+	expect<object>(castable);
 };
 
 (/* stringify */) => {
 	expect<string>(stringify({}));
 
+	// @ts-expect-error - fix leaky implementation
 	stringify(parse(''));
 	stringify({ hello: 'world', foo: ['bar', 'baz'], nested: { key: 'value' } });
 	stringify({} as Record<string, any>);

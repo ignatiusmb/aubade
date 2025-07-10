@@ -243,18 +243,18 @@ describe('parse', ({ concurrent: it }) => {
 					'link:',
 					'\tnormal: https://github.com',
 					'\tdashed:',
-					'\t\t- https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower',
-					'\t\t- https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly',
-					'\t\t- https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song',
+					'\t\t- https://myanimelist.net/anime/25537',
+					'\t\t- https://myanimelist.net/anime/33049',
+					'\t\t- https://myanimelist.net/anime/33050',
 				].join('\n'),
 			),
 		).toEqual({
 			link: {
 				normal: 'https://github.com',
 				dashed: [
-					'https://myanimelist.net/anime/25537/Fate_stay_night_Movie__Heavens_Feel_-_I_Presage_Flower',
-					'https://myanimelist.net/anime/33049/Fate_stay_night_Movie__Heavens_Feel_-_II_Lost_Butterfly',
-					'https://myanimelist.net/anime/33050/Fate_stay_night_Movie__Heavens_Feel_-_III_Spring_Song',
+					'https://myanimelist.net/anime/25537',
+					'https://myanimelist.net/anime/33049',
+					'https://myanimelist.net/anime/33050',
 				],
 			},
 		});
