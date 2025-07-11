@@ -1,6 +1,6 @@
 {
 	"name": "aubade",
-	"version": "0.10.2",
+	"version": "0.10.3",
 	"description": "filesystem-based content processor",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
