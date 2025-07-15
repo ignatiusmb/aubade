@@ -119,7 +119,7 @@ function words(tokens: Token[]): number {
 			case 'inline:text':
 				count += token.text.split(/\s+/).length;
 				break;
-			case 'parent:paragraph':
+			case 'block:paragraph':
 				count += words(token.children);
 			default:
 				break;
