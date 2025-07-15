@@ -5,7 +5,7 @@ describe('afm', ({ concurrent: it }) => {
 	describe('comments', ({ concurrent: it }) => {
 		it('block', ({ expect }) => {
 			expect(engrave('<!-- comment -->').tokens).toEqual([
-				{ type: 'inline:comment', text: 'comment' },
+				{ type: 'aubade:comment', text: 'comment' },
 			]);
 
 			expect(engrave('<!-- comment -->').html()).toBe('');
@@ -14,10 +14,10 @@ describe('afm', ({ concurrent: it }) => {
 
 		it('inline', ({ expect }) => {
 			expect(engrave('hello <!-- comment --> world').tokens[0]).toEqual({
-				type: 'parent:paragraph',
+				type: 'block:paragraph',
 				children: [
 					{ type: 'inline:text', text: 'hello ' },
-					{ type: 'inline:comment', text: 'comment' },
+					{ type: 'aubade:comment', text: 'comment' },
 					{ type: 'inline:text', text: ' world' },
 				],
 			});
