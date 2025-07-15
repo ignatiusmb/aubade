@@ -27,7 +27,7 @@ export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R
 export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
-	['<', [parent.html]],
+	['<', [inline.comment, parent.html]],
 	['`', [block.code]],
 	['#', [parent.heading]],
 	['>', [parent.quote]],
