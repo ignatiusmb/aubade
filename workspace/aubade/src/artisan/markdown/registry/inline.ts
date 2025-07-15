@@ -56,9 +56,10 @@ export function comment({ cursor }: Context): null | {
 	text: string;
 } {
 	if (!cursor.eat('<!--')) return null;
-	const comment = cursor.locate(/-->|$/);
+	const comment = cursor.locate(/-->/);
+	if (!comment.length) return null;
 	cursor.eat('-->');
-	return { type: 'inline:comment', text: comment };
+	return { type: 'inline:comment', text: comment.trim() };
 }
 
 export function escape({ cursor, stack }: Context): null | {

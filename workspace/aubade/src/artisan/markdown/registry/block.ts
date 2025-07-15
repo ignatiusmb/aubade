@@ -1,10 +1,9 @@
 import type { Context } from '../engine.js';
-import type { code as inline } from './inline.js';
 
 export function code({ cursor }: Context): null | {
 	type: 'block:code';
 	attr: { 'data-language': string };
-	children: NonNullable<ReturnType<typeof inline>>[];
+	children: { type: 'inline:code'; text: string }[];
 } {
 	if (!cursor.eat('```')) return null;
 	const language = cursor.locate(/\n/).trim();

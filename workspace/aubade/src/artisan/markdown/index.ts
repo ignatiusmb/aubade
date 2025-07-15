@@ -37,6 +37,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<p>${children || sanitize(token.text || '')}</p>`;
 		},
 		'block:break': () => `<hr />`,
+		'inline:comment': () => '',
 		'inline:autolink': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 				v.length ? `${k}="${sanitize(v)}"` : [],
