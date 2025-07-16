@@ -1,54 +1,42 @@
-import * as block from './registry/block.js';
-import * as inline from './registry/inline.js';
-import * as modifier from './registry/modifier.js';
-import * as parent from './registry/parent.js';
+import * as registry from './registry.js';
 
 type Registry = [
-	typeof parent.html,
-	typeof block.linebreak,
-	typeof parent.heading,
-	typeof parent.quote,
-	typeof block.list,
-	typeof block.code,
-	typeof parent.paragraph,
+	// aubade registries
+	typeof registry.markup,
+	typeof registry.comment,
 
-	typeof inline.comment,
-	typeof inline.escape,
-	typeof inline.autolink,
-	typeof inline.code,
-	typeof inline.image,
-	typeof inline.link,
-	typeof modifier.strong,
-	typeof modifier.emphasis,
-	typeof modifier.strike,
-	typeof inline.text,
+	// block registries
+	typeof registry.divider,
+	typeof registry.heading,
+	typeof registry.quote,
+	typeof registry.list,
+	typeof registry.codeblock,
+	typeof registry.paragraph,
+
+	// inline registries
+	typeof registry.escape,
+	typeof registry.autolink,
+	typeof registry.codespan,
+	typeof registry.image,
+	typeof registry.link,
+	typeof registry.strong,
+	typeof registry.emphasis,
+	typeof registry.strike,
+	typeof registry.text,
 ][number];
 export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
 export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
-	['<', [inline.comment, parent.html]],
-	['`', [block.code]],
-	['#', [parent.heading]],
-	['>', [parent.quote]],
-	['-', [block.linebreak, block.list]],
-	['*', [block.linebreak, block.list]],
-	['_', [block.linebreak]],
-	['\\', [parent.paragraph]],
+	['<', [registry.comment, registry.markup]],
+	['`', [registry.codeblock]],
+	['#', [registry.heading]],
+	['>', [registry.quote]],
+	['-', [registry.divider, registry.list]],
+	['*', [registry.divider, registry.list]],
+	['_', [registry.divider]],
+	['\\', [registry.paragraph]],
 ] as ReadonlyArray<readonly [string, Registry[]]>);
-
-const tidbits = [
-	inline.escape,
-	inline.comment,
-	inline.code,
-	inline.autolink,
-	inline.image,
-	inline.link,
-	modifier.strong,
-	modifier.emphasis,
-	modifier.strike,
-	inline.text,
-];
 
 export interface Context {
 	cursor: {
@@ -236,26 +224,21 @@ export function compose(source: string): {
 		const context = contextualize(input.slice(index), stack);
 		if (context.cursor.eat('\n')) {
 			let current: Token | undefined = stack[stack.length - 1];
-			while (current?.type === 'parent:paragraph' || current?.type === 'parent:quote') {
+			while (current?.type === 'block:paragraph' || current?.type === 'block:quote') {
 				current = stack.pop();
 			}
 		}
 
 		const start = input[index + context.cursor.index];
-		const rules = [...(dispatch.get(start) || []), parent.paragraph];
+		const rules = [...(dispatch.get(start) || []), registry.paragraph];
 		const token = match({ ...context, rules });
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
 		index += context.cursor.index;
 	}
 
 	for (const parent of tree) {
-		if (
-			!parent.type.startsWith('parent:') ||
-			!('children' in parent) ||
-			!('text' in parent) ||
-			!parent.text
-		)
-			continue;
+		if (!('children' in parent) || !('text' in parent)) continue;
+		if (!parent.text || parent.children.length) continue;
 
 		index = stack.length = 0;
 		parent.children = annotate(parent.text);
@@ -276,7 +259,22 @@ export function annotate(source: string): Token[] {
 		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
 		const context = contextualize(source, stack);
 		context.cursor.index = index;
-		const token = match({ ...context, rules: tidbits });
+		const token = match({
+			...context,
+			rules: [
+				// order matters
+				registry.escape,
+				registry.comment,
+				registry.codespan,
+				registry.autolink,
+				registry.image,
+				registry.link,
+				registry.strong,
+				registry.emphasis,
+				registry.strike,
+				registry.text,
+			],
+		});
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
 		index = context.cursor.index;
 	}

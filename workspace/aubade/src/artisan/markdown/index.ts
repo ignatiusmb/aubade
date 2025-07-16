@@ -11,8 +11,10 @@ export interface Options {
 
 export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
-		'parent:html': ({ token, render }) => `<div>${token.children.map(render).join('')}</div>`,
-		'parent:heading': ({ token, render }) => {
+		'aubade:comment': () => '',
+		'aubade:html': ({ token, render }) => `<div>${token.children.map(render).join('')}</div>`,
+
+		'block:heading': ({ token, render }) => {
 			const tag = `h${token.meta.level}`;
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 				v.length ? `${k}="${sanitize(v)}"` : [],
@@ -20,7 +22,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			const children = token.children.map(render).join('');
 			return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
 		},
-		'parent:quote': ({ token, render }) => {
+		'block:quote': ({ token, render }) => {
 			return `<blockquote>${token.children.map(render).join('')}</blockquote>`;
 		},
 		'block:code': ({ token, render, sanitize }) => {
@@ -31,13 +33,13 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
 		},
 		'block:list': ({ token, render }) => `<ul>${token.children.map(render).join('')}</ul>`,
-		// 'parent:item': ({ token, render }) => `<li>${token.children.map(render).join('')}</li>`,
-		'parent:paragraph': ({ token, render }) => {
+		// 'block:item': ({ token, render }) => `<li>${token.children.map(render).join('')}</li>`,
+		'block:paragraph': ({ token, render }) => {
 			const children = token.children.map(render).join('');
 			return `<p>${children || sanitize(token.text || '')}</p>`;
 		},
 		'block:break': () => `<hr />`,
-		'inline:comment': () => '',
+
 		'inline:autolink': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 				v.length ? `${k}="${sanitize(v)}"` : [],
@@ -58,6 +60,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			const children = token.children.map(render).join('');
 			return `<a ${attributes.join(' ')}>${children}</a>`;
 		},
+
 		'modifier:strong': ({ token, render }) =>
 			`<strong>${token.children.map(render).join('')}</strong>`,
 		'modifier:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
