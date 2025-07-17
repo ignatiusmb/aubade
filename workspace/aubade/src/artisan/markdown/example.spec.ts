@@ -2,6 +2,8 @@ import { describe } from 'vitest';
 import { engrave } from './index.js';
 
 describe('spec', ({ concurrent: it }) => {
+	// 1-11 is TBD
+
 	it.skip('#12', ({ expect }) => {
 		const { html } = engrave(
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
@@ -18,6 +20,60 @@ describe('spec', ({ concurrent: it }) => {
 		// https://spec.commonmark.org/0.31.2/#example-13
 		expect(engrave('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
 	});
+
+	it('#14', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-14
+		expect(
+			engrave(
+				[
+					'\\*not emphasized*',
+					'\\<br/> not a tag',
+					'\\[not a link](/foo)',
+					'\\`not code`',
+					'1\\. not a list',
+					'\\* not a list',
+					'\\# not a heading',
+					'\\[foo]: /url "not a reference"',
+					'\\&ouml; not a character entity',
+				].join('\n'),
+			).html(),
+		).toBe(
+			[
+				'<p>*not emphasized*',
+				'&lt;br/&gt; not a tag',
+				'[not a link](/foo)',
+				'`not code`',
+				'1. not a list',
+				'* not a list',
+				'# not a heading',
+				'[foo]: /url &quot;not a reference&quot;',
+				'&amp;ouml; not a character entity</p>',
+			].join('\n'),
+		);
+	});
+
+	it('#15', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-15
+		expect(engrave('\\\\*emphasis*').html()).toBe('<p>\\<em>emphasis</em></p>');
+	});
+
+	// 16 is TBD
+
+	it('#17', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-17
+		expect(engrave('`` \\[\\` ``').html()).toBe('<p><code>\\[\\`</code></p>');
+	});
+
+	// 18-19 is N/A
+
+	it('#20', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-20
+		expect(engrave('<https://example.com?find=\\*>').html()).toBe(
+			'<p><a href="https://example.com?find=%5C*">https://example.com?find=\\*</a></p>',
+		);
+	});
+
+	// 21-42 is WIP
 
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43

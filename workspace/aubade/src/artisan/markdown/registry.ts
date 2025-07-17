@@ -175,7 +175,7 @@ export function autolink({ cursor }: Context): null | {
 
 	let href = '';
 	if (/^https?:\/\//.test(text)) {
-		href = text;
+		href = encodeURI(text);
 	} else if (/^mailto:/.test(text)) {
 		href = text;
 	} else if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(text)) {
