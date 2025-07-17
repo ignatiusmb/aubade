@@ -15,30 +15,60 @@ export function comment({ cursor }: Context): null | {
 
 export function markup({ cursor, compose }: Context): null | {
 	type: 'aubade:html';
-	text: string;
+	tag: string;
 	attr: Record<string, string>;
 	children: Token[];
 } {
-	const open = cursor.read(1);
-	if (open !== '<') return null;
+	if (!cursor.eat('<')) return null;
 
 	const tag = cursor.locate(/\s|>/);
 	if (!tag.length) return null;
-	cursor.eat('>');
+
+	const attr: Record<string, string> = {};
+	let char = cursor.read(1);
+	if (char !== '>') {
+		let [equals, escaped] = [false, false];
+		let quoted: '"' | "'" | null = null;
+		let [name, value] = ['', ''];
+		while (char && char !== '>') {
+			quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
+			escaped = equals && !escaped && char === '\\';
+
+			if (!quoted && name && char === ' ') {
+				attr[clean(name)] = unquote(value);
+				name = value = '';
+				equals = false;
+			} else if (char === '=') {
+				equals = true;
+			} else if (quoted || char !== ' ') {
+				if (!equals) name += char;
+				else value += char;
+			}
+
+			char = cursor.read(1);
+		}
+		if (name && value) attr[clean(name)] = unquote(value);
+	}
 
 	// TODO: handle elements without closing tags
 	compose; // recursive call to parse the inner HTML
 
-	const html = cursor.locate(new RegExp(`</${tag}>`));
-	if (!html.length) return null;
-	cursor.eat(`</${tag}>`);
+	const close = `</${tag}>`;
+	const contents = cursor.locate(new RegExp(close));
+	if (!contents.length && !cursor.eat(close)) return null;
 
-	return {
-		type: 'aubade:html',
-		text: html,
-		attr: {},
-		children: [],
-	};
+	return { type: 'aubade:html', tag, attr, children: [] };
+
+	function clean(name: string): string {
+		return name.replace(/[^a-zA-Z0-9_.:-]+/g, '_').replace(/^([^a-zA-Z_:])/, '_');
+	}
+
+	function unquote(text: string): string {
+		if (text.length < 2) return text;
+		const last = text[text.length - 1];
+		if (text[0] !== '"' && text[0] !== "'") return text;
+		return last === text[0] ? text.slice(1, -1) : text;
+	}
 }
 
 // --- block registries ---

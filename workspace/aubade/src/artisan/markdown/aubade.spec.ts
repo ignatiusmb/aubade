@@ -2,6 +2,19 @@ import { describe } from 'vitest';
 import { engrave } from './index.js';
 
 describe('afm', ({ concurrent: it }) => {
+	describe('broken HTML', ({ concurrent: it }) => {
+		it('original #21', ({ expect }) => {
+			// https://spec.commonmark.org/0.31.2/#example-21
+			expect(engrave('<a href="/bar\\/)">').html()).toBe(
+				'<p>&lt;a href=&quot;/bar\\/)&quot;&gt;</p>',
+			);
+		});
+
+		it('treated as text', ({ expect }) => {
+			expect(engrave('<p>hello').html()).toBe('<p>&lt;p&gt;hello</p>');
+		});
+	});
+
 	describe('comments', ({ concurrent: it }) => {
 		it('block', ({ expect }) => {
 			expect(engrave('<!-- comment -->').tokens).toEqual([
