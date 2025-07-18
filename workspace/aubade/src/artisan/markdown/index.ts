@@ -12,7 +12,13 @@ export interface Options {
 export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
 		'aubade:comment': () => '',
-		'aubade:html': ({ token, render }) => `<div>${token.children.map(render).join('')}</div>`,
+		'aubade:html': ({ token, render }) => {
+			const attributes = Object.entries(token.attr)
+				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
+				.join(' ');
+			const children = token.children.map(render).join('');
+			return `<${token.tag}${attributes ? ' ' + attributes : ''}>${children}</${token.tag}>`;
+		},
 
 		'block:heading': ({ token, render }) => {
 			const tag = `h${token.meta.level}`;

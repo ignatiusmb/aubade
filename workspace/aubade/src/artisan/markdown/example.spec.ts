@@ -73,7 +73,20 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	// 21-42 is WIP
+	it('#21', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-21
+		// modded: added closing tag to match the registry
+		expect(engrave('<a href="/bar\\/)"></a>').html()).toBe('<a href="/bar\\/)"></a>');
+	});
+
+	it.skip('#22', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-22
+		expect(engrave('[foo](/bar\\* "ti\\*tle")').html()).toBe(
+			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
+		);
+	});
+
+	// 23-42 is WIP
 
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43
