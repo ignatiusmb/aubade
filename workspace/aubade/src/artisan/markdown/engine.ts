@@ -2,19 +2,20 @@ import * as registry from './registry.js';
 
 type Registry = [
 	// aubade registries
-	typeof registry.markup,
 	typeof registry.comment,
+	typeof registry.markup,
 
 	// block registries
+	typeof registry.codeblock,
 	typeof registry.divider,
 	typeof registry.heading,
-	typeof registry.quote,
 	typeof registry.list,
-	typeof registry.codeblock,
 	typeof registry.paragraph,
+	typeof registry.quote,
 
 	// inline registries
 	typeof registry.escape,
+	typeof registry.linebreak,
 	typeof registry.autolink,
 	typeof registry.codespan,
 	typeof registry.image,
@@ -264,6 +265,7 @@ export function annotate(source: string): Token[] {
 			rules: [
 				// order matters
 				registry.escape,
+				registry.linebreak,
 				registry.comment,
 				registry.codespan,
 				registry.autolink,

@@ -102,9 +102,8 @@ export function divider({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
-export function heading({ cursor, stack }: Context): null | {
+export function heading({ cursor, stack, annotate }: Context): null | {
 	type: 'block:heading';
-	text: string;
 	attr: { id: string };
 	meta: { level: number };
 	children: Token[];
@@ -126,10 +125,9 @@ export function heading({ cursor, stack }: Context): null | {
 
 	return stack.push({
 		type: 'block:heading',
-		text: title,
 		attr: { id },
 		meta: { level },
-		children: [],
+		children: annotate(title),
 	});
 }
 
@@ -148,8 +146,8 @@ export function list({ cursor, compose }: Context): null | {
 
 export function paragraph({ cursor, stack }: Context): null | {
 	type: 'block:paragraph';
-	text: string;
 	children: Token[];
+	text: string;
 } {
 	const text = cursor.locate(/\n|$/).trim();
 	cursor.eat('\n'); // eat the newline character
@@ -162,8 +160,8 @@ export function paragraph({ cursor, stack }: Context): null | {
 
 	return stack.push({
 		type: 'block:paragraph',
-		text: text,
 		children: [],
+		text: text,
 	});
 }
 
@@ -190,8 +188,8 @@ export function quote({ cursor, stack, compose }: Context): null | {
 // only parse http[s]:// and mails for safety
 export function autolink({ cursor }: Context): null | {
 	type: 'inline:autolink';
-	text: string;
 	attr: { href: string };
+	text: string;
 } {
 	let text = '';
 
@@ -214,7 +212,7 @@ export function autolink({ cursor }: Context): null | {
 		return null;
 	}
 
-	return { type: 'inline:autolink', text, attr: { href } };
+	return { type: 'inline:autolink', attr: { href }, text };
 }
 
 // code span backticks have higher precedence than any other inline constructs
@@ -279,6 +277,13 @@ export function image({ cursor }: Context): null | {
 		type: 'inline:image',
 		attr: { src, alt, title: title.trim() },
 	};
+}
+
+export function linebreak({ cursor }: Context): null | {
+	type: 'inline:break';
+} {
+	if (!cursor.eat('\n')) return null;
+	return { type: 'inline:break' };
 }
 
 export function link({ cursor, annotate }: Context): null | {
