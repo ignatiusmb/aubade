@@ -52,6 +52,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			);
 			return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
 		},
+		'inline:break': () => `\n`,
 		'inline:code': ({ token, sanitize }) => `<code>${sanitize(token.text || '')}</code>`,
 		'inline:image': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
