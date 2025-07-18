@@ -2,7 +2,10 @@ import { describe } from 'vitest';
 import { engrave, forge } from './index.js';
 
 describe('spec', ({ concurrent: it }) => {
-	// @TBD: 1-11
+	// @WIP: 1-9
+
+	// @MODIFIED: 10
+	// @DISALLOWED: 11
 
 	it.skip('#12', ({ expect }) => {
 		const { tokens, html } = engrave(
@@ -200,12 +203,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('\\## foo').html()).toBe('<p>## foo</p>');
 	});
 
-	it.todo('#66', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-66
-		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
-			'<h1 id="foo-bar-baz">foo <em>bar</em> *baz*</h1>',
-		);
-	});
+	// @MODIFIED: 66-67
 
 	// @DISALLOWED: 80-106 [setext headings]
 
@@ -452,6 +450,11 @@ okay.`).html(),
 });
 
 describe('@MODIFIED', ({ concurrent: it }) => {
+	it('#10', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-10
+		expect(engrave('#\tFoo').html()).toBe('<h1 id="foo">Foo</h1>');
+	});
+
 	it('#16 | inline break is `\n` instead of `<br />`', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-16
 		expect(engrave('foo\\\nbar').html()).toBe('<p>foo\nbar</p>');
@@ -492,9 +495,28 @@ describe('@MODIFIED', ({ concurrent: it }) => {
 			].join('\n'),
 		);
 	});
+
+	it.todo('#66', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-66
+		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
+			'<h1 id="foo-bar-baz">foo <em>bar</em> *baz*</h1>',
+		);
+	});
+
+	it('#67', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-67
+		expect(engrave('#                  foo                     ').html()).toBe(
+			'<h1 id="foo">foo</h1>',
+		);
+	});
 });
 
 describe('@DISALLOWED', ({ concurrent: it }) => {
+	it('#11 | no space between identifiers', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-11
+		expect(engrave('*\t*\t*\t').html()).toBe('<p>*\t*\t*</p>');
+	});
+
 	it('#18 | 4 (any) space indent is just a paragraph', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-18
 		expect(engrave('    \[\]').html()).toBe('<p>\[\]</p>');
