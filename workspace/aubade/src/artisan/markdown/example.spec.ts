@@ -86,7 +86,12 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	// 23-42 is WIP
+	// 23-41 is WIP
+
+	it.skip('#42', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-42
+		expect(engrave('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
+	});
 
 	it('#43', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-43
@@ -115,6 +120,8 @@ describe('spec', ({ concurrent: it }) => {
 		// https://spec.commonmark.org/0.31.2/#example-58
 		expect(engrave('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
 	});
+
+	// 80-106 is N/A [setext headings are disallowed]
 
 	it.skip('#149', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-149

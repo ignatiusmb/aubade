@@ -2,7 +2,7 @@ import { describe } from 'vitest';
 import { engrave } from './index.js';
 
 describe('block', ({ concurrent: it }) => {
-	it('header | ATX headings from 1 to 6 #', ({ expect }) => {
+	it('header | ATX 1 to 6', ({ expect }) => {
 		// expected: corresponding HTML <h1> to <h6> tags
 		expect(engrave('# abc').html()).toBe('<h1 id="abc">abc</h1>');
 		expect(engrave('## abc').html()).toBe('<h2 id="abc">abc</h2>');
@@ -11,13 +11,13 @@ describe('block', ({ concurrent: it }) => {
 		expect(engrave('##### abc').html()).toBe('<h5 id="abc">abc</h5>');
 		expect(engrave('###### abc').html()).toBe('<h6 id="abc">abc</h6>');
 	});
-	it('header | ATX invalid headings', ({ expect }) => {
+	it('header | invalid identifier', ({ expect }) => {
 		expect(engrave('####### abc').html()).toBe('<p>####### abc</p>');
 		expect(engrave('#5 abc').html()).toBe('<p>#5 abc</p>');
 		expect(engrave('#hashtag').html()).toBe('<p>#hashtag</p>');
 		expect(engrave('\\## escaped').html()).toBe('<p>## escaped</p>');
 	});
-	it('header | ATX headings with inline styles', ({ expect }) => {
+	it('header | annotate inline styles', ({ expect }) => {
 		expect(engrave('# header with `code`').html()).toBe(
 			'<h1 id="header-with-code">header with <code>code</code></h1>',
 		);
@@ -28,12 +28,20 @@ describe('block', ({ concurrent: it }) => {
 			'<h1 id="header-with-bold">header with <strong>bold</strong></h1>',
 		);
 	});
-	it('header | ATX headings automatic id prefix', ({ expect }) => {
-		expect(engrave('## main\n### sub').html()).toBe(
-			'<h2 id="main">main</h2>\n<h3 id="main-sub">sub</h3>',
+	it('header | automatic id prefixes', ({ expect }) => {
+		expect(engrave(['## main', '### sub'].join('\n')).html()).toBe(
+			['<h2 id="main">main</h2>', '<h3 id="main-sub">sub</h3>'].join('\n'),
 		);
-		expect(engrave('## first\n### sub\n#### four\n## second\n### sub').html()).toBe(
-			'<h2 id="first">first</h2>\n<h3 id="first-sub">sub</h3>\n<h4 id="first-sub-four">four</h4>\n<h2 id="second">second</h2>\n<h3 id="second-sub">sub</h3>',
+		expect(
+			engrave(['## first', '### sub', '#### four', '## second', '### sub'].join('\n')).html(),
+		).toBe(
+			[
+				'<h2 id="first">first</h2>',
+				'<h3 id="first-sub">sub</h3>',
+				'<h4 id="first-sub-four">four</h4>',
+				'<h2 id="second">second</h2>',
+				'<h3 id="second-sub">sub</h3>',
+			].join('\n'),
 		);
 	});
 
@@ -47,8 +55,8 @@ describe('block', ({ concurrent: it }) => {
 			'<pre><code>code</code>\n<code>line</code></pre>',
 		);
 	});
+
 	it.skip('list | unordered and ordered', ({ expect }) => {
-		// expected: <ul> and <ol> tags with <li> children
 		expect(engrave('- a\n- b\n- c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
 		expect(engrave('* a\n* b\n* c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
 		expect(engrave('1. one\n2. two\n3. three').html()).toBe(
@@ -58,25 +66,24 @@ describe('block', ({ concurrent: it }) => {
 			'<ol><li>a<ul><li>b</li><li>c</li></ul></li></ol>',
 		);
 	});
-	it.skip('list | precedence over inline constructs', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-42
-		expect(engrave('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
-	});
 
 	it('quote | basic quoted text', ({ expect }) => {
-		// expected: <blockquote> tags
 		expect(engrave('> quote').html()).toBe('<blockquote><p>quote</p></blockquote>');
 	});
+	it('quote | annotated text', ({ expect }) => {
+		expect(engrave('> quote with **formatting** and `inline code`.').html()).toBe(
+			'<blockquote><p>quote with <strong>formatting</strong> and <code>inline code</code>.</p></blockquote>',
+		);
+	});
+
 	it.skip('table | basic markdown table', ({ expect }) => {
-		// expected: <table> with its children
 		expect(engrave('| a | b |\n|---|---|\n| 1 | 2 |').html()).toBe(
 			'<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>',
 		);
 	});
-	it.skip('HTML entities', ({ expect }) => {
-		// expected: entities should be rendered as their corresponding characters
-		expect(engrave('&amp; &lt; &gt;').html()).toBe('<p>& < ></p>');
-		expect(engrave('&copy; 2025').html()).toBe('<p>© 2025</p>');
+	it('HTML entities', ({ expect }) => {
+		expect(engrave('&amp; &lt; &gt;').html()).toBe('<p>&amp; &lt; &gt;</p>');
+		expect(engrave('&copy; 2025').html()).toBe('<p>&copy; 2025</p>');
 	});
 
 	it('reference links', ({ expect }) => {

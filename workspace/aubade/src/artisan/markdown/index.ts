@@ -46,6 +46,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 		'block:break': () => `<hr />`,
 
+		'inline:escape': ({ token, sanitize }) => `${sanitize(token.text)}`,
 		'inline:autolink': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 				v.length ? `${k}="${sanitize(v)}"` : [],
