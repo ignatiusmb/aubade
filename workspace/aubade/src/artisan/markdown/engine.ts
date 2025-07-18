@@ -231,7 +231,7 @@ export function compose(source: string): {
 		}
 
 		const start = input[index + context.cursor.index];
-		const rules = [...(dispatch.get(start) || []), registry.paragraph];
+		const rules = [...(dispatch.get(start) || []), registry.divider, registry.paragraph];
 		const token = match({ ...context, rules });
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
 		index += context.cursor.index;
@@ -264,8 +264,8 @@ export function annotate(source: string): Token[] {
 			...context,
 			rules: [
 				// order matters
-				registry.escape,
 				registry.linebreak,
+				registry.escape,
 				registry.comment,
 				registry.codespan,
 				registry.autolink,

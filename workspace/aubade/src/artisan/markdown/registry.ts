@@ -277,8 +277,10 @@ export function image({ cursor }: Context): null | {
 export function linebreak({ cursor }: Context): null | {
 	type: 'inline:break';
 } {
-	if (!cursor.eat('\n')) return null;
-	return { type: 'inline:break' };
+	if (cursor.eat('\\\n') || cursor.eat('\n')) {
+		return { type: 'inline:break' };
+	}
+	return null;
 }
 
 export function link({ cursor, annotate }: Context): null | {
