@@ -27,11 +27,11 @@ describe('comments', ({ concurrent: it }) => {
 	});
 });
 
-describe.skip('directives', ({ concurrent: it }) => {
+describe.todo('directives', ({ concurrent: it }) => {
 	it;
 });
 
-describe.skip('fences', ({ concurrent: it }) => {
+describe.todo('fences', ({ concurrent: it }) => {
 	it;
 });
 

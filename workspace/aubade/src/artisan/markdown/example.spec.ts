@@ -1,16 +1,56 @@
 import { describe } from 'vitest';
-import { engrave } from './index.js';
+import { engrave, forge } from './index.js';
 
 describe('spec', ({ concurrent: it }) => {
-	// 1-11 is TBD
+	// @WIP: 1-9
+
+	// @MODIFIED: 10
+	// @DISALLOWED: 11
 
 	it.skip('#12', ({ expect }) => {
-		const { html } = engrave(
+		const { tokens, html } = engrave(
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
 		);
 
-		// const { text } = root.children[0]?.children[0];
-		// expect(text).toBe("<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>");
+		expect(tokens[0]).toEqual({
+			type: 'block:paragraph',
+			children: [
+				// { type: 'inline:escape', text: '!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' },
+				{ type: 'inline:escape', text: '!' },
+				{ type: 'inline:escape', text: '"' },
+				{ type: 'inline:escape', text: '#' },
+				{ type: 'inline:escape', text: '$' },
+				{ type: 'inline:escape', text: '%' },
+				{ type: 'inline:escape', text: '&' },
+				{ type: 'inline:escape', text: "'" },
+				{ type: 'inline:escape', text: '(' },
+				{ type: 'inline:escape', text: ')' },
+				{ type: 'inline:escape', text: '*' },
+				{ type: 'inline:escape', text: '+' },
+				{ type: 'inline:escape', text: ',' },
+				{ type: 'inline:escape', text: '-' },
+				{ type: 'inline:escape', text: '.' },
+				{ type: 'inline:escape', text: '/' }, // this fails with '\\/'
+				{ type: 'inline:escape', text: ':' },
+				{ type: 'inline:escape', text: ';' },
+				{ type: 'inline:escape', text: '<' },
+				{ type: 'inline:escape', text: '=' },
+				{ type: 'inline:escape', text: '>' },
+				{ type: 'inline:escape', text: '?' },
+				{ type: 'inline:escape', text: '@' },
+				{ type: 'inline:escape', text: '[' },
+				{ type: 'inline:escape', text: '\\' },
+				{ type: 'inline:escape', text: ']' },
+				{ type: 'inline:escape', text: '^' },
+				{ type: 'inline:escape', text: '_' }, // this fails with '\\_'
+				{ type: 'inline:escape', text: '`' },
+				{ type: 'inline:escape', text: '{' },
+				{ type: 'inline:escape', text: '|' },
+				{ type: 'inline:escape', text: '}' },
+				{ type: 'inline:escape', text: '~' },
+			],
+		});
+		// "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>"
 
 		// https://spec.commonmark.org/0.31.2/#example-12 - adjusted test
 		expect(html()).toBe('<p>!&quot;#$%&amp;&#39;()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>');
@@ -57,14 +97,15 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('\\\\*emphasis*').html()).toBe('<p>\\<em>emphasis</em></p>');
 	});
 
-	// 16 is TBD
+	// @MODIFIED: 16
 
 	it('#17', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-17
 		expect(engrave('`` \\[\\` ``').html()).toBe('<p><code>\\[\\`</code></p>');
 	});
 
-	// 18-19 is N/A
+	// @DISALLOWED: 18
+	// @DISALLOWED: 19
 
 	it('#20', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-20
@@ -73,22 +114,18 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it('#21', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-21
-		// modded: added closing tag to match the registry
-		expect(engrave('<a href="/bar\\/)"></a>').html()).toBe('<a href="/bar\\/)"></a>');
-	});
+	// @MODIFIED: 21
 
-	it.skip('#22', ({ expect }) => {
+	it.todo('#22', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-22
 		expect(engrave('[foo](/bar\\* "ti\\*tle")').html()).toBe(
 			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
 		);
 	});
 
-	// 23-41 is WIP
+	// @WIP: 23-41
 
-	it.skip('#42', ({ expect }) => {
+	it.todo('#42', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-42
 		expect(engrave('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
 	});
@@ -116,14 +153,61 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('**\n--\n__').html()).toBe('<p>**\n--\n__</p>');
 	});
 
+	it('#47', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-47
+		expect(engrave([' ***', '  ***', '   ***'].join('\n')).html()).toBe('<hr />\n<hr />\n<hr />');
+	});
+
+	// @DISALLOWED: 48-49 [4 space indents code blocks]
+	// @DISALLOWED: 50 [divider with more than 3 characters]
+	// @DISALLOWED: 51-54 [divider with space and tabs between]
+
+	it('#55', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-55
+		expect(engrave([' ***', '  ***', '   ***'].join('\n')).html()).toBe('<hr />\n<hr />\n<hr />');
+	});
+
+	it('#56', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-56
+		expect(engrave(' *-*').html()).toBe('<p><em>-</em></p>');
+	});
+
+	it.todo('#57', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-57
+		expect(engrave(['- foo', '***', '- bar'].join('\n')).html()).toBe(
+			'<ul><li>foo</li></ul><hr /><ul><li>bar</li></ul>',
+		);
+	});
+
 	it('#58', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-58
 		expect(engrave('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
 	});
 
-	// 80-106 is N/A [setext headings are disallowed]
+	// @DISALLOWED: 59
+	// @MODIFIED: 60-61
+	// @MODIFIED: 62
 
-	it.skip('#149', ({ expect }) => {
+	it('#63', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-63
+		expect(engrave('####### foo').html()).toBe('<p>####### foo</p>');
+	});
+
+	it('#64', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-64
+		expect(engrave('#5 bolt\n\n#hashtag').html()).toBe('<p>#5 bolt</p>\n<p>#hashtag</p>');
+	});
+
+	it('#65', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-65
+		expect(engrave('\\## foo').html()).toBe('<p>## foo</p>');
+	});
+
+	// @MODIFIED: 66-67
+
+	// @DISALLOWED: 80-106 [setext headings]
+
+	it.todo('#149', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-149
 		expect(
 			engrave(`<table>
@@ -159,7 +243,7 @@ okay.`).html(),
 		);
 	});
 
-	it.skip('#330', ({ expect }) => {
+	it.todo('#330', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-330
 		expect(engrave('` `` `').html()).toBe('<p><code>``</code></p>');
 	});
@@ -350,7 +434,7 @@ okay.`).html(),
 		expect(engrave('*(**foo**)*').html()).toBe('<p><em>(<strong>foo</strong>)</em></p>');
 	});
 
-	it.skip('#394', ({ expect }) => {
+	it.todo('#394', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-394
 		expect(
 			engrave('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**').html(),
@@ -362,5 +446,89 @@ okay.`).html(),
 	it('#482', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-482
 		expect(engrave('[link](/uri "title")').html(), '<p><a href="/uri" title="title">link</a></p>');
+	});
+});
+
+describe('@MODIFIED', ({ concurrent: it }) => {
+	it('#10', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-10
+		expect(engrave('#\tFoo').html()).toBe('<h1 id="foo">Foo</h1>');
+	});
+
+	it('#16 | inline break is `\n` instead of `<br />`', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-16
+		expect(engrave('foo\\\nbar').html()).toBe('<p>foo\nbar</p>');
+
+		const modified = forge({
+			renderer: { 'inline:break': () => '<br />' },
+		});
+		expect(modified('foo\\\nbar').tokens[0]).toEqual({
+			type: 'block:paragraph',
+			children: [
+				{ type: 'inline:text', text: 'foo' },
+				{ type: 'inline:break' },
+				{ type: 'inline:text', text: 'bar' },
+			],
+		});
+		expect(modified('foo\\\nbar').html()).toBe('<p>foo<br />bar</p>');
+	});
+
+	it('#21 | HTML tag needs to be closed', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-21
+		expect(engrave('<a href="/bar\\/)"></a>').html()).toBe('<a href="/bar\\/)"></a>');
+	});
+
+	it('#62 | ATX headings includes and inherits id', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-62
+		expect(
+			engrave(
+				['# foo', '## foo', '### foo', '#### foo', '##### foo', '###### foo'].join('\n'),
+			).html(),
+		).toBe(
+			[
+				'<h1 id="foo">foo</h1>',
+				`<h2 id="${Array(2).fill('foo').join('-')}">foo</h2>`,
+				`<h3 id="${Array(3).fill('foo').join('-')}">foo</h3>`,
+				`<h4 id="${Array(4).fill('foo').join('-')}">foo</h4>`,
+				`<h5 id="${Array(5).fill('foo').join('-')}">foo</h5>`,
+				`<h6 id="${Array(6).fill('foo').join('-')}">foo</h6>`,
+			].join('\n'),
+		);
+	});
+
+	it.todo('#66', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-66
+		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
+			'<h1 id="foo-bar-baz">foo <em>bar</em> *baz*</h1>',
+		);
+	});
+
+	it('#67', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-67
+		expect(engrave('#                  foo                     ').html()).toBe(
+			'<h1 id="foo">foo</h1>',
+		);
+	});
+});
+
+describe('@DISALLOWED', ({ concurrent: it }) => {
+	it('#11 | no space between identifiers', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-11
+		expect(engrave('*\t*\t*\t').html()).toBe('<p>*\t*\t*</p>');
+	});
+
+	it('#18 | 4 (any) space indent is just a paragraph', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-18
+		expect(engrave('    \[\]').html()).toBe('<p>\[\]</p>');
+	});
+
+	it.todo('#19 | only triple backticks code block', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-18
+		expect(engrave('~~~\n\[\]\n~~~').html()).toBe('<p>~~~\n\[\]\n~~~</p>');
+	});
+
+	it('#59 | triple dash does not make a heading', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-59
+		expect(engrave('Foo\n---\nbar').html()).toBe('<p>Foo</p>\n<hr />\n<p>bar</p>');
 	});
 });
