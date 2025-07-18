@@ -237,7 +237,7 @@ export function codespan({ cursor }: Context): null | {
 }
 
 export function escape({ cursor, stack }: Context): null | {
-	type: 'inline:text';
+	type: 'inline:escape';
 	text: string;
 } {
 	if (!cursor.eat('\\')) return null;
@@ -246,12 +246,7 @@ export function escape({ cursor, stack }: Context): null | {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
 
-	const last = stack.peek();
-	if (last?.type === 'inline:text') {
-		last.text += next;
-		return last;
-	}
-	return stack.push({ type: 'inline:text', text: next });
+	return stack.push({ type: 'inline:escape', text: next });
 }
 
 export function image({ cursor }: Context): null | {
