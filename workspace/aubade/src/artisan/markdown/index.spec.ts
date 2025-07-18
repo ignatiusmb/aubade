@@ -2,21 +2,6 @@ import { describe } from 'vitest';
 import { engrave } from './index.js';
 
 describe('block', ({ concurrent: it }) => {
-	it('header | ATX 1 to 6', ({ expect }) => {
-		// expected: corresponding HTML <h1> to <h6> tags
-		expect(engrave('# abc').html()).toBe('<h1 id="abc">abc</h1>');
-		expect(engrave('## abc').html()).toBe('<h2 id="abc">abc</h2>');
-		expect(engrave('### abc').html()).toBe('<h3 id="abc">abc</h3>');
-		expect(engrave('#### abc').html()).toBe('<h4 id="abc">abc</h4>');
-		expect(engrave('##### abc').html()).toBe('<h5 id="abc">abc</h5>');
-		expect(engrave('###### abc').html()).toBe('<h6 id="abc">abc</h6>');
-	});
-	it('header | invalid identifier', ({ expect }) => {
-		expect(engrave('####### abc').html()).toBe('<p>####### abc</p>');
-		expect(engrave('#5 abc').html()).toBe('<p>#5 abc</p>');
-		expect(engrave('#hashtag').html()).toBe('<p>#hashtag</p>');
-		expect(engrave('\\## escaped').html()).toBe('<p>## escaped</p>');
-	});
 	it('header | annotate inline styles', ({ expect }) => {
 		expect(engrave('# header with `code`').html()).toBe(
 			'<h1 id="header-with-code">header with <code>code</code></h1>',
@@ -56,7 +41,7 @@ describe('block', ({ concurrent: it }) => {
 		);
 	});
 
-	it.skip('list | unordered and ordered', ({ expect }) => {
+	it.todo('list | unordered and ordered', ({ expect }) => {
 		expect(engrave('- a\n- b\n- c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
 		expect(engrave('* a\n* b\n* c').html()).toBe('<ul><li>a</li><li>b</li><li>c</li></ul>');
 		expect(engrave('1. one\n2. two\n3. three').html()).toBe(
@@ -76,7 +61,7 @@ describe('block', ({ concurrent: it }) => {
 		);
 	});
 
-	it.skip('table | basic markdown table', ({ expect }) => {
+	it.todo('table | basic markdown table', ({ expect }) => {
 		expect(engrave('| a | b |\n|---|---|\n| 1 | 2 |').html()).toBe(
 			'<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>',
 		);
@@ -175,7 +160,7 @@ describe('inline', ({ concurrent: it }) => {
 			'<p><strong><a href="https://mauss.dev">a b c</a></strong></p>',
 		);
 	});
-	it.skip('modifiers | incomplete or broken', ({ expect }) => {
+	it.todo('modifiers | incomplete or broken', ({ expect }) => {
 		expect(engrave('**not closed').html()).toBe('<p>**not closed</p>');
 		expect(engrave('*in **out*').html()).toBe('<p><em>in **out</em></p>');
 		expect(engrave('~~strike').html()).toBe('<p>~~strike</p>');

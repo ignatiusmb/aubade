@@ -5,12 +5,49 @@ describe('spec', ({ concurrent: it }) => {
 	// @TBD: 1-11
 
 	it.skip('#12', ({ expect }) => {
-		const { html } = engrave(
+		const { tokens, html } = engrave(
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
 		);
 
-		// const { text } = root.children[0]?.children[0];
-		// expect(text).toBe("<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>");
+		expect(tokens[0]).toEqual({
+			type: 'block:paragraph',
+			children: [
+				// { type: 'inline:escape', text: '!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' },
+				{ type: 'inline:escape', text: '!' },
+				{ type: 'inline:escape', text: '"' },
+				{ type: 'inline:escape', text: '#' },
+				{ type: 'inline:escape', text: '$' },
+				{ type: 'inline:escape', text: '%' },
+				{ type: 'inline:escape', text: '&' },
+				{ type: 'inline:escape', text: "'" },
+				{ type: 'inline:escape', text: '(' },
+				{ type: 'inline:escape', text: ')' },
+				{ type: 'inline:escape', text: '*' },
+				{ type: 'inline:escape', text: '+' },
+				{ type: 'inline:escape', text: ',' },
+				{ type: 'inline:escape', text: '-' },
+				{ type: 'inline:escape', text: '.' },
+				{ type: 'inline:escape', text: '/' }, // this fails with '\\/'
+				{ type: 'inline:escape', text: ':' },
+				{ type: 'inline:escape', text: ';' },
+				{ type: 'inline:escape', text: '<' },
+				{ type: 'inline:escape', text: '=' },
+				{ type: 'inline:escape', text: '>' },
+				{ type: 'inline:escape', text: '?' },
+				{ type: 'inline:escape', text: '@' },
+				{ type: 'inline:escape', text: '[' },
+				{ type: 'inline:escape', text: '\\' },
+				{ type: 'inline:escape', text: ']' },
+				{ type: 'inline:escape', text: '^' },
+				{ type: 'inline:escape', text: '_' }, // this fails with '\\_'
+				{ type: 'inline:escape', text: '`' },
+				{ type: 'inline:escape', text: '{' },
+				{ type: 'inline:escape', text: '|' },
+				{ type: 'inline:escape', text: '}' },
+				{ type: 'inline:escape', text: '~' },
+			],
+		});
+		// "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>"
 
 		// https://spec.commonmark.org/0.31.2/#example-12 - adjusted test
 		expect(html()).toBe('<p>!&quot;#$%&amp;&#39;()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>');
@@ -76,7 +113,7 @@ describe('spec', ({ concurrent: it }) => {
 
 	// @MODIFIED: 21
 
-	it.skip('#22', ({ expect }) => {
+	it.todo('#22', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-22
 		expect(engrave('[foo](/bar\\* "ti\\*tle")').html()).toBe(
 			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
@@ -85,7 +122,7 @@ describe('spec', ({ concurrent: it }) => {
 
 	// @WIP: 23-41
 
-	it.skip('#42', ({ expect }) => {
+	it.todo('#42', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-42
 		expect(engrave('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
 	});
@@ -132,7 +169,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave(' *-*').html()).toBe('<p><em>-</em></p>');
 	});
 
-	it.skip('#57', ({ expect }) => {
+	it.todo('#57', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-57
 		expect(engrave(['- foo', '***', '- bar'].join('\n')).html()).toBe(
 			'<ul><li>foo</li></ul><hr /><ul><li>bar</li></ul>',
@@ -148,9 +185,31 @@ describe('spec', ({ concurrent: it }) => {
 	// @MODIFIED: 60-61
 	// @MODIFIED: 62
 
+	it('#63', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-63
+		expect(engrave('####### foo').html()).toBe('<p>####### foo</p>');
+	});
+
+	it('#64', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-64
+		expect(engrave('#5 bolt\n\n#hashtag').html()).toBe('<p>#5 bolt</p>\n<p>#hashtag</p>');
+	});
+
+	it('#65', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-65
+		expect(engrave('\\## foo').html()).toBe('<p>## foo</p>');
+	});
+
+	it.todo('#66', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-66
+		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
+			'<h1 id="foo-bar-baz">foo <em>bar</em> *baz*</h1>',
+		);
+	});
+
 	// @DISALLOWED: 80-106 [setext headings]
 
-	it.skip('#149', ({ expect }) => {
+	it.todo('#149', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-149
 		expect(
 			engrave(`<table>
@@ -186,7 +245,7 @@ okay.`).html(),
 		);
 	});
 
-	it.skip('#330', ({ expect }) => {
+	it.todo('#330', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-330
 		expect(engrave('` `` `').html()).toBe('<p><code>``</code></p>');
 	});
@@ -377,7 +436,7 @@ okay.`).html(),
 		expect(engrave('*(**foo**)*').html()).toBe('<p><em>(<strong>foo</strong>)</em></p>');
 	});
 
-	it.skip('#394', ({ expect }) => {
+	it.todo('#394', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-394
 		expect(
 			engrave('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**').html(),
@@ -441,7 +500,7 @@ describe('@DISALLOWED', ({ concurrent: it }) => {
 		expect(engrave('    \[\]').html()).toBe('<p>\[\]</p>');
 	});
 
-	it.skip('#19 | only triple backticks code block', ({ expect }) => {
+	it.todo('#19 | only triple backticks code block', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-18
 		expect(engrave('~~~\n\[\]\n~~~').html()).toBe('<p>~~~\n\[\]\n~~~</p>');
 	});
