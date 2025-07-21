@@ -231,7 +231,12 @@ export function compose(source: string): {
 		}
 
 		const start = input[index + context.cursor.index];
-		const rules = [...(dispatch.get(start) || []), registry.divider, registry.paragraph];
+		const rules = [
+			...(dispatch.get(start) || []),
+			registry.divider,
+			registry.heading,
+			registry.paragraph,
+		];
 		const token = match({ ...context, rules });
 		if (token && token !== tree[tree.length - 1]) tree.push(token);
 		index += context.cursor.index;
