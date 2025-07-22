@@ -104,10 +104,11 @@ export function divider({ cursor }: Context): null | {
 
 export function heading({ cursor, stack, annotate }: Context): null | {
 	type: 'block:heading';
-	attr: { id: string };
 	meta: { level: number };
+	attr: { id: string; 'data-text': string };
 	children: Token[];
 } {
+	cursor.trim(); // trim leading whitespace
 	const match = cursor.locate(/\s/);
 	if (!/^#{1,6}$/.test(match)) return null;
 	const { length: level } = match;
@@ -119,16 +120,20 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 
 	const parent = stack.find('block:heading', (token) => token.meta.level === level - 1);
 
-	const id = `${parent?.attr.id || ''}-${title.toLowerCase()}`
-		.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
-		.replace(/^-+|-+$|(?<=-)-+/g, '');
+	const children = annotate(title);
+	const attr = {
+		id: `${parent?.attr.id || ''}-${title.toLowerCase()}`
+			.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+			.replace(/^-+|-+$|(?<=-)-+/g, ''),
+		'data-text': children.map(extract).join(''),
+	};
 
-	return stack.push({
-		type: 'block:heading',
-		attr: { id },
-		meta: { level },
-		children: annotate(title),
-	});
+	return stack.push({ type: 'block:heading', meta: { level }, attr, children });
+
+	function extract(token: Token): string {
+		if ('children' in token) return token.children.map(extract).join('');
+		return 'text' in token ? token.text : '';
+	}
 }
 
 export function list({ cursor, compose }: Context): null | {

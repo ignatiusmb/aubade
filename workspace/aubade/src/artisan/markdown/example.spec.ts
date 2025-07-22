@@ -69,9 +69,9 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it('#10 | @MOD: enhanced heading with id', ({ expect }) => {
+	it('#10 | @MOD: enhanced heading with attributes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-10
-		expect(engrave('#\tFoo').html()).toBe('<h1 id="foo">Foo</h1>');
+		expect(engrave('#\tFoo').html()).toBe('<h1 id="foo" data-text="Foo">Foo</h1>');
 	});
 
 	it('#11 | @DIS: no space between identifiers', ({ expect }) => {
@@ -388,9 +388,42 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave([' ***', '  ***', '   ***'].join('\n')).html()).toBe('<hr />\n<hr />\n<hr />');
 	});
 
-	// @DISALLOWED: 48-49 [4 space indents code blocks]
-	// @DISALLOWED: 50 [divider with more than 3 characters]
-	// @DISALLOWED: 51-54 [divider with space and tabs between]
+	it('#48 | @DIS: no 4 space indent code blocks', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-48
+		expect(engrave('    ***').html()).toBe('<hr />');
+	});
+
+	it('#49 | @DIS: no 4 space indent code blocks', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-49
+		expect(engrave('Foo\n    ***').html()).toBe('<p>Foo</p>\n<hr />');
+	});
+
+	it('#50 | @DIS: divider needs to be 3 characters', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-50
+		expect(engrave('_____________________________________').html()).toBe(
+			'<p>_____________________________________</p>',
+		);
+	});
+
+	it('#51 | @DIS: no spaces or tabs between', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-51
+		expect(engrave(' - - -').html()).toBe('<p>- - -</p>');
+	});
+
+	it('#52 | @DIS: no spaces or tabs between', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-52
+		expect(engrave(' **  * ** * ** * **').html()).toBe('<p>**  * ** * ** * **</p>');
+	});
+
+	it('#53 | @DIS: no spaces or tabs between', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-53
+		expect(engrave('-     -      -      -').html()).toBe('<p>-     -      -      -</p>');
+	});
+
+	it('#54 | @MOD: spaces only at the end', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-54
+		expect(engrave('---    ').html()).toBe('<hr />');
+	});
 
 	it('#55', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-55
@@ -419,9 +452,21 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('Foo\n---\nbar').html()).toBe('<p>Foo</p>\n<hr />\n<p>bar</p>');
 	});
 
-	// @MODIFIED: 60-61
+	it.todo('#60 | @DIS: divider and list item', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-60
+		expect(engrave('* Foo\n* * *\n* Bar').html()).toBe(
+			['<ul>', '<li>Foo</li>', '<li>* *</li>', '<li>Bar</li>', '</ul>'].join('\n'),
+		);
+	});
 
-	it('#62 | @MOD: ATX headings includes and inherits id', ({ expect }) => {
+	it.todo('#61 | @MOD: divider in list item', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-61
+		expect(engrave('- Foo\n- ***').html()).toBe(
+			['<ul>', '<li>Foo</li>', '<li>', '<hr />', '</li>', '</ul>'].join('\n'),
+		);
+	});
+
+	it('#62 | @MOD: ATX headings with attributes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-62
 		expect(
 			engrave(
@@ -429,12 +474,12 @@ describe('spec', ({ concurrent: it }) => {
 			).html(),
 		).toBe(
 			[
-				'<h1 id="foo">foo</h1>',
-				`<h2 id="${Array(2).fill('foo').join('-')}">foo</h2>`,
-				`<h3 id="${Array(3).fill('foo').join('-')}">foo</h3>`,
-				`<h4 id="${Array(4).fill('foo').join('-')}">foo</h4>`,
-				`<h5 id="${Array(5).fill('foo').join('-')}">foo</h5>`,
-				`<h6 id="${Array(6).fill('foo').join('-')}">foo</h6>`,
+				'<h1 id="foo" data-text="foo">foo</h1>',
+				`<h2 id="${Array(2).fill('foo').join('-')}" data-text="foo">foo</h2>`,
+				`<h3 id="${Array(3).fill('foo').join('-')}" data-text="foo">foo</h3>`,
+				`<h4 id="${Array(4).fill('foo').join('-')}" data-text="foo">foo</h4>`,
+				`<h5 id="${Array(5).fill('foo').join('-')}" data-text="foo">foo</h5>`,
+				`<h6 id="${Array(6).fill('foo').join('-')}" data-text="foo">foo</h6>`,
 			].join('\n'),
 		);
 	});
@@ -464,7 +509,18 @@ describe('spec', ({ concurrent: it }) => {
 	it('#67 | @MOD', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-67
 		expect(engrave('#                  foo                     ').html()).toBe(
-			'<h1 id="foo">foo</h1>',
+			'<h1 id="foo" data-text="foo">foo</h1>',
+		);
+	});
+
+	it('#68 | @MOD: enhanced heading with id', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-68
+		expect(engrave(' ### foo\n  ## foo\n   # foo').html()).toBe(
+			[
+				'<h3 id="foo" data-text="foo">foo</h3>',
+				'<h2 id="foo" data-text="foo">foo</h2>',
+				'<h1 id="foo" data-text="foo">foo</h1>',
+			].join('\n'),
 		);
 	});
 

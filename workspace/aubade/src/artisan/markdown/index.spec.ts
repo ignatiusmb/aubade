@@ -4,28 +4,31 @@ import { engrave } from './index.js';
 describe('block', ({ concurrent: it }) => {
 	it('header | annotate inline styles', ({ expect }) => {
 		expect(engrave('# header with `code`').html()).toBe(
-			'<h1 id="header-with-code">header with <code>code</code></h1>',
+			'<h1 id="header-with-code" data-text="header with code">header with <code>code</code></h1>',
 		);
 		expect(engrave('# header with *emphasis*').html()).toBe(
-			'<h1 id="header-with-emphasis">header with <em>emphasis</em></h1>',
+			'<h1 id="header-with-emphasis" data-text="header with emphasis">header with <em>emphasis</em></h1>',
 		);
 		expect(engrave('# header with **bold**').html()).toBe(
-			'<h1 id="header-with-bold">header with <strong>bold</strong></h1>',
+			'<h1 id="header-with-bold" data-text="header with bold">header with <strong>bold</strong></h1>',
 		);
 	});
 	it('header | automatic id prefixes', ({ expect }) => {
 		expect(engrave(['## main', '### sub'].join('\n')).html()).toBe(
-			['<h2 id="main">main</h2>', '<h3 id="main-sub">sub</h3>'].join('\n'),
+			[
+				'<h2 id="main" data-text="main">main</h2>',
+				'<h3 id="main-sub" data-text="sub">sub</h3>',
+			].join('\n'),
 		);
 		expect(
 			engrave(['## first', '### sub', '#### four', '## second', '### sub'].join('\n')).html(),
 		).toBe(
 			[
-				'<h2 id="first">first</h2>',
-				'<h3 id="first-sub">sub</h3>',
-				'<h4 id="first-sub-four">four</h4>',
-				'<h2 id="second">second</h2>',
-				'<h3 id="second-sub">sub</h3>',
+				'<h2 id="first" data-text="first">first</h2>',
+				'<h3 id="first-sub" data-text="sub">sub</h3>',
+				'<h4 id="first-sub-four" data-text="four">four</h4>',
+				'<h2 id="second" data-text="second">second</h2>',
+				'<h3 id="second-sub" data-text="sub">sub</h3>',
 			].join('\n'),
 		);
 	});
