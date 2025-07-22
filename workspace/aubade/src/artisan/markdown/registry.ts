@@ -149,27 +149,6 @@ export function list({ cursor, compose }: Context): null | {
 	return null;
 }
 
-export function paragraph({ cursor, stack }: Context): null | {
-	type: 'block:paragraph';
-	children: Token[];
-	text: string;
-} {
-	const text = cursor.locate(/\n|$/).trim();
-	cursor.eat('\n'); // eat the newline character
-
-	const last = stack.peek();
-	if (last?.type === 'block:paragraph') {
-		last.text += '\n' + text;
-		return last;
-	}
-
-	return stack.push({
-		type: 'block:paragraph',
-		children: [],
-		text: text,
-	});
-}
-
 export function quote({ cursor, stack, compose }: Context): null | {
 	type: 'block:quote';
 	children: Token[];
@@ -241,7 +220,7 @@ export function codespan({ cursor }: Context): null | {
 	return { type: 'inline:code', text: code };
 }
 
-export function escape({ cursor, stack }: Context): null | {
+export function escape({ cursor }: Context): null | {
 	type: 'inline:escape';
 	text: string;
 } {
@@ -251,7 +230,7 @@ export function escape({ cursor, stack }: Context): null | {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
 
-	return stack.push({ type: 'inline:escape', text: next });
+	return { type: 'inline:escape', text: next };
 }
 
 export function image({ cursor }: Context): null | {
@@ -315,20 +294,6 @@ export function link({ cursor, annotate }: Context): null | {
 	};
 }
 
-export function text({ cursor, stack }: Context): null | {
-	type: 'inline:text';
-	text: string;
-} {
-	const char = cursor.read(1);
-	const last = stack.peek();
-	if (last?.type === 'inline:text') {
-		last.text += char;
-		return last;
-	}
-
-	return stack.push({ type: 'inline:text', text: char });
-}
-
 // --- modifier registries ---
 
 export function emphasis({ cursor, is, annotate }: Context): null | {
@@ -350,9 +315,9 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 	if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return null;
 
 	const body = cursor.consume(char, (i) => {
-		const before = cursor.see(i - cursor.index - 1);
+		const before = cursor.see(i - 1);
 		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i - cursor.index + 1);
+		const after = cursor.see(i + 1);
 		// https://spec.commonmark.org/0.31.2/#example-374
 		if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return false;
 		return is['right-flanking'](before, after);
@@ -389,9 +354,9 @@ export function strong({ cursor, is, annotate }: Context): null | {
 	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
 	if (!cursor.eat('**')) return null;
 	const body = cursor.consume('**', (i) => {
-		const before = cursor.see(i - cursor.index - 1);
+		const before = cursor.see(i - 1);
 		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i - cursor.index + 2);
+		const after = cursor.see(i + 2);
 		return is['right-flanking'](before, after);
 	});
 	const invalid = body.includes('`') && cursor.peek(/`/);

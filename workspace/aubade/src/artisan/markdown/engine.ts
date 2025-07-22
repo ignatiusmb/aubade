@@ -10,8 +10,8 @@ type Registry = [
 	typeof registry.divider,
 	typeof registry.heading,
 	typeof registry.list,
-	typeof registry.paragraph,
 	typeof registry.quote,
+	() => { type: 'block:paragraph'; children: Token[]; text?: string },
 
 	// inline registries
 	typeof registry.escape,
@@ -23,7 +23,7 @@ type Registry = [
 	typeof registry.strong,
 	typeof registry.emphasis,
 	typeof registry.strike,
-	typeof registry.text,
+	() => { type: 'inline:text'; text: string },
 ][number];
 export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
 export type Dispatch = { [T in Token as T['type']]: T };
@@ -36,7 +36,6 @@ const dispatch = new Map([
 	['-', [registry.divider, registry.list]],
 	['*', [registry.divider, registry.list]],
 	['_', [registry.divider]],
-	['\\', [registry.paragraph]],
 ] as ReadonlyArray<readonly [string, Registry[]]>);
 
 export interface Context {
@@ -127,7 +126,8 @@ function contextualize(source: string, stack: Token[]): Context {
 			while (i < source.length) {
 				if (i + delimiter.length > source.length) break;
 				const text = delimiter.length === 1 ? source[i] : source.slice(i, i + delimiter.length);
-				if (text === delimiter && update(i)) last = i;
+				const result = update(i - pointer);
+				if (text === delimiter && result) last = i;
 				i++;
 			}
 
@@ -231,24 +231,28 @@ export function compose(source: string): {
 		}
 
 		const start = input[index + context.cursor.index];
-		const rules = [
-			...(dispatch.get(start) || []),
-			registry.divider,
-			registry.heading,
-			registry.paragraph,
-		];
-		const token = match({ ...context, rules });
-		if (token && token !== tree[tree.length - 1]) tree.push(token);
+		const known = (start === '\\' && []) || dispatch.get(start);
+		const token = match({ ...context, rules: known || [registry.divider, registry.heading] });
+		if (token) {
+			if (token !== tree[tree.length - 1]) tree.push(token);
+		} else {
+			const text = context.cursor.locate(/\n|$/).trim();
+			context.cursor.eat('\n'); // eat the line feed
+
+			const last = stack[stack.length - 1];
+			if (last?.type === 'block:paragraph') last.text += '\n' + text;
+			else {
+				tree.push({ type: 'block:paragraph', children: [], text });
+				stack.push(tree[tree.length - 1]);
+			}
+		}
 		index += context.cursor.index;
 	}
 
 	for (const parent of tree) {
-		if (!('children' in parent) || !('text' in parent)) continue;
-		if (!parent.text || parent.children.length) continue;
-
-		index = stack.length = 0;
+		if (parent.type !== 'block:paragraph' || !parent.text) continue;
 		parent.children = annotate(parent.text);
-		// @ts-expect-error - why does it need to be optional?
+		// @TODO: make it configurable
 		delete parent.text; // cleanup text after inline parsing
 	}
 
@@ -279,10 +283,15 @@ export function annotate(source: string): Token[] {
 				registry.strong,
 				registry.emphasis,
 				registry.strike,
-				registry.text,
 			],
 		});
-		if (token && token !== tree[tree.length - 1]) tree.push(token);
+		if (token) tree.push(token);
+		else {
+			const char = context.cursor.read(1);
+			const last = tree[tree.length - 1];
+			if (last?.type === 'inline:text') last.text += char;
+			else tree.push({ type: 'inline:text', text: char });
+		}
 		index = context.cursor.index;
 	}
 	return tree;
