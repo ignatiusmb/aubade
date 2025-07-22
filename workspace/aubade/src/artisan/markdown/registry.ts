@@ -351,6 +351,7 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 
 	const body = cursor.consume(char, (i) => {
 		const before = cursor.see(i - cursor.index - 1);
+		if (before === '\\') return false; // escaped character
 		const after = cursor.see(i - cursor.index + 1);
 		// https://spec.commonmark.org/0.31.2/#example-374
 		if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return false;
@@ -389,6 +390,7 @@ export function strong({ cursor, is, annotate }: Context): null | {
 	if (!cursor.eat('**')) return null;
 	const body = cursor.consume('**', (i) => {
 		const before = cursor.see(i - cursor.index - 1);
+		if (before === '\\') return false; // escaped character
 		const after = cursor.see(i - cursor.index + 2);
 		return is['right-flanking'](before, after);
 	});

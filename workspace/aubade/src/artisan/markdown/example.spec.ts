@@ -499,21 +499,21 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('\\## foo').html()).toBe('<p>## foo</p>');
 	});
 
-	it.todo('#66 | @MOD', ({ expect }) => {
+	it('#66 | @MOD: enhanced heading with attributes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-66
 		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
-			'<h1 id="foo-bar-baz">foo <em>bar</em> *baz*</h1>',
+			'<h1 id="foo-bar-baz" data-text="foo bar *baz*">foo <em>bar</em> *baz*</h1>',
 		);
 	});
 
-	it('#67 | @MOD', ({ expect }) => {
+	it('#67 | @MOD: enhanced heading with attributes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-67
 		expect(engrave('#                  foo                     ').html()).toBe(
 			'<h1 id="foo" data-text="foo">foo</h1>',
 		);
 	});
 
-	it('#68 | @MOD: enhanced heading with id', ({ expect }) => {
+	it('#68 | @MOD: enhanced heading with attributes', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-68
 		expect(engrave(' ### foo\n  ## foo\n   # foo').html()).toBe(
 			[
