@@ -17,7 +17,6 @@
 		text-align: center;
 	}
 	h1 {
-		font-family: var(--font-monospace);
 		font-size: 5rem;
 	}
 	a {

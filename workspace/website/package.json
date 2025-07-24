@@ -3,12 +3,13 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "svelte-kit sync && vite build",
-		"check": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
+		"build": "vite build",
+		"check": "svelte-check src --tsconfig ./tsconfig.json",
+		"prepare": "svelte-kit sync"
 	},
 	"devDependencies": {
+		"@fontsource-variable/crimson-pro": "^5.2.6",
 		"@fontsource-variable/fira-code": "^5.2.6",
-		"@fontsource-variable/karla": "^5.2.6",
 		"@ignatiusmb/styles": "^0.1.1",
 		"@sveltejs/adapter-vercel": "^5.7.2",
 		"@sveltejs/kit": "^2.21.5",

@@ -1,6 +1,6 @@
 :root {
-	--font-default: 'Karla Variable', 'Karla', system-ui, sans-serif;
-	--font-monospace: 'Fira Code Variable', 'Fira Code', 'Inconsolata', monospace;
+	--font-base: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+	--font-mono: ui-monospace, monospace;
 
 	--aubade-tab-size: 2;
 	--aubade-rounding: 0.3rem;
@@ -31,14 +31,8 @@
 	white-space: pre;
 }
 code {
-	position: relative;
-	top: -0.075rem;
-	padding: 0.15rem 0.3rem;
 	margin: 0 0.1rem;
-	border-radius: var(--aubade-rounding);
-	background: var(--aubade-background);
 	color: var(--aubade-text);
-	line-height: 1.5;
 	font-size: 0.8em; /* em - relative to wrapper */
 	white-space: nowrap;
 }
@@ -53,7 +47,8 @@ code {
 	border-bottom-right-radius: var(--aubade-rounding);
 	background: var(--aubade-background);
 	color: var(--aubade-text);
-	font-family: var(--font-monospace);
+	font-family: var(--font-mono);
+	font-variation-settings: var(--font-mono-variation);
 }
 [data-aubade='pre'] code {
 	top: 0;
@@ -104,8 +99,9 @@ code {
 	background-color: var(--aubade-header);
 	color: #fff;
 	font-weight: 300;
-	font-family: var(--font-monospace);
+	font-family: var(--font-mono);
 	font-size: clamp(0.8rem, 2vw, 0.95rem);
+	font-variation-settings: var(--font-mono-variation);
 }
 [data-aubade='header'].empty {
 	padding: 0;
@@ -117,7 +113,7 @@ code {
 }
 [data-aubade='header']::after,
 [data-aubade='header']::before {
-	font-family: var(--font-default);
+	font-family: var(--font-base);
 	font-size: 0.75rem;
 }
 [data-aubade='header'] > span {
