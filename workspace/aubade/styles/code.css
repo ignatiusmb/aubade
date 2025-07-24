@@ -323,7 +323,7 @@ code {
 	bottom: 2rem;
 	display: none;
 	padding: 0.3rem 0.6rem;
-	border-radius: calc(var(--aubade-rounding) * 2);
+	border-radius: var(--aubade-rounding);
 	background-color: #7c7c7c;
 	color: #ffffff;
 	transition: var(--aubade-transition);
