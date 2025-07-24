@@ -51,7 +51,7 @@
 		border: 1px solid rgba(124, 124, 124, 0.7);
 		border-radius: var(--radius);
 		letter-spacing: 2px;
-		font-family: var(--font-monospace);
+		font-family: var(--font-mono);
 	}
 	div {
 		display: grid;

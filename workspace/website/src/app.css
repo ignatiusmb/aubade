@@ -1,4 +1,8 @@
 :root {
+	--font-scale: 1.068;
+	--font-base: 'Crimson Pro Variable', serif;
+	--font-mono: 'Fira Code Variable', monospace;
+
 	--stone-050: #fafaf9;
 	--stone-100: #f5f5f4;
 	--stone-200: #e7e5e4;
@@ -34,8 +38,6 @@
 	--rose-800: #9f1239;
 	--rose-900: #881337;
 	--rose-950: #4c0519;
-
-	--font-mono: 'Fira Code', monospace;
 }
 
 html,
@@ -43,7 +45,8 @@ body {
 	height: 100%;
 	background: var(--stone-900);
 	color: var(--stone-200);
-	font-family: var(--font-default);
+	font-family: var(--font-base);
+	font-size: calc(1rem * var(--font-scale));
 }
 
 a {
