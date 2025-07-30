@@ -19,6 +19,21 @@ export function forge({ renderer = {} }: Options = {}) {
 			const children = token.children.map(render).join('');
 			return `<${token.tag}${attributes ? ' ' + attributes : ''}>${children}</${token.tag}>`;
 		},
+		'aubade:youtube': ({ token, render }) => {
+			const src = `https://www.youtube-nocookie.com/embed/${token.meta.id}`;
+			const attributes = [
+				'title="YouTube video player"',
+				'frameborder="0"',
+				'allowfullscreen',
+				'allow="autoplay; encrypted-media"',
+			];
+			return [
+				'<figure>',
+				`<iframe src="${src}" ${attributes.join(' ')}></iframe>`,
+				`<figcaption>${token.meta.caption.map(render)}</figcaption>`,
+				'</figure>',
+			].join('');
+		},
 
 		'block:heading': ({ token, render }) => {
 			const tag = `h${token.meta.level}`;

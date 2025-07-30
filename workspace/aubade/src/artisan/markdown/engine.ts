@@ -4,6 +4,7 @@ type Registry = [
 	// aubade registries
 	typeof registry.comment,
 	typeof registry.markup,
+	typeof registry.youtube,
 
 	// block registries
 	typeof registry.codeblock,
@@ -29,6 +30,7 @@ export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R
 export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
+	['@', [registry.youtube]],
 	['<', [registry.comment, registry.markup]],
 	['`', [registry.codeblock]],
 	['#', [registry.heading]],
@@ -36,6 +38,7 @@ const dispatch = new Map([
 	['-', [registry.divider, registry.list]],
 	['*', [registry.divider, registry.list]],
 	['_', [registry.divider]],
+	['\\', []],
 ] as ReadonlyArray<readonly [string, Registry[]]>);
 
 export interface Context {
@@ -108,7 +111,7 @@ const is: Context['is'] = {
 	},
 };
 
-function contextualize(source: string, stack: Token[]): Context {
+function contextualize(source: string, stack: Token[] = []): Context {
 	let pointer = 0;
 
 	const cursor: Context['cursor'] = {
@@ -231,8 +234,8 @@ export function compose(source: string): {
 		}
 
 		const start = input[index + context.cursor.index];
-		const known = (start === '\\' && []) || dispatch.get(start);
-		const token = match({ ...context, rules: known || [registry.divider, registry.heading] });
+		const rules = dispatch.get(start) || [registry.divider, registry.heading];
+		const token = match({ ...context, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
 		} else {
@@ -262,12 +265,9 @@ export function compose(source: string): {
 /** construct inline tokens from the source */
 export function annotate(source: string): Token[] {
 	const tree: Token[] = [];
-	const stack: Token[] = [];
-
+	const context = contextualize(source);
 	let index = 0;
 	while (index < source.length) {
-		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
-		const context = contextualize(source, stack);
 		context.cursor.index = index;
 		const token = match({
 			...context,
