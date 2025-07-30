@@ -43,6 +43,7 @@ export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[
 	const cleaned = raw.replace(/#.*$/gm, '').trim();
 	switch (cleaned[0]) {
 		case '-': {
+			if (cleaned[1] !== ' ') return coerce(cleaned);
 			const sequence = cleaned.split(/^- /gm).filter((v) => v);
 			const tabbed = sequence.map((v) =>
 				v.replace(/\n( +)/g, (_, s) => '\n' + '\t'.repeat(s.length / 2)),

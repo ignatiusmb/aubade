@@ -123,6 +123,28 @@ describe('parse', ({ concurrent: it }) => {
 		});
 	});
 
+	it('block | scalars with negative numbers', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'rating:',
+					'  category:',
+					'    - type: -1',
+					'    - type: -2',
+					'    - type: -3',
+					'  additional:',
+					'    - type: -2',
+					'    - type: -4',
+				].join('\n'),
+			),
+		).toEqual({
+			rating: {
+				category: [{ type: '-1' }, { type: '-2' }, { type: '-3' }],
+				additional: [{ type: '-2' }, { type: '-4' }],
+			},
+		});
+	});
+
 	it('block | nested sequences inside object entries', ({ expect }) => {
 		expect(
 			parse(
