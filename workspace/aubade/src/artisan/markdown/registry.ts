@@ -149,22 +149,15 @@ export function list({ cursor, compose }: Context): null | {
 	return null;
 }
 
-export function quote({ cursor, stack, compose }: Context): null | {
+export function quote({ cursor, compose }: Context): null | {
 	type: 'block:quote';
 	children: Token[];
 } {
-	const match = cursor.eat('>');
-	if (!match) return null;
-
-	const body = cursor.locate(/\n|$/).trim();
-	const { children } = compose(body);
-	const last = stack.peek();
-	if (last?.type === 'block:quote') {
-		last.children.push(...children);
-		return last;
-	}
-
-	return stack.push({ type: 'block:quote', children });
+	if (cursor.see(0) !== '>') return null;
+	const block = cursor.locate(/\n(?!>)|$/).trim();
+	const body = block.split('\n').map((l) => l.slice(1).trim());
+	const { children } = compose(body.join('\n'));
+	return { type: 'block:quote', children };
 }
 
 // --- inline registries ---
