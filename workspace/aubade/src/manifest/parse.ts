@@ -7,7 +7,7 @@ export interface FrontMatter {
 export function parse(raw: string, memo: Record<string, any> = {}): FrontMatter[string] {
 	raw = raw.trim();
 
-	if (raw[0] === raw[raw.length - 1] && (raw[0] === '"' || raw[0] === "'")) {
+	if ((raw[0] === '"' || raw[0] === "'") && raw.endsWith(raw[0])) {
 		return raw.slice(1, -1);
 	}
 
