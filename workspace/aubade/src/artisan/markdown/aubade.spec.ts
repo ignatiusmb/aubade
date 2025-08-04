@@ -27,8 +27,17 @@ describe('comments', ({ concurrent: it }) => {
 	});
 });
 
-describe.todo('directives', ({ concurrent: it }) => {
-	it;
+describe('directives', ({ concurrent: it }) => {
+	it('youtube', ({ expect }) => {
+		expect(engrave('@youtube[hitoribocchi tokyo](7TovqLDCosk)').html()).toBe(
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'</figure>',
+			].join(''),
+		);
+	});
 });
 
 describe.todo('fences', ({ concurrent: it }) => {
