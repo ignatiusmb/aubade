@@ -115,10 +115,13 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 	const title = cursor.locate(/\n|$/).trim();
 	if (!title.length) return null;
 
-	const sibling = stack.find('block:heading', (token) => token.meta.level === level);
-	if (sibling) stack.remove(sibling);
-
-	const parent = stack.find('block:heading', (token) => token.meta.level === level - 1);
+	const sibling = stack.findIndex(
+		(token) => token.type === 'block:heading' && token.meta.level === level,
+	);
+	if (sibling !== -1) stack.splice(sibling, 1);
+	const parent = stack.find((token): token is Extract<Token, { type: 'block:heading' }> => {
+		return token.type === 'block:heading' && token.meta.level === level - 1;
+	});
 
 	const children = annotate(title);
 	const attr = {
@@ -128,7 +131,8 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 		'data-text': children.map(extract).join(''),
 	};
 
-	return stack.push({ type: 'block:heading', meta: { level }, attr, children });
+	stack.push({ type: 'block:heading', meta: { level }, attr, children });
+	return { type: 'block:heading', meta: { level }, attr, children };
 
 	function extract(token: Token): string {
 		if ('children' in token) return token.children.map(extract).join('');

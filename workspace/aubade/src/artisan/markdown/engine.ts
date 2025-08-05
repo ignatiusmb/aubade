@@ -38,80 +38,29 @@ const dispatch = new Map([
 	['_', [registry.divider]],
 ] as ReadonlyArray<readonly [string, Registry[]]>);
 
-export interface Context {
-	cursor: {
-		/** current index in the source */
-		index: number;
+interface Cursor {
+	/** current index in the source */
+	index: number;
 
-		/** greedily consume until the last matching character */
-		consume(delimiter: string, update: (i: number) => boolean): string;
-		/** consume the input if it matches */
-		eat(text: string): boolean;
-		/** read a fixed number of characters */
-		read(length: number): string;
-		/** eat until `pattern` is found */
-		locate(pattern: RegExp): string;
-		/** see the `pattern` ahead */
-		peek(pattern: string | RegExp): string;
-		/** see the `n`-th character before/after */
-		see(n: number): string;
+	/** greedily consume until the last matching character */
+	consume(delimiter: string, update: (i: number) => boolean): string;
+	/** consume the input if it matches */
+	eat(text: string): boolean;
+	/** read a fixed number of characters */
+	read(length: number): string;
+	/** eat until `pattern` is found */
+	locate(pattern: RegExp): string;
+	/** see the `pattern` ahead */
+	peek(pattern: string | RegExp): string;
+	/** see the `n`-th character before/after */
+	see(n: number): string;
 
-		trim(): void;
-	};
-
-	is: {
-		'left-flanking'(before: string, after: string): boolean;
-		'right-flanking'(before: string, after: string): boolean;
-
-		alphanumeric(char: string): boolean;
-		punctuation(char: string): boolean;
-		whitespace(char: string): boolean;
-	};
-
-	stack: {
-		push<T extends Token>(token: T): T;
-		pop(): Token | undefined;
-		find<T extends Token['type']>(
-			type: T,
-			predicate?: (token: Extract<Token, { type: T }>) => boolean,
-		): Extract<Token, { type: T }> | undefined;
-		remove(token: Token): Token | undefined;
-		peek(): Token | undefined;
-	};
-
-	compose: typeof compose;
-	annotate: typeof annotate;
+	trim(): void;
 }
-
-const is: Context['is'] = {
-	'left-flanking'(before, after) {
-		return (
-			!is.whitespace(after) &&
-			(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
-		);
-	},
-	'right-flanking'(before, after) {
-		return (
-			!is.whitespace(before) &&
-			(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
-		);
-	},
-
-	alphanumeric(char) {
-		return /\p{L}|\p{N}|_/u.test(char);
-	},
-	punctuation(char) {
-		return /\p{P}|\p{S}/u.test(char);
-	},
-	whitespace(char) {
-		return /\p{Zs}/u.test(char) || /\s/.test(char);
-	},
-};
-
-function contextualize(source: string, stack: Token[]): Context {
+function contextualize(source: string): Cursor {
 	let pointer = 0;
 
-	const cursor: Context['cursor'] = {
+	return {
 		get index() {
 			return pointer;
 		},
@@ -180,34 +129,6 @@ function contextualize(source: string, stack: Token[]): Context {
 			}
 		},
 	};
-
-	return {
-		cursor,
-		is,
-		stack: {
-			peek() {
-				return stack[stack.length - 1];
-			},
-			push(token) {
-				stack.push(token);
-				return token;
-			},
-			pop() {
-				return stack.pop();
-			},
-			find(type, predicate = () => true) {
-				return stack.find((token): token is any => token.type === type && predicate(token as any));
-			},
-			remove(token) {
-				const index = stack.indexOf(token);
-				if (index === -1) return undefined;
-				return stack.splice(index, 1)[0];
-			},
-		},
-
-		compose,
-		annotate,
-	};
 }
 
 /** create the root document from the source */
@@ -222,22 +143,23 @@ export function compose(source: string): {
 
 	let index = 0;
 	while (index < input.length) {
-		const context = contextualize(input.slice(index), stack);
-		if (context.cursor.eat('\n')) {
+		const cursor = contextualize(input.slice(index));
+		if (cursor.eat('\n')) {
 			let current: Token | undefined = stack[stack.length - 1];
 			while (current?.type === 'block:paragraph' || current?.type === 'block:quote') {
 				current = stack.pop();
 			}
 		}
 
-		const start = input[index + context.cursor.index];
+		const start = input[index + cursor.index];
 		const known = (start === '\\' && []) || dispatch.get(start);
-		const token = match({ ...context, rules: known || [registry.divider, registry.heading] });
+		const rules = known || [registry.divider, registry.heading];
+		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
 		} else {
-			const text = context.cursor.locate(/\n|$/).trim();
-			context.cursor.eat('\n'); // eat the line feed
+			const text = cursor.locate(/\n|$/).trim();
+			cursor.eat('\n'); // eat the line feed
 
 			const last = stack[stack.length - 1];
 			if (last?.type === 'block:paragraph') last.text += '\n' + text;
@@ -246,7 +168,7 @@ export function compose(source: string): {
 				stack.push(tree[tree.length - 1]);
 			}
 		}
-		index += context.cursor.index;
+		index += cursor.index;
 	}
 
 	for (const parent of tree) {
@@ -267,10 +189,11 @@ export function annotate(source: string): Token[] {
 	let index = 0;
 	while (index < source.length) {
 		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
-		const context = contextualize(source, stack);
-		context.cursor.index = index;
+		const cursor = contextualize(source);
+		cursor.index = index;
 		const token = match({
-			...context,
+			cursor,
+			stack,
 			rules: [
 				// order matters
 				registry.linebreak,
@@ -287,25 +210,63 @@ export function annotate(source: string): Token[] {
 		});
 		if (token) tree.push(token);
 		else {
-			const char = context.cursor.read(1);
+			const char = cursor.read(1);
 			const last = tree[tree.length - 1];
 			if (last?.type === 'inline:text') last.text += char;
 			else tree.push({ type: 'inline:text', text: char });
 		}
-		index = context.cursor.index;
+		index = cursor.index;
 	}
 	return tree;
 }
 
-interface MatchContext extends Context {
-	rules: Registry[];
+const is = {
+	'left-flanking'(before: string, after: string): boolean {
+		return (
+			!is.whitespace(after) &&
+			(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
+		);
+	},
+	'right-flanking'(before: string, after: string): boolean {
+		return (
+			!is.whitespace(before) &&
+			(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
+		);
+	},
+
+	alphanumeric(char: string): boolean {
+		return /\p{L}|\p{N}|_/u.test(char);
+	},
+	punctuation(char: string): boolean {
+		return /\p{P}|\p{S}/u.test(char);
+	},
+	whitespace(char: string): boolean {
+		return /\p{Zs}/u.test(char) || /\s/.test(char);
+	},
+};
+
+export interface Context {
+	annotate: typeof annotate;
+	compose: typeof compose;
+
+	cursor: Cursor;
+	is: typeof is;
+	stack: Token[];
 }
-function match({ rules, ...context }: MatchContext) {
-	const start = context.cursor.index;
+
+type MatchContext = { cursor: Cursor; rules: Registry[]; stack: Token[] };
+function match({ cursor, rules, stack }: MatchContext) {
+	const start = cursor.index;
 	for (const rule of rules) {
-		const token = rule(context);
+		const token = rule({
+			annotate,
+			compose,
+			is,
+			cursor,
+			stack,
+		});
 		if (token) return token;
-		context.cursor.index = start;
+		cursor.index = start;
 	}
 	return null;
 }
