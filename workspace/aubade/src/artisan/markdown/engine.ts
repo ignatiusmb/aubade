@@ -197,8 +197,8 @@ export function annotate(source: string): Token[] {
 	});
 
 	let index = 0;
+	const cursor = contextualize(source);
 	while (index < source.length) {
-		const cursor = contextualize(source);
 		cursor.index = index;
 		const token = match({
 			cursor,
