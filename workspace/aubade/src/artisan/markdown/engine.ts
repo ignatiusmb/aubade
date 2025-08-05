@@ -26,7 +26,6 @@ type Registry = [
 	() => { type: 'inline:text'; text: string },
 ][number];
 export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
-export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
 	['<', [registry.comment, registry.markup]],
@@ -255,6 +254,7 @@ const is = {
 	},
 };
 
+type Dispatch = { [T in Token as T['type']]: T };
 export interface Context {
 	annotate: typeof annotate;
 	compose: typeof compose;
