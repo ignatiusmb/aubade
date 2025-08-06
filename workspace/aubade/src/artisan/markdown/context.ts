@@ -30,7 +30,7 @@ export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R
 export type Annotation = Extract<Token, { type: `${'aubade' | 'inline' | 'modifier'}:${string}` }>;
 export type Block = Extract<Token, { type: `${'aubade' | 'block'}:${string}` }>;
 
-export interface Cursor {
+interface Cursor {
 	/** current index in the source */
 	index: number;
 
