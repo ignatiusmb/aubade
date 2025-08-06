@@ -262,26 +262,22 @@ export interface Context {
 	stack: { [T in Token as T['type']]: T[] };
 }
 
-function match<Rules extends Registry[]>({
-	cursor,
-	rules,
-	stack,
-}: {
+function match<Rules extends Registry[]>(ctx: {
 	cursor: Cursor;
 	rules: Rules;
 	stack: Context['stack'];
 }): null | ReturnType<Rules[number]> {
-	const start = cursor.index;
-	for (const rule of rules) {
+	const start = ctx.cursor.index;
+	for (const rule of ctx.rules) {
 		const token = rule({
 			annotate,
 			compose,
 			is,
-			cursor,
-			stack,
+			cursor: ctx.cursor,
+			stack: ctx.stack,
 		}) as ReturnType<Rules[number]>;
 		if (token != null) return token;
-		cursor.index = start;
+		ctx.cursor.index = start;
 	}
 	return null;
 }
