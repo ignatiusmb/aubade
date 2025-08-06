@@ -123,6 +123,7 @@ function contextualize(source: string): Cursor {
 }
 
 const dispatch = new Map([
+	['\\', []], // escape falls back to paragraph
 	['<', [registry.comment, registry.markup]],
 	['`', [registry.codeblock]],
 	['#', [registry.heading]],
@@ -154,9 +155,8 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			}
 		}
 
-		const start = input[index + cursor.index];
-		const known = (start === '\\' && []) || dispatch.get(start);
-		const rules = known || [registry.divider, registry.heading];
+		const start = dispatch.get(input[index + cursor.index]);
+		const rules = start || [registry.divider, registry.heading];
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
