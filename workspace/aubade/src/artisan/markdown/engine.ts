@@ -253,14 +253,13 @@ const is = {
 	},
 };
 
-type Dispatch = { [T in Token as T['type']]: T };
 export interface Context {
 	annotate: typeof annotate;
 	compose: typeof compose;
 
 	cursor: Cursor;
 	is: typeof is;
-	stack: { [K in keyof Dispatch]: Dispatch[K][] };
+	stack: { [T in Token as T['type']]: T[] };
 }
 
 function match<Rules extends Registry[]>({
