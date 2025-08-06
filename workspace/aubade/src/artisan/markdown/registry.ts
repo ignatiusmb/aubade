@@ -1,4 +1,4 @@
-import type { Context, Token } from './engine.js';
+import type { Annotation, Block, Context } from './engine.js';
 
 // --- aubade registries ---
 
@@ -13,11 +13,11 @@ export function comment({ cursor }: Context): null | {
 	return { type: 'aubade:comment', text: comment.trim() };
 }
 
-export function markup({ cursor, compose }: Context): null | {
+export function markup({ compose, cursor }: Context): null | {
 	type: 'aubade:html';
 	tag: string;
 	attr: Record<string, string>;
-	children: Token[];
+	children: Block[];
 } {
 	if (!cursor.eat('<')) return null;
 
@@ -102,11 +102,11 @@ export function divider({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
-export function heading({ cursor, stack, annotate }: Context): null | {
+export function heading({ annotate, cursor, stack }: Context): null | {
 	type: 'block:heading';
 	meta: { level: number };
 	attr: { id: string; 'data-text': string };
-	children: Token[];
+	children: Annotation[];
 } {
 	cursor.trim(); // trim leading whitespace
 	const match = cursor.locate(/\s/);
@@ -134,15 +134,15 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
 	return stack['block:heading'].push(heading), heading;
 
-	function extract(token: Token): string {
+	function extract(token: Block | Annotation): string {
 		if ('children' in token) return token.children.map(extract).join('');
 		return 'text' in token ? token.text : '';
 	}
 }
 
-export function list({ cursor, compose }: Context): null | {
+export function list({ compose, cursor }: Context): null | {
 	type: 'block:list';
-	children: [];
+	children: Block[];
 } {
 	const char = cursor.read(1);
 	const bullet = char === '-' || char === '*';
@@ -153,9 +153,9 @@ export function list({ cursor, compose }: Context): null | {
 	return null;
 }
 
-export function quote({ cursor, compose }: Context): null | {
+export function quote({ compose, cursor }: Context): null | {
 	type: 'block:quote';
-	children: Token[];
+	children: Block[];
 } {
 	if (cursor.see(0) !== '>') return null;
 	const block = cursor.locate(/\n(?!>)|$/).trim();
@@ -264,10 +264,10 @@ export function linebreak({ cursor }: Context): null | {
 	return null;
 }
 
-export function link({ cursor, annotate }: Context): null | {
+export function link({ annotate, cursor }: Context): null | {
 	type: 'inline:link';
 	attr: { href: string; title: string };
-	children: Token[];
+	children: Annotation[];
 } {
 	if (!cursor.eat('[')) return null;
 	const name = cursor.locate(/]/).replace(/\n/g, ' ');
@@ -293,9 +293,9 @@ export function link({ cursor, annotate }: Context): null | {
 
 // --- modifier registries ---
 
-export function emphasis({ cursor, is, annotate }: Context): null | {
+export function emphasis({ annotate, cursor, is }: Context): null | {
 	type: 'modifier:emphasis';
-	children: Token[];
+	children: Annotation[];
 } {
 	const before = cursor.see(-1);
 	const after = cursor.see(1);
@@ -327,9 +327,9 @@ export function emphasis({ cursor, is, annotate }: Context): null | {
 	return { type: 'modifier:emphasis', children };
 }
 
-export function strike({ cursor, is, annotate }: Context): null | {
+export function strike({ annotate, cursor, is }: Context): null | {
 	type: 'modifier:strike';
-	children: Token[];
+	children: Annotation[];
 } {
 	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
 
@@ -344,9 +344,9 @@ export function strike({ cursor, is, annotate }: Context): null | {
 	return { type: 'modifier:strike', children };
 }
 
-export function strong({ cursor, is, annotate }: Context): null | {
+export function strong({ annotate, cursor, is }: Context): null | {
 	type: 'modifier:strong';
-	children: Token[];
+	children: Annotation[];
 } {
 	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
 	if (!cursor.eat('**')) return null;
