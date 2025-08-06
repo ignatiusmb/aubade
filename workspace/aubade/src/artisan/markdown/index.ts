@@ -1,5 +1,6 @@
+import type { Token } from './context.js';
 import { escape as sanitize } from '../utils.js';
-import { compose, type Token } from './engine.js';
+import { compose } from './engine.js';
 
 interface Resolver<T extends Token = Token> {
 	(panel: { token: T; render(token: Token): string; sanitize(text: string): string }): string;

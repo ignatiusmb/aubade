@@ -1,4 +1,4 @@
-import type { Annotation, Block, Context } from './engine.js';
+import type { Annotation, Block, Context } from './context.js';
 
 // --- aubade registries ---
 
