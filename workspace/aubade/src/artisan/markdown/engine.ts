@@ -11,7 +11,7 @@ type Registry = [
 	typeof registry.heading,
 	typeof registry.list,
 	typeof registry.quote,
-	() => { type: 'block:paragraph'; children: Token[]; text?: string },
+	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
 	typeof registry.escape,
@@ -26,16 +26,8 @@ type Registry = [
 	() => { type: 'inline:text'; text: string },
 ][number];
 export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
-
-const dispatch = new Map([
-	['<', [registry.comment, registry.markup]],
-	['`', [registry.codeblock]],
-	['#', [registry.heading]],
-	['>', [registry.quote]],
-	['-', [registry.divider, registry.list]],
-	['*', [registry.divider, registry.list]],
-	['_', [registry.divider]],
-] as ReadonlyArray<readonly [string, Registry[]]>);
+export type Annotation = Extract<Token, { type: `${'aubade' | 'inline' | 'modifier'}:${string}` }>;
+export type Block = Extract<Token, { type: `${'aubade' | 'block'}:${string}` }>;
 
 interface Cursor {
 	/** current index in the source */
@@ -130,12 +122,19 @@ function contextualize(source: string): Cursor {
 	};
 }
 
+const dispatch = new Map([
+	['<', [registry.comment, registry.markup]],
+	['`', [registry.codeblock]],
+	['#', [registry.heading]],
+	['>', [registry.quote]],
+	['-', [registry.divider, registry.list]],
+	['*', [registry.divider, registry.list]],
+	['_', [registry.divider]],
+]);
+
 /** create the root document from the source */
-export function compose(source: string): {
-	type: ':document';
-	children: Token[];
-} {
-	const root = { type: ':document' as const, children: [] as Token[] };
+export function compose(source: string): { type: ':document'; children: Block[] } {
+	const root = { type: ':document' as const, children: [] as Block[] };
 	const input = source.trim();
 	const tree = root.children;
 	const stack = new Proxy({} as Context['stack'], {
@@ -186,8 +185,8 @@ export function compose(source: string): {
 }
 
 /** construct inline tokens from the source */
-export function annotate(source: string): Token[] {
-	const tree: Token[] = [];
+export function annotate(source: string): Annotation[] {
+	const tree: Annotation[] = [];
 	const stack = new Proxy({} as Context['stack'], {
 		get(target, key: keyof Context['stack']) {
 			const container = target[key] || [];
@@ -264,12 +263,15 @@ export interface Context {
 	stack: { [K in keyof Dispatch]: Dispatch[K][] };
 }
 
-interface MatchContext {
+function match<Rules extends Registry[]>({
+	cursor,
+	rules,
+	stack,
+}: {
 	cursor: Cursor;
-	rules: Registry[];
+	rules: Rules;
 	stack: Context['stack'];
-}
-function match({ cursor, rules, stack }: MatchContext) {
+}): null | ReturnType<Rules[number]> {
 	const start = cursor.index;
 	for (const rule of rules) {
 		const token = rule({
@@ -278,8 +280,8 @@ function match({ cursor, rules, stack }: MatchContext) {
 			is,
 			cursor,
 			stack,
-		});
-		if (token) return token;
+		}) as ReturnType<Rules[number]>;
+		if (token != null) return token;
 		cursor.index = start;
 	}
 	return null;
