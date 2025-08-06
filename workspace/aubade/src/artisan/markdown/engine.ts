@@ -26,7 +26,6 @@ type Registry = [
 	() => { type: 'inline:text'; text: string },
 ][number];
 export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
-export type Dispatch = { [T in Token as T['type']]: T };
 
 const dispatch = new Map([
 	['<', [registry.comment, registry.markup]],
@@ -139,15 +138,20 @@ export function compose(source: string): {
 	const root = { type: ':document' as const, children: [] as Token[] };
 	const input = source.trim();
 	const tree = root.children;
-	const stack: Token[] = [];
+	const stack = new Proxy({} as Context['stack'], {
+		get(target, key: keyof Context['stack']) {
+			const container = target[key] || [];
+			target[key] = container as any;
+			return target[key];
+		},
+	});
 
 	let index = 0;
 	while (index < input.length) {
 		const cursor = contextualize(input.slice(index));
 		if (cursor.eat('\n')) {
-			let current: Token | undefined = stack[stack.length - 1];
-			while (current?.type === 'block:paragraph' || current?.type === 'block:quote') {
-				current = stack.pop();
+			for (const type of ['block:paragraph', 'block:quote'] as const) {
+				while (stack[type].length) stack[type].pop();
 			}
 		}
 
@@ -161,11 +165,11 @@ export function compose(source: string): {
 			const text = cursor.locate(/\n|$/).trim();
 			cursor.eat('\n'); // eat the line feed
 
-			const last = stack[stack.length - 1];
-			if (last?.type === 'block:paragraph') last.text += '\n' + text;
+			const q = stack['block:paragraph'];
+			if (q.length) q[q.length - 1].text += '\n' + text;
 			else {
-				tree.push({ type: 'block:paragraph', children: [], text });
-				stack.push(tree[tree.length - 1]);
+				const p = { type: 'block:paragraph' as const, children: [], text };
+				tree.push(p), q.push(p);
 			}
 		}
 		index += cursor.index;
@@ -184,12 +188,17 @@ export function compose(source: string): {
 /** construct inline tokens from the source */
 export function annotate(source: string): Token[] {
 	const tree: Token[] = [];
-	const stack: Token[] = [];
+	const stack = new Proxy({} as Context['stack'], {
+		get(target, key: keyof Context['stack']) {
+			const container = target[key] || [];
+			target[key] = container as any;
+			return target[key];
+		},
+	});
 
 	let index = 0;
+	const cursor = contextualize(source);
 	while (index < source.length) {
-		if (tree[tree.length - 1] !== stack[stack.length - 1]) stack.pop();
-		const cursor = contextualize(source);
 		cursor.index = index;
 		const token = match({
 			cursor,
@@ -245,16 +254,21 @@ const is = {
 	},
 };
 
+type Dispatch = { [T in Token as T['type']]: T };
 export interface Context {
 	annotate: typeof annotate;
 	compose: typeof compose;
 
 	cursor: Cursor;
 	is: typeof is;
-	stack: Token[];
+	stack: { [K in keyof Dispatch]: Dispatch[K][] };
 }
 
-type MatchContext = { cursor: Cursor; rules: Registry[]; stack: Token[] };
+interface MatchContext {
+	cursor: Cursor;
+	rules: Registry[];
+	stack: Context['stack'];
+}
 function match({ cursor, rules, stack }: MatchContext) {
 	const start = cursor.index;
 	for (const rule of rules) {

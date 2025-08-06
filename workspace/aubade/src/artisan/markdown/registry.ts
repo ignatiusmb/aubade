@@ -115,24 +115,24 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 	const title = cursor.locate(/\n|$/).trim();
 	if (!title.length) return null;
 
-	const sibling = stack.findIndex(
-		(token) => token.type === 'block:heading' && token.meta.level === level,
-	);
-	if (sibling !== -1) stack.splice(sibling, 1);
-	const parent = stack.find((token): token is Extract<Token, { type: 'block:heading' }> => {
-		return token.type === 'block:heading' && token.meta.level === level - 1;
-	});
-
 	const children = annotate(title);
 	const attr = {
-		id: `${parent?.attr.id || ''}-${title.toLowerCase()}`
+		id: title
+			.toLowerCase()
 			.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
 			.replace(/^-+|-+$|(?<=-)-+/g, ''),
 		'data-text': children.map(extract).join(''),
 	};
 
-	stack.push({ type: 'block:heading', meta: { level }, attr, children });
-	return { type: 'block:heading', meta: { level }, attr, children };
+	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
+		const { attr: parent, meta } = stack['block:heading'][i];
+		if (meta.level >= level) continue;
+		attr.id = `${parent.id}-${attr.id}`;
+		break;
+	}
+
+	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
+	return stack['block:heading'].push(heading), heading;
 
 	function extract(token: Token): string {
 		if ('children' in token) return token.children.map(extract).join('');
