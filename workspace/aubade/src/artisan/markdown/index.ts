@@ -70,10 +70,10 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<a ${attributes.join(' ')}>${children}</a>`;
 		},
 
-		'modifier:strong': ({ token, render }) =>
+		'inline:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
+		'inline:strike': ({ token, render }) => `<s>${token.children.map(render).join('')}</s>`,
+		'inline:strong': ({ token, render }) =>
 			`<strong>${token.children.map(render).join('')}</strong>`,
-		'modifier:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
-		'modifier:strike': ({ token, render }) => `<s>${token.children.map(render).join('')}</s>`,
 		'inline:text': ({ token, sanitize }) => sanitize(token.text || ''),
 		...renderer,
 	} satisfies Options['renderer'];

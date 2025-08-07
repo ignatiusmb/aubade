@@ -21,14 +21,14 @@ type Registry = [
 	typeof registry.codespan,
 	typeof registry.image,
 	typeof registry.link,
-	typeof registry.strong,
-	typeof registry.emphasis,
-	typeof registry.strike,
+	() => { type: 'inline:strong'; children: Annotation[] },
+	() => { type: 'inline:emphasis'; children: Annotation[] },
+	() => { type: 'inline:strike'; children: Annotation[] },
 	() => { type: 'inline:text'; text: string },
 ][number];
-export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
-export type Annotation = Extract<Token, { type: `${'aubade' | 'inline' | 'modifier'}:${string}` }>;
-export type Block = Extract<Token, { type: `${'aubade' | 'block'}:${string}` }>;
+export type Token = Registry extends (ctx: Context) => infer R ? NonNullable<R> : never;
+export type Annotation = Exclude<Token, { type: `block:${string}` }>;
+export type Block = Exclude<Token, { type: `inline:${string}` }>;
 
 interface Cursor {
 	/** current index in the source */
@@ -147,7 +147,7 @@ export const is = {
 		return /\p{Zs}/u.test(char) || /\s/.test(char);
 	},
 };
-export function match<Rules extends Registry[]>(ctx: {
+export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
 	cursor: Cursor;
 	rules: Rules;
 	stack: Context['stack'];
@@ -160,7 +160,7 @@ export function match<Rules extends Registry[]>(ctx: {
 			is,
 			cursor: ctx.cursor,
 			stack: ctx.stack,
-		}) as ReturnType<Rules[number]>;
+		}) as null | ReturnType<Rules[number]>;
 		if (token != null) return token;
 		ctx.cursor.index = start;
 	}

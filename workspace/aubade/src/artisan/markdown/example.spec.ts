@@ -759,7 +759,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('*(**foo**)*').html()).toBe('<p><em>(<strong>foo</strong>)</em></p>');
 	});
 
-	it.todo('#394', ({ expect }) => {
+	it('#394', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-394
 		expect(
 			engrave('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**').html(),
