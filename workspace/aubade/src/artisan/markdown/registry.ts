@@ -163,6 +163,15 @@ export function heading({ annotate, cursor, stack }: Context): null | {
 		break;
 	}
 
+	const blocks = stack['block:heading'];
+	if (blocks.some((h) => h.attr.id === attr.id)) {
+		let suffix = 1;
+		while (blocks.some((h) => h.attr.id === `${attr.id}-${suffix}`)) {
+			suffix++;
+		}
+		attr.id = `${attr.id}-${suffix}`;
+	}
+
 	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
 	return stack['block:heading'].push(heading), heading;
 
