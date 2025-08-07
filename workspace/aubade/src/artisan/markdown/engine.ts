@@ -2,17 +2,6 @@ import type { Annotation, Block, Context } from './context.js';
 import { contextualize, match } from './context.js';
 import * as registry from './registry.js';
 
-const dispatch = new Map([
-	['\\', []], // escape falls back to paragraph
-	['<', [registry.comment, registry.markup]],
-	['`', [registry.codeblock]],
-	['#', [registry.heading]],
-	['>', [registry.quote]],
-	['-', [registry.divider, registry.list]],
-	['*', [registry.divider, registry.list]],
-	['_', [registry.divider]],
-]);
-
 /** create the root document from the source */
 export function compose(source: string): { type: ':document'; children: Block[] } {
 	const root = { type: ':document' as const, children: [] as Block[] };
@@ -25,6 +14,17 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			return target[key];
 		},
 	});
+
+	const dispatch = new Map([
+		['\\', []], // escape falls back to paragraph
+		['<', [registry.comment, registry.markup]],
+		['`', [registry.codeblock]],
+		['#', [registry.heading]],
+		['>', [registry.quote]],
+		['-', [registry.divider, registry.list]],
+		['*', [registry.divider, registry.list]],
+		['_', [registry.divider]],
+	]);
 
 	let index = 0;
 	while (index < input.length) {
@@ -64,9 +64,10 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	return root;
 }
 
+type Run = NonNullable<ReturnType<typeof registry.delimiter>>;
 /** construct inline tokens from the source */
 export function annotate(source: string): Annotation[] {
-	const tree: Annotation[] = [];
+	const runs: Array<Annotation | Run> = [];
 	const stack = new Proxy({} as Context['stack'], {
 		get(target, key: keyof Context['stack']) {
 			const container = target[key] || [];
@@ -75,35 +76,76 @@ export function annotate(source: string): Annotation[] {
 		},
 	});
 
+	const dispatch = new Map([
+		['\n', [registry.linebreak]],
+		['\\', [registry.linebreak, registry.escape]],
+		['<', [registry.comment, registry.markup, registry.autolink]],
+		['`', [registry.codespan]],
+		['!', [registry.image]],
+		['[', [registry.link]],
+		['*', [registry.delimiter]],
+		['_', [registry.delimiter]],
+		['~', [registry.delimiter]],
+	]);
+
 	let index = 0;
 	const cursor = contextualize(source);
 	while (index < source.length) {
 		cursor.index = index;
-		const token = match({
-			cursor,
-			stack,
-			rules: [
-				// order matters
-				registry.linebreak,
-				registry.escape,
-				registry.comment,
-				registry.codespan,
-				registry.autolink,
-				registry.image,
-				registry.link,
-				registry.strong,
-				registry.emphasis,
-				registry.strike,
-			],
-		});
-		if (token) tree.push(token);
+		const rules = dispatch.get(source[index]) || [registry.autolink];
+		const token = match({ cursor, stack, rules });
+		if (token) runs.push(token);
 		else {
 			const char = cursor.read(1);
-			const last = tree[tree.length - 1];
+			const last = runs[runs.length - 1];
 			if (last?.type === 'inline:text') last.text += char;
-			else tree.push({ type: 'inline:text', text: char });
+			else runs.push({ type: 'inline:text', text: char });
 		}
 		index = cursor.index;
 	}
-	return tree;
+
+	return pair(runs);
+}
+
+function pair(runs: Array<Annotation | Run>): Annotation[] {
+	const stack: { run: Run; tokens: Annotation[] }[] = [];
+	const root: Annotation[] = [];
+	for (let i = 0; i < runs.length; i++) {
+		const current = runs[i];
+		if (current.type !== 'aubade:delimiter') {
+			const tree = stack[stack.length - 1]?.tokens || root;
+			tree.push(current);
+			continue;
+		}
+
+		if (current.meta.can.close && stack.length > 0) {
+			const { run: opening, tokens } = stack.pop()!;
+			if (opening.meta.char !== current.meta.char) {
+				const remainder = current.meta.char.repeat(current.meta.count);
+				tokens.push({ type: 'inline:text', text: remainder });
+				stack.push({ run: opening, tokens });
+				continue;
+			}
+
+			const used = Math.min(opening.meta.count, current.meta.count, 2);
+			opening.meta.count -= used;
+			current.meta.count -= used;
+
+			const tree = stack[stack.length - 1]?.tokens || root;
+			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
+			const children = opening.meta.count ? pair([opening, ...tokens, current]) : tokens;
+			tree.push({ type: `inline:${mod}`, children });
+		} else if (current.meta.can.open) {
+			stack.push({ run: current, tokens: [] });
+		} else {
+			const tree = stack[stack.length - 1]?.tokens || root;
+			const remainder = current.meta.char.repeat(current.meta.count);
+			tree.push({ type: 'inline:text', text: remainder });
+		}
+	}
+	for (const { run, tokens } of stack) {
+		const remainder = run.meta.char.repeat(run.meta.count);
+		root.push({ type: 'inline:text', text: remainder }, ...tokens);
+	}
+	return root;
 }

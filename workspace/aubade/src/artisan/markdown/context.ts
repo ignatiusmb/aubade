@@ -21,38 +21,20 @@ type Registry = [
 	typeof registry.codespan,
 	typeof registry.image,
 	typeof registry.link,
-	typeof registry.strong,
-	typeof registry.emphasis,
-	typeof registry.strike,
+	() => { type: 'inline:strong'; children: Annotation[] },
+	() => { type: 'inline:emphasis'; children: Annotation[] },
+	() => { type: 'inline:strike'; children: Annotation[] },
 	() => { type: 'inline:text'; text: string },
 ][number];
-export type Token = Registry extends (...args: any[]) => infer R ? NonNullable<R> : never;
-export type Annotation = Extract<Token, { type: `${'aubade' | 'inline' | 'modifier'}:${string}` }>;
-export type Block = Extract<Token, { type: `${'aubade' | 'block'}:${string}` }>;
+export type Token = Registry extends (ctx: Context) => infer R ? NonNullable<R> : never;
+export type Annotation = Exclude<Token, { type: `block:${string}` }>;
+export type Block = Exclude<Token, { type: `inline:${string}` }>;
 
-interface Cursor {
-	/** current index in the source */
-	index: number;
-
-	/** greedily consume until the last matching character */
-	consume(delimiter: string, update: (i: number) => boolean): string;
-	/** consume the input if it matches */
-	eat(text: string): boolean;
-	/** read a fixed number of characters */
-	read(length: number): string;
-	/** eat until `pattern` is found */
-	locate(pattern: RegExp): string;
-	/** see the `pattern` ahead */
-	peek(pattern: string | RegExp): string;
-	/** see the `n`-th character before/after */
-	see(n: number): string;
-
-	trim(): void;
-}
-export function contextualize(source: string): Cursor {
+export function contextualize(source: string) {
 	let pointer = 0;
 
 	return {
+		/** current index in the source */
 		get index() {
 			return pointer;
 		},
@@ -60,7 +42,8 @@ export function contextualize(source: string): Cursor {
 			pointer = value;
 		},
 
-		consume(delimiter, update) {
+		/** greedily consume until the last matching character */
+		consume(delimiter: string, update: (i: number) => boolean): string {
 			let i = pointer;
 			let last = -1;
 
@@ -77,19 +60,22 @@ export function contextualize(source: string): Cursor {
 			pointer = last;
 			return result;
 		},
-		eat(text) {
+		/** consume the input if it matches */
+		eat(text: string): boolean {
 			if (text.length === 1) return source[pointer] === text && !!++pointer;
 			if (text !== source.slice(pointer, pointer + text.length)) return false;
 			pointer += text.length;
 			return true;
 		},
-		read(length) {
+		/** read a fixed number of characters */
+		read(length: number): string {
 			if (length === 1) return source[pointer++];
 			const text = source.slice(pointer, pointer + length);
 			pointer += text.length;
 			return text;
 		},
-		locate(pattern) {
+		/** eat until `pattern` is found */
+		locate(pattern: RegExp): string {
 			const start = pointer;
 			const match = pattern.exec(source.slice(pointer));
 			if (match) {
@@ -98,7 +84,8 @@ export function contextualize(source: string): Cursor {
 			}
 			return '';
 		},
-		peek(pattern) {
+		/** see the `pattern` ahead */
+		peek(pattern: string | RegExp): string {
 			if (typeof pattern === 'string') {
 				if (pattern.length === 1) return source[pointer] === pattern ? pattern : '';
 				return source.slice(pointer, pointer + pattern.length) === pattern ? pattern : '';
@@ -106,8 +93,9 @@ export function contextualize(source: string): Cursor {
 			const match = pattern.exec(source.slice(pointer));
 			return match ? source.slice(pointer, pointer + match.index) : '';
 		},
-		see(n) {
-			if (n === 0) return source[pointer];
+		/** see the `n`-th character before/after */
+		see(n: number): string {
+			if (n === 0) return source[pointer] || ' ';
 			const index = pointer + n;
 			// treat out-of-bounds as whitespace
 			if (n < 0 && index < 0) return ' ';
@@ -115,7 +103,7 @@ export function contextualize(source: string): Cursor {
 			return source[index];
 		},
 
-		trim() {
+		trim(): void {
 			while (pointer < source.length && /\s/.test(source[pointer])) {
 				pointer++;
 			}
@@ -147,8 +135,8 @@ export const is = {
 		return /\p{Zs}/u.test(char) || /\s/.test(char);
 	},
 };
-export function match<Rules extends Registry[]>(ctx: {
-	cursor: Cursor;
+export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
+	cursor: ReturnType<typeof contextualize>;
 	rules: Rules;
 	stack: Context['stack'];
 }): null | ReturnType<Rules[number]> {
@@ -160,7 +148,7 @@ export function match<Rules extends Registry[]>(ctx: {
 			is,
 			cursor: ctx.cursor,
 			stack: ctx.stack,
-		}) as ReturnType<Rules[number]>;
+		}) as null | ReturnType<Rules[number]>;
 		if (token != null) return token;
 		ctx.cursor.index = start;
 	}
@@ -171,7 +159,7 @@ export interface Context {
 	annotate: typeof annotate;
 	compose: typeof compose;
 
-	cursor: Cursor;
+	cursor: ReturnType<typeof contextualize>;
 	is: typeof is;
 	stack: { [T in Token as T['type']]: T[] };
 }

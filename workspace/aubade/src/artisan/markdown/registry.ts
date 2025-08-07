@@ -13,6 +13,38 @@ export function comment({ cursor }: Context): null | {
 	return { type: 'aubade:comment', text: comment.trim() };
 }
 
+export function delimiter({ cursor, is }: Context): null | {
+	type: 'aubade:delimiter';
+	text: string;
+	meta: {
+		char: '*' | '_' | '~';
+		count: number;
+		can: { open: boolean; close: boolean };
+	};
+} {
+	let count = 1;
+	const before = cursor.see(-1);
+	const char = cursor.read(1) as '*' | '_' | '~';
+	while (cursor.eat(char)) count++;
+	const after = cursor.see(0);
+
+	// underscore cannot be used for emphasis inside words
+	// https://spec.commonmark.org/0.31.2/#example-360
+	// https://spec.commonmark.org/0.31.2/#example-374
+	const intra = is.alphanumeric(before) && is.alphanumeric(after);
+	const left = is['left-flanking'](before, after);
+	const right = is['right-flanking'](before, after);
+	const can = {
+		open: char === '_' ? !intra && left : left,
+		close: char === '_' ? !intra && right : right,
+	};
+	return {
+		type: 'aubade:delimiter',
+		text: char.repeat(count),
+		meta: { char, count, can },
+	};
+}
+
 export function markup({ compose, cursor }: Context): null | {
 	type: 'aubade:html';
 	tag: string;
@@ -289,76 +321,4 @@ export function link({ annotate, cursor }: Context): null | {
 		attr: { href, title: title.trim() },
 		children: annotate(name),
 	};
-}
-
-// --- modifier registries ---
-
-export function emphasis({ annotate, cursor, is }: Context): null | {
-	type: 'modifier:emphasis';
-	children: Annotation[];
-} {
-	const before = cursor.see(-1);
-	const after = cursor.see(1);
-	if (!is['left-flanking'](before, after)) return null;
-
-	const char = cursor.read(1);
-	// double asterisk handled by `modifier:strong`
-	if (char !== '*' && char !== '_') return null;
-	if (before === char) return null; // failed strong rule
-	if (cursor.peek(char)) return null; // immediately closed
-
-	// underscore cannot be used for emphasis inside words
-	// https://spec.commonmark.org/0.31.2/#example-360
-	if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return null;
-
-	const body = cursor.consume(char, (i) => {
-		const before = cursor.see(i - 1);
-		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i + 1);
-		// https://spec.commonmark.org/0.31.2/#example-374
-		if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return false;
-		return is['right-flanking'](before, after);
-	});
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	cursor.eat(char);
-
-	const children = annotate(body);
-	return { type: 'modifier:emphasis', children };
-}
-
-export function strike({ annotate, cursor, is }: Context): null | {
-	type: 'modifier:strike';
-	children: Annotation[];
-} {
-	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
-
-	if (!cursor.eat('~~')) return null;
-	const body = cursor.locate(/~~/);
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	if (!is['right-flanking'](cursor.see(-2), cursor.see(1))) return null;
-	cursor.eat('~~');
-
-	const children = annotate(body);
-	return { type: 'modifier:strike', children };
-}
-
-export function strong({ annotate, cursor, is }: Context): null | {
-	type: 'modifier:strong';
-	children: Annotation[];
-} {
-	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
-	if (!cursor.eat('**')) return null;
-	const body = cursor.consume('**', (i) => {
-		const before = cursor.see(i - 1);
-		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i + 2);
-		return is['right-flanking'](before, after);
-	});
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	cursor.eat('**');
-	const children = annotate(body);
-	return { type: 'modifier:strong', children };
 }
