@@ -127,11 +127,12 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 			}
 
 			const used = Math.min(opening.meta.count, current.meta.count, 2);
-			opening.meta.count -= used;
-			current.meta.count -= used;
 			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
 			const tree = stack[stack.length - 1]?.tokens || root;
 			tree.push({ type: `inline:${mod}`, children: tokens });
+
+			opening.meta.count -= used;
+			current.meta.count -= used;
 			if (opening.meta.count) {
 				if (tree !== root) stack[stack.length - 1].tokens = [];
 				stack.push({ run: opening, tokens: tree.slice() });
