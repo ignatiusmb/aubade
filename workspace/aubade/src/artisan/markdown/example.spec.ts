@@ -978,7 +978,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('__foo_ bar_').html()).toBe('<p><em><em>foo</em> bar</em></p>');
 	});
 
-	it.todo('#409', ({ expect }) => {
+	it('#409', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-409
 		expect(engrave('*foo *bar**').html()).toBe('<p><em>foo <em>bar</em></em></p>');
 	});

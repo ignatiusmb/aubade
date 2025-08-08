@@ -145,13 +145,16 @@ describe('inline', ({ concurrent: it }) => {
 		);
 	});
 
-	it.todo('modifiers | nested emphasis', ({ expect }) => {
-		expect(engrave('***bold italic***').html()).toBe(
-			'<p><strong><em>bold italic</em></strong></p>',
-		);
+	it('modifiers | nested unique emphasis', ({ expect }) => {
 		expect(engrave('_**italic bold**_').html()).toBe(
 			'<p><em><strong>italic bold</strong></em></p>',
 		);
+		expect(engrave('**_bold italic_**').html()).toBe(
+			'<p><strong><em>bold italic</em></strong></p>',
+		);
+	});
+	it('modifiers | nested common emphasis', ({ expect }) => {
+		expect(engrave('***both***').html()).toBe('<p><em><strong>both</strong></em></p>');
 	});
 	it('modifiers | markers for strikethrough', ({ expect }) => {
 		expect(engrave('~~strike~~').html()).toBe('<p><s>strike</s></p>');
