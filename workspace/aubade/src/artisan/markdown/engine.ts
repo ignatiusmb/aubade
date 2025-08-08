@@ -124,10 +124,13 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 				const text = current.meta.char.repeat(current.meta.count);
 				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
 				continue;
+			} else if (current.meta.can.open && current.meta.count > opening.meta.count) {
+				stack.push({ run: opening, tokens }, { run: current, tokens: [] });
+				continue;
 			}
 
 			const used = Math.min(opening.meta.count, current.meta.count, 2);
-			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
+			const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
 			const tree = stack[stack.length - 1]?.tokens || root;
 			tree.push({ type: `inline:${mod}`, children: tokens });
 
