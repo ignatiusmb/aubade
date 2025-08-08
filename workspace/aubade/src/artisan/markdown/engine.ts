@@ -110,31 +110,34 @@ export function annotate(source: string): Annotation[] {
 function pair(runs: Array<Annotation | Run>): Annotation[] {
 	const stack: { run: Run; tokens: Annotation[] }[] = [];
 	const root: Annotation[] = [];
-	for (let i = 0; i < runs.length; i++) {
-		const current = runs[i];
+	for (const current of runs) {
 		if (current.type !== 'aubade:delimiter') {
 			const tree = stack[stack.length - 1]?.tokens || root;
 			tree.push(current);
 			continue;
 		}
 
+		if (!current.meta.count) continue;
 		if (current.meta.can.close && stack.length > 0) {
 			const { run: opening, tokens } = stack.pop()!;
 			if (opening.meta.char !== current.meta.char) {
-				const remainder = current.meta.char.repeat(current.meta.count);
-				tokens.push({ type: 'inline:text', text: remainder });
-				stack.push({ run: opening, tokens });
+				const text = current.meta.char.repeat(current.meta.count);
+				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
 				continue;
 			}
 
 			const used = Math.min(opening.meta.count, current.meta.count, 2);
+			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
+			const tree = stack[stack.length - 1]?.tokens || root;
+			tree.push({ type: `inline:${mod}`, children: tokens });
+
 			opening.meta.count -= used;
 			current.meta.count -= used;
-
-			const tree = stack[stack.length - 1]?.tokens || root;
-			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
-			const children = opening.meta.count ? pair([opening, ...tokens, current]) : tokens;
-			tree.push({ type: `inline:${mod}`, children });
+			if (opening.meta.count) {
+				if (tree !== root) stack[stack.length - 1].tokens = [];
+				stack.push({ run: opening, tokens: tree.slice() });
+				if (tree === root) root.length = 0;
+			}
 		} else if (current.meta.can.open) {
 			stack.push({ run: current, tokens: [] });
 		} else {

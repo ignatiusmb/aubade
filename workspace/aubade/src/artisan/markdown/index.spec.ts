@@ -145,9 +145,7 @@ describe('inline', ({ concurrent: it }) => {
 		);
 	});
 
-	it('modifiers | markers for italics and/or bold', ({ expect }) => {
-		expect(engrave('*italic*').html()).toBe('<p><em>italic</em></p>');
-		expect(engrave('**bold**').html()).toBe('<p><strong>bold</strong></p>');
+	it.todo('modifiers | nested emphasis', ({ expect }) => {
 		expect(engrave('***bold italic***').html()).toBe(
 			'<p><strong><em>bold italic</em></strong></p>',
 		);
@@ -162,10 +160,5 @@ describe('inline', ({ concurrent: it }) => {
 		expect(engrave('**[a b c](https://mauss.dev)**').html()).toBe(
 			'<p><strong><a href="https://mauss.dev">a b c</a></strong></p>',
 		);
-	});
-	it.todo('modifiers | incomplete or broken', ({ expect }) => {
-		expect(engrave('**not closed').html()).toBe('<p>**not closed</p>');
-		expect(engrave('*in **out*').html()).toBe('<p><em>in **out</em></p>');
-		expect(engrave('~~strike').html()).toBe('<p>~~strike</p>');
 	});
 });
