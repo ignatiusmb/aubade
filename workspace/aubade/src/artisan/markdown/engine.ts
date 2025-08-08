@@ -120,12 +120,12 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 		if (!current.meta.count) continue;
 		if (current.meta.can.close && stack.length > 0) {
 			const { run: opening, tokens } = stack.pop()!;
-			if (opening.meta.char !== current.meta.char) {
+			if (current.meta.can.open && current.meta.count > opening.meta.count) {
+				stack.push({ run: opening, tokens }, { run: current, tokens: [] });
+				continue;
+			} else if (opening.meta.char !== current.meta.char) {
 				const text = current.meta.char.repeat(current.meta.count);
 				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
-				continue;
-			} else if (current.meta.can.open && current.meta.count > opening.meta.count) {
-				stack.push({ run: opening, tokens }, { run: current, tokens: [] });
 				continue;
 			}
 
