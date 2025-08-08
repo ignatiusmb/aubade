@@ -138,6 +138,21 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 				stack.push({ run: opening, tokens: tree.slice() });
 				if (tree === root) root.length = 0;
 			}
+			while (current.meta.count) {
+				if (stack.find(({ run }) => run.meta.char === current.meta.char)) {
+					const { run, tokens } = stack.pop()!;
+					const tree = stack[stack.length - 1]?.tokens || root;
+					if (run.meta.char !== current.meta.char) {
+						const remainder = current.meta.char.repeat(current.meta.count);
+						tree.push({ type: 'inline:text', text: remainder });
+					} else tree.push(...pair([run, ...tokens, current]));
+				} else {
+					const remainder = current.meta.char.repeat(current.meta.count);
+					const tree = stack[stack.length - 1]?.tokens || root;
+					tree.push({ type: 'inline:text', text: remainder });
+					break;
+				}
+			}
 		} else if (current.meta.can.open) {
 			stack.push({ run: current, tokens: [] });
 		} else {
