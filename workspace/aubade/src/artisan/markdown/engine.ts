@@ -120,14 +120,17 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 		if (!current.meta.count) continue;
 		if (current.meta.can.close && stack.length > 0) {
 			const { run: opening, tokens } = stack.pop()!;
-			if (opening.meta.char !== current.meta.char) {
+			if (current.meta.can.open && current.meta.count > opening.meta.count) {
+				stack.push({ run: opening, tokens }, { run: current, tokens: [] });
+				continue;
+			} else if (opening.meta.char !== current.meta.char) {
 				const text = current.meta.char.repeat(current.meta.count);
 				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
 				continue;
 			}
 
 			const used = Math.min(opening.meta.count, current.meta.count, 2);
-			const mod = current.meta.char !== '~' ? (used >= 2 ? 'strong' : 'emphasis') : 'strike';
+			const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
 			const tree = stack[stack.length - 1]?.tokens || root;
 			tree.push({ type: `inline:${mod}`, children: tokens });
 
