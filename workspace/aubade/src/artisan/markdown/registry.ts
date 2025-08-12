@@ -134,7 +134,7 @@ export function divider({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
-export function heading({ annotate, cursor, stack }: Context): null | {
+export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	type: 'block:heading';
 	meta: { level: number };
 	attr: { id: string; 'data-text': string };
@@ -172,21 +172,16 @@ export function heading({ annotate, cursor, stack }: Context): null | {
 
 	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
 	return stack['block:heading'].push(heading), heading;
-
-	function extract(token: Block | Annotation): string {
-		if ('children' in token) return token.children.map(extract).join('');
-		return 'text' in token ? token.text : '';
-	}
 }
 
 export function list({ compose, cursor }: Context): null | {
 	type: 'block:list';
+	ordered: boolean;
 	children: Block[];
 } {
-	const char = cursor.read(1);
-	const bullet = char === '-' || char === '*';
-	const number = /^\d/.test(char);
-	if (!bullet && !number) return null;
+	const match = cursor.peek(/^[ \t]{0,1}([-+*]|\d+[.)])\s+/);
+	if (!match) return null;
+	// const ordered = /^\d/.test(match[1]);
 	// @TODO: implement
 	compose; // recursive call to parse the list items
 	return null;
@@ -303,7 +298,7 @@ export function linebreak({ cursor }: Context): null | {
 	return null;
 }
 
-export function link({ annotate, cursor }: Context): null | {
+export function link({ annotate, extract, cursor }: Context): null | {
 	type: 'inline:link';
 	attr: { href: string; title: string };
 	children: Annotation[];
@@ -317,7 +312,7 @@ export function link({ annotate, cursor }: Context): null | {
 	cursor.trim(); // eat whitespace between link and optionally title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.trim(); // eat whitespace between optionally title and closing `)`
+	cursor.eat('"'), cursor.trim(); // eat closing quote and whitespace
 
 	// includes backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && href.includes('`');
@@ -325,7 +320,10 @@ export function link({ annotate, cursor }: Context): null | {
 
 	return {
 		type: 'inline:link',
-		attr: { href, title: title.trim() },
+		attr: {
+			href: annotate(href).map(extract).join(''),
+			title: annotate(title.trim()).map(extract).join(''),
+		},
 		children: annotate(name),
 	};
 }

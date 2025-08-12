@@ -214,7 +214,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('<a href="/bar\\/)"></a>').html()).toBe('<a href="/bar\\/)"></a>');
 	});
 
-	it.todo('#22', ({ expect }) => {
+	it('#22', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-22
 		expect(engrave('[foo](/bar\\* "ti\\*tle")').html()).toBe(
 			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
@@ -234,8 +234,6 @@ describe('spec', ({ concurrent: it }) => {
 			'<pre data-language="foo+bar"><code>foo</code></pre>',
 		);
 	});
-
-	// @WIP: 23-41
 
 	it('#25 | @MOD: HTML5 entities are left as-is', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-25
