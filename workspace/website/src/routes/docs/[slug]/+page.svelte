@@ -16,7 +16,7 @@
 		style:margin-bottom="0.5rem"
 		style:letter-spacing="2px"
 		style:font-size="1.25rem"
-		style:font-family="var(--font-monospace)"
+		style:font-family="var(--font-mono)"
 		data-prefix="v"
 	>
 		{version}

@@ -1,5 +1,5 @@
 <script>
-	import '@fontsource-variable/karla';
+	import '@fontsource-variable/crimson-pro';
 	import '@fontsource-variable/fira-code';
 	import '@ignatiusmb/styles/core.css';
 	import 'aubade/styles/code.css';
