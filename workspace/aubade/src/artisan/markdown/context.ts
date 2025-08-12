@@ -111,6 +111,11 @@ export function contextualize(source: string) {
 	};
 }
 
+function extract(token: Token): string {
+	if ('children' in token) return token.children.map(extract).join('');
+	return 'text' in token ? token.text : '';
+}
+
 export const is = {
 	'left-flanking'(before: string, after: string): boolean {
 		return (
@@ -145,6 +150,7 @@ export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
 		const token = rule({
 			annotate,
 			compose,
+			extract,
 			is,
 			cursor: ctx.cursor,
 			stack: ctx.stack,
@@ -158,6 +164,7 @@ export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
 export interface Context {
 	annotate: typeof annotate;
 	compose: typeof compose;
+	extract: typeof extract;
 
 	cursor: ReturnType<typeof contextualize>;
 	is: typeof is;
