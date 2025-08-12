@@ -256,9 +256,9 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it('#26 | @MOD: decimal numeric characters are left as-is', ({ expect }) => {
+	it('#26', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-26
-		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p>&#35; &#1234; &#992; &#0;</p>');
+		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p># Ӓ Ϡ �</p>');
 	});
 
 	it.todo('#27 | @MOD: hexadecimal numeric characters are left as-is', ({ expect }) => {
@@ -330,9 +330,9 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('').html()).toBe('');
 	});
 
-	it.todo('#37', ({ expect }) => {
+	it('#37', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-37
-		expect(engrave('').html()).toBe('');
+		expect(engrave('&#42;foo&#42;\n*foo*').html()).toBe('<p>*foo*\n<em>foo</em></p>');
 	});
 
 	it.todo('#38', ({ expect }) => {
