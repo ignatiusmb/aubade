@@ -320,14 +320,16 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it.todo('#35', ({ expect }) => {
+	it('#35', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-35
-		expect(engrave('').html()).toBe('');
+		expect(engrave('`f&ouml;&ouml;`').html()).toBe('<p><code>f&amp;ouml;&amp;ouml;</code></p>');
 	});
 
-	it.todo('#36', ({ expect }) => {
+	it('#36 | @MOD: code blocks with triple backticks', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-36
-		expect(engrave('').html()).toBe('');
+		expect(engrave('```\nf&ouml;f&ouml;\n```').html()).toBe(
+			'<pre><code>f&amp;ouml;f&amp;ouml;</code></pre>',
+		);
 	});
 
 	it.todo('#37', ({ expect }) => {
