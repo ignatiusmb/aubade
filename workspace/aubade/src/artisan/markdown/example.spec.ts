@@ -254,9 +254,9 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it('#26 | @MOD: decimal numeric characters are left as-is', ({ expect }) => {
+	it('#26', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-26
-		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p>&#35; &#1234; &#992; &#0;</p>');
+		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p># Ӓ Ϡ �</p>');
 	});
 
 	it.todo('#27 | @MOD: hexadecimal numeric characters are left as-is', ({ expect }) => {
@@ -330,29 +330,29 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it.todo('#37', ({ expect }) => {
+	it('#37', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-37
-		expect(engrave('').html()).toBe('');
+		expect(engrave('&#42;foo&#42;\n*foo*').html()).toBe('<p>*foo*\n<em>foo</em></p>');
 	});
 
 	it.todo('#38', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-38
-		expect(engrave('').html()).toBe('');
+		expect(engrave('&#42; foo\n\n* foo').html()).toBe('<p>* foo</p>\n<ul>\n<li>foo</li>\n</ul>');
 	});
 
-	it.todo('#39', ({ expect }) => {
+	it('#39', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-39
-		expect(engrave('').html()).toBe('');
+		expect(engrave('foo&#10;&#10;bar').html()).toBe('<p>foo\n\nbar</p>');
 	});
 
-	it.todo('#40', ({ expect }) => {
+	it('#40', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-40
-		expect(engrave('').html()).toBe('');
+		expect(engrave('&#9;foo').html()).toBe('<p>\tfoo</p>');
 	});
 
-	it.todo('#41', ({ expect }) => {
+	it('#41', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-41
-		expect(engrave('').html()).toBe('');
+		expect(engrave('[a](url &quot;tit&quot;)').html()).toBe('<p>[a](url &quot;tit&quot;)</p>');
 	});
 
 	it.todo('#42', ({ expect }) => {
