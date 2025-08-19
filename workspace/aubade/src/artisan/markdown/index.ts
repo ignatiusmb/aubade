@@ -1,9 +1,9 @@
 import type { Token } from './context.js';
-import { escape as sanitize } from '../utils.js';
+import { escape } from '../utils.js';
 import { compose } from './engine.js';
 
 interface Resolver<T extends Token = Token> {
-	(panel: { token: T; render(token: Token): string; sanitize: typeof sanitize }): string;
+	(panel: { token: T; render(token: Token): string; sanitize: typeof escape }): string;
 }
 
 export interface Options {
@@ -83,7 +83,7 @@ export function forge({ renderer = {} }: Options = {}) {
 	function render<T extends Token>(token: T): string {
 		const resolve = resolver[token.type] as Resolver<T> | undefined;
 		if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
-		return resolve({ render, sanitize, token });
+		return resolve({ token, render, sanitize: escape });
 	}
 
 	return (input: string) => {
