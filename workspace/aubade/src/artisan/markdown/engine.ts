@@ -30,6 +30,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	while (index < input.length) {
 		const cursor = contextualize(input.slice(index));
 		if (cursor.eat('\n')) {
+			while (cursor.eat('\n'));
 			for (const type of ['block:paragraph', 'block:quote'] as const) {
 				while (stack[type].length) stack[type].pop();
 			}
