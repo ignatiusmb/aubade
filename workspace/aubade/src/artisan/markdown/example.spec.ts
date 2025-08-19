@@ -259,12 +259,12 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p># Ӓ Ϡ �</p>');
 	});
 
-	it.todo('#27 | @MOD: hexadecimal numeric characters are left as-is', ({ expect }) => {
+	it('#27', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-27
-		expect(engrave('&#X22; &#XD06; &#xcab;').html()).toBe('<p>&#X22; &#XD06; &#xcab;</p>');
+		expect(engrave('&#X22; &#XD06; &#xcab;').html()).toBe('<p>&quot; ആ ಫ</p>');
 	});
 
-	it.todo('#28', ({ expect }) => {
+	it.skip('#28', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-28
 		expect(
 			engrave(
@@ -285,7 +285,7 @@ describe('spec', ({ concurrent: it }) => {
 		expect(engrave('&copy').html()).toBe('<p>&amp;copy</p>');
 	});
 
-	it.todo('#30', ({ expect }) => {
+	it.skip('#30', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-30
 		expect(engrave('&MadeUpEntity;').html()).toBe('<p>&amp;MadeUpEntity;</p>');
 	});
