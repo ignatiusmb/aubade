@@ -252,6 +252,7 @@ export function codespan({ cursor }: Context): null | {
 		code += char;
 	}
 	if (!cursor.eat('`'.repeat(backticks))) return null;
+	code = code.replace(/\n/g, ' ');
 	const check = [
 		code.length > 2,
 		code[0] === ' ' && code.endsWith(' '),
