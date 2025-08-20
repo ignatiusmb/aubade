@@ -1,34 +1,5 @@
-import type * as registry from './registry.js';
+import type { Token } from './registry.js';
 import { annotate, compose } from './engine.js';
-
-type Registry = [
-	// aubade registries
-	typeof registry.comment,
-	typeof registry.markup,
-
-	// block registries
-	typeof registry.codeblock,
-	typeof registry.divider,
-	typeof registry.heading,
-	typeof registry.list,
-	typeof registry.quote,
-	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
-
-	// inline registries
-	typeof registry.escape,
-	typeof registry.linebreak,
-	typeof registry.autolink,
-	typeof registry.codespan,
-	typeof registry.image,
-	typeof registry.link,
-	() => { type: 'inline:strong'; children: Annotation[] },
-	() => { type: 'inline:emphasis'; children: Annotation[] },
-	() => { type: 'inline:strike'; children: Annotation[] },
-	() => { type: 'inline:text'; text: string },
-][number];
-export type Token = Registry extends (ctx: Context) => infer R ? NonNullable<R> : never;
-export type Annotation = Exclude<Token, { type: `block:${string}` }>;
-export type Block = Exclude<Token, { type: `inline:${string}` }>;
 
 export function contextualize(source: string) {
 	let pointer = 0;
@@ -42,24 +13,6 @@ export function contextualize(source: string) {
 			pointer = value;
 		},
 
-		/** greedily consume until the last matching character */
-		consume(delimiter: string, update: (i: number) => boolean): string {
-			let i = pointer;
-			let last = -1;
-
-			while (i < source.length) {
-				if (i + delimiter.length > source.length) break;
-				const text = delimiter.length === 1 ? source[i] : source.slice(i, i + delimiter.length);
-				const result = update(i - pointer);
-				if (text === delimiter && result) last = i;
-				i++;
-			}
-
-			if (last === -1) return '';
-			const result = source.slice(pointer, last);
-			pointer = last;
-			return result;
-		},
 		/** consume the input if it matches */
 		eat(text: string): boolean {
 			if (text.length === 1) return source[pointer] === text && !!++pointer;

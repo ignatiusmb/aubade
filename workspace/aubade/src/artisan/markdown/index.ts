@@ -1,4 +1,4 @@
-import type { Token } from './context.js';
+import type { Token } from './registry.js';
 import { escape } from '../utils.js';
 import { compose } from './engine.js';
 

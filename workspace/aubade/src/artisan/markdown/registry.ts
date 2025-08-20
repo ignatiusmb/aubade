@@ -1,4 +1,33 @@
-import type { Annotation, Block, Context } from './context.js';
+import type { Context } from './context.js';
+
+export type Registry = [
+	// aubade registries
+	typeof comment,
+	typeof markup,
+
+	// block registries
+	typeof codeblock,
+	typeof divider,
+	typeof heading,
+	typeof list,
+	typeof quote,
+	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
+
+	// inline registries
+	typeof escape,
+	typeof linebreak,
+	typeof autolink,
+	typeof codespan,
+	typeof image,
+	typeof link,
+	() => { type: 'inline:strong'; children: Annotation[] },
+	() => { type: 'inline:emphasis'; children: Annotation[] },
+	() => { type: 'inline:strike'; children: Annotation[] },
+	() => { type: 'inline:text'; text: string },
+][number];
+export type Token = Registry extends (ctx: any) => infer R ? NonNullable<R> : never;
+export type Annotation = Exclude<Token, { type: `block:${string}` }>;
+export type Block = Exclude<Token, { type: `inline:${string}` }>;
 
 // --- aubade registries ---
 
@@ -106,17 +135,26 @@ export function markup({ compose, cursor }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
+	meta: { info: string[] };
 	attr: { 'data-language': string };
 	children: { type: 'inline:code'; text: string }[];
 } {
-	if (!cursor.eat('```')) return null;
-	const language = cursor.locate(/\n/).trim();
-	const source = cursor.locate(/\r?\n```|$/).trim();
+	let backticks = +cursor.eat('`');
+	if (backticks === 0) return null;
+	while (cursor.eat('`')) backticks++;
+	if (backticks < 3) return null;
+
+	const info = cursor.locate(/\n/).trim();
+	if (/`/.test(info) || !cursor.eat('\n')) return null;
+	const source = cursor.locate(/\r?\n\s*```|$/).trim();
 	if (!source.length) return null;
 	cursor.trim(), cursor.eat('```');
 
+	const [language, ...rest] = info.split(/\s+/);
+
 	return {
 		type: 'block:code',
+		meta: { info: rest },
 		attr: { 'data-language': language },
 		children: source.split('\n').map((line) => ({
 			type: 'inline:code',
