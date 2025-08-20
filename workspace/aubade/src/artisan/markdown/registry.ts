@@ -82,19 +82,18 @@ export function markup({ compose, cursor }: Context): null | {
 		if (name && value) attr[clean(name)] = unquote(value);
 	}
 
-	// TODO: handle elements without closing tags
-	compose; // recursive call to parse the inner HTML
-
 	const close = `</${tag}>`;
 	const contents = cursor.locate(new RegExp(close));
 	if (!contents.length && !cursor.eat(close)) return null;
 
-	return { type: 'aubade:html', tag, attr, children: [] };
+	const { children } = compose(contents);
+	return { type: 'aubade:html', tag, attr, children };
+
+	// --- internal helpers ---
 
 	function clean(name: string): string {
 		return name.replace(/[^a-zA-Z0-9_.:-]+/g, '_').replace(/^([^a-zA-Z_:])/, '_');
 	}
-
 	function unquote(text: string): string {
 		if (text.length < 2) return text;
 		const last = text[text.length - 1];
@@ -236,18 +235,29 @@ export function codespan({ cursor }: Context): null | {
 	type: 'inline:code';
 	text: string;
 } {
-	if (!cursor.eat('`')) return null;
+	const before = cursor.see(-1);
+	let backticks = +cursor.eat('`');
+	if (backticks === 0) return null;
+	if (before === '`') return null;
+	while (cursor.eat('`')) backticks++;
 
 	let code = '';
-	let char = '';
-	const n = 1 + cursor.locate(/[^`]/).length;
-	while (!cursor.eat('`'.repeat(n)) && (char = cursor.read(1))) {
+	while (
+		code.endsWith('`') ||
+		cursor.see(backticks) === '`' ||
+		!cursor.peek('`'.repeat(backticks))
+	) {
+		const char = cursor.read(1);
+		if (!char) return null;
 		code += char;
 	}
-	if (!char) return null;
-	if (code[0] === ' ' && code[0] === code[code.length - 1]) {
-		code = code.slice(1, -1); // trim the single space
-	}
+	if (!cursor.eat('`'.repeat(backticks))) return null;
+	const check = [
+		code.length > 2,
+		code[0] === ' ' && code.endsWith(' '),
+		/[` ]/.test(code.slice(1, -1)),
+	];
+	if (check.every(Boolean)) code = code.slice(1, -1);
 	return { type: 'inline:code', text: code };
 }
 
