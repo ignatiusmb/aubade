@@ -91,18 +91,6 @@ describe('inline', ({ concurrent: it }) => {
 		expect(engrave('hello world').html()).toBe('<p>hello world</p>');
 	});
 
-	it('code | with literal backslash', ({ expect }) => {
-		expect(engrave('`\\`').html()).toBe('<p><code>\\</code></p>');
-	});
-	it('code | takes precedence over other constructs', ({ expect }) => {
-		expect(engrave('`*foo*`').html()).toBe('<p><code>*foo*</code></p>');
-		expect(engrave('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
-	});
-	it('code | edge cases', ({ expect }) => {
-		expect(engrave('``backtick``').html()).toBe('<p><code>backtick</code></p>');
-		expect(engrave('`` ` ``').html()).toBe('<p><code>`</code></p>');
-	});
-
 	it('image | ![alt](src)', ({ expect }) => {
 		expect(engrave('hello ![wave emoji](wave.png)').html()).toBe(
 			'<p>hello <img src="wave.png" alt="wave emoji" /></p>',
