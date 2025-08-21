@@ -145,10 +145,19 @@ export function codeblock({ cursor }: Context): null | {
 	if (backticks < 3) return null;
 
 	const info = cursor.locate(/\n/).trim();
-	if (/`/.test(info) || !cursor.eat('\n')) return null;
-	const source = cursor.locate(/\r?\n\s*```|$/).trim();
-	if (!source.length) return null;
-	cursor.trim(), cursor.eat('```');
+	if (/`/.test(info)) return null;
+	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
+
+	const code: string[] = [];
+	let line = cursor.peek(/\n|$/).trim();
+	while (/[^`]/.test(line) || line.length < backticks) {
+		code.push(cursor.locate(/\n|$/));
+		if (!cursor.eat('\n')) break;
+		line = cursor.peek(/\n|$/).trim();
+	}
+	cursor.trim();
+	while (cursor.eat('`'));
+	cursor.trim();
 
 	const [language, ...rest] = info.split(/\s+/);
 
@@ -156,10 +165,7 @@ export function codeblock({ cursor }: Context): null | {
 		type: 'block:code',
 		meta: { info: rest },
 		attr: { 'data-language': language },
-		children: source.split('\n').map((line) => ({
-			type: 'inline:code',
-			text: line,
-		})),
+		children: code.map((text) => ({ type: 'inline:code', text })),
 	};
 }
 
