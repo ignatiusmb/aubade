@@ -1,5 +1,5 @@
-import type { Annotation, Block, Context } from './context.js';
-import { contextualize, match } from './context.js';
+import type { Annotation, Block } from './registry.js';
+import { type Context, contextualize, match } from './context.js';
 import * as registry from './registry.js';
 
 /** create the root document from the source */
