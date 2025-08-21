@@ -796,7 +796,156 @@ describe('spec', ({ concurrent: it }) => {
 	});
 
 	// @DISALLOWED: 107-118 [indented code blocks]
-	// @TODO: 119-147
+
+	it('#119 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-119
+		expect(engrave(['```', '<', ' >', '```'].join('\n')).html()).toBe(
+			['<pre><code>&lt;</code>', '<code> &gt;</code></pre>'].join('\n'),
+		);
+	});
+
+	it.skip('#120 | @DIS: tilde fenced code block', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-120
+		expect(engrave(['~~~', '<', ' >', '~~~'].join('\n')).html()).toBe(
+			['<pre><code>&lt;</code>', '<code> &gt;</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#121 | @MOD: padded code span', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-121
+		expect(engrave(['``', 'foo', '``'].join('\n')).html()).toBe('<p><code> foo </code></p>');
+	});
+
+	it('#122 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-122
+		expect(engrave(['```', 'aaa', '~~~', '```'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>~~~</code></pre>'].join('\n'),
+		);
+	});
+
+	it.skip('#123 | @DIS: tilde fenced code block', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-123
+		expect(engrave(['~~~', 'aaa', '```', '~~~'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>```</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#124 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-124
+		expect(engrave(['````', 'aaa', '```', '``````'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>```</code></pre>'].join('\n'),
+		);
+	});
+
+	it.skip('#125 | @DIS: tilde fenced code block', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-125
+		expect(engrave(['~~~~', 'aaa', '~~~', '~~~~'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>~~~</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#126', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-126
+		expect(engrave('```').html()).toBe('<pre><code></code></pre>');
+	});
+
+	it('#127 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-127
+		expect(engrave(['`````', '', '```', 'aaa'].join('\n')).html()).toBe(
+			['<pre><code></code>', '<code>```</code>', '<code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#128 | @MOD: compact blockquote children', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-128
+		expect(engrave(['> ````', '> aaa', '', 'bbb'].join('\n')).html()).toBe(
+			['<blockquote><pre><code>aaa</code></pre></blockquote>', '<p>bbb</p>'].join('\n'),
+		);
+	});
+
+	it('#129 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-129
+		expect(engrave(['```', '', '  ', '```'].join('\n')).html()).toBe(
+			['<pre><code></code>', '<code>  </code></pre>'].join('\n'),
+		);
+	});
+
+	it('#130 | @MOD: empty code block without <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-130
+		expect(engrave('```\n```').html()).toBe('<pre></pre>');
+	});
+
+	it('#131 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-131
+		expect(engrave([' ```', ' aaa', 'aaa', '```'].join('\n')).html()).toBe(
+			['<pre><code> aaa</code>', '<code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#132 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-132
+		expect(engrave(['  ```', 'aaa', '  aaa', 'aaa', '  ```'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>  aaa</code>', '<code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#133 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-133
+		expect(engrave(['   ```', '   aaa', '    aaa', '  aaa', '   ```'].join('\n')).html()).toBe(
+			['<pre><code>   aaa</code>', '<code>    aaa</code>', '<code>  aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#134 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-134
+		expect(engrave(['    ```', '    aaa', '    ```'].join('\n')).html()).toBe(
+			['<pre><code>    aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#135 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-135
+		expect(engrave(['```', 'aaa', '  ```'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#136 | @MOD: indented opening have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-136
+		expect(engrave(['   ```', 'aaa', '  ```'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#137 | @MOD: indented closing have no effect', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-137
+		expect(engrave(['```', 'aaa', '    ```'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#138', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-138
+		expect(engrave(['``` ```', 'aaa'].join('\n')).html()).toBe(
+			['<p><code> </code>', 'aaa</p>'].join('\n'),
+		);
+	});
+
+	it.skip('#139', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-139
+		expect(engrave(['~~~~~~', 'aaa', '~~~ ~~'].join('\n')).html()).toBe(
+			['<pre><code>aaa</code>', '<code>~~~ ~~</code></pre>'].join('\n'),
+		);
+	});
+
+	it.todo('#140', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-140
+		expect(engrave(['foo', '```', 'bar', '```', 'baz'].join('\n')).html()).toBe(
+			['<p>foo</p>', '<pre><code>bar</code></pre>', '<p>baz</p>'].join('\n'),
+		);
+	});
+
+	// @TODO: 141-147
 
 	it.todo('#148', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-148
