@@ -3,8 +3,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "svelte-kit sync && vite build",
-		"check": "svelte-kit sync && svelte-check src --tsconfig ./tsconfig.json"
+		"build": "vite build",
+		"check": "svelte-check src --tsconfig ./tsconfig.json",
+		"prepare": "svelte-kit sync"
 	},
 	"devDependencies": {
 		"@fontsource-variable/brygada-1918": "^5.2.6",

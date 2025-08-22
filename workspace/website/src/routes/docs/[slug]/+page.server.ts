@@ -19,7 +19,7 @@ export async function load({ fetch, params }) {
 		pages: metadata.pages,
 		meta: {
 			title: docs.title,
-			description: 'The framework to manage your static content',
+			description: docs.description,
 		},
 	};
 }
