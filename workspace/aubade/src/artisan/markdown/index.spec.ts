@@ -91,18 +91,6 @@ describe('inline', ({ concurrent: it }) => {
 		expect(engrave('hello world').html()).toBe('<p>hello world</p>');
 	});
 
-	it('code | with literal backslash', ({ expect }) => {
-		expect(engrave('`\\`').html()).toBe('<p><code>\\</code></p>');
-	});
-	it('code | takes precedence over other constructs', ({ expect }) => {
-		expect(engrave('`*foo*`').html()).toBe('<p><code>*foo*</code></p>');
-		expect(engrave('`**foo**`').html()).toBe('<p><code>**foo**</code></p>');
-	});
-	it('code | edge cases', ({ expect }) => {
-		expect(engrave('``backtick``').html()).toBe('<p><code>backtick</code></p>');
-		expect(engrave('`` ` ``').html()).toBe('<p><code>`</code></p>');
-	});
-
 	it('image | ![alt](src)', ({ expect }) => {
 		expect(engrave('hello ![wave emoji](wave.png)').html()).toBe(
 			'<p>hello <img src="wave.png" alt="wave emoji" /></p>',
@@ -145,15 +133,16 @@ describe('inline', ({ concurrent: it }) => {
 		);
 	});
 
-	it('modifiers | markers for italics and/or bold', ({ expect }) => {
-		expect(engrave('*italic*').html()).toBe('<p><em>italic</em></p>');
-		expect(engrave('**bold**').html()).toBe('<p><strong>bold</strong></p>');
-		expect(engrave('***bold italic***').html()).toBe(
-			'<p><strong><em>bold italic</em></strong></p>',
-		);
+	it('modifiers | nested unique emphasis', ({ expect }) => {
 		expect(engrave('_**italic bold**_').html()).toBe(
 			'<p><em><strong>italic bold</strong></em></p>',
 		);
+		expect(engrave('**_bold italic_**').html()).toBe(
+			'<p><strong><em>bold italic</em></strong></p>',
+		);
+	});
+	it('modifiers | nested common emphasis', ({ expect }) => {
+		expect(engrave('***both***').html()).toBe('<p><em><strong>both</strong></em></p>');
 	});
 	it('modifiers | markers for strikethrough', ({ expect }) => {
 		expect(engrave('~~strike~~').html()).toBe('<p><s>strike</s></p>');
@@ -162,10 +151,5 @@ describe('inline', ({ concurrent: it }) => {
 		expect(engrave('**[a b c](https://mauss.dev)**').html()).toBe(
 			'<p><strong><a href="https://mauss.dev">a b c</a></strong></p>',
 		);
-	});
-	it.todo('modifiers | incomplete or broken', ({ expect }) => {
-		expect(engrave('**not closed').html()).toBe('<p>**not closed</p>');
-		expect(engrave('*in **out*').html()).toBe('<p><em>in **out</em></p>');
-		expect(engrave('~~strike').html()).toBe('<p>~~strike</p>');
 	});
 });

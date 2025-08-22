@@ -13,6 +13,7 @@
 <style>
 	div {
 		padding: 0;
+		border-radius: 1rem;
 		background: var(--aubade-primary);
 	}
 	.horizontal {

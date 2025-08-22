@@ -11,9 +11,8 @@
 
 <details id="index">
 	<summary>
-		<span>{version}</span>
-		<span>&ndash;</span>
-		<a href="https://github.com/ignatiusmb/aubade/releases/v{version}">Changelog</a>
+		<i data-icon="duotone-caret-right"></i>
+		<a href="https://github.com/ignatiusmb/aubade/releases/latest">v{version}</a>
 	</summary>
 	<div>
 		{#each items as { slug, title }}
@@ -42,10 +41,24 @@
 				border-bottom-width: 1px;
 				border-bottom-right-radius: 0;
 				border-bottom-left-radius: 0;
+
+				i[data-icon] {
+					transform: rotate(90deg);
+				}
 			}
 		}
 	}
 	summary {
+		list-style: none;
+		cursor: pointer;
+		user-select: none;
+
+		display: grid;
+		gap: 0.5rem;
+		align-items: center;
+		justify-content: start;
+		grid-template-columns: auto auto;
+
 		padding: 0.5rem 1rem;
 		margin: 0;
 		border: 1px solid rgba(124, 124, 124, 0.7);
@@ -69,5 +82,10 @@
 				background: rgba(255, 255, 255, 0.15);
 			}
 		}
+	}
+
+	i[data-icon='duotone-caret-right'] {
+		transition: 100ms ease-out;
+		--svg: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><polygon points="96 48 176 128 96 208 96 48" opacity="0.2"/><polygon points="96 48 176 128 96 208 96 48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>');
 	}
 </style>

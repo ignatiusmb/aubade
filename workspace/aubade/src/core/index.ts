@@ -1,5 +1,5 @@
-import type { Token } from '../artisan/markdown/engine.js';
-import { engrave } from '../artisan/index.js';
+import type { Token } from '../artisan/markdown/registry.js';
+import { engrave } from '../artisan/markdown/index.js';
 import { parse as manifest } from '../manifest/index.js';
 import { uhi } from '../utils.js';
 

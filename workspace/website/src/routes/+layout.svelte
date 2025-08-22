@@ -1,6 +1,6 @@
 <script>
-	import '@fontsource-variable/crimson-pro';
-	import '@fontsource-variable/fira-code';
+	import '@fontsource-variable/brygada-1918';
+	import '@fontsource-variable/inconsolata';
 	import '@ignatiusmb/styles/core.css';
 	import 'aubade/styles/code.css';
 	import '../app.css';
@@ -24,7 +24,7 @@
 	domain="https://aubade.mauss.dev"
 	title="{page.data.meta?.title || page.status} • Aubade"
 	canonical={page.data.meta?.canonical || '/'}
-	description={page.data.meta?.description || 'filesystem-based content processor'}
+	description={page.data.meta?.description || 'markdown, orchestrated.'}
 	authors={['Ignatius Bagus.']}
 	og={{
 		site_name: 'Aubade',
@@ -51,8 +51,6 @@
 
 <style>
 	main {
-		height: 100%;
-
 		:global(i[data-icon]) {
 			width: 1.5rem;
 			height: 1.5rem;
@@ -60,12 +58,6 @@
 			background: currentColor;
 			mask: no-repeat center / 100%;
 			mask-image: var(--svg);
-
-			&[data-icon='copyright'] {
-				width: 1rem;
-				height: 1rem;
-				--svg: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"><circle cx="128" cy="128" r="96"/><path d="M160,152a40,40,0,1,1,0-48"/></svg>');
-			}
 		}
 	}
 </style>

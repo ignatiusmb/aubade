@@ -1,7 +1,6 @@
 :root {
 	--font-scale: 1.068;
-	--font-base: 'Crimson Pro Variable', serif;
-	--font-mono: 'Fira Code Variable', monospace;
+	--font-mono: 'Inconsolata Variable', ui-monospace, monospace;
 
 	--stone-050: #fafaf9;
 	--stone-100: #f5f5f4;
@@ -42,13 +41,23 @@
 
 html,
 body {
-	height: 100%;
 	background: var(--stone-900);
 	color: var(--stone-200);
-	font-family: var(--font-base);
 	font-size: calc(1rem * var(--font-scale));
+	font-family: 'Brygada 1918 Variable', serif;
+	font-variation-settings:
+		'MONO' 1,
+		'CASL' 0.1,
+		'CRSV' 0;
 }
 
 a {
 	color: #34aeff;
+}
+
+code,
+[data-aubade] {
+	--font-monospace: var(--font-mono);
+	font-family: var(--font-mono);
+	font-weight: 400;
 }

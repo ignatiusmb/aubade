@@ -12,7 +12,7 @@
 
 <aside>
 	<a
-		href="https://github.com/ignatiusmb/aubade/releases/v{version}"
+		href="https://github.com/ignatiusmb/aubade/releases/latest"
 		style:margin-bottom="0.5rem"
 		style:letter-spacing="2px"
 		style:font-size="1.25rem"
@@ -43,10 +43,10 @@
 
 	<footer>
 		<Edit repo="ignatiusmb/aubade" path={data.path}>
-			<span>Suggest changes to this page</span>
+			<span>suggest changes</span>
 		</Edit>
 
-		<Divider type="horizontal" spacing="1rem" />
+		<Divider type="horizontal" spacing="0.5rem" />
 
 		<Flank flank={data.flank} />
 	</footer>
@@ -70,10 +70,10 @@
 				content: attr(data-prefix);
 				margin: 0 0.75rem 0 0.25rem;
 			}
-			&:hover {
+			&.current {
 				background: rgba(255, 255, 255, 0.1);
 			}
-			&.current {
+			&:hover {
 				background: rgba(255, 255, 255, 0.15);
 			}
 		}
@@ -85,57 +85,45 @@
 
 	/* ---- @html content ---- */
 	article :global {
-		> [id] {
+		[id] {
 			scroll-margin-top: 2rem;
 		}
-		> h2,
-		> h3 {
+		h2,
+		h3 {
 			display: grid;
 			gap: 0.75rem;
-			grid-template-columns: auto 1fr;
 			align-items: center;
 			margin-top: 1.5rem;
 			font-size: 1.5rem;
 		}
-		> h2 {
+		h2 {
 			position: relative;
-			grid-template-columns: 1.25rem auto 1fr;
-			margin: 2rem 0 1.5rem;
+			margin-top: 2rem;
 			font-size: 2rem;
 			font-weight: 500;
 		}
-		> h3 {
-			grid-template-columns: auto 1fr;
+		h3 {
 			margin-top: 1.5rem;
 			font-size: 1.5rem;
 			font-weight: 500;
 		}
-		> h2::before {
-			content: '';
-			width: 0.75rem;
-			height: 0.75rem;
-			border-radius: 50%;
-			margin-left: 0.25rem;
-			box-shadow: 0 0 0 0.25rem rgba(0, 112, 187, 0.6);
-			background: var(--aubade-primary);
-		}
-		> h2::after,
-		> h3::after {
-			content: '';
-			width: 100%;
-			height: 0.15rem;
-			background: rgba(0, 112, 187, 0.6);
-		}
-		> p {
+		p,
+		li {
 			line-height: 1.65;
 		}
-		> p:not(:first-child) {
+		p:not(:first-child) {
 			margin-top: 1rem;
 		}
-		> ul li:not(:first-child) {
-			margin-top: 0.5rem;
+		ul {
+			padding-inline-start: 1.25rem;
+			margin: 0;
+			margin-block-start: 1rem;
+
+			li:not(:first-child) {
+				margin-top: 0.25rem;
+			}
 		}
-		> blockquote {
+		blockquote {
 			padding: 1rem;
 			margin: 1rem 0;
 			border-left: 0.25rem solid var(--aubade-primary);

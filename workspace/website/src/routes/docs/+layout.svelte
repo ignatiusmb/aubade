@@ -15,7 +15,7 @@
 		grid-template-columns: minmax(0, 1fr);
 		align-items: flex-start;
 		justify-content: center;
-		padding: 0 2rem;
+		padding: 0 1rem;
 		margin: 3rem auto 0;
 
 		@media only screen and (min-width: 769px) {

@@ -24,6 +24,9 @@ describe('parse', ({ concurrent: it }) => {
 		expect(parse('draft: null')).toEqual({
 			draft: null,
 		});
+		expect(parse('value: "false"')).toEqual({
+			value: 'false',
+		});
 	});
 
 	it('inline arrays', ({ expect }) => {
@@ -120,6 +123,28 @@ describe('parse', ({ concurrent: it }) => {
 				{ red: 'ff0000', green: '00ff00', blue: '0000ff' },
 				{ red: '255-0-0', green: '0-255-0', blue: '0-0-255' },
 			],
+		});
+	});
+
+	it('block | scalars with negative numbers', ({ expect }) => {
+		expect(
+			parse(
+				[
+					'rating:',
+					'  category:',
+					'    - type: -1',
+					'    - type: -2',
+					'    - type: -3',
+					'  additional:',
+					'    - type: -2',
+					'    - type: -4',
+				].join('\n'),
+			),
+		).toEqual({
+			rating: {
+				category: [{ type: '-1' }, { type: '-2' }, { type: '-3' }],
+				additional: [{ type: '-2' }, { type: '-4' }],
+			},
 		});
 	});
 
@@ -326,6 +351,19 @@ describe('parse', ({ concurrent: it }) => {
 				youtube: 'https://youtube.com',
 				'search-engines': ['https://duckduckgo.com', 'https://google.com', 'https://bing.com'],
 			},
+		});
+	});
+
+	it('ignore comments', ({ expect }) => {
+		expect(parse('# this is a comment')).toEqual('');
+		expect(parse('title: world # this is a comment')).toEqual({
+			title: 'world',
+		});
+		expect(parse('title: world\n# also a comment')).toEqual({
+			title: 'world',
+		});
+		expect(parse('title: "this # is not a comment"')).toEqual({
+			title: 'this # is not a comment',
 		});
 	});
 });
