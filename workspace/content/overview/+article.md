@@ -16,7 +16,7 @@ Aubade ships with tools designed from the ground up to be lightweight and effici
 
 `assemble()` is the basic building block of Aubade. it takes the contents of a markdown file as a string and returns:
 
-- `manifest` — parsed front matter,
+- `manifest` — parsed [front matter](/docs/manifest#frontmatter),
 - `md` — `{ tokens, html() }`, and
 - `meta` — `{ body, ... }` including generated metadata.
 
