@@ -312,7 +312,7 @@ export function escape({ cursor }: Context): null | {
 } {
 	if (!cursor.eat('\\')) return null;
 	let next = cursor.read(1);
-	if (!/[\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
+	if (!/[\/_\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
 
