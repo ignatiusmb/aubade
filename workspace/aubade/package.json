@@ -1,7 +1,7 @@
 {
 	"name": "aubade",
 	"version": "0.10.3",
-	"description": "filesystem-based content processor",
+	"description": "markdown, orchestrated.",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
 	"author": "Ignatius Bagus",

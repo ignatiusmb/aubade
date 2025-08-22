@@ -1,4 +1,3 @@
-import * as fs from 'node:fs';
 import { traverse } from 'aubade/compass';
 import { chain } from 'aubade/transform';
 
@@ -6,38 +5,41 @@ const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
 	async 'docs/'() {
-		fs.mkdirSync(ROOT, { recursive: true });
-
-		const items = await traverse('../content', ({ breadcrumb: [name] }) => {
-			if (!name.endsWith('.md')) return; // skip non-md files
+		const items = await traverse('../content', ({ breadcrumb: [file, slug] }) => {
+			if (file !== '+article.md') return;
 
 			return async ({ buffer, marker, parse, siblings, task }) => {
 				const { body, frontmatter } = parse(buffer.toString('utf-8'));
-				if (!frontmatter) return; // skip if no frontmatter
+				if (!frontmatter) return;
 
-				for (const { filename, buffer } of siblings) {
-					if (filename.endsWith('.md')) continue;
+				const content = body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
+					const asset = siblings.find(({ filename }) => relative === filename);
+					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return m;
+
 					task(async ({ fs }) => {
-						await fs.writeFile(`${ROOT}/${filename}`, await buffer);
+						await fs.mkdir(ROOT, { recursive: true });
+						const payload = await asset.buffer;
+						const filename = `${ROOT}/${asset.filename}`;
+						return fs.writeFile(filename, payload);
 					});
-				}
 
-				const content = body.replace(/\.\/([^\s)]+)/g, (m, path) =>
-					siblings.some(({ filename }) => filename === path) ? `/uploads/${path}` : m,
-				);
+					return `/uploads/${asset.filename}`;
+				});
 
 				return {
-					slug: name.match(/^(\d{2})-(.+).md$/)![2],
+					slug,
+					rank: frontmatter.rank,
 					title: frontmatter.title,
 					description: frontmatter.description,
 					table: frontmatter.table,
-					path: `workspace/content/${name}`,
+					path: `workspace/content/${file}`,
 					content: marker.render(content),
 				};
 			};
 		});
 
 		return chain(items, {
+			sort: ({ rank: x }, { rank: y }) => Number(x) - Number(y),
 			transform: ({ slug, title }) => ({ slug: '/docs/' + slug, title }),
 		});
 	},
