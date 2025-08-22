@@ -31,9 +31,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		const cursor = contextualize(input.slice(index));
 		if (cursor.eat('\n')) {
 			while (cursor.eat('\n'));
-			for (const type of ['block:paragraph', 'block:quote'] as const) {
-				while (stack[type].length) stack[type].pop();
-			}
+			clear(['block:paragraph', 'block:quote']);
 		}
 
 		const start = dispatch.get(input[index + cursor.index]);
@@ -41,6 +39,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
+			clear(['block:paragraph', 'block:quote']);
 		} else {
 			const text = cursor.locate(/\n|$/).trim();
 			cursor.eat('\n'); // eat the line feed
@@ -63,6 +62,12 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	}
 
 	return root;
+
+	function clear(blocks: Array<keyof Context['stack']>) {
+		for (const type of blocks) {
+			while (stack[type].length) stack[type].pop();
+		}
+	}
 }
 
 type Run = NonNullable<ReturnType<typeof registry.delimiter>>;

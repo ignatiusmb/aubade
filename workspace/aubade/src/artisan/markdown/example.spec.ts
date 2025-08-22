@@ -795,7 +795,7 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	// @DISALLOWED: 107-118 [indented code blocks]
+	// @TODO: 107-118 [indented code blocks]
 
 	it('#119 | @MOD: lines wrapped in <code>', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-119
@@ -938,14 +938,78 @@ describe('spec', ({ concurrent: it }) => {
 		);
 	});
 
-	it.todo('#140', ({ expect }) => {
+	it('#140', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-140
 		expect(engrave(['foo', '```', 'bar', '```', 'baz'].join('\n')).html()).toBe(
 			['<p>foo</p>', '<pre><code>bar</code></pre>', '<p>baz</p>'].join('\n'),
 		);
 	});
 
-	// @TODO: 141-147
+	it('#141 | @MOD: use backticks for code block', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-141
+		expect(engrave(['foo', '---', '```', 'bar', '```', '# baz'].join('\n')).html()).toBe(
+			[
+				'<p>foo</p>',
+				'<hr />',
+				'<pre><code>bar</code></pre>',
+				'<h1 id="baz" data-text="baz">baz</h1>',
+			].join('\n'),
+		);
+	});
+
+	it('#142 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-142
+		expect(engrave(['```ruby', 'def foo(x)', '  return 3', 'end', '```'].join('\n')).html()).toBe(
+			[
+				'<pre data-language="ruby"><code>def foo(x)</code>',
+				'<code>  return 3</code>',
+				'<code>end</code></pre>',
+			].join('\n'),
+		);
+	});
+
+	it('#143 | @MOD: lines wrapped in <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-143
+		expect(
+			engrave(
+				['```    ruby startline=3 $%@#$', 'def foo(x)', '  return 3', 'end', '```'].join('\n'),
+			).html(),
+		).toBe(
+			[
+				'<pre data-language="ruby"><code>def foo(x)</code>',
+				'<code>  return 3</code>',
+				'<code>end</code></pre>',
+			].join('\n'),
+		);
+	});
+
+	it('#144 | @MOD: empty code block without <code>', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-144
+		expect(engrave(['````;', '````'].join('\n')).html()).toBe(
+			['<pre data-language=";"></pre>'].join('\n'),
+		);
+	});
+
+	it('#145 | @MOD: padded code span', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-145
+		expect(engrave(['``` aa ```', 'foo'].join('\n')).html()).toBe(
+			['<p><code> aa </code>', 'foo</p>'].join('\n'),
+		);
+	});
+
+	it.skip('#146', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-146
+		expect(engrave(['~~~ aa ``` ~~~', 'foo', '~~~'].join('\n')).html()).toBe(
+			['<pre data-language="aa"><code>aa</code></pre>'].join('\n'),
+		);
+	});
+
+	it('#147', ({ expect }) => {
+		// https://spec.commonmark.org/0.31.2/#example-147
+		expect(engrave(['```', '``` aaa', '```'].join('\n')).html()).toBe(
+			['<pre><code>``` aaa</code></pre>'].join('\n'),
+		);
+	});
 
 	it.todo('#148', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-148
