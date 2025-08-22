@@ -86,6 +86,6 @@ gives access to file contents and processing utilities:
 
 - `assemble` — the [`assemble()` function from core](/docs/overview#core).
 - `buffer` — raw file content as a `Buffer`.
-- `engrave` — the [`engrave()` function from `/artisan`](/docs/artisan#engrave).
+- `engrave` — the [`engrave()` function from `/artisan`](/docs/artisan#markdown-engrave).
 - `siblings` — sibling files in the same directory, with filenames and lazy buffers.
 - `task(fn)` — register async work to run in parallel, e.g. image conversion or asset copying.
