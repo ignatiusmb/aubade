@@ -21,7 +21,7 @@ export function chain<
 ): Array<Item & { [P in Key]: { back?: Output; next?: Output } }>;
 ```
 
-* `key` — name the property that will be added, defaults to `flank`.
-* `sort` — sort the items before chaining them, defaults to no sorting.
-* `breakpoint` — stop the chain on a certain condition after sorting, defaults to no breakpoint.
-* `transform` — transform the output before linking, defaults to only `{ slug, title }`.
+- `key` — name the property that will be added, defaults to `flank`.
+- `sort` — sort the items before chaining them, defaults to no sorting.
+- `breakpoint` — stop the chain on a certain condition after sorting, defaults to no breakpoint.
+- `transform` — transform the output before linking, defaults to only `{ slug, title }`.

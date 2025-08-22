@@ -15,4 +15,4 @@ mixing prose and application logic in the same place quickly becomes unmanageabl
 
 ## behind the name
 
-Aubade `/ō-ˈbäd/` comes from *Made in Abyss*, where it refers to "Supreme Treasures of the Netherworld", rare artifacts of immense power and versatility. the word itself is French for "dawn serenade", a song at daybreak. the name points to what Aubade aims for: a practical tool built with a sense of form and elegance.
+Aubade `/ō-ˈbäd/` comes from _Made in Abyss_, where it refers to "Supreme Treasures of the Netherworld", rare artifacts of immense power and versatility. the word itself is French for "dawn serenade", a song at daybreak. the name points to what Aubade aims for: a practical tool built with a sense of form and elegance.

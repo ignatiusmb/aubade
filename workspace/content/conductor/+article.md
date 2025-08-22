@@ -47,8 +47,8 @@ interface Inspect<Output extends Record<string, any>> {
 
 the second argument is an `inspect` function. it receives an [Options](#inspect-options) object and should either:
 
-* return a falsy value to skip the file, or
-* return a function to process the file with a [Chunk](#inspect-chunk).
+- return a falsy value to skip the file, or
+- return a function to process the file with a [Chunk](#inspect-chunk).
 
 this lets you control which files are included and how they're transformed.
 
@@ -65,10 +65,10 @@ interface Options {
 
 provides context for the file:
 
-* `breadcrumb` — path segments leading to the file, in reverse order.
-* `depth` — depth in the directory tree, starting at `0`.
-* `parent` — parent directory path, absolute from `entry`.
-* `path` — full path of the file, absolute from `entry`.
+- `breadcrumb` — path segments leading to the file, in reverse order.
+- `depth` — depth in the directory tree, starting at `0`.
+- `parent` — parent directory path, absolute from `entry`.
+- `path` — full path of the file, absolute from `entry`.
 
 ### Chunk
 
@@ -84,8 +84,8 @@ interface Chunk {
 
 gives access to file contents and processing utilities:
 
-* `assemble` — the [`assemble()` function from core](/docs/overview#core).
-* `buffer` — raw file content as a `Buffer`.
-* `engrave` — the [`engrave()` function from `/artisan`](/docs/artisan#engrave).
-* `siblings` — sibling files in the same directory, with filenames and lazy buffers.
-* `task(fn)` — register async work to run in parallel, e.g. image conversion or asset copying.
+- `assemble` — the [`assemble()` function from core](/docs/overview#core).
+- `buffer` — raw file content as a `Buffer`.
+- `engrave` — the [`engrave()` function from `/artisan`](/docs/artisan#engrave).
+- `siblings` — sibling files in the same directory, with filenames and lazy buffers.
+- `task(fn)` — register async work to run in parallel, e.g. image conversion or asset copying.

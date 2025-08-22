@@ -90,7 +90,7 @@ import { transform } from 'aubade/artisan';
 import markdown from 'markdown-it';
 
 const marker = markdown({
-	highlight: (src, language) => transform(src, { language })
+	highlight: (src, language) => transform(src, { language }),
 });
 ```
 
