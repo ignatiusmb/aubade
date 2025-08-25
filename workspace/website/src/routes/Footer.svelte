@@ -8,12 +8,10 @@
 
 <style>
 	footer {
-		width: 100%;
-		max-width: 84ch;
+		grid-column: content;
 		position: relative;
 		padding: 2rem;
 		padding-bottom: 3rem;
-		margin: 0 auto;
 
 		text-align: center;
 		font-size: calc(0.875rem * var(--font-scale));

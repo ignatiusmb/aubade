@@ -6,8 +6,6 @@ description: markdown dialect for Aubade
 
 > **here be dragons** — this spec is a work-in-progress. syntax and behavior may change as the compiler evolves.
 
-## introduction
-
 Libretto is a _deliberately selective_ markdown dialect designed for Aubade. it draws from [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), but only implements the parts that serve Aubade's principles.
 
 > Libretto [passes the CommonMark test suite](https://github.com/ignatiusmb/aubade/blob/master/workspace/aubade/src/artisan/markdown/example.spec.ts), but only for the subset of rules it adopts. some tests are skipped, and certain behaviors are redefined to fit Libretto's design.
@@ -56,18 +54,18 @@ each line inside a fenced code block is wrapped in its own `<code>` tag.
 
 ### leaf images
 
-standalone images are treated as block-level elements and wrapped in `<figure>`. if a title is present, it becomes a `<figcaption>`.
-
 > to be implemented
+
+standalone images are treated as block-level elements and wrapped in `<figure>`. if a title is present, it becomes a `<figcaption>`.
 
 ### custom directives
 
-inline directives can be defined with the `@{...}` syntax.
+> todo: [github#183](https://github.com/ignatiusmb/aubade/pull/183)
 
-> todo: <https://github.com/ignatiusmb/aubade/pull/183>
+inline directives can be defined with the `@{...}` syntax.
 
 ### custom containers
 
-block containers can be defined with `::: type`.
-
 > to be implemented
+
+block containers can be defined with `::: type`.
