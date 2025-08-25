@@ -7,26 +7,27 @@
 	<p>
 		<a href="https://github.com/ignatiusmb/aubade">Aubade</a>
 		<span>•</span>
-		<span>filesystem-based content processor</span>
+		<span>markdown, orchestrated.</span>
 	</p>
 </header>
 
 <style>
 	header {
-		max-width: 80rem;
+		grid-column: content;
 		width: 100%;
+
 		display: grid;
 		gap: 0.875rem;
 		align-items: center;
 		justify-content: center;
-		padding: 2rem 2rem 0;
-		margin: 0 auto;
+
+		padding-top: calc(var(--pad) * 2);
 		font-size: 1.25rem;
 		text-align: center;
 
 		@media only screen and (min-width: 769px) {
 			justify-content: start;
-			padding: 2rem 1rem 0;
+			padding-left: 1rem;
 			text-align: left;
 		}
 

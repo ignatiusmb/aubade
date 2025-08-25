@@ -47,9 +47,7 @@ describe.todo('fences', ({ concurrent: it }) => {
 describe('HTML', ({ concurrent: it }) => {
 	it('original #21', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-21
-		expect(engrave('<a href="/bar\\/)">').html()).toBe(
-			'<p>&lt;a href=&quot;/bar\\/)&quot;&gt;</p>',
-		);
+		expect(engrave('<a href="/bar\\/)">').html()).toBe('<p>&lt;a href=&quot;/bar/)&quot;&gt;</p>');
 	});
 
 	it('treated as text', ({ expect }) => {

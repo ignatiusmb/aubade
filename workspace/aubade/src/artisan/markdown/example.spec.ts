@@ -1,155 +1,44 @@
 import { describe } from 'vitest';
 import { engrave, forge } from './index.js';
 
-// NOTES:
-// - output is exactly the same as the spec, except for the following:
-// - @DIS -> output is completely different from the spec
-// - @MOD -> output is enhanced from the spec, slightly different
+// `deny` disallow features, either:
+//  - outright, like indented code block and setext headings
+//  - partially, like entities allowed in numeric form and not HTML5 named, or
+//  - stricter rules, like block quotes requiring '>' at the start of every line
 describe('spec', ({ concurrent: it }) => {
-	it('#1 | @DIS: no tab indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-1
-		expect(engrave('\tfoo\tbaz\t\tbim').html()).toBe('<p>foo\tbaz\t\tbim</p>');
-	});
-
-	it('#2 | @DIS: no mixed space indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-2
-		expect(engrave('  \tfoo\tbaz\t\tbim').html()).toBe('<p>foo\tbaz\t\tbim</p>');
-	});
-
-	it('#3 | @DIS: no 4 space indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-3
-		expect(engrave('    a\ta\n    ὐ\ta').html()).toBe('<p>a\ta\nὐ\ta</p>');
-	});
-
-	it.todo('#4', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-4
-		expect(engrave('  - foo\n\n\tbar').html()).toBe(
-			'<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>',
-		);
-	});
-
-	it.todo('#5 | @DIS: no tab indent code blocks in list item', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-5
-		expect(engrave('- foo\n\n\t\tbar').html()).toBe(
-			'<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>',
-		);
-	});
-
-	it('#6 | @DIS: no tab indent code blocks in blockquote', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-6
-		expect(engrave('>\t\tfoo').html()).toBe('<blockquote><p>foo</p></blockquote>');
-	});
-
-	it.todo('#7 | @DIS: no tab indent code blocks in list item', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-7
-		expect(engrave('-\t\tfoo').html()).toBe('<ul><li><p>foo</p></li></ul>');
-	});
-
-	it('#8 | @DIS: no mixed space indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-8
-		expect(engrave('    foo\n\tbar').html()).toBe('<p>foo\nbar</p>');
-	});
-
-	it.todo('#9', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-9
-		expect(engrave(' - foo\n   - bar\n\t - baz').html()).toBe(
-			[
-				'<ul>',
-				'<li>foo',
-				'<ul>',
-				'<li>bar',
-				'<ul>',
-				'<li>baz</li>',
-				'</ul>',
-				'</li>',
-				'</ul>',
-				'</li>',
-				'</ul>',
-			].join('\n'),
-		);
-	});
-
-	it('#10 | @MOD: enhanced heading with attributes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-10
-		expect(engrave('#\tFoo').html()).toBe('<h1 id="foo" data-text="Foo">Foo</h1>');
-	});
-
-	it('#11 | @DIS: no space between identifiers', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-11
-		expect(engrave('*\t*\t*\t').html()).toBe('<p>*\t*\t*</p>');
-	});
-
-	it.skip('#12', ({ expect }) => {
-		const { tokens, html } = engrave(
+	// https://spec.commonmark.org/0.31.2/
+	const suite: Record<string, [input: string, output: string]> = {
+		'001|deny': ['\tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
+		'002|deny': ['  \tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
+		'003|deny': ['    a\ta\n    ὐ\ta', '<p>a\ta\nὐ\ta</p>'],
+		'004|todo': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'005|todo': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'006|deny': ['>\t\tfoo', '<blockquote><p>foo</p></blockquote>'],
+		'007|todo': ['-\t\tfoo', '<ul><li><p>foo</p></li></ul>'],
+		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
+		'009|todo': [
+			' - foo\n   - bar\n\t - baz',
+			'<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>',
+		],
+		'010|plus': ['#\tFoo', '<h1 id="foo" data-text="Foo">Foo</h1>'],
+		'011|deny': ['*\t*\t*\t', '<p>*\t*\t*</p>'],
+		'012': [
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
-		);
-
-		expect(tokens[0]).toEqual({
-			type: 'block:paragraph',
-			children: [
-				// { type: 'inline:escape', text: '!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~' },
-				{ type: 'inline:escape', text: '!' },
-				{ type: 'inline:escape', text: '"' },
-				{ type: 'inline:escape', text: '#' },
-				{ type: 'inline:escape', text: '$' },
-				{ type: 'inline:escape', text: '%' },
-				{ type: 'inline:escape', text: '&' },
-				{ type: 'inline:escape', text: "'" },
-				{ type: 'inline:escape', text: '(' },
-				{ type: 'inline:escape', text: ')' },
-				{ type: 'inline:escape', text: '*' },
-				{ type: 'inline:escape', text: '+' },
-				{ type: 'inline:escape', text: ',' },
-				{ type: 'inline:escape', text: '-' },
-				{ type: 'inline:escape', text: '.' },
-				{ type: 'inline:escape', text: '/' }, // this fails with '\\/'
-				{ type: 'inline:escape', text: ':' },
-				{ type: 'inline:escape', text: ';' },
-				{ type: 'inline:escape', text: '<' },
-				{ type: 'inline:escape', text: '=' },
-				{ type: 'inline:escape', text: '>' },
-				{ type: 'inline:escape', text: '?' },
-				{ type: 'inline:escape', text: '@' },
-				{ type: 'inline:escape', text: '[' },
-				{ type: 'inline:escape', text: '\\' },
-				{ type: 'inline:escape', text: ']' },
-				{ type: 'inline:escape', text: '^' },
-				{ type: 'inline:escape', text: '_' }, // this fails with '\\_'
-				{ type: 'inline:escape', text: '`' },
-				{ type: 'inline:escape', text: '{' },
-				{ type: 'inline:escape', text: '|' },
-				{ type: 'inline:escape', text: '}' },
-				{ type: 'inline:escape', text: '~' },
-			],
-		});
-		// "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[]^_`{|}~</p>"
-
-		// https://spec.commonmark.org/0.31.2/#example-12 - adjusted test
-		expect(html()).toBe('<p>!&quot;#$%&amp;&#39;()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>');
-	});
-
-	it('#13', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-13
-		expect(engrave('\\→\\A\\a\\ \\3\\φ\\«').html()).toBe('<p>\\→\\A\\a\\ \\3\\φ\\«</p>');
-	});
-
-	it('#14', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-14
-		expect(
-			engrave(
-				[
-					'\\*not emphasized*',
-					'\\<br/> not a tag',
-					'\\[not a link](/foo)',
-					'\\`not code`',
-					'1\\. not a list',
-					'\\* not a list',
-					'\\# not a heading',
-					'\\[foo]: /url "not a reference"',
-					'\\&ouml; not a character entity',
-				].join('\n'),
-			).html(),
-		).toBe(
+			"<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>",
+		],
+		'013': ['\\→\\A\\a\\ \\3\\φ\\«', '<p>\\→\\A\\a\\ \\3\\φ\\«</p>'],
+		'014': [
+			[
+				'\\*not emphasized*',
+				'\\<br/> not a tag',
+				'\\[not a link](/foo)',
+				'\\`not code`',
+				'1\\. not a list',
+				'\\* not a list',
+				'\\# not a heading',
+				'\\[foo]: /url "not a reference"',
+				'\\&ouml; not a character entity',
+			].join('\n'),
 			[
 				'<p>*not emphasized*',
 				'&lt;br/&gt; not a tag',
@@ -161,21 +50,471 @@ describe('spec', ({ concurrent: it }) => {
 				'[foo]: /url &quot;not a reference&quot;',
 				'&amp;ouml; not a character entity</p>',
 			].join('\n'),
-		);
-	});
+		],
+		'015': ['\\\\*emphasis*', '<p>\\<em>emphasis</em></p>'],
+		'016|mod': ['foo\\\nbar', '<p>foo\nbar</p>'],
+		'017': ['`` \\[\\` ``', '<p><code>\\[\\`</code></p>'],
+		'018|deny': ['    \[\]', '<p>\[\]</p>'],
+		'019|todo': ['~~~\n\[\]\n~~~', '<pre><code>\[\]</code></pre>'],
+		'020': [
+			'<https://example.com?find=\\*>',
+			'<p><a href="https://example.com?find=%5C*">https://example.com?find=\\*</a></p>',
+		],
+		'021|deny': ['<a href="/bar\\/)"></a>', '<a href="/bar\\/)"></a>'],
+		'022': ['[foo](/bar\\* "ti\\*tle")', '<p><a href="/bar*" title="ti*tle">foo</a></p>'],
+		'023|skip': [
+			'[foo]\n\n[foo]: /bar\\* "ti\\*tle"',
+			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
+		],
+		'024|plus': ['``` foo\+bar\nfoo\n```', '<pre data-language="foo+bar"><code>foo</code></pre>'],
+		'025|deny': [
+			'&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;',
+			'<p>&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;</p>',
+		],
+		'026': ['&#35; &#1234; &#992; &#0;', '<p># Ӓ Ϡ �</p>'],
+		'027': ['&#X22; &#XD06; &#xcab;', '<p>&quot; ആ ಫ</p>'],
+		'028|skip': [
+			'&nbsp &x; &#; &#x;\n&#87654321;\n&#abcdef0;\n&ThisIsNotDefined; &hi?;',
+			'<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;\n&amp;#87654321;\n&amp;#abcdef0;\n&amp;ThisIsNotDefined; &amp;hi?;</p>',
+		],
+		'029': ['&copy', '<p>&amp;copy</p>'],
+		'030|skip': ['&MadeUpEntity;', '<p>&amp;MadeUpEntity;</p>'],
+		'031|deny': ['<a href="&ouml;&ouml;.html"></a>', '<a href="&ouml;&ouml;.html"></a>'],
+		'032|todo': [
+			'[foo](/f&ouml;&ouml; "f&ouml;&ouml;")',
+			'<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>',
+		],
+		'033|skip': [
+			'[foo]\n\n[foo]: /f&ouml;&ouml; "f&ouml;&ouml;"',
+			'<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>',
+		],
+		'034|skip': ['``` f&ouml;&ouml;\nfoo\n```', '<pre data-language="föö"><code>foo</code></pre>'],
+		'035': ['`f&ouml;&ouml;`', '<p><code>f&amp;ouml;&amp;ouml;</code></p>'],
+		'036|mod': ['```\nf&ouml;f&ouml;\n```', '<pre><code>f&amp;ouml;f&amp;ouml;</code></pre>'],
+		'037': ['&#42;foo&#42;\n*foo*', '<p>*foo*\n<em>foo</em></p>'],
+		'038|todo': ['&#42; foo\n\n* foo', '<p>* foo</p>\n<ul>\n<li>foo</li>\n</ul>'],
+		'039': ['foo&#10;&#10;bar', '<p>foo\n\nbar</p>'],
+		'040': ['&#9;foo', '<p>\tfoo</p>'],
+		'041': ['[a](url &quot;tit&quot;)', '<p>[a](url &quot;tit&quot;)</p>'],
+		'042|todo': ['- `one\n- two`', '<ul><li>`one</li><li>two`</li></ul>'],
+		'043': ['***\n---\n___', '<hr />\n<hr />\n<hr />'],
+		'044': ['+++', '<p>+++</p>'],
+		'045': ['===', '<p>===</p>'],
+		'046': ['**\n--\n__', '<p>**\n--\n__</p>'],
+		'047': [' ***\n  ***\n   ***', '<hr />\n<hr />\n<hr />'],
+		'048|deny': ['    ***', '<hr />'],
+		'049|deny': ['Foo\n    ***', '<p>Foo</p>\n<hr />'],
+		'050|deny': [
+			'_____________________________________',
+			'<p>_____________________________________</p>',
+		],
+		'051|deny': [' - - -', '<p>- - -</p>'],
+		'052|deny': [' **  * ** * ** * **', '<p>**  * ** * ** * **</p>'],
+		'053|deny': ['-     -      -      -', '<p>-     -      -      -</p>'],
+		'054|deny': ['- - - -    ', '<p>- - - -</p>'],
+		'055': [' ***\n  ***\n   ***', '<hr />\n<hr />\n<hr />'],
+		'056': [' *-*', '<p><em>-</em></p>'],
+		'057|todo': ['- foo\n***\n- bar', '<ul><li>foo</li></ul>\n<hr />\n<ul><li>bar</li></ul>'],
+		'058': ['foo\n***\nbar', '<p>foo</p>\n<hr />\n<p>bar</p>'],
+		'059|deny': ['Foo\n---\nbar', '<p>Foo</p>\n<hr />\n<p>bar</p>'],
+		'060|todo': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n<li>* *</li>\n<li>Bar</li>\n</ul>'],
+		'061|todo': ['- Foo\n- ***', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
+		'062|plus': [
+			'# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo',
+			[
+				'<h1 id="foo" data-text="foo">foo</h1>',
+				`<h2 id="${Array(2).fill('foo').join('-')}" data-text="foo">foo</h2>`,
+				`<h3 id="${Array(3).fill('foo').join('-')}" data-text="foo">foo</h3>`,
+				`<h4 id="${Array(4).fill('foo').join('-')}" data-text="foo">foo</h4>`,
+				`<h5 id="${Array(5).fill('foo').join('-')}" data-text="foo">foo</h5>`,
+				`<h6 id="${Array(6).fill('foo').join('-')}" data-text="foo">foo</h6>`,
+			].join('\n'),
+		],
+		'063': ['####### foo', '<p>####### foo</p>'],
+		'064': ['#5 bolt\n\n#hashtag', '<p>#5 bolt</p>\n<p>#hashtag</p>'],
+		'065': ['\\## foo', '<p>## foo</p>'],
+		'066|plus': [
+			'# foo *bar* \\*baz\\*',
+			'<h1 id="foo-bar-baz" data-text="foo bar *baz*">foo <em>bar</em> *baz*</h1>',
+		],
+		'067|plus': [
+			'#                  foo                     ',
+			'<h1 id="foo" data-text="foo">foo</h1>',
+		],
+		'068|plus': [
+			' ### foo\n  ## foo\n   # foo',
+			[
+				'<h3 id="foo" data-text="foo">foo</h3>',
+				'<h2 id="foo-1" data-text="foo">foo</h2>',
+				'<h1 id="foo-2" data-text="foo">foo</h1>',
+			].join('\n'),
+		],
+		'069|deny': ['    # foo', '<h1 id="foo" data-text="foo">foo</h1>'],
+		'070|deny': ['foo\n    # bar', '<p>foo</p>\n<h1 id="bar" data-text="bar">bar</h1>'],
+		'071|deny': [
+			'## foo ##\n  ###   bar    ###',
+			[
+				'<h2 id="foo" data-text="foo ##">foo ##</h2>',
+				'<h3 id="foo-bar" data-text="bar    ###">bar    ###</h3>',
+			].join('\n'),
+		],
+		'072|deny': [
+			'# foo ##################################\n##### foo ##',
+			[
+				'<h1 id="foo" data-text="foo ##################################">foo ##################################</h1>',
+				'<h5 id="foo-foo" data-text="foo ##">foo ##</h5>',
+			].join('\n'),
+		],
+		'073|deny': ['### foo ###     ', '<h3 id="foo" data-text="foo ###">foo ###</h3>'],
+		'074|plus': ['### foo ### b', '<h3 id="foo-b" data-text="foo ### b">foo ### b</h3>'],
+		'075|plus': ['# foo#', '<h1 id="foo" data-text="foo#">foo#</h1>'],
+		'076|deny': [
+			'### foo \\###\n## foo #\\##\n# foo \\#',
+			[
+				'<h3 id="foo" data-text="foo ###">foo ###</h3>',
+				'<h2 id="foo-1" data-text="foo ###">foo ###</h2>',
+				'<h1 id="foo-2" data-text="foo #">foo #</h1>',
+			].join('\n'),
+		],
+		'077|deny': [
+			'****\n## foo\n****',
+			'<p>****</p>\n<h2 id="foo" data-text="foo">foo</h2>\n<p>****</p>',
+		],
+		'078|plus': [
+			'Foo bar\n# baz\nBar foo',
+			'<p>Foo bar</p>\n<h1 id="baz" data-text="baz">baz</h1>\n<p>Bar foo</p>',
+		],
+		'079|deny': ['## \n#\n### ###', '<p>##\n#</p>\n<h3 data-text="###">###</h3>'],
+		'080|deny': [
+			'Foo *bar*\n=========\n\nFoo *bar*\n---------',
+			'<p>Foo <em>bar</em>\n=========</p>\n<p>Foo <em>bar</em>\n---------</p>',
+		],
+		'081|deny': ['Foo *bar\nbaz*\n====', '<p>Foo <em>bar\nbaz</em>\n====</p>'],
+		'082|deny': ['Foo *bar\nbaz*\t\n====', '<p>Foo <em>bar\nbaz</em>\n====</p>'],
+		'083|deny': [
+			'Foo\n-------------------------\n\nFoo\n=',
+			'<p>Foo\n-------------------------</p>\n<p>Foo\n=</p>',
+		],
+		'084|deny': [
+			'   Foo\n---\n\n  Foo\n-----\n\n  Foo\n  ===',
+			'<p>Foo</p>\n<hr />\n<p>Foo\n-----</p>\n<p>Foo\n===</p>',
+		],
+		'085|deny': ['    Foo\n    ---\n\n    Foo\n---', '<p>Foo</p>\n<hr />\n<p>Foo</p>\n<hr />'],
+		'086|deny': ['Foo\n   ----      ', '<p>Foo\n----</p>'],
+		'087|deny': ['Foo\n    ---', '<p>Foo</p>\n<hr />'],
+		'088|deny': ['Foo\n= =\n\nFoo\n--- -', '<p>Foo\n= =</p>\n<p>Foo\n--- -</p>'],
+		'089|deny': ['Foo  \n-----', '<p>Foo\n-----</p>'],
+		'090|deny': ['Foo\\\n----', '<p>Foo\n----</p>'],
+		'091|deny': [
+			'`Foo\n----\n`\n\n<a title="a lot\n---\nof dashes"/>',
+			'<p><code>Foo ---- </code></p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>',
+		],
+		'092|mod': ['> Foo\n---', '<blockquote><p>Foo</p></blockquote>\n<hr />'],
+		'093|deny': ['> foo\n> bar\n> ===', '<blockquote><p>foo\nbar\n===</p></blockquote>'],
+		'094|todo': ['- Foo\n---', '<ul>\n<li>Foo</li>\n</ul>\n<hr />'],
+		'095|deny': ['Foo\nBar\n---', '<p>Foo\nBar</p>\n<hr />'],
+		'096|deny': [
+			'---\nFoo\n---\nBar\n---\nBaz',
+			'<hr />\n<p>Foo</p>\n<hr />\n<p>Bar</p>\n<hr />\n<p>Baz</p>',
+		],
+		'097': ['\n====', '<p>====</p>'],
+		'098': ['---\n---', '<hr />\n<hr />'],
+		'099|todo': ['- foo\n-----', '<ul>\n<li>foo</li>\n</ul>\n<p>-----</p>'],
+		'100': ['    foo\n---', '<p>foo</p>\n<hr />'],
+		'101|deny': ['> foo\n-----', '<blockquote><p>foo</p></blockquote>\n<p>-----</p>'],
+		'102|deny': ['\\> foo\n-----', '<p>&gt; foo\n-----</p>'],
+		'103|deny': ['Foo\n\nbar\n---\nbaz', '<p>Foo</p>\n<p>bar</p>\n<hr />\n<p>baz</p>'],
+		'104': ['Foo\nbar\n\n---\n\nbaz', '<p>Foo\nbar</p>\n<hr />\n<p>baz</p>'],
+		'105|deny': ['Foo\nbar\n* * *\nbaz', '<p>Foo\nbar\n* * *\nbaz</p>'],
+		'106': ['Foo\nbar\n\\---\nbaz', '<p>Foo\nbar\n---\nbaz</p>'],
+		// @TODO: 107-118 [indented code blocks]
+		'119|plus': ['```\n<\n >\n```', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
+		'120|skip': ['~~~\n<\n >\n~~~', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
+		'121|todo': ['``\nfoo\n``', '<pre><code>foo</code></pre>'],
+		'122|plus': ['```\naaa\n~~~\n```', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
+		'123|skip': ['~~~\naaa\n```\n~~~', '<pre><code>aaa</code>\n<code>```</code></pre>'],
+		'124|plus': ['````\naaa\n```\n``````', '<pre><code>aaa</code>\n<code>```</code></pre>'],
+		'125|skip': ['~~~~\naaa\n~~~\n~~~~', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
+		'126': ['```', '<pre><code></code></pre>'],
+		'127|plus': [
+			'`````\n\n```\naaa',
+			'<pre><code></code>\n<code>```</code>\n<code>aaa</code></pre>',
+		],
+		'128|mod': [
+			'> ````\n> aaa\n\nbbb',
+			'<blockquote><pre><code>aaa</code></pre></blockquote>\n<p>bbb</p>',
+		],
+		'129|plus': ['```\n\n  \n```', '<pre><code></code>\n<code>  </code></pre>'],
+		'130|plus': ['```\n```', '<pre></pre>'],
+		'131|deny': [' ```\n aaa\naaa\n```', '<pre><code> aaa</code>\n<code>aaa</code></pre>'],
+		'132|deny': [
+			'  ```\naaa\n  aaa\naaa\n  ```',
+			'<pre><code>aaa</code>\n<code>  aaa</code>\n<code>aaa</code></pre>',
+		],
+		'133|deny': [
+			'   ```\n   aaa\n    aaa\n  aaa\n   ```',
+			'<pre><code>   aaa</code>\n<code>    aaa</code>\n<code>  aaa</code></pre>',
+		],
+		'134|deny': ['    ```\n    aaa\n    ```', '<pre><code>    aaa</code></pre>'],
+		'135': ['```\naaa\n  ```', '<pre><code>aaa</code></pre>'],
+		'136': ['   ```\naaa\n  ```', '<pre><code>aaa</code></pre>'],
+		'137|deny': ['```\naaa\n    ```', '<pre><code>aaa</code></pre>'],
+		'138': ['``` ```\naaa', '<p><code> </code>\naaa</p>'],
+		'139|skip': ['~~~~~~\naaa\n~~~ ~~', '<pre><code>aaa</code>\n<code>~~~ ~~</code></pre>'],
+		'140': ['foo\n```\nbar\n```\nbaz', '<p>foo</p>\n<pre><code>bar</code></pre>\n<p>baz</p>'],
+		'141|mod': [
+			'foo\n---\n```\nbar\n```\n# baz',
+			'<p>foo</p>\n<hr />\n<pre><code>bar</code></pre>\n<h1 id="baz" data-text="baz">baz</h1>',
+		],
+		'142|plus': [
+			'```ruby\ndef foo(x)\n  return 3\nend\n```',
+			'<pre data-language="ruby"><code>def foo(x)</code>\n<code>  return 3</code>\n<code>end</code></pre>',
+		],
+		'143|plus': [
+			'```    ruby startline=3 $%@#$\ndef foo(x)\n	return 3\nend\n```',
+			'<pre data-language="ruby"><code>def foo(x)</code>\n<code>	return 3</code>\n<code>end</code></pre>',
+		],
+		'144|mod': ['````;\n````', '<pre data-language=";"></pre>'],
+		'145|todo': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
+		'146|skip': ['~~~ aa ``` ~~~\nfoo\n~~~', '<pre data-language="aa"><code>aa</code></pre>'],
+		'147': ['```\n``` aaa\n```', '<pre><code>``` aaa</code></pre>'],
+		'148|skip': [
+			'<table><tr><td>\n<pre>\n**Hello**,\n\n_world_.\n</pre>\n</td</tr></table>',
+			'<table><tr><td>\n<pre>\n**Hello**,\n<p><em>world</em>.\n</pre></p>\n</td></tr></table>',
+		],
+		'149|skip': [
+			'<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n\nokay.',
+			'<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n<p>okay.</p>',
+		],
+		// @TODO: 150-191
+		// @TODO: 192-218 [link reference definitions]
+		'219': ['aaa\n\nbbb', '<p>aaa</p>\n<p>bbb</p>'],
+		'220': ['aaa\nbbb\n\nccc\nddd', '<p>aaa\nbbb</p>\n<p>ccc\nddd</p>'],
+		'221': ['aaa\n\n\nbbb', '<p>aaa</p>\n<p>bbb</p>'],
+		'222': ['  aaa\n bbb', '<p>aaa\nbbb</p>'],
+		'223': [`aaa\n${' '.repeat(13)}bbb\n${' '.repeat(39)}ccc`, '<p>aaa\nbbb\nccc</p>'],
+		'224': ['   aaa\nbbb', '<p>aaa\nbbb</p>'],
+		'225|deny': ['    aaa\nbbb', '<p>aaa\nbbb</p>'],
+		'226|mod': ['aaa     \nbbb     ', '<p>aaa\nbbb</p>'],
+		'227|plus': [
+			'  \n\naaa\n   \n\n# aaa\n\n   ',
+			'<p>aaa</p>\n<h1 id="aaa" data-text="aaa">aaa</h1>',
+		],
+		// @TODO: 228-252 [block quotes]
+		// @TODO: 253-300 [list items]
+		// @TODO: 301-326 [lists]
+		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
+		'328': ['`code`', '<p><code>code</code></p>'],
+		'329': ['`` code with `backticks ``', '<p><code>code with `backticks</code></p>'],
+		'330': ['` `` `', '<p><code>``</code></p>'],
+		'331': ['`  ``  `', '<p><code> `` </code></p>'],
+		'332': ['` a`', '<p><code> a</code></p>'],
+		'333': ['` b `', '<p><code> b </code></p>'],
+		'334': ['` `\n`  `', '<p><code> </code>\n<code>  </code></p>'],
+		'335|plus': ['``\nfoo\nbar  \nbaz\n``', '<p><code>foo bar baz</code></p>'],
+		'336|plus': ['``\nfoo \n``', '<p><code> foo </code></p>'],
+		'337|plus': ['`foo   bar \nbaz`', '<p><code>foo   bar baz</code></p>'],
+		'338': ['`foo\\`bar`', '<p><code>foo\\</code>bar`</p>'],
+		'339': ['``foo`bar``', '<p><code>foo`bar</code></p>'],
+		'340': ['` foo `` bar `', '<p><code>foo `` bar</code></p>'],
+		'341': ['*foo`*`', '<p>*foo<code>*</code></p>'],
+		'342': ['[not a `link](/foo`)', '<p>[not a <code>link](/foo</code>)</p>'],
+		'343': ['`<a href="`">`', '<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>'],
+		'344|todo': ['<a href="`">`', '<p><a href="`">`</p>'],
+		'345': ['`<https://foo.bar.`baz>`', '<p><code>&lt;https://foo.bar.</code>baz&gt;`</p>'],
+		'346': [
+			'<https://foo.bar.`baz>`',
+			'<p><a href="https://foo.bar.%60baz">https://foo.bar.`baz</a>`</p>',
+		],
+		'347': ['```foo``', '<p>```foo``</p>'],
+		'348': ['`foo', '<p>`foo</p>'],
+		'349': ['`foo``bar``', '<p>`foo<code>bar</code></p>'],
+		'350': ['*foo bar*', '<p><em>foo bar</em></p>'],
+		'351': ['a * foo bar*', '<p>a * foo bar*</p>'],
+		'352': ['a*"foo"*', '<p>a*&quot;foo&quot;*</p>'],
+		'353': ['* a *', '<p>* a *</p>'],
+		'354': [
+			'*$*alpha.\n\n*£*bravo.\n\n*€*charlie.',
+			'<p>*$*alpha.</p>\n<p>*£*bravo.</p>\n<p>*€*charlie.</p>',
+		],
+		'355': ['foo*bar*', '<p>foo<em>bar</em></p>'],
+		'356': ['5*6*78', '<p>5<em>6</em>78</p>'],
+		'358': ['_ foo bar_', '<p>_ foo bar_</p>'],
+		'359': ['a_"foo"_', '<p>a_&quot;foo&quot;_</p>'],
+		'360': ['foo_bar_', '<p>foo_bar_</p>'],
+		'361': ['5_6_78', '<p>5_6_78</p>'],
+		'362': ['пристаням_стремятся_', '<p>пристаням_стремятся_</p>'],
+		'363': ['aa_"bb"_cc', '<p>aa_&quot;bb&quot;_cc</p>'],
+		'364': ['foo-_(bar)_', '<p>foo-<em>(bar)</em></p>'],
+		'365': ['_foo*', '<p>_foo*</p>'],
+		'366': ['*foo bar *', '<p>*foo bar *</p>'],
+		'367': ['*foo bar\n*', '<p>*foo bar\n*</p>'],
+		'368': ['*(*foo)', '<p>*(*foo)</p>'],
+		'369': ['*(*foo*)*', '<p><em>(<em>foo</em>)</em></p>'],
+		'370': ['*foo*bar', '<p><em>foo</em>bar</p>'],
+		'371': ['_foo bar _', '<p>_foo bar _</p>'],
+		'372': ['_(_foo)', '<p>_(_foo)</p>'],
+		'373': ['_(_foo_)_', '<p><em>(<em>foo</em>)</em></p>'],
+		'374': ['_foo_bar', '<p>_foo_bar</p>'],
+		'375': ['_пристаням_стремятся', '<p>_пристаням_стремятся</p>'],
+		'376': ['_foo_bar_baz_', '<p><em>foo_bar_baz</em></p>'],
+		'377': ['_(bar)_.', '<p><em>(bar)</em>.</p>'],
+		'378': ['**foo bar**', '<p><strong>foo bar</strong></p>'],
+		'379': ['** foo bar**', '<p>** foo bar**</p>'],
+		'380': ['a**"foo"**', '<p>a**&quot;foo&quot;**</p>'],
+		'381': ['foo**bar**', '<p>foo<strong>bar</strong></p>'],
+		'382': ['__foo bar__', '<p><strong>foo bar</strong></p>'],
+		'383': ['__ foo bar__', '<p>__ foo bar__</p>'],
+		'384': ['__\nfoo bar__', '<p>__\nfoo bar__</p>'],
+		'385': ['a__"foo"__', '<p>a__&quot;foo&quot;__</p>'],
+		'386': ['foo__bar__', '<p>foo__bar__</p>'],
+		'387': ['5__6__78', '<p>5__6__78</p>'],
+		'388': ['пристаням__стремятся__', '<p>пристаням__стремятся__</p>'],
+		'389': ['__foo, __bar__, baz__', '<p><strong>foo, <strong>bar</strong>, baz</strong></p>'],
+		'390': ['foo-__(bar)__', '<p>foo-<strong>(bar)</strong></p>'],
+		'391': ['**foo bar **', '<p>**foo bar **</p>'],
+		'392': ['**(**foo)', '<p>**(**foo)</p>'],
+		'393': ['*(**foo**)*', '<p><em>(<strong>foo</strong>)</em></p>'],
+		'394': [
+			'**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**',
+			'<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>',
+		],
+		'395': ['**foo "*bar*" foo**', '<p><strong>foo &quot;<em>bar</em>&quot; foo</strong></p>'],
+		'396': ['**foo**bar', '<p><strong>foo</strong>bar</p>'],
+		'397': ['__foo bar __', '<p>__foo bar __</p>'],
+		'398': ['__(__foo)', '<p>__(__foo)</p>'],
+		'399': ['_(__foo__)_', '<p><em>(<strong>foo</strong>)</em></p>'],
+		'400': ['__foo__bar', '<p>__foo__bar</p>'],
+		'401': ['__пристаням__стремятся', '<p>__пристаням__стремятся</p>'],
+		'402': ['__foo__bar__baz__', '<p><strong>foo__bar__baz</strong></p>'],
+		'403': ['__(bar)__.', '<p><strong>(bar)</strong>.</p>'],
+		'404': ['*foo [bar](/url)*', '<p><em>foo <a href="/url">bar</a></em></p>'],
+		'405': ['*foo\nbar*', '<p><em>foo\nbar</em></p>'],
+		'406': ['_foo __bar__ baz_', '<p><em>foo <strong>bar</strong> baz</em></p>'],
+		'407': ['_foo _bar_ baz_', '<p><em>foo <em>bar</em> baz</em></p>'],
+		'408': ['__foo_ bar_', '<p><em><em>foo</em> bar</em></p>'],
+		'409': ['*foo *bar**', '<p><em>foo <em>bar</em></em></p>'],
+		'410': ['*foo **bar** baz*', '<p><em>foo <strong>bar</strong> baz</em></p>'],
+		'411': ['*foo**bar**baz*', '<p><em>foo<strong>bar</strong>baz</em></p>'],
+		'412|todo': ['*foo**bar*', '<p><em>foo**bar</em></p>'],
+		'413': ['***foo** bar*', '<p><em><strong>foo</strong> bar</em></p>'],
+		'414': ['*foo **bar***', '<p><em>foo <strong>bar</strong></em></p>'],
+		'415': ['*foo**bar***', '<p><em>foo<strong>bar</strong></em></p>'],
+		'416|todo': ['foo***bar***baz', '<p>foo<em><strong>bar</strong></em>baz</p>'],
+		'417|todo': [
+			'foo******bar*********baz',
+			'<p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>',
+		],
+		'418': [
+			'*foo **bar *baz* bim** bop*',
+			'<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>',
+		],
+		'419': ['*foo [*bar*](/url)*', '<p><em>foo <a href="/url"><em>bar</em></a></em></p>'],
+		'420': ['** is not an empty emphasis', '<p>** is not an empty emphasis</p>'],
+		'421': ['**** is not an empty strong emphasis', '<p>**** is not an empty strong emphasis</p>'],
+		'422': ['**foo [bar](/url)**', '<p><strong>foo <a href="/url">bar</a></strong></p>'],
+		'423': ['**foo\nbar**', '<p><strong>foo\nbar</strong></p>'],
+		'424': ['__foo _bar_ baz__', '<p><strong>foo <em>bar</em> baz</strong></p>'],
+		'425': ['__foo __bar__ baz__', '<p><strong>foo <strong>bar</strong> baz</strong></p>'],
+		'426': ['____foo__ bar__', '<p><strong><strong>foo</strong> bar</strong></p>'],
+		'427': ['**foo **bar****', '<p><strong>foo <strong>bar</strong></strong></p>'],
+		'428': ['**foo *bar* baz**', '<p><strong>foo <em>bar</em> baz</strong></p>'],
+		'429|todo': ['**foo*bar*baz**', '<p><strong>foo<em>bar</em>baz</strong></p>'],
+		'430': ['***foo* bar**', '<p><strong><em>foo</em> bar</strong></p>'],
+		'431': ['**foo *bar***', '<p><strong>foo <em>bar</em></strong></p>'],
+		'432': [
+			'**foo *bar **baz**\nbim* bop**',
+			'<p><strong>foo <em>bar <strong>baz</strong>\nbim</em> bop</strong></p>',
+		],
+		'433': ['**foo [*bar*](/url)**', '<p><strong>foo <a href="/url"><em>bar</em></a></strong></p>'],
+		'434': ['__ is not an empty emphasis', '<p>__ is not an empty emphasis</p>'],
+		'435': ['____ is not an empty strong emphasis', '<p>____ is not an empty strong emphasis</p>'],
+		'436': ['foo ***', '<p>foo ***</p>'],
+		'437': ['foo *\\**', '<p>foo <em>*</em></p>'],
+		'438': ['foo *_*', '<p>foo <em>_</em></p>'],
+		'439': ['foo *****', '<p>foo *****</p>'],
+		'440': ['foo **\\***', '<p>foo <strong>*</strong></p>'],
+		'441': ['foo **_**', '<p>foo <strong>_</strong></p>'],
+		'442': ['**foo*', '<p>*<em>foo</em></p>'],
+		'443': ['*foo**', '<p><em>foo</em>*</p>'],
+		'444': ['***foo**', '<p>*<strong>foo</strong></p>'],
+		'445': ['****foo*', '<p>***<em>foo</em></p>'],
+		'446': ['**foo***', '<p><strong>foo</strong>*</p>'],
+		'447': ['*foo****', '<p><em>foo</em>***</p>'],
+		'448': ['foo ___', '<p>foo ___</p>'],
+		'449': ['foo _\\__', '<p>foo <em>_</em></p>'],
+		'450': ['foo _*_', '<p>foo <em>*</em></p>'],
+		'451': ['foo _____', '<p>foo _____</p>'],
+		'452': ['foo __\\___', '<p>foo <strong>_</strong></p>'],
+		'453': ['foo __*__', '<p>foo <strong>*</strong></p>'],
+		'454': ['__foo_', '<p>_<em>foo</em></p>'],
+		'455': ['_foo__', '<p><em>foo</em>_</p>'],
+		'456': ['___foo__', '<p>_<strong>foo</strong></p>'],
+		'457': ['____foo_', '<p>___<em>foo</em></p>'],
+		'458': ['__foo___', '<p><strong>foo</strong>_</p>'],
+		'459': ['_foo____', '<p><em>foo</em>___</p>'],
+		'460': ['**foo**', '<p><strong>foo</strong></p>'],
+		'461': ['*_foo_*', '<p><em><em>foo</em></em></p>'],
+		'462': ['__foo__', '<p><strong>foo</strong></p>'],
+		'463': ['_*foo*_', '<p><em><em>foo</em></em></p>'],
+		'464': ['****foo****', '<p><strong><strong>foo</strong></strong></p>'],
+		'465': ['____foo____', '<p><strong><strong>foo</strong></strong></p>'],
+		'466': ['******foo******', '<p><strong><strong><strong>foo</strong></strong></strong></p>'],
+		'467': ['***foo***', '<p><em><strong>foo</strong></em></p>'],
+		'468': ['_____foo_____', '<p><em><strong><strong>foo</strong></strong></em></p>'],
+		'469|todo': ['*foo _bar* baz_', '<p><em>foo _bar</em> baz_</p>'],
+		'470|todo': [
+			'*foo __bar *baz bim__ bam*',
+			'<p><em>foo <strong>bar *baz bim</strong> bam</em></p>',
+		],
+		'471': ['**foo **bar baz**', '<p>**foo <strong>bar baz</strong></p>'],
+		'472': ['*foo *bar baz*', '<p>*foo <em>bar baz</em></p>'],
+		'473': ['*[bar*](/url)', '<p>*<a href="/url">bar*</a></p>'],
+		'474': ['_foo [bar_](/url)', '<p>_foo <a href="/url">bar_</a></p>'],
+		'475|todo': ['*<img src="foo" title="*"/>', '<p>*<img src="foo" title="*"/></p>'],
+		'476|todo': ['**<a href="**">', '<p>**<a href="**"></p>'],
+		'477|todo': ['__<a href="__">', '<p>__<a href="__"></p>'],
+		'478': ['*a `*`*', '<p><em>a <code>*</code></em></p>'],
+		'479': ['_a `_`_', '<p><em>a <code>_</code></em></p>'],
+		'480|todo': [
+			'**a<https://foo.bar/?q=**>',
+			'<p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>',
+		],
+		'481|todo': [
+			'__a<https://foo.bar/?q=__>',
+			'<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>',
+		],
+		// @TODO: 413-481
+		'482': ['[link](/uri "title")', '<p><a href="/uri" title="title">link</a></p>'],
+		// @TODO: 483-571 [links]
+		// @TODO: 572-593 [images]
+		// @TODO: 594-612 [auto links]
+		// @TODO: 613-632 [raw html]
+		// @TODO: 633-647 [hard line breaks]
+		'648': ['foo\nbaz', '<p>foo\nbaz</p>'],
+		'649': ['foo \n baz', '<p>foo\nbaz</p>'],
+		'650': ["hello $.;'there", "<p>hello $.;'there</p>"],
+		'651': ['Foo χρῆν', '<p>Foo χρῆν</p>'],
+		'652': ['Multiple     spaces', '<p>Multiple     spaces</p>'],
+		// that's all the examples from the spec!
+	};
 
-	it('#15', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-15
-		expect(engrave('\\\\*emphasis*').html()).toBe('<p>\\<em>emphasis</em></p>');
-	});
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, prop] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: prop === 'fail',
+			only: prop === 'only',
+			skip: prop === 'skip',
+			todo: prop === 'todo',
+		};
+		it(test, options, ({ expect }) => expect(engrave(input).html()).toBe(output));
+	}
+});
 
-	it("#16 | @MOD: inline break is '\\n' instead of '<br />'", ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-16
-		expect(engrave('foo\\\nbar').html()).toBe('<p>foo\nbar</p>');
-
-		const modified = forge({
-			renderer: { 'inline:break': () => '<br />' },
-		});
+describe('modified', ({ concurrent: it }) => {
+	it('016', ({ expect }) => {
+		const modified = forge({ renderer: { 'inline:break': () => '<br />' } });
 		expect(modified('foo\\\nbar').tokens[0]).toEqual({
 			type: 'block:paragraph',
 			children: [
@@ -187,589 +526,8 @@ describe('spec', ({ concurrent: it }) => {
 		expect(modified('foo\\\nbar').html()).toBe('<p>foo<br />bar</p>');
 	});
 
-	it('#17', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-17
-		expect(engrave('`` \\[\\` ``').html()).toBe('<p><code>\\[\\`</code></p>');
-	});
-
-	it('#18 | @DIS: any space indent is just a paragraph', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-18
-		expect(engrave('    \[\]').html()).toBe('<p>\[\]</p>');
-	});
-
-	it.todo('#19 | @DIS: only triple backticks code block', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-19
-		expect(engrave('~~~\n\[\]\n~~~').html()).toBe('<p>~~~\n\[\]\n~~~</p>');
-	});
-
-	it('#20', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-20
-		expect(engrave('<https://example.com?find=\\*>').html()).toBe(
-			'<p><a href="https://example.com?find=%5C*">https://example.com?find=\\*</a></p>',
-		);
-	});
-
-	it('#21 | @MOD: HTML tag needs to be closed', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-21
-		expect(engrave('<a href="/bar\\/)"></a>').html()).toBe('<a href="/bar\\/)"></a>');
-	});
-
-	it.todo('#22', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-22
-		expect(engrave('[foo](/bar\\* "ti\\*tle")').html()).toBe(
-			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
-		);
-	});
-
-	it.skip('#23', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-23
-		expect(engrave('[foo]\n\n[foo]: /bar\\* "ti\\*tle"').html()).toBe(
-			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
-		);
-	});
-
-	it("#24 | @MOD: code blocks with 'data-language'", ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-24
-		expect(engrave('``` foo\+bar\nfoo\n```').html()).toBe(
-			'<pre data-language="foo+bar"><code>foo</code></pre>',
-		);
-	});
-
-	// @WIP: 23-41
-
-	it('#25 | @MOD: HTML5 entities are left as-is', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-25
-		expect(
-			engrave(
-				[
-					'&nbsp; &amp; &copy; &AElig; &Dcaron;',
-					'&frac34; &HilbertSpace; &DifferentialD;',
-					'&ClockwiseContourIntegral; &ngE;',
-				].join('\n'),
-			).html(),
-		).toBe(
-			[
-				'<p>&nbsp; &amp; &copy; &AElig; &Dcaron;',
-				'&frac34; &HilbertSpace; &DifferentialD;',
-				'&ClockwiseContourIntegral; &ngE;</p>',
-			].join('\n'),
-		);
-	});
-
-	it('#26 | @MOD: decimal numeric characters are left as-is', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-26
-		expect(engrave('&#35; &#1234; &#992; &#0;').html()).toBe('<p>&#35; &#1234; &#992; &#0;</p>');
-	});
-
-	it.todo('#27 | @MOD: hexadecimal numeric characters are left as-is', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-27
-		expect(engrave('&#X22; &#XD06; &#xcab;').html()).toBe('<p>&#X22; &#XD06; &#xcab;</p>');
-	});
-
-	it.todo('#28', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-28
-		expect(
-			engrave(
-				['&nbsp &x; &#; &#x;', '&#87654321;', '&#abcdef0;', '&ThisIsNotDefined; &hi?;'].join('\n'),
-			).html(),
-		).toBe(
-			[
-				'<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;',
-				'&amp;#87654321;',
-				'&amp;#abcdef0;',
-				'&amp;ThisIsNotDefined; &amp;hi?;</p>',
-			].join('\n'),
-		);
-	});
-
-	it('#29', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-29
-		expect(engrave('&copy').html()).toBe('<p>&amp;copy</p>');
-	});
-
-	it.todo('#30', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-30
-		expect(engrave('&MadeUpEntity;').html()).toBe('<p>&amp;MadeUpEntity;</p>');
-	});
-
-	it('#31 | @MOD: close HTML tag', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-31
-		expect(engrave('<a href="&ouml;&ouml;.html"></a>').html()).toBe(
-			'<a href="&ouml;&ouml;.html"></a>',
-		);
-	});
-
-	it.todo('#32', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-32
-		expect(engrave('[foo](/f&ouml;&ouml; "f&ouml;&ouml;")').html()).toBe(
-			'<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>',
-		);
-	});
-
-	it.skip('#33', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-33
-		expect(engrave('[foo]\n\n[foo]: /f&ouml;&ouml; "f&ouml;&ouml;"').html()).toBe(
-			'<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>',
-		);
-	});
-
-	it.skip("#34 | @MOD: code blocks with 'data-language'", ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-34
-		expect(engrave('``` f&ouml;&ouml;\nfoo\n```').html()).toBe(
-			'<pre data-language="föö"><code>foo</code></pre>',
-		);
-	});
-
-	it.todo('#35', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-35
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#36', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-36
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#37', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-37
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#38', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-38
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#39', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-39
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#40', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-40
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#41', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-41
-		expect(engrave('').html()).toBe('');
-	});
-
-	it.todo('#42', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-42
-		expect(engrave('- `one\n- two`').html()).toBe('<ul><li>`one</li><li>two`</li></ul>');
-	});
-
-	it('#43', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-43
-		expect(engrave('***').html()).toBe('<hr />');
-		expect(engrave('---').html()).toBe('<hr />');
-		expect(engrave('___').html()).toBe('<hr />');
-		expect(engrave('***\n---\n___').html()).toBe('<hr />\n<hr />\n<hr />');
-	});
-
-	it('#44', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-44
-		expect(engrave('+++').html()).toBe('<p>+++</p>');
-	});
-
-	it('#45', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-45
-		expect(engrave('===').html()).toBe('<p>===</p>');
-	});
-
-	it('#46', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-46
-		expect(engrave('**\n--\n__').html()).toBe('<p>**\n--\n__</p>');
-	});
-
-	it('#47', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-47
-		expect(engrave([' ***', '  ***', '   ***'].join('\n')).html()).toBe('<hr />\n<hr />\n<hr />');
-	});
-
-	it('#48 | @DIS: no 4 space indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-48
-		expect(engrave('    ***').html()).toBe('<hr />');
-	});
-
-	it('#49 | @DIS: no 4 space indent code blocks', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-49
-		expect(engrave('Foo\n    ***').html()).toBe('<p>Foo</p>\n<hr />');
-	});
-
-	it('#50 | @DIS: divider needs to be 3 characters', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-50
-		expect(engrave('_____________________________________').html()).toBe(
-			'<p>_____________________________________</p>',
-		);
-	});
-
-	it('#51 | @DIS: no spaces or tabs between', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-51
-		expect(engrave(' - - -').html()).toBe('<p>- - -</p>');
-	});
-
-	it('#52 | @DIS: no spaces or tabs between', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-52
-		expect(engrave(' **  * ** * ** * **').html()).toBe('<p>**  * ** * ** * **</p>');
-	});
-
-	it('#53 | @DIS: no spaces or tabs between', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-53
-		expect(engrave('-     -      -      -').html()).toBe('<p>-     -      -      -</p>');
-	});
-
-	it('#54 | @MOD: spaces only at the end', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-54
-		expect(engrave('---    ').html()).toBe('<hr />');
-	});
-
-	it('#55', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-55
-		expect(engrave([' ***', '  ***', '   ***'].join('\n')).html()).toBe('<hr />\n<hr />\n<hr />');
-	});
-
-	it('#56', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-56
-		expect(engrave(' *-*').html()).toBe('<p><em>-</em></p>');
-	});
-
-	it.todo('#57', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-57
-		expect(engrave(['- foo', '***', '- bar'].join('\n')).html()).toBe(
-			'<ul><li>foo</li></ul><hr /><ul><li>bar</li></ul>',
-		);
-	});
-
-	it('#58', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-58
-		expect(engrave('foo\n***\nbar').html()).toBe('<p>foo</p>\n<hr />\n<p>bar</p>');
-	});
-
-	it('#59 | @DIS: triple dash does not make a heading', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-59
-		expect(engrave('Foo\n---\nbar').html()).toBe('<p>Foo</p>\n<hr />\n<p>bar</p>');
-	});
-
-	it.todo('#60 | @DIS: divider and list item', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-60
-		expect(engrave('* Foo\n* * *\n* Bar').html()).toBe(
-			['<ul>', '<li>Foo</li>', '<li>* *</li>', '<li>Bar</li>', '</ul>'].join('\n'),
-		);
-	});
-
-	it.todo('#61 | @MOD: divider in list item', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-61
-		expect(engrave('- Foo\n- ***').html()).toBe(
-			['<ul>', '<li>Foo</li>', '<li>', '<hr />', '</li>', '</ul>'].join('\n'),
-		);
-	});
-
-	it('#62 | @MOD: ATX headings with attributes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-62
-		expect(
-			engrave(
-				['# foo', '## foo', '### foo', '#### foo', '##### foo', '###### foo'].join('\n'),
-			).html(),
-		).toBe(
-			[
-				'<h1 id="foo" data-text="foo">foo</h1>',
-				`<h2 id="${Array(2).fill('foo').join('-')}" data-text="foo">foo</h2>`,
-				`<h3 id="${Array(3).fill('foo').join('-')}" data-text="foo">foo</h3>`,
-				`<h4 id="${Array(4).fill('foo').join('-')}" data-text="foo">foo</h4>`,
-				`<h5 id="${Array(5).fill('foo').join('-')}" data-text="foo">foo</h5>`,
-				`<h6 id="${Array(6).fill('foo').join('-')}" data-text="foo">foo</h6>`,
-			].join('\n'),
-		);
-	});
-
-	it('#63', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-63
-		expect(engrave('####### foo').html()).toBe('<p>####### foo</p>');
-	});
-
-	it('#64', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-64
-		expect(engrave('#5 bolt\n\n#hashtag').html()).toBe('<p>#5 bolt</p>\n<p>#hashtag</p>');
-	});
-
-	it('#65', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-65
-		expect(engrave('\\## foo').html()).toBe('<p>## foo</p>');
-	});
-
-	it('#66 | @MOD: enhanced heading with attributes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-66
-		expect(engrave('# foo *bar* \\*baz\\*').html()).toBe(
-			'<h1 id="foo-bar-baz" data-text="foo bar *baz*">foo <em>bar</em> *baz*</h1>',
-		);
-	});
-
-	it('#67 | @MOD: enhanced heading with attributes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-67
-		expect(engrave('#                  foo                     ').html()).toBe(
-			'<h1 id="foo" data-text="foo">foo</h1>',
-		);
-	});
-
-	it('#68 | @MOD: enhanced heading with attributes', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-68
-		expect(engrave(' ### foo\n  ## foo\n   # foo').html()).toBe(
-			[
-				'<h3 id="foo" data-text="foo">foo</h3>',
-				'<h2 id="foo" data-text="foo">foo</h2>',
-				'<h1 id="foo" data-text="foo">foo</h1>',
-			].join('\n'),
-		);
-	});
-
-	// @DISALLOWED: 80-106 [setext headings]
-
-	it.todo('#149', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-149
-		expect(
-			engrave(
-				[
-					'<table>',
-					'  <tr>',
-					'    <td>',
-					'           hi',
-					'    </td>',
-					'  </tr>',
-					'</table>',
-					'',
-					'okay.',
-				].join('\n'),
-			).html(),
-		).toBe(
-			[
-				'<table>',
-				'  <tr>',
-				'    <td>',
-				'           hi',
-				'    </td>',
-				'  </tr>',
-				'</table>',
-				'<p>okay.</p>',
-			].join('\n'),
-		);
-	});
-
-	it('#328', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-328
-		expect(engrave('`code`').html()).toBe('<p><code>code</code></p>');
-	});
-
-	it('#329', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-329
-		expect(engrave('`` code with `backticks ``').html()).toBe(
-			'<p><code>code with `backticks</code></p>',
-		);
-	});
-
-	it.todo('#330', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-330
-		expect(engrave('` `` `').html()).toBe('<p><code>``</code></p>');
-	});
-
-	it('#341', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-341
-		expect(engrave('*foo`*`').html()).toBe('<p>*foo<code>*</code></p>');
-	});
-
-	it('#342', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-342
-		expect(engrave('[not a `link](/foo`)').html()).toBe('<p>[not a <code>link](/foo</code>)</p>');
-	});
-
-	it('#343', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-343
-		expect(engrave('`<a href="`">`').html()).toBe(
-			'<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>',
-		);
-	});
-
-	it('#351', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-351
-		expect(engrave('a * foo bar*').html()).toBe('<p>a * foo bar*</p>');
-	});
-
-	it('#352', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-352
-		expect(engrave('a*"foo"*').html()).toBe('<p>a*&quot;foo&quot;*</p>');
-	});
-
-	it('#353', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-353
-		expect(engrave('* a *').html()).toBe('<p>* a *</p>');
-	});
-
-	it('#354', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-354
-		expect(engrave('*$*alpha.').html()).toBe('<p>*$*alpha.</p>');
-		expect(engrave('*£*bravo.').html()).toBe('<p>*£*bravo.</p>');
-		expect(engrave('*€*charlie.').html()).toBe('<p>*€*charlie.</p>');
-	});
-
-	it('#355', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-355
-		expect(engrave('foo*bar*').html()).toBe('<p>foo<em>bar</em></p>');
-	});
-
-	it('#356', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-356
-		expect(engrave('5*6*78').html()).toBe('<p>5<em>6</em>78</p>');
-	});
-
-	it('#358', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-358
-		expect(engrave('_ foo bar_').html()).toBe('<p>_ foo bar_</p>');
-	});
-
-	it('#359', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-359
-		expect(engrave('a_"foo"_').html()).toBe('<p>a_&quot;foo&quot;_</p>');
-	});
-
-	it('#360', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-360
-		expect(engrave('foo_bar_').html()).toBe('<p>foo_bar_</p>');
-	});
-
-	it('#361', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-361
-		expect(engrave('5_6_78').html()).toBe('<p>5_6_78</p>');
-	});
-
-	it('#362', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-362
-		expect(engrave('пристаням_стремятся_').html()).toBe('<p>пристаням_стремятся_</p>');
-	});
-
-	it('#363', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-363
-		expect(engrave('aa_"bb"_cc').html()).toBe('<p>aa_&quot;bb&quot;_cc</p>');
-	});
-
-	it('#364', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-364
-		expect(engrave('foo-_(bar)_').html()).toBe('<p>foo-<em>(bar)</em></p>');
-	});
-
-	it('#365', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-365
-		expect(engrave('_foo*').html()).toBe('<p>_foo*</p>');
-	});
-
-	it('#366', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-366
-		expect(engrave('*foo bar *').html()).toBe('<p>*foo bar *</p>');
-	});
-
-	it('#367', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-367
-		expect(engrave('*foo bar\n*').html()).toBe('<p>*foo bar\n*</p>');
-	});
-
-	it('#368', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-368
-		expect(engrave('*(*foo)').html()).toBe('<p>*(*foo)</p>');
-	});
-
-	it('#369', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-369
-		expect(engrave('*(*foo*)*').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
-	});
-
-	it('#370', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-370
-		expect(engrave('*foo*bar').html()).toBe('<p><em>foo</em>bar</p>');
-	});
-
-	it('#371', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-371
-		expect(engrave('_foo bar _').html()).toBe('<p>_foo bar _</p>');
-	});
-
-	it('#372', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-372
-		expect(engrave('_(_foo)').html()).toBe('<p>_(_foo)</p>');
-	});
-
-	it('#373', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-373
-		expect(engrave('_(_foo_)_').html()).toBe('<p><em>(<em>foo</em>)</em></p>');
-	});
-
-	it('#374', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-374
-		expect(engrave('_foo_bar').html()).toBe('<p>_foo_bar</p>');
-	});
-
-	it('#375', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-375
-		expect(engrave('_пристаням_стремятся').html()).toBe('<p>_пристаням_стремятся</p>');
-	});
-
-	it('#376', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-376
-		expect(engrave('_foo_bar_baz_').html()).toBe('<p><em>foo_bar_baz</em></p>');
-	});
-
-	it('#377', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-377
-		expect(engrave('_(bar)_.').html()).toBe('<p><em>(bar)</em>.</p>');
-	});
-
-	it('#378', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-378
-		expect(engrave('**foo bar**').html()).toBe('<p><strong>foo bar</strong></p>');
-	});
-
-	it('#379', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-379
-		expect(engrave('** foo bar**').html()).toBe('<p>** foo bar**</p>');
-	});
-
-	it('#380', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-380
-		expect(engrave('a**"foo"**').html()).toBe('<p>a**&quot;foo&quot;**</p>');
-	});
-
-	it('#381', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-381
-		expect(engrave('foo**bar**').html()).toBe('<p>foo<strong>bar</strong></p>');
-	});
-
-	// 382-390 is N/A
-
-	it('#391', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-391
-		expect(engrave('**foo bar **').html()).toBe('<p>**foo bar **</p>');
-	});
-
-	it('#392', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-392
-		expect(engrave('**(**foo)').html()).toBe('<p>**(**foo)</p>');
-	});
-
-	it('#393', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-393
-		expect(engrave('*(**foo**)*').html()).toBe('<p><em>(<strong>foo</strong>)</em></p>');
-	});
-
-	it.todo('#394', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-394
-		expect(
-			engrave('**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**').html(),
-		).toBe(
-			'<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.\n<em>Asclepias physocarpa</em>)</strong></p>',
-		);
-	});
-
-	it('#482', ({ expect }) => {
-		// https://spec.commonmark.org/0.31.2/#example-482
-		expect(engrave('[link](/uri "title")').html(), '<p><a href="/uri" title="title">link</a></p>');
+	it('226', ({ expect }) => {
+		const modified = forge({ renderer: { 'inline:break': () => '<br />\n' } });
+		expect(modified('aaa     \nbbb     ').html()).toBe('<p>aaa<br />\nbbb</p>');
 	});
 });

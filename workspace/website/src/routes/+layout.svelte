@@ -1,6 +1,6 @@
 <script>
-	import '@fontsource-variable/karla';
-	import '@fontsource-variable/fira-code';
+	import '@fontsource-variable/brygada-1918';
+	import '@fontsource-variable/inconsolata';
 	import '@ignatiusmb/styles/core.css';
 	import 'aubade/styles/code.css';
 	import '../app.css';
@@ -24,7 +24,7 @@
 	domain="https://aubade.mauss.dev"
 	title="{page.data.meta?.title || page.status} • Aubade"
 	canonical={page.data.meta?.canonical || '/'}
-	description={page.data.meta?.description || 'filesystem-based content processor'}
+	description={page.data.meta?.description || 'markdown, orchestrated.'}
 	authors={['Ignatius Bagus.']}
 	og={{
 		site_name: 'Aubade',
@@ -37,21 +37,44 @@
 	}}
 />
 
-<main>
+<div>
 	{#if !page.error}
 		<Header />
 	{/if}
 
-	{@render children()}
+	<main>
+		{@render children()}
+	</main>
 
 	{#if !page.error}
 		<Footer />
 	{/if}
-</main>
+</div>
 
 <style>
-	main {
-		height: 100%;
+	div {
+		--max-content: 80rem;
+		--breakout: calc((calc(var(--max-content) + 12rem) - var(--max-content)) / 2);
+		--pad: 1rem;
+
+		display: grid;
+		gap: var(--pad) 0;
+		align-content: center;
+		grid-template-rows: [top-start] auto [content-start] 1fr [content-end] auto [top-end];
+		grid-template-columns:
+			[full-bleed-start] var(--pad)
+			[full-bleed-padding-start] minmax(0, 1fr)
+			[breakout-start] minmax(0, var(--breakout))
+			[content-start] min(100% - var(--pad) * 2, var(--max-content))
+			[content-end] minmax(0, var(--breakout))
+			[breakout-end] minmax(0, 1fr)
+			[full-bleed-padding-end] var(--pad)
+			[full-bleed-end];
+
+		> main {
+			grid-row: content;
+			grid-column: content;
+		}
 
 		:global(i[data-icon]) {
 			width: 1.5rem;
@@ -60,12 +83,6 @@
 			background: currentColor;
 			mask: no-repeat center / 100%;
 			mask-image: var(--svg);
-
-			&[data-icon='copyright'] {
-				width: 1rem;
-				height: 1rem;
-				--svg: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"><circle cx="128" cy="128" r="96"/><path d="M160,152a40,40,0,1,1,0-48"/></svg>');
-			}
 		}
 	}
 </style>

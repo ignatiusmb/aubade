@@ -6,7 +6,7 @@
 	<h1>{page.status}</h1>
 	<h2>{page.error?.message}</h2>
 
-	<a href="/docs/introduction">back to the docs</a>
+	<a href="/docs/overview">back to the docs</a>
 </div>
 
 <style>
@@ -17,7 +17,7 @@
 		text-align: center;
 	}
 	h1 {
-		font-family: var(--font-monospace);
+		font-family: var(--font-mono);
 		font-size: 5rem;
 	}
 	a {
