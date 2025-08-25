@@ -18,9 +18,10 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	const dispatch = new Map([
 		['\\', []], // escape falls back to paragraph
 		['<', [registry.comment, registry.markup]],
-		['`', [registry.codeblock]],
 		['#', [registry.heading]],
+		['`', [registry.codeblock]],
 		['>', [registry.quote]],
+		['!', [registry.figure]],
 		['-', [registry.divider, registry.list]],
 		['*', [registry.divider, registry.list]],
 		['_', [registry.divider]],

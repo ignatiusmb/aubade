@@ -54,8 +54,6 @@ each line inside a fenced code block is wrapped in its own `<code>` tag.
 
 ### leaf images
 
-> to be implemented
-
 standalone images are treated as block-level elements and wrapped in `<figure>`. if a title is present, it becomes a `<figcaption>`.
 
 ### custom directives
