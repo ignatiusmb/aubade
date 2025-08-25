@@ -1,6 +1,7 @@
 ---
 rank: 2
 title: /manifest
+description: front matter utilities for Aubade
 ---
 
 the `/manifest` module handles front matter in markdown files. it parses a minimal, YAML-like syntax into plain JavaScript objects and primitives, and can also stringify objects back into front matter. built from the ground up to be lightweight and efficient, use it together with the other modules or independently in any JavaScript environment.
@@ -32,7 +33,6 @@ Aubade supports a minimal subset of [YAML](https://yaml.org/) syntax. front matt
 - **literal blocks** (`|`) — multi-line strings
 - **inline arrays** (`[x, y, z]`) — primitives only
 - **sequences** (`- x`) — can contain nested maps or sequences
-- **compressed nested properties** (`key:x: value`) — top-level only
 
 wrap values in quotes to preserve literal content.
 
@@ -67,7 +67,7 @@ convert a front matter string into a [FrontMatter](#frontmatter) object. strip t
 export function parse(source: string): FrontMatter[string];
 ```
 
-Aubade only parses — it does not validate. to enforce types, use any validation library of your choice. this example uses `define()` from [`mauss`](https://github.com/alkamauss/mauss):
+Aubade only parses — it does not validate. to enforce types, use any validation library of your choice. this example uses `define()` from [mauss](https://github.com/alkamauss/mauss):
 
 ```javascript
 import { parse } from 'aubade/manifest';
@@ -83,6 +83,7 @@ image:
 `;
 const manifest = parse(source);
 
+// --- validate with define ---
 const schema = define(({ array, string }) => ({
 	date: string(),
 	title: string(),

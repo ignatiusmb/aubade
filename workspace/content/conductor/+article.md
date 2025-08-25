@@ -1,9 +1,10 @@
 ---
 rank: 3
 title: /conductor
+description: filesystem orchestration for Aubade
 ---
 
-the `/conductor` module orchestrates content in the filesystem. it provides the `orchestrate()` function to traverse directories and build a structured tree of articles and its metadata.
+the `/conductor` module orchestrates content in the filesystem. it provides an `orchestrate()` function to traverse directories and build a structured tree of articles and its metadata.
 
 > requires filesystem access via [`node:fs`](https://nodejs.org/api/fs.html).
 

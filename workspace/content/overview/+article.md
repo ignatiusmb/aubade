@@ -1,24 +1,25 @@
 ---
 rank: 0
 title: Overview
+description: introduction to Aubade
 ---
 
-Aubade is a filesystem-first framework that turns your markdown and front matter into structured content.
+Aubade is a filesystem-first framework for authoring in markdown. your text files — markdown and front matter — are the source of truth. Aubade turns them into structured data you can query and HTML you can publish, so you can manage content in plain text while powering a full site or application.
 
 ## batteries
 
-Aubade ships with tools designed from the ground up to be lightweight and efficient. you can use them together or independently, in any JavaScript environment. the main tools are:
+Aubade ships with tools you can use together or independently in any JavaScript environment:
 
-- **[markdown compiler](/docs/artisan#markdown)** — tokenize markdown into `{ tokens, html() }`, call `.html()` for direct output.
-- **[front matter parser](/docs/manifest)** — parse a minimal subset of YAML syntax into plain JavaScript objects and primitives.
+- **[markdown compiler](/docs/artisan#markdown)** — tokenize markdown into `{ tokens, html() }`; call `.html()` for direct output.
+- **[front matter parser](/docs/manifest)** — parse a minimal YAML subset into plain JavaScript objects and primitives.
 
 ## core
 
-`assemble()` is the basic building block of Aubade. it takes the contents of a markdown file as a string and returns:
+`assemble()` is the main building block. it takes a markdown string and returns:
 
 - `manifest` — parsed [front matter](/docs/manifest#frontmatter),
 - `md` — `{ tokens, html() }`, and
-- `meta` — `{ body, ... }` including generated metadata.
+- `meta` — `{ body, ... }` with generated metadata.
 
 ```javascript
 import { assemble } from 'aubade';
@@ -27,11 +28,11 @@ const source = ''; // markdown source placeholder
 const { manifest, md, meta } = assemble(source);
 ```
 
-for larger collections, `orchestrate()` recursively traverses your directories and adapts to your file structure, giving you access to all the same batteries across your content tree.
+for collections, [`orchestrate()` from `/conductor`](/docs/conductor) walks your directories and applies the same batteries across the content tree.
 
 ## structure
 
-while you can design your own layout, [Aubade's vision](/docs/philosophy) is to keep content separate from code and collocate articles with their assets. a typical layout might look like:
+Aubade's [principle](/docs/philosophy) is to keep content separate from code and collocate articles with their assets. a common layout:
 
 ```
 /posts
@@ -46,9 +47,9 @@ while you can design your own layout, [Aubade's vision](/docs/philosophy) is to 
     graph.svg
 ```
 
-- directories act as slugs for your articles,
-- `+article.md` serves as the main entry point,
-- additional `+*.md` files branch into sub-pages, and
-- assets like images or videos stay alongside the articles.
+- directories are slugs,
+- `+article.md` is the main entry,
+- extra `+*.md` files become sub-pages,
+- assets stay alongside the articles.
 
-this keeps each article and its assets self-contained, making both content management and collaboration simpler. nevertheless, _nothing in Aubade enforces it_ — the primitives are flexible enough to adapt to any structure you prefer, and you can use it with your existing markdown files without any issues.
+this keeps each article self-contained and easier to manage. Aubade doesn't enforce this layout — the primitives adapt to any structure, and you can drop it into existing markdown projects without friction.

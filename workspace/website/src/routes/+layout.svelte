@@ -37,20 +37,45 @@
 	}}
 />
 
-<main>
+<div>
 	{#if !page.error}
 		<Header />
 	{/if}
 
-	{@render children()}
+	<main>
+		{@render children()}
+	</main>
 
 	{#if !page.error}
 		<Footer />
 	{/if}
-</main>
+</div>
 
 <style>
-	main {
+	div {
+		--max-content: 80rem;
+		--breakout: calc((calc(var(--max-content) + 12rem) - var(--max-content)) / 2);
+		--pad: 1rem;
+
+		display: grid;
+		gap: var(--pad) 0;
+		align-content: center;
+		grid-template-rows: [top-start] auto [content-start] 1fr [content-end] auto [top-end];
+		grid-template-columns:
+			[full-bleed-start] var(--pad)
+			[full-bleed-padding-start] minmax(0, 1fr)
+			[breakout-start] minmax(0, var(--breakout))
+			[content-start] min(100% - var(--pad) * 2, var(--max-content))
+			[content-end] minmax(0, var(--breakout))
+			[breakout-end] minmax(0, 1fr)
+			[full-bleed-padding-end] var(--pad)
+			[full-bleed-end];
+
+		> main {
+			grid-row: content;
+			grid-column: content;
+		}
+
 		:global(i[data-icon]) {
 			width: 1.5rem;
 			height: 1.5rem;
