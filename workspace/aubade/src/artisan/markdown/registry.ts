@@ -11,6 +11,7 @@ export type Registry = [
 	typeof heading,
 	typeof list,
 	typeof quote,
+	typeof figure,
 	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
@@ -175,6 +176,17 @@ export function divider({ cursor }: Context): null | {
 	const source = cursor.locate(/\n|$/).trim();
 	if (!['---', '***', '___'].includes(source)) return null;
 	return { type: 'block:break' };
+}
+
+export function figure(context: Context): null | {
+	type: 'block:image';
+	attr: { src: string; alt: string };
+	children: Annotation[];
+} {
+	const token = image(context);
+	if (!token) return null;
+	const children = context.annotate(token.attr.title);
+	return { type: 'block:image', attr: token.attr, children };
 }
 
 export function heading({ annotate, extract, cursor, stack }: Context): null | {
