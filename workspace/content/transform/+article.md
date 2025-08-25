@@ -1,6 +1,7 @@
 ---
 rank: 6
 title: /transform
+description: transformation utilities for Aubade
 ---
 
 the `/transform` module provides a `chain()` function to link items in a list with their previous and next neighbors.
