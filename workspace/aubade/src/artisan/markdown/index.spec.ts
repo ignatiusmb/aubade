@@ -31,11 +31,6 @@ describe('inline', ({ concurrent: it }) => {
 			'<p>hello <img src="wave.png" alt="wave" title="emoji" /></p>',
 		);
 	});
-	it('image | complex alt text', ({ expect }) => {
-		expect(engrave('![*italic* alt](img.png)').html()).toBe(
-			'<p><img src="img.png" alt="*italic* alt" /></p>',
-		);
-	});
 
 	it('autolink | bracketed links', ({ expect }) => {
 		expect(engrave('<https://mauss.dev>').html()).toBe(

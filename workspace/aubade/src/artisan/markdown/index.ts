@@ -45,7 +45,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		'block:image': ({ token, render, sanitize }) => {
 			const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 			const title = token.children.map(render).join('');
-			const caption = title ? `<figcaption>${sanitize(title)}</figcaption>` : '';
+			const caption = title ? `<figcaption>${title}</figcaption>` : '';
 			return `<figure>${img}${caption}</figure>`;
 		},
 		'block:paragraph': ({ token, render, sanitize }) => {
