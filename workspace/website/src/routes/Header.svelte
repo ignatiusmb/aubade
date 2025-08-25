@@ -7,7 +7,7 @@
 	<p>
 		<a href="https://github.com/ignatiusmb/aubade">Aubade</a>
 		<span>•</span>
-		<span>filesystem-based content processor</span>
+		<span>markdown, orchestrated.</span>
 	</p>
 </header>
 
