@@ -159,6 +159,27 @@
 			border-left: 0.25rem solid var(--aubade-primary);
 			background: rgba(0, 112, 187, 0.1);
 		}
+		table {
+			width: 100%;
+			margin-top: 1rem;
+			border-collapse: collapse;
+			line-height: 1.3;
+			font-size: calc(var(--size-base) * 0.89);
+
+			thead {
+				background: var(--stone-800);
+				color: var(--stone-400);
+				font-weight: 500;
+			}
+
+			td,
+			th {
+				padding: 0.5rem;
+				border-bottom: 1px solid var(--stone-700);
+				text-align: left;
+			}
+		}
+
 		[data-aubade='block'] {
 			margin: 1rem 0 1.5rem;
 		}
