@@ -4,7 +4,7 @@ title: Overview
 description: introduction to Aubade
 ---
 
-Aubade is a filesystem-first framework for authoring in markdown. your text files — markdown and front matter — are the source of truth. Aubade turns them into structured data you can query and HTML you can publish, so you can manage content in plain text while powering a full site or application.
+Aubade is a filesystem-first framework for authoring in markdown. it treats your markdown files (with front matter) as the source of truth, turning them into structured data you can query and HTML you can publish — letting you power a full site or application directly from plain text.
 
 ## batteries
 

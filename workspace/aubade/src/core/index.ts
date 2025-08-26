@@ -92,38 +92,49 @@ function compress(metadata: Record<string, any>, parent = '') {
 }
 
 export function assemble(source: string): {
-	manifest?: Record<string, any>;
+	manifest: Record<string, any>;
 	md: ReturnType<typeof engrave>;
-	meta: { body: string; words: number };
+	meta: {
+		head: string;
+		body: string;
+		readonly table: Array<{ id: string; title: string; level: number }>;
+		readonly words: number;
+	};
 } {
 	const match = /---\r?\n([\s\S]+?)\r?\n---/.exec(source);
-	if (!match) {
-		const document = engrave(source);
-		const meta = { body: source, words: words(document.tokens) };
-		return { md: document, meta };
-	}
-
-	const body = source.slice(match.index + match[0].length);
-	const document = engrave(body);
+	const body = match ? source.slice(match.index + match[0].length) : source;
+	const document = engrave(body.trim());
 	return {
-		manifest: manifest(match[1].trim()) as Record<string, any>,
+		manifest: match ? (manifest(match[1].trim()) as Record<string, any>) : {},
 		md: document,
-		meta: { body, words: words(document.tokens) },
-	};
-}
+		meta: {
+			head: match ? match[0] : '',
+			body: body.trim() + '\n',
 
-function words(tokens: Token[]): number {
-	let count = 0;
-	for (const token of tokens) {
-		switch (token.type) {
-			case 'inline:text':
-				count += token.text.split(/\s+/).length;
-				break;
-			case 'block:paragraph':
-				count += words(token.children);
-			default:
-				break;
-		}
-	}
-	return count;
+			get table() {
+				const toc: Array<{ id: string; title: string; level: number }> = [];
+				for (const token of document.tokens) {
+					if (token.type !== 'block:heading') continue;
+					toc.push({
+						id: token.attr.id,
+						title: token.attr['data-text'],
+						level: token.meta.level,
+					});
+				}
+				return toc;
+			},
+
+			get words() {
+				return count(document.tokens);
+				function count(tokens: Token[]): number {
+					let total = 0;
+					for (const token of tokens) {
+						if ('children' in token) total += count(token.children);
+						else if ('text' in token) total += token.text.split(/\s+/).length;
+					}
+					return total;
+				}
+			},
+		},
+	};
 }

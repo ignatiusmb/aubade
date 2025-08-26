@@ -24,12 +24,8 @@ const outputs = await orchestrate('content', ({ path }) => {
 	if (!path.endsWith('.md')) return;
 	return async ({ assemble, buffer }) => {
 		const { manifest, md, meta } = assemble(buffer.toString('utf-8'));
-		if (!manifest) return;
-		return {
-			...manifest,
-			words: meta.words,
-			content: md.html(),
-		};
+		if (manifest.draft) return;
+		return { ...manifest, ...meta, content: md.html() };
 	};
 });
 ```

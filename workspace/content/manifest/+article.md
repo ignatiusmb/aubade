@@ -20,21 +20,16 @@ export interface FrontMatter {
 
 Aubade supports a minimal subset of [YAML](https://yaml.org/) syntax. front matter is placed at the top of a file between two `---` lines. [`assemble()`](/docs/overview#core) will automatically separate and parse it.
 
-### supported types
-
-- `null`, `true`, `false`
-- strings
-- arrays
-- nested objects (maps and sequences)
-
-### parsing rules
-
-- **comments** (`# ...`) — ignored
-- **literal blocks** (`|`) — multi-line strings
-- **inline arrays** (`[x, y, z]`) — primitives only
-- **sequences** (`- x`) — can contain nested maps or sequences
-
-wrap values in quotes to preserve literal content.
+| syntax          | category         | description                       |
+| --------------- | ---------------- | --------------------------------- |
+| `key: value`    | **map (object)** | fundamental key–value pair        |
+| `text`/`"text"` | string           | plain or quoted text              |
+| `null`          | null             | null literal                      |
+| `true`/`false`  | boolean          | boolean literals                  |
+| `[x, y, z]`     | array (inline)   | primitives only                   |
+| `- x`           | sequence (block) | can contain nested maps/sequences |
+| `\|`            | literal block    | multi-line string                 |
+| `# comment`     | comment          | ignored during parsing            |
 
 ```yaml
 date: '2025-08-22T11:04:00'
@@ -45,7 +40,7 @@ image:
     path: cdn_link
 ```
 
-produces:
+stringified to JSON, this becomes:
 
 ```json
 {
