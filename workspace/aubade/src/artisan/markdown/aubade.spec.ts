@@ -28,13 +28,13 @@ describe('extensions', ({ concurrent: it }) => {
 
 	it('leaf image without title', ({ expect }) => {
 		expect(engrave('![unannotated *alt* text](img.png)').html()).toBe(
-			'<figure><img src="img.png" alt="unannotated *alt* text" /></figure>',
+			'<figure>\n<img src="img.png" alt="unannotated *alt* text" />\n</figure>',
 		);
 	});
 
 	it('leaf image with title', ({ expect }) => {
 		expect(engrave('![alt](img.png "annotated *title* for caption")').html()).toBe(
-			'<figure><img src="img.png" alt="alt" /><figcaption>annotated <em>title</em> for caption</figcaption></figure>',
+			'<figure>\n<img src="img.png" alt="alt" /><figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
 		);
 	});
 });

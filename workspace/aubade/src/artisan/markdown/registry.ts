@@ -84,7 +84,7 @@ export function markup({ compose, cursor }: Context): null | {
 	if (!cursor.eat('<')) return null;
 
 	const tag = cursor.locate(/\s|>/);
-	if (!tag.length) return null;
+	if (!/^[a-z][a-z0-9-]*$/i.test(tag)) return null;
 
 	const attr: Record<string, string> = {};
 	let char = cursor.read(1);

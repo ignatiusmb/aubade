@@ -13,7 +13,7 @@ describe('spec', ({ concurrent: it }) => {
 		'003|deny': ['    a\ta\n    ὐ\ta', '<p>a\ta\nὐ\ta</p>'],
 		'004|todo': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
 		'005|todo': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'006|deny': ['>\t\tfoo', '<blockquote><p>foo</p></blockquote>'],
+		'006|deny': ['>\t\tfoo', '<blockquote>\n<p>foo</p>\n</blockquote>'],
 		'007|todo': ['-\t\tfoo', '<ul><li><p>foo</p></li></ul>'],
 		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
 		'009|todo': [
@@ -209,8 +209,8 @@ describe('spec', ({ concurrent: it }) => {
 			'`Foo\n----\n`\n\n<a title="a lot\n---\nof dashes"/>',
 			'<p><code>Foo ---- </code></p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>',
 		],
-		'092|mod': ['> Foo\n---', '<blockquote><p>Foo</p></blockquote>\n<hr />'],
-		'093|deny': ['> foo\n> bar\n> ===', '<blockquote><p>foo\nbar\n===</p></blockquote>'],
+		'092': ['> Foo\n---', '<blockquote>\n<p>Foo</p>\n</blockquote>\n<hr />'],
+		'093|deny': ['> foo\n> bar\n> ===', '<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>'],
 		'094|todo': ['- Foo\n---', '<ul>\n<li>Foo</li>\n</ul>\n<hr />'],
 		'095|deny': ['Foo\nBar\n---', '<p>Foo\nBar</p>\n<hr />'],
 		'096|deny': [
@@ -221,7 +221,7 @@ describe('spec', ({ concurrent: it }) => {
 		'098': ['---\n---', '<hr />\n<hr />'],
 		'099|todo': ['- foo\n-----', '<ul>\n<li>foo</li>\n</ul>\n<p>-----</p>'],
 		'100': ['    foo\n---', '<p>foo</p>\n<hr />'],
-		'101|deny': ['> foo\n-----', '<blockquote><p>foo</p></blockquote>\n<p>-----</p>'],
+		'101|deny': ['> foo\n-----', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>-----</p>'],
 		'102|deny': ['\\> foo\n-----', '<p>&gt; foo\n-----</p>'],
 		'103|deny': ['Foo\n\nbar\n---\nbaz', '<p>Foo</p>\n<p>bar</p>\n<hr />\n<p>baz</p>'],
 		'104': ['Foo\nbar\n\n---\n\nbaz', '<p>Foo\nbar</p>\n<hr />\n<p>baz</p>'],
@@ -240,9 +240,9 @@ describe('spec', ({ concurrent: it }) => {
 			'`````\n\n```\naaa',
 			'<pre><code></code>\n<code>```</code>\n<code>aaa</code></pre>',
 		],
-		'128|mod': [
+		'128|plus': [
 			'> ````\n> aaa\n\nbbb',
-			'<blockquote><pre><code>aaa</code></pre></blockquote>\n<p>bbb</p>',
+			'<blockquote>\n<pre><code>aaa</code></pre>\n</blockquote>\n<p>bbb</p>',
 		],
 		'129|plus': ['```\n\n  \n```', '<pre><code></code>\n<code>  </code></pre>'],
 		'130|plus': ['```\n```', '<pre></pre>'],
@@ -300,7 +300,19 @@ describe('spec', ({ concurrent: it }) => {
 			'  \n\naaa\n   \n\n# aaa\n\n   ',
 			'<p>aaa</p>\n<h1 id="aaa" data-text="aaa">aaa</h1>',
 		],
-		// @TODO: 228-252 [block quotes]
+		'228|plus': [
+			'> # Foo\n> bar\n> baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'229|plus': [
+			'># Foo\n>bar\n> baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'230|todo': [
+			'   > # Foo\n   > bar\n > baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		// @TODO: 231-252 [block quotes]
 		// @TODO: 253-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
@@ -476,15 +488,14 @@ describe('spec', ({ concurrent: it }) => {
 		'477|todo': ['__<a href="__">', '<p>__<a href="__"></p>'],
 		'478': ['*a `*`*', '<p><em>a <code>*</code></em></p>'],
 		'479': ['_a `_`_', '<p><em>a <code>_</code></em></p>'],
-		'480|todo': [
+		'480': [
 			'**a<https://foo.bar/?q=**>',
 			'<p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>',
 		],
-		'481|todo': [
+		'481': [
 			'__a<https://foo.bar/?q=__>',
 			'<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>',
 		],
-		// @TODO: 413-481
 		'482': ['[link](/uri "title")', '<p><a href="/uri" title="title">link</a></p>'],
 		// @TODO: 483-571 [links]
 		// @TODO: 572-593 [images]

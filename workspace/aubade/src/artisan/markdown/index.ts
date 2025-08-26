@@ -38,7 +38,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
 		},
 		'block:quote': ({ token, render }) => {
-			return `<blockquote>${token.children.map(render).join('')}</blockquote>`;
+			return `<blockquote>\n${token.children.map(render).join('\n')}\n</blockquote>`;
 		},
 		'block:list': ({ token, render }) => `<ul>${token.children.map(render).join('')}</ul>`,
 		// 'block:item': ({ token, render }) => `<li>${token.children.map(render).join('')}</li>`,
@@ -46,7 +46,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 			const title = token.children.map(render).join('');
 			const caption = title ? `<figcaption>${title}</figcaption>` : '';
-			return `<figure>${img}${caption}</figure>`;
+			return `<figure>\n${img}${caption}\n</figure>`;
 		},
 		'block:paragraph': ({ token, render, sanitize }) => {
 			const children = token.children.map(render).join('');
