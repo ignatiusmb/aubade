@@ -71,9 +71,9 @@
 	"dependencies": {
 		"@types/markdown-it": "^14.1.2",
 		"markdown-it": "^14.1.0",
-		"shiki": "^3.6.0"
+		"shiki": "^3.12.0"
 	},
 	"devDependencies": {
-		"mauss": "^0.10.0"
+		"mauss": "^0.10.7"
 	}
 }

@@ -10,7 +10,7 @@ Libretto is a _deliberately selective_ markdown dialect designed for Aubade. it 
 
 > Libretto [passes the CommonMark test suite](https://github.com/ignatiusmb/aubade/blob/master/workspace/aubade/src/artisan/markdown/example.spec.ts), but only for the subset of rules it adopts. some tests are skipped, and certain behaviors are redefined to fit Libretto's design.
 
-the goal is clarity and predictability, not broad compatibility: markdown should remain human-readable and convenient to write.
+the goal is not broad compatibility but clarity: a syntax that stays human-readable, convenient to write, and consistently produces predictable HTML.
 
 ## deviations
 
