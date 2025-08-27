@@ -1,11 +1,11 @@
 import { describe } from 'vitest';
-import { traverse } from '../../src/compass/index.js';
+import { orchestrate } from '../../src/conductor/index.js';
 import { readJSON } from './utils.js';
 
 const target = `${process.cwd()}/test/apps`;
 describe('traverse', ({ concurrent: it }) => {
 	it('metadata', async ({ expect }) => {
-		const output = await traverse(`${target}/metadata/input`);
+		const output = await orchestrate(`${target}/metadata/input`);
 		const expected = readJSON(`${target}/metadata/expected.json`);
 
 		expect(output).toBeTypeOf('object');
@@ -15,7 +15,7 @@ describe('traverse', ({ concurrent: it }) => {
 	});
 
 	it('multiple', async ({ expect }) => {
-		const output = await traverse(`${target}/multiple/input`);
+		const output = await orchestrate(`${target}/multiple/input`);
 		const expected = readJSON(`${target}/multiple/expected.json`);
 
 		output.sort((x, y) => x.title.localeCompare(y.title));
@@ -27,7 +27,7 @@ describe('traverse', ({ concurrent: it }) => {
 	});
 
 	it('nested-1', async ({ expect }) => {
-		const output = await traverse(`${target}/nested-1/input`);
+		const output = await orchestrate(`${target}/nested-1/input`);
 		const expected = readJSON(`${target}/nested-1/expected.json`);
 
 		output.sort((x, y) => x.title.localeCompare(y.title));

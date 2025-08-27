@@ -1,20 +1,26 @@
 [
 	{
 		"title": "a",
-		"estimate": 1,
+		"head": "---\ntitle: a\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	},
 	{
 		"title": "b",
-		"estimate": 1,
+		"head": "---\ntitle: b\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	},
 	{
 		"title": "c",
-		"estimate": 1,
+		"head": "---\ntitle: c\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	}
 ]

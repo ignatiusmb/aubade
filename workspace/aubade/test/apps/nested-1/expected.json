@@ -1,20 +1,26 @@
 [
 	{
 		"title": "slug-1",
-		"estimate": 1,
+		"head": "---\ntitle: slug-1\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	},
 	{
 		"title": "slug-2",
-		"estimate": 1,
+		"head": "---\ntitle: slug-2\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	},
 	{
 		"title": "slug-3",
-		"estimate": 1,
+		"head": "---\ntitle: slug-3\n---",
+		"body": "\n",
 		"table": [],
+		"words": 0,
 		"content": ""
 	}
 ]

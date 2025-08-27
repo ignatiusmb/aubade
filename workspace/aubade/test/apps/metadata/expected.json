@@ -2,8 +2,10 @@
 	{
 		"title": "Standard Singular Test",
 		"description": "standard input for singular test",
-		"estimate": 1,
+		"head": "---\ntitle: Standard Singular Test\ndescription: standard input for singular test\n---",
+		"body": "Lorem ipsum dolor sit amet\n",
 		"table": [],
+		"words": 5,
 		"content": "<p>Lorem ipsum dolor sit amet</p>"
 	}
 ]
