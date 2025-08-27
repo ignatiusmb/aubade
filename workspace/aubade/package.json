@@ -31,10 +31,6 @@
 			"types": "./index.d.ts",
 			"default": "./src/browser/index.js"
 		},
-		"./compass": {
-			"types": "./index.d.ts",
-			"default": "./src/compass/index.js"
-		},
 		"./conductor": {
 			"types": "./index.d.ts",
 			"default": "./src/conductor/index.js"
