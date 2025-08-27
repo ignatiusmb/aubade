@@ -225,8 +225,8 @@ export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	}
 	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
 
-	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
-	return stack['block:heading'].push(heading), heading;
+	stack['block:heading'].push({ type: 'block:heading', meta: { level }, attr, children });
+	return stack['block:heading'][stack['block:heading'].length - 1];
 }
 
 export function list({ compose, cursor }: Context): null | {
