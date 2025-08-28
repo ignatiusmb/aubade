@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { engrave, forge } from './index.js';
+import { engrave } from './index.js';
 
 // `deny` disallow features, either:
 //  - outright, like indented code block and setext headings

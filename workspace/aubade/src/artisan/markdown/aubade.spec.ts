@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { engrave, forge } from './index.js';
+import { engrave } from './index.js';
 
 describe('extensions', ({ concurrent: it }) => {
 	it('block comments', ({ expect }) => {
