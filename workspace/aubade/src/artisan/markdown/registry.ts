@@ -1,4 +1,34 @@
-import type { Context, Token } from './engine.js';
+import type { Context } from './context.js';
+
+export type Registry = [
+	// aubade registries
+	typeof comment,
+	typeof markup,
+
+	// block registries
+	typeof codeblock,
+	typeof divider,
+	typeof heading,
+	typeof list,
+	typeof quote,
+	typeof figure,
+	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
+
+	// inline registries
+	typeof escape,
+	typeof linebreak,
+	typeof autolink,
+	typeof codespan,
+	typeof image,
+	typeof link,
+	() => { type: 'inline:strong'; children: Annotation[] },
+	() => { type: 'inline:emphasis'; children: Annotation[] },
+	() => { type: 'inline:strike'; children: Annotation[] },
+	() => { type: 'inline:text'; text: string },
+][number];
+export type Token = Registry extends (ctx: any) => infer R ? NonNullable<R> : never;
+export type Annotation = Exclude<Token, { type: `block:${string}` }>;
+export type Block = Exclude<Token, { type: `inline:${string}` }>;
 
 // --- aubade registries ---
 
@@ -13,16 +43,48 @@ export function comment({ cursor }: Context): null | {
 	return { type: 'aubade:comment', text: comment.trim() };
 }
 
-export function markup({ cursor, compose }: Context): null | {
+export function delimiter({ cursor, is }: Context): null | {
+	type: 'aubade:delimiter';
+	text: string;
+	meta: {
+		char: '*' | '_' | '~';
+		count: number;
+		can: { open: boolean; close: boolean };
+	};
+} {
+	let count = 1;
+	const before = cursor.see(-1);
+	const char = cursor.read(1) as '*' | '_' | '~';
+	while (cursor.eat(char)) count++;
+	const after = cursor.see(0);
+
+	// underscore cannot be used for emphasis inside words
+	// https://spec.commonmark.org/0.31.2/#example-360
+	// https://spec.commonmark.org/0.31.2/#example-374
+	const intra = is.alphanumeric(before) && is.alphanumeric(after);
+	const left = is['left-flanking'](before, after);
+	const right = is['right-flanking'](before, after);
+	const can = {
+		open: char === '_' ? !intra && left : left,
+		close: char === '_' ? !intra && right : right,
+	};
+	return {
+		type: 'aubade:delimiter',
+		text: char.repeat(count),
+		meta: { char, count, can },
+	};
+}
+
+export function markup({ compose, cursor }: Context): null | {
 	type: 'aubade:html';
 	tag: string;
 	attr: Record<string, string>;
-	children: Token[];
+	children: Block[];
 } {
 	if (!cursor.eat('<')) return null;
 
 	const tag = cursor.locate(/\s|>/);
-	if (!tag.length) return null;
+	if (!/^[a-z][a-z0-9-]*$/i.test(tag)) return null;
 
 	const attr: Record<string, string> = {};
 	let char = cursor.read(1);
@@ -50,19 +112,18 @@ export function markup({ cursor, compose }: Context): null | {
 		if (name && value) attr[clean(name)] = unquote(value);
 	}
 
-	// TODO: handle elements without closing tags
-	compose; // recursive call to parse the inner HTML
-
 	const close = `</${tag}>`;
 	const contents = cursor.locate(new RegExp(close));
 	if (!contents.length && !cursor.eat(close)) return null;
 
-	return { type: 'aubade:html', tag, attr, children: [] };
+	const { children } = compose(contents);
+	return { type: 'aubade:html', tag, attr, children };
+
+	// --- internal helpers ---
 
 	function clean(name: string): string {
 		return name.replace(/[^a-zA-Z0-9_.:-]+/g, '_').replace(/^([^a-zA-Z_:])/, '_');
 	}
-
 	function unquote(text: string): string {
 		if (text.length < 2) return text;
 		const last = text[text.length - 1];
@@ -75,22 +136,37 @@ export function markup({ cursor, compose }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
+	meta: { info: string[] };
 	attr: { 'data-language': string };
 	children: { type: 'inline:code'; text: string }[];
 } {
-	if (!cursor.eat('```')) return null;
-	const language = cursor.locate(/\n/).trim();
-	const source = cursor.locate(/\r?\n```|$/).trim();
-	if (!source.length) return null;
-	cursor.trim(), cursor.eat('```');
+	let backticks = +cursor.eat('`');
+	if (backticks === 0) return null;
+	while (cursor.eat('`')) backticks++;
+	if (backticks < 3) return null;
+
+	const info = cursor.locate(/\n/).trim();
+	if (/`/.test(info)) return null;
+	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
+
+	const code: string[] = [];
+	let line = cursor.peek(/\n|$/).trim();
+	while (/[^`]/.test(line) || line.length < backticks) {
+		code.push(cursor.locate(/\n|$/));
+		if (!cursor.eat('\n')) break;
+		line = cursor.peek(/\n|$/).trim();
+	}
+	cursor.trim();
+	while (cursor.eat('`'));
+	cursor.trim();
+
+	const [language, ...rest] = info.split(/\s+/);
 
 	return {
 		type: 'block:code',
+		meta: { info: rest },
 		attr: { 'data-language': language },
-		children: source.split('\n').map((line) => ({
-			type: 'inline:code',
-			text: line,
-		})),
+		children: code.map((text) => ({ type: 'inline:code', text })),
 	};
 }
 
@@ -102,11 +178,22 @@ export function divider({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
-export function heading({ cursor, stack, annotate }: Context): null | {
+export function figure(context: Context): null | {
+	type: 'block:image';
+	attr: { src: string; alt: string };
+	children: Annotation[];
+} {
+	const token = image(context);
+	if (!token) return null;
+	const children = context.annotate(token.attr.title);
+	return { type: 'block:image', attr: token.attr, children };
+}
+
+export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	type: 'block:heading';
 	meta: { level: number };
 	attr: { id: string; 'data-text': string };
-	children: Token[];
+	children: Annotation[];
 } {
 	cursor.trim(); // trim leading whitespace
 	const match = cursor.locate(/\s/);
@@ -115,56 +202,55 @@ export function heading({ cursor, stack, annotate }: Context): null | {
 	const title = cursor.locate(/\n|$/).trim();
 	if (!title.length) return null;
 
-	const sibling = stack.find('block:heading', (token) => token.meta.level === level);
-	if (sibling) stack.remove(sibling);
-
-	const parent = stack.find('block:heading', (token) => token.meta.level === level - 1);
-
 	const children = annotate(title);
 	const attr = {
-		id: `${parent?.attr.id || ''}-${title.toLowerCase()}`
+		id: title
+			.toLowerCase()
 			.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
 			.replace(/^-+|-+$|(?<=-)-+/g, ''),
 		'data-text': children.map(extract).join(''),
 	};
 
-	return stack.push({ type: 'block:heading', meta: { level }, attr, children });
-
-	function extract(token: Token): string {
-		if ('children' in token) return token.children.map(extract).join('');
-		return 'text' in token ? token.text : '';
+	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
+		const { attr: parent, meta } = stack['block:heading'][i];
+		if (meta.level >= level) continue;
+		attr.id = `${parent.id}-${attr.id}`;
+		break;
 	}
+
+	let suffix = 0;
+	for (const h of stack['block:heading']) {
+		const check = suffix ? `${attr.id}-${suffix}` : attr.id;
+		if (h.attr.id === check) suffix++;
+	}
+	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
+
+	stack['block:heading'].push({ type: 'block:heading', meta: { level }, attr, children });
+	return stack['block:heading'][stack['block:heading'].length - 1];
 }
 
-export function list({ cursor, compose }: Context): null | {
+export function list({ compose, cursor }: Context): null | {
 	type: 'block:list';
-	children: [];
+	ordered: boolean;
+	children: Block[];
 } {
-	const char = cursor.read(1);
-	const bullet = char === '-' || char === '*';
-	const number = /^\d/.test(char);
-	if (!bullet && !number) return null;
+	const match = cursor.peek(/^[ \t]{0,1}([-+*]|\d+[.)])\s+/);
+	if (!match) return null;
+	// const ordered = /^\d/.test(match[1]);
 	// @TODO: implement
 	compose; // recursive call to parse the list items
 	return null;
 }
 
-export function quote({ cursor, stack, compose }: Context): null | {
+export function quote({ compose, cursor }: Context): null | {
 	type: 'block:quote';
-	children: Token[];
+	children: Block[];
 } {
-	const match = cursor.eat('>');
-	if (!match) return null;
-
-	const body = cursor.locate(/\n|$/).trim();
-	const { children } = compose(body);
-	const last = stack.peek();
-	if (last?.type === 'block:quote') {
-		last.children.push(...children);
-		return last;
-	}
-
-	return stack.push({ type: 'block:quote', children });
+	if (cursor.see(0) !== '>') return null;
+	const block = cursor.locate(/\n(?!>)|$/).trim();
+	const body = block.split('\n').map((l) => l.slice(1).trim());
+	const { children } = compose(body.join('\n'));
+	return { type: 'block:quote', children };
 }
 
 // --- inline registries ---
@@ -205,18 +291,30 @@ export function codespan({ cursor }: Context): null | {
 	type: 'inline:code';
 	text: string;
 } {
-	if (!cursor.eat('`')) return null;
+	const before = cursor.see(-1);
+	let backticks = +cursor.eat('`');
+	if (backticks === 0) return null;
+	if (before === '`') return null;
+	while (cursor.eat('`')) backticks++;
 
 	let code = '';
-	let char = '';
-	const n = 1 + cursor.locate(/[^`]/).length;
-	while (!cursor.eat('`'.repeat(n)) && (char = cursor.read(1))) {
+	while (
+		code.endsWith('`') ||
+		cursor.see(backticks) === '`' ||
+		!cursor.peek('`'.repeat(backticks))
+	) {
+		const char = cursor.read(1);
+		if (!char) return null;
 		code += char;
 	}
-	if (!char) return null;
-	if (code[0] === ' ' && code[0] === code[code.length - 1]) {
-		code = code.slice(1, -1); // trim the single space
-	}
+	if (!cursor.eat('`'.repeat(backticks))) return null;
+	code = code.replace(/\n/g, ' ');
+	const check = [
+		code.length > 2,
+		code[0] === ' ' && code.endsWith(' '),
+		/[` ]/.test(code.slice(1, -1)),
+	];
+	if (check.every(Boolean)) code = code.slice(1, -1);
 	return { type: 'inline:code', text: code };
 }
 
@@ -226,7 +324,7 @@ export function escape({ cursor }: Context): null | {
 } {
 	if (!cursor.eat('\\')) return null;
 	let next = cursor.read(1);
-	if (!/[\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
+	if (!/[\/_\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
 
@@ -240,17 +338,18 @@ export function image({ cursor }: Context): null | {
 	if (!cursor.eat('![')) return null;
 	const alt = cursor.locate(/]/);
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const src = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"'), cursor.trim(); // eat the closing quote and whitespace
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = alt.includes('`') && src.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:image',
@@ -267,101 +366,33 @@ export function linebreak({ cursor }: Context): null | {
 	return null;
 }
 
-export function link({ cursor, annotate }: Context): null | {
+export function link({ annotate, extract, cursor }: Context): null | {
 	type: 'inline:link';
 	attr: { href: string; title: string };
-	children: Token[];
+	children: Annotation[];
 } {
 	if (!cursor.eat('[')) return null;
 	const name = cursor.locate(/]/).replace(/\n/g, ' ');
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const href = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.trim(); // eat whitespace between optionally title and closing `)`
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && href.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:link',
-		attr: { href, title: title.trim() },
+		attr: {
+			href: annotate(href).map(extract).join(''),
+			title: annotate(title.trim()).map(extract).join(''),
+		},
 		children: annotate(name),
 	};
-}
-
-// --- modifier registries ---
-
-export function emphasis({ cursor, is, annotate }: Context): null | {
-	type: 'modifier:emphasis';
-	children: Token[];
-} {
-	const before = cursor.see(-1);
-	const after = cursor.see(1);
-	if (!is['left-flanking'](before, after)) return null;
-
-	const char = cursor.read(1);
-	// double asterisk handled by `modifier:strong`
-	if (char !== '*' && char !== '_') return null;
-	if (before === char) return null; // failed strong rule
-	if (cursor.peek(char)) return null; // immediately closed
-
-	// underscore cannot be used for emphasis inside words
-	// https://spec.commonmark.org/0.31.2/#example-360
-	if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return null;
-
-	const body = cursor.consume(char, (i) => {
-		const before = cursor.see(i - 1);
-		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i + 1);
-		// https://spec.commonmark.org/0.31.2/#example-374
-		if (char === '_' && is.alphanumeric(before) && is.alphanumeric(after)) return false;
-		return is['right-flanking'](before, after);
-	});
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	cursor.eat(char);
-
-	const children = annotate(body);
-	return { type: 'modifier:emphasis', children };
-}
-
-export function strike({ cursor, is, annotate }: Context): null | {
-	type: 'modifier:strike';
-	children: Token[];
-} {
-	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
-
-	if (!cursor.eat('~~')) return null;
-	const body = cursor.locate(/~~/);
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	if (!is['right-flanking'](cursor.see(-2), cursor.see(1))) return null;
-	cursor.eat('~~');
-
-	const children = annotate(body);
-	return { type: 'modifier:strike', children };
-}
-
-export function strong({ cursor, is, annotate }: Context): null | {
-	type: 'modifier:strong';
-	children: Token[];
-} {
-	if (!is['left-flanking'](cursor.see(-1), cursor.see(2))) return null;
-	if (!cursor.eat('**')) return null;
-	const body = cursor.consume('**', (i) => {
-		const before = cursor.see(i - 1);
-		if (before === '\\') return false; // escaped character
-		const after = cursor.see(i + 2);
-		return is['right-flanking'](before, after);
-	});
-	const invalid = body.includes('`') && cursor.peek(/`/);
-	if (!body.length || invalid) return null;
-	cursor.eat('**');
-	const children = annotate(body);
-	return { type: 'modifier:strong', children };
 }

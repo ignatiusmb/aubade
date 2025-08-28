@@ -15,12 +15,12 @@
 		grid-template-columns: minmax(0, 1fr);
 		align-items: flex-start;
 		justify-content: center;
-		padding: 0 2rem;
-		margin: 3rem auto 0;
 
 		@media only screen and (min-width: 769px) {
-			padding: 0 1rem;
-			grid-template-columns: minmax(12rem, 16rem) minmax(0, 60rem);
+			grid-template-columns: 12rem minmax(0, 80ch);
+		}
+		@media only screen and (min-width: 1024px) {
+			grid-template-columns: 14rem minmax(0, 80ch) 14rem;
 		}
 	}
 </style>

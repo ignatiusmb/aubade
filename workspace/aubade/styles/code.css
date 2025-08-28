@@ -5,7 +5,7 @@
 	--aubade-tab-size: 2;
 	--aubade-rounding: 0.3rem;
 
-	--aubade-primary: #0070bb;
+	--aubade-primary: oklch(0.712 0.171 298);
 	--aubade-background: #2d2d2d;
 	--aubade-overlay: #f7f7f7;
 	--aubade-text: #dadada;

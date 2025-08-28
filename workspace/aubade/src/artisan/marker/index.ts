@@ -1,5 +1,4 @@
 import markdown from 'markdown-it';
-import { uhi } from '../../utils.js';
 import { transform } from '../palette/index.js';
 
 export const marker = markdown({
@@ -94,3 +93,10 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 		return `<figure class="${classes.top.join(' ')}">${body}</figure>`;
 	}
 };
+
+const separators = /[\s\][!"#$%&'()*+,./:;<=>?@\\^_{|}~-]/g;
+function uhi(title: string) {
+	const cleaned = title.toLowerCase().replace(separators, '-');
+	const normalized = cleaned.replace(/`/g, '').replace(/-+/g, '-');
+	return normalized.replace(/^-*(.+?)-*$/, '$1'); // hyphen at the sides
+}

@@ -1,55 +1,54 @@
-# Contributors Guide
+# contributing
 
-Thanks for taking the time to contribute! 🎉
+contributions are welcome in many forms — not only code. using the project, reporting issues, improving docs, and testing changes are all valuable. if you want to get involved, start with the sections below.
 
-Contributing goes a long way, there are lots of ways you can still help, even if you can't contribute to the code. All methods are outlined in the sections below, but the two main things other than code are testing and creating issues.
+## testing
 
-## Testing
+the simplest way to help is by using the software. report problems, unexpected behavior, or missing use cases. open a [new issue](https://github.com/ignatiusmb/aubade/issues/new/choose) or start a [discussion](https://github.com/ignatiusmb/aubade/discussions/new).
 
-The easiest way to contribute! By just using the software, you're already helping the project grows. Simply use and let us know if you run into problems, or there's some use case you would like to use it for but are not yet covered, this is the most common way we uncover bugs or implement new features. Open a [new issue](https://github.com/ignatiusmb/aubade/issues/new/choose) or start a [new discussion](https://github.com/ignatiusmb/aubade/discussions/new).
+## documentation
 
-## Documentation
+docs are part of the project. you can add missing details, clarify existing sections, or share guidance from your own experience. the source lives in [`workspace/content`](workspace/content).
 
-Documentation is especially helpful! You can add something that hasn't been covered or is missing in the docs and help guide others with your experience. The source for the documentation lives in the [workspace/content](workspace/content) directory.
+## development
 
-## Developing
+if you want to work on the codebase:
 
-Follow this if you're looking to contribute to the code.
+### setup
 
-### Preparing
-
-First step is to prepare your environment and make sure that [pnpm](https://pnpm.io/) is available to use, you can follow their [installation guide](https://pnpm.io/installation) or enable them through [corepack](https://nodejs.org/api/corepack.html).
+make sure [pnpm](https://pnpm.io/) is available. you can install it or enable it with [corepack](https://nodejs.org/api/corepack.html):
 
 ```bash
 corepack enable
 corepack prepare pnpm@latest --activate
 ```
 
-The next step is to checkout the code by forking and cloning the repository.
+then fork and clone the repository.
 
-### Scripts
+### scripts
 
-The first script to run is `"watch"` in `workspace/aubade`, this will compile and watch for changes in the source code. The next step is to run the dev server with `"dev"` in `workspace/website`, this will host the documentation site locally and it's the easiest way to see the code changes that you do in `workspace/aubade` source.
+- run `pnpm dev` in `workspace/aubade` to run the test suite in watch mode
+- run `pnpm dev` in `workspace/website` to run the documentation site locally
 
-### Structure
+### layout
 
-How the project and code is structured, and some entry points to be aware of
+project structure and entry points:
 
-- `workspace/aubade/src/core` - aubade core module, compiler components
-- `workspace/aubade/src/artisan` - aubade artisan module, syntax highlighter and marker
-- `workspace/aubade/src/browser` - aubade browser module, DOM hydrating function
-- `workspace/aubade/src/compass` - aubade compass module, read files from disk
-- `workspace/aubade/src/transform` - aubade transform module, transformers for `traverse`
-- `workspace/aubade/styles` - stylesheets used and exported
-- `workspace/content` - unprocessed markdown files containing all of the documentation
-- `workspace/website` - source code for the website
+- `workspace/aubade/src/core` — basic building blocks
+- `workspace/aubade/src/artisan` — compiler and content processing
+- `workspace/aubade/src/browser` — DOM hydration and interactivity
+- `workspace/aubade/src/conductor` — content orchestration
+- `workspace/aubade/src/manifest` — front matter parsing
+- `workspace/aubade/src/transform` — content transformation
+- `workspace/aubade/styles` — exported stylesheets
+- `workspace/content` — unprocessed markdown docs
+- `workspace/website` — documentation site
 
-## Maintaining
+## maintenance
 
-For maintainers of the project.
+for maintainers.
 
-### Publishing
+### release
 
-0. prepare a [new release draft](https://github.com/ignatiusmb/aubade/releases/new) with a new tag
-1. bump version in [`package.json`](workspace/aubade/package.json) and commit with `~ vX.Y.Z`
-2. publish release draft and title release with `X.Y.Z`
+1. bump version in [`workspace/aubade/package.json`](workspace/aubade/package.json), commit as `release ~ vX.Y.Z`
+2. publish the release draft titled `aubade@X.Y.Z`
