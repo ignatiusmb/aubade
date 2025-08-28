@@ -10,7 +10,7 @@
 	let { data } = $props();
 </script>
 
-<nav>
+<nav style:grid-area="nav">
 	<span
 		style:padding="0.25rem 1rem"
 		style:margin-top="1rem"
@@ -30,7 +30,21 @@
 	</ul>
 </nav>
 
-<article>
+<aside style:grid-area="sidebar">
+	<label>
+		<input type="checkbox" style:display="none" />
+		<strong>on this page</strong>
+	</label>
+	<ul>
+		<li><a href="/docs/{data.slug}">{data.title}</a></li>
+		{#each data.table as { id, title, level }}
+			{@const indent = `${(level - 2) * 0.5}rem`}
+			<li><a href="#{id}" style:margin-left={indent}>{title}</a></li>
+		{/each}
+	</ul>
+</aside>
+
+<article style:grid-area="article">
 	<Index items={data.pages} />
 
 	{@html data.content}
@@ -45,20 +59,6 @@
 		<Flank flank={data.flank} />
 	</footer>
 </article>
-
-<aside style:margin-top="1rem">
-	<label>
-		<input type="checkbox" style:display="none" />
-		<strong>on this page</strong>
-	</label>
-	<ul>
-		<li><a href="/docs/{data.slug}">{data.title}</a></li>
-		{#each data.table as { id, title, level }}
-			{@const indent = `${(level - 2) * 0.5}rem`}
-			<li><a href="#{id}" style:margin-left={indent}>{title}</a></li>
-		{/each}
-	</ul>
-</aside>
 
 <style>
 	nav {
@@ -82,12 +82,16 @@
 				line-height: 2;
 
 				&.current {
-					background: rgba(255, 255, 255, 0.1);
+					background: var(--color-surface);
 				}
 				&:hover {
-					background: rgba(255, 255, 255, 0.15);
+					background: var(--color-overlay);
 				}
 			}
+		}
+
+		a {
+			text-decoration: none;
 		}
 	}
 
@@ -102,10 +106,15 @@
 		top: 1rem;
 		display: none;
 		gap: 0.5rem;
+		margin-top: 1rem;
 
 		ul {
 			list-style: none;
 			line-height: 1.5;
+		}
+
+		a {
+			text-decoration: none;
 		}
 
 		@media (min-width: 1024px) {
@@ -156,8 +165,8 @@
 		blockquote {
 			padding: 1rem;
 			margin: 1rem 0;
-			border-left: 0.25rem solid var(--aubade-primary);
-			background: rgba(0, 112, 187, 0.1);
+			border-left: 0.25rem solid var(--aubade-accent);
+			background: color-mix(in oklch, var(--aubade-accent) 34%, black);
 		}
 		table {
 			width: 100%;
@@ -167,15 +176,15 @@
 			font-size: calc(var(--size-base) * 0.89);
 
 			thead {
-				background: var(--stone-800);
-				color: var(--stone-400);
+				background: var(--color-surface);
+				color: var(--color-text-muted);
 				font-weight: 500;
 			}
 
 			td,
 			th {
 				padding: 0.5rem;
-				border-bottom: 1px solid var(--stone-700);
+				border-bottom: 1px solid var(--color-border);
 				text-align: left;
 			}
 		}

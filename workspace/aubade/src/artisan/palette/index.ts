@@ -41,8 +41,8 @@ export function transform(source: string, dataset: Dataset): string {
 		class="aubade ${file ? '' : 'empty'}"
 	>${file ? `<span>${file}</span>` : ''}
 		<div data-aubade="toolbar">
+			${icon('copy', 'Copy')}
 			${icon('list', 'Toggle\nNumbering')}
-			${icon('clipboard', 'Copy')}
 		</div>
 	</header>
 
@@ -54,7 +54,7 @@ export function transform(source: string, dataset: Dataset): string {
 </pre>`;
 }
 
-function icon(name: 'clipboard' | 'list', tooltip: string) {
+function icon(name: 'copy' | 'list', tooltip: string) {
 	const span = `<span data-aubade="tooltip">${tooltip}</span>`;
 	return `<button data-aubade-toolbar="${name}">${span}</button>`;
 }
