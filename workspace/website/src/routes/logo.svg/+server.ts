@@ -1,5 +1,3 @@
-// import { dev } from '$app/environment';
-
 function build(r: number, w: number, amp: number, halves: number): string {
 	const c = (theta: number) => r + amp * Math.sin(w * theta);
 	const prime = (theta: number) => amp * w * Math.cos(w * theta);
