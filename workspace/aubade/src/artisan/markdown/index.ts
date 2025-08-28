@@ -46,7 +46,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		'block:image': ({ token, render, sanitize }) => {
 			const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 			const title = token.children.map(render).join('');
-			const caption = title ? `<figcaption>${title}</figcaption>` : '';
+			const caption = title ? `\n<figcaption>${title}</figcaption>` : '';
 			return `<figure>\n${img}${caption}\n</figure>`;
 		},
 		'block:paragraph': ({ token, render, sanitize }) => {
@@ -74,7 +74,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 		'inline:link': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-				v.length ? `${k}="${sanitize(v)}"` : [],
+				k === 'href' || v.length ? `${k}="${sanitize(v)}"` : [],
 			);
 			const children = token.children.map(html).join('');
 			return `<a ${attributes.join(' ')}>${children}</a>`;
