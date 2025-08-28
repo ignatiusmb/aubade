@@ -1,18 +1,18 @@
-import { traverse } from 'aubade/compass';
+import { marker } from 'aubade/artisan';
+import { orchestrate } from 'aubade/conductor';
 import { chain } from 'aubade/transform';
 
 const ROOT = `${process.cwd()}/static/uploads`;
 
 export const DATA = {
 	async 'docs/'() {
-		const items = await traverse('../content', ({ breadcrumb: [file, slug] }) => {
+		const items = await orchestrate('../content', ({ breadcrumb: [file, slug] }) => {
 			if (file !== '+article.md') return;
 
-			return async ({ buffer, marker, parse, siblings, task }) => {
-				const { body, frontmatter } = parse(buffer.toString('utf-8'));
-				if (!frontmatter) return;
+			return async ({ assemble, buffer, siblings, task }) => {
+				const { manifest, meta } = assemble(buffer.toString('utf-8'));
 
-				const content = body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
+				const content = meta.body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
 					const asset = siblings.find(({ filename }) => relative === filename);
 					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return m;
 
@@ -28,10 +28,10 @@ export const DATA = {
 
 				return {
 					slug,
-					rank: frontmatter.rank,
-					title: frontmatter.title,
-					description: frontmatter.description,
-					table: frontmatter.table,
+					rank: manifest.rank,
+					title: manifest.title,
+					description: manifest.description,
+					table: meta.table,
 					path: `workspace/content/${file}`,
 					content: marker.render(content),
 				};

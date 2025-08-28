@@ -12,7 +12,7 @@
 <details id="index">
 	<summary>
 		<i data-icon="duotone-caret-right"></i>
-		<a href="https://github.com/ignatiusmb/aubade/releases/latest">v{version}</a>
+		<span>aubade@<a href="https://github.com/ignatiusmb/aubade/releases/latest">{version}</a></span>
 	</summary>
 	<div>
 		{#each items as { slug, title }}
@@ -63,7 +63,6 @@
 		margin: 0;
 		border: 1px solid rgba(124, 124, 124, 0.7);
 		border-radius: var(--radius);
-		letter-spacing: 2px;
 		font-family: var(--font-mono);
 	}
 	div {

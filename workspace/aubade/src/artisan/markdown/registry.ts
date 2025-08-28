@@ -11,6 +11,7 @@ export type Registry = [
 	typeof heading,
 	typeof list,
 	typeof quote,
+	typeof figure,
 	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
@@ -83,7 +84,7 @@ export function markup({ compose, cursor }: Context): null | {
 	if (!cursor.eat('<')) return null;
 
 	const tag = cursor.locate(/\s|>/);
-	if (!tag.length) return null;
+	if (!/^[a-z][a-z0-9-]*$/i.test(tag)) return null;
 
 	const attr: Record<string, string> = {};
 	let char = cursor.read(1);
@@ -177,6 +178,17 @@ export function divider({ cursor }: Context): null | {
 	return { type: 'block:break' };
 }
 
+export function figure(context: Context): null | {
+	type: 'block:image';
+	attr: { src: string; alt: string };
+	children: Annotation[];
+} {
+	const token = image(context);
+	if (!token) return null;
+	const children = context.annotate(token.attr.title);
+	return { type: 'block:image', attr: token.attr, children };
+}
+
 export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	type: 'block:heading';
 	meta: { level: number };
@@ -213,8 +225,8 @@ export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	}
 	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
 
-	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
-	return stack['block:heading'].push(heading), heading;
+	stack['block:heading'].push({ type: 'block:heading', meta: { level }, attr, children });
+	return stack['block:heading'][stack['block:heading'].length - 1];
 }
 
 export function list({ compose, cursor }: Context): null | {
@@ -312,7 +324,7 @@ export function escape({ cursor }: Context): null | {
 } {
 	if (!cursor.eat('\\')) return null;
 	let next = cursor.read(1);
-	if (!/[\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
+	if (!/[\/_\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
 
@@ -326,17 +338,18 @@ export function image({ cursor }: Context): null | {
 	if (!cursor.eat('![')) return null;
 	const alt = cursor.locate(/]/);
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const src = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"'), cursor.trim(); // eat the closing quote and whitespace
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = alt.includes('`') && src.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:image',
@@ -361,17 +374,18 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	if (!cursor.eat('[')) return null;
 	const name = cursor.locate(/]/).replace(/\n/g, ' ');
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const href = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"'), cursor.trim(); // eat closing quote and whitespace
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && href.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:link',

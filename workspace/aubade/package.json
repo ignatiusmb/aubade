@@ -1,6 +1,6 @@
 {
 	"name": "aubade",
-	"version": "0.10.3",
+	"version": "0.10.4",
 	"description": "markdown, orchestrated.",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
@@ -11,7 +11,6 @@
 		"dev": "vitest",
 		"test": "pnpm run \"/^test:.*/\"",
 		"test:core": "vitest run src",
-		"test:apps": "vitest run test/apps",
 		"test:types": "tsc -p src/tsconfig.test.json",
 		"build:types": "node scripts/dts-buddy.js",
 		"build:files": "tsc --project src",
@@ -30,10 +29,6 @@
 		"./browser": {
 			"types": "./index.d.ts",
 			"default": "./src/browser/index.js"
-		},
-		"./compass": {
-			"types": "./index.d.ts",
-			"default": "./src/compass/index.js"
 		},
 		"./conductor": {
 			"types": "./index.d.ts",
@@ -76,9 +71,9 @@
 	"dependencies": {
 		"@types/markdown-it": "^14.1.2",
 		"markdown-it": "^14.1.0",
-		"shiki": "^3.6.0"
+		"shiki": "^3.12.0"
 	},
 	"devDependencies": {
-		"mauss": "^0.10.0"
+		"mauss": "^0.10.7"
 	}
 }

@@ -1,6 +1,7 @@
 ---
 rank: 2
 title: /manifest
+description: front matter utilities for Aubade
 ---
 
 the `/manifest` module handles front matter in markdown files. it parses a minimal, YAML-like syntax into plain JavaScript objects and primitives, and can also stringify objects back into front matter. built from the ground up to be lightweight and efficient, use it together with the other modules or independently in any JavaScript environment.
@@ -19,22 +20,16 @@ export interface FrontMatter {
 
 Aubade supports a minimal subset of [YAML](https://yaml.org/) syntax. front matter is placed at the top of a file between two `---` lines. [`assemble()`](/docs/overview#core) will automatically separate and parse it.
 
-### supported types
-
-- `null`, `true`, `false`
-- strings
-- arrays
-- nested objects (maps and sequences)
-
-### parsing rules
-
-- **comments** (`# ...`) — ignored
-- **literal blocks** (`|`) — multi-line strings
-- **inline arrays** (`[x, y, z]`) — primitives only
-- **sequences** (`- x`) — can contain nested maps or sequences
-- **compressed nested properties** (`key:x: value`) — top-level only
-
-wrap values in quotes to preserve literal content.
+| syntax          | category         | description                       |
+| --------------- | ---------------- | --------------------------------- |
+| `key: value`    | **map (object)** | fundamental key–value pair        |
+| `text`/`"text"` | string           | plain or quoted text              |
+| `null`          | null             | null literal                      |
+| `true`/`false`  | boolean          | boolean literals                  |
+| `[x, y, z]`     | array (inline)   | primitives only                   |
+| `- x`           | sequence (block) | can contain nested maps/sequences |
+| `\|`            | literal block    | multi-line string                 |
+| `# comment`     | comment          | ignored during parsing            |
 
 ```yaml
 date: '2025-08-22T11:04:00'
@@ -45,7 +40,7 @@ image:
     path: cdn_link
 ```
 
-produces:
+stringified to JSON, this becomes:
 
 ```json
 {
@@ -67,7 +62,7 @@ convert a front matter string into a [FrontMatter](#frontmatter) object. strip t
 export function parse(source: string): FrontMatter[string];
 ```
 
-Aubade only parses — it does not validate. to enforce types, use any validation library of your choice. this example uses `define()` from [`mauss`](https://github.com/alkamauss/mauss):
+Aubade only parses — it does not validate. to enforce types, use any validation library of your choice. this example uses `define()` from [mauss](https://github.com/alkamauss/mauss):
 
 ```javascript
 import { parse } from 'aubade/manifest';
@@ -83,6 +78,7 @@ image:
 `;
 const manifest = parse(source);
 
+// --- validate with define ---
 const schema = define(({ array, string }) => ({
 	date: string(),
 	title: string(),

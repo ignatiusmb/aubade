@@ -1,6 +1,7 @@
 ---
 rank: 1
 title: /artisan
+description: content processing tools for Aubade
 ---
 
 the `/artisan` module provides tools for content processing, including a markdown compiler and a syntax highlighter. built from the ground up to be lightweight and efficient, use it together with the other modules or independently in any JavaScript environment.
@@ -9,7 +10,7 @@ the `/artisan` module provides tools for content processing, including a markdow
 
 > **here be dragons** — this feature is experimental. expect missing pieces and breaking changes as the compiler evolves.
 
-Aubade ships its own markdown compiler, built around its [AubadeMark](/docs/spec) spec. this makes markdown source more terse and output more flexible. unlike existing parsers, AubadeMark integrates tightly with Aubade's content primitives, giving predictable token structures, convenient asset handling, and full control over rendering. for a complete list of quirks, differences, and advanced features, see the [spec page](/docs/spec).
+[Libretto](/docs/libretto) is Aubade's own markdown dialect, it is designed to keep documents readable while giving Aubade precise control over how content is parsed and rendered.
 
 ### engrave
 
