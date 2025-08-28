@@ -52,7 +52,7 @@ body {
 }
 
 a {
-	color: #34aeff;
+	color: oklch(0.722 0.157 242);
 }
 
 code,

@@ -48,8 +48,8 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			const q = stack['block:paragraph'];
 			if (q.length) q[q.length - 1].text += '\n' + text;
 			else {
-				const p = { type: 'block:paragraph' as const, children: [], text };
-				tree.push(p), q.push(p);
+				q.push({ type: 'block:paragraph', children: [], text });
+				tree.push(q[q.length - 1]);
 			}
 		}
 		index += cursor.index;

@@ -225,8 +225,8 @@ export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	}
 	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
 
-	const heading = { type: 'block:heading' as const, meta: { level }, attr, children };
-	return stack['block:heading'].push(heading), heading;
+	stack['block:heading'].push({ type: 'block:heading', meta: { level }, attr, children });
+	return stack['block:heading'][stack['block:heading'].length - 1];
 }
 
 export function list({ compose, cursor }: Context): null | {
@@ -338,17 +338,18 @@ export function image({ cursor }: Context): null | {
 	if (!cursor.eat('![')) return null;
 	const alt = cursor.locate(/]/);
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const src = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"'), cursor.trim(); // eat the closing quote and whitespace
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = alt.includes('`') && src.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:image',
@@ -373,17 +374,18 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	if (!cursor.eat('[')) return null;
 	const name = cursor.locate(/]/).replace(/\n/g, ' ');
 	if (!cursor.eat('](')) return null;
-	cursor.trim(); // eat whitespace between opening `(` and link
+	cursor.trim(); // whitespace between opening `(` and link
 
 	const href = cursor.locate(/\s|\)/);
-	cursor.trim(); // eat whitespace between link and optionally title
+	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"'), cursor.trim(); // eat closing quote and whitespace
+	cursor.eat('"');
+	cursor.trim();
 
-	// includes backticks that invalidates "](" pattern
+	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && href.includes('`');
-	if (invalid || !cursor.eat(')')) return null; // closing `)` is required
+	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:link',

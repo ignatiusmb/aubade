@@ -11,6 +11,7 @@ export interface Options {
 	renderer?: { [T in Token as T['type']]?: Resolver<T> };
 }
 
+export const engrave = forge();
 export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
 		'aubade:comment': () => '',
@@ -98,6 +99,3 @@ export function forge({ renderer = {} }: Options = {}) {
 		return { tokens, html: () => tokens.map(html).join('\n') };
 	};
 }
-
-export const engrave = forge();
-export { forge as markdown };
