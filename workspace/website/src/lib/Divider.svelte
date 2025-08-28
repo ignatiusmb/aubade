@@ -14,7 +14,7 @@
 	div {
 		padding: 0;
 		border-radius: 1rem;
-		background: var(--aubade-primary);
+		background: var(--aubade-accent);
 	}
 	.horizontal {
 		width: 100%;

@@ -9,7 +9,7 @@ export function hydrate(signal?: any) {
 
 			for (const item of actions) {
 				const action = item.getAttribute('data-aubade-toolbar');
-				if (action === 'clipboard') {
+				if (action === 'copy') {
 					const tooltip = item.querySelector('[data-aubade="tooltip"]');
 					if (!tooltip) continue;
 					const original = tooltip.textContent;

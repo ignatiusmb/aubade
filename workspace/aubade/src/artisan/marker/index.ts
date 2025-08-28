@@ -4,13 +4,19 @@ import { transform } from '../palette/index.js';
 export const marker = markdown({
 	html: true,
 	typographer: true,
-	highlight(source, language) {
+	highlight(source, language, attributes) {
 		const content: string[] = [];
 		const dataset: Record<string, string> = { language };
 		for (const line of source.split('\n')) {
 			const match = line.match(/^#\$ (\w+): (.+)/);
 			if (!match) content.push(line);
 			else dataset[match[1]] = match[2]?.trim() || '';
+		}
+		for (const attr of attributes.split(';')) {
+			const separator = attr.indexOf(':');
+			if (separator === -1) continue;
+			const key = attr.slice(0, separator).trim();
+			dataset[key] = attr.slice(separator + 1).trim();
 		}
 		return transform(content.join('\n').trim(), dataset);
 	},

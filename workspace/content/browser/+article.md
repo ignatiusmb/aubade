@@ -12,7 +12,7 @@ export function hydrate(signal: any): (node: HTMLElement) => () => void;
 
 `hydrate()` is designed to be framework-agnostic, but the usage shown here is optimized for [Svelte 5 with SvelteKit](https://svelte.dev/docs/kit/introduction). you can adapt it to any environment that supports mount/unmount hooks or action-like lifecycles.
 
-```svelte
+```svelte file:+layout.svelte
 <script>
 	import { hydrate } from 'aubade/browser';
 	import { navigating } from '$app/state';

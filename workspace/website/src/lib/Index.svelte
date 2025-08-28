@@ -23,17 +23,15 @@
 
 <style>
 	details {
-		--radius: calc(var(--aubade-rounding));
-
 		z-index: 2;
 		position: sticky;
 		top: 1rem;
 		margin-bottom: 1rem;
-		border-radius: var(--radius);
-		background: rgb(42, 42, 42);
+		border-radius: var(--rounding-box);
+		background: var(--color-surface);
 
 		&[open] {
-			border: 1px solid rgba(124, 124, 124, 0.7);
+			border: 1px solid var(--color-border);
 
 			summary {
 				margin-bottom: 0;
@@ -46,6 +44,10 @@
 					transform: rotate(90deg);
 				}
 			}
+		}
+
+		a {
+			text-decoration: none;
 		}
 	}
 	summary {
@@ -62,7 +64,7 @@
 		padding: 0.5rem 1rem;
 		margin: 0;
 		border: 1px solid rgba(124, 124, 124, 0.7);
-		border-radius: var(--radius);
+		border-radius: var(--rounding-box);
 		font-family: var(--font-mono);
 	}
 	div {
@@ -74,11 +76,11 @@
 			padding: 0.5rem 1rem;
 
 			&:last-child {
-				border-bottom-right-radius: var(--radius);
-				border-bottom-left-radius: var(--radius);
+				border-bottom-right-radius: var(--rounding-box);
+				border-bottom-left-radius: var(--rounding-box);
 			}
 			&.current {
-				background: rgba(255, 255, 255, 0.15);
+				background: var(--color-overlay);
 			}
 		}
 	}

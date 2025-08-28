@@ -34,5 +34,8 @@
 		h1 {
 			font-size: 4rem;
 		}
+		a {
+			text-decoration: none;
+		}
 	}
 </style>
