@@ -52,7 +52,7 @@ describe('spec', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'015': ['\\\\*emphasis*', '<p>\\<em>emphasis</em></p>'],
-		'016|mod': ['foo\\\nbar', '<p>foo\nbar</p>'],
+		'016': ['foo\\\nbar', '<p>foo<br />\nbar</p>'],
 		'017': ['`` \\[\\` ``', '<p><code>\\[\\`</code></p>'],
 		'018|deny': ['    \[\]', '<p>\[\]</p>'],
 		'019|todo': ['~~~\n\[\]\n~~~', '<pre><code>\[\]</code></pre>'],
@@ -203,8 +203,8 @@ describe('spec', ({ concurrent: it }) => {
 		'086|deny': ['Foo\n   ----      ', '<p>Foo\n----</p>'],
 		'087|deny': ['Foo\n    ---', '<p>Foo</p>\n<hr />'],
 		'088|deny': ['Foo\n= =\n\nFoo\n--- -', '<p>Foo\n= =</p>\n<p>Foo\n--- -</p>'],
-		'089|deny': ['Foo  \n-----', '<p>Foo\n-----</p>'],
-		'090|deny': ['Foo\\\n----', '<p>Foo\n----</p>'],
+		'089|deny': ['Foo  \n-----', '<p>Foo<br />\n-----</p>'],
+		'090|deny': ['Foo\\\n----', '<p>Foo<br />\n----</p>'],
 		'091|deny': [
 			'`Foo\n----\n`\n\n<a title="a lot\n---\nof dashes"/>',
 			'<p><code>Foo ---- </code></p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>',
@@ -295,7 +295,7 @@ describe('spec', ({ concurrent: it }) => {
 		'223': [`aaa\n${' '.repeat(13)}bbb\n${' '.repeat(39)}ccc`, '<p>aaa\nbbb\nccc</p>'],
 		'224': ['   aaa\nbbb', '<p>aaa\nbbb</p>'],
 		'225|deny': ['    aaa\nbbb', '<p>aaa\nbbb</p>'],
-		'226|mod': ['aaa     \nbbb     ', '<p>aaa\nbbb</p>'],
+		'226': ['aaa     \nbbb     ', '<p>aaa<br />\nbbb</p>'],
 		'227|plus': [
 			'  \n\naaa\n   \n\n# aaa\n\n   ',
 			'<p>aaa</p>\n<h1 id="aaa" data-text="aaa">aaa</h1>',
@@ -321,11 +321,11 @@ describe('spec', ({ concurrent: it }) => {
 		'330': ['` `` `', '<p><code>``</code></p>'],
 		'331': ['`  ``  `', '<p><code> `` </code></p>'],
 		'332': ['` a`', '<p><code> a</code></p>'],
-		'333': ['` b `', '<p><code> b </code></p>'],
+		'333': ['` b `', '<p><code> b </code></p>'],
 		'334': ['` `\n`  `', '<p><code> </code>\n<code>  </code></p>'],
-		'335|plus': ['``\nfoo\nbar  \nbaz\n``', '<p><code>foo bar baz</code></p>'],
-		'336|plus': ['``\nfoo \n``', '<p><code> foo </code></p>'],
-		'337|plus': ['`foo   bar \nbaz`', '<p><code>foo   bar baz</code></p>'],
+		'335': ['``\nfoo\nbar  \nbaz\n``', '<p><code>foo bar   baz</code></p>'],
+		'336': ['``\nfoo \n``', '<p><code>foo </code></p>'],
+		'337': ['`foo   bar \nbaz`', '<p><code>foo   bar  baz</code></p>'],
 		'338': ['`foo\\`bar`', '<p><code>foo\\</code>bar`</p>'],
 		'339': ['``foo`bar``', '<p><code>foo`bar</code></p>'],
 		'340': ['` foo `` bar `', '<p><code>foo `` bar</code></p>'],
@@ -521,24 +521,4 @@ describe('spec', ({ concurrent: it }) => {
 		};
 		it(test, options, ({ expect }) => expect(engrave(input).html()).toBe(output));
 	}
-});
-
-describe('modified', ({ concurrent: it }) => {
-	it('016', ({ expect }) => {
-		const modified = forge({ renderer: { 'inline:break': () => '<br />' } });
-		expect(modified('foo\\\nbar').tokens[0]).toEqual({
-			type: 'block:paragraph',
-			children: [
-				{ type: 'inline:text', text: 'foo' },
-				{ type: 'inline:break' },
-				{ type: 'inline:text', text: 'bar' },
-			],
-		});
-		expect(modified('foo\\\nbar').html()).toBe('<p>foo<br />bar</p>');
-	});
-
-	it('226', ({ expect }) => {
-		const modified = forge({ renderer: { 'inline:break': () => '<br />\n' } });
-		expect(modified('aaa     \nbbb     ').html()).toBe('<p>aaa<br />\nbbb</p>');
-	});
 });
