@@ -62,7 +62,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			);
 			return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
 		},
-		'inline:break': () => `\n`,
+		'inline:break': () => '<br />\n',
 		'inline:code': ({ token, sanitize }) => {
 			return `<code>${sanitize(token.text.replace(/&/g, '&amp;') || '')}</code>`;
 		},

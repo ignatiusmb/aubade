@@ -16,7 +16,6 @@ export type Registry = [
 
 	// inline registries
 	typeof escape,
-	typeof linebreak,
 	typeof autolink,
 	typeof codespan,
 	typeof image,
@@ -25,6 +24,7 @@ export type Registry = [
 	() => { type: 'inline:emphasis'; children: Annotation[] },
 	() => { type: 'inline:strike'; children: Annotation[] },
 	() => { type: 'inline:text'; text: string },
+	() => { type: 'inline:break' },
 ][number];
 export type Token = Registry extends (ctx: any) => infer R ? NonNullable<R> : never;
 export type Annotation = Exclude<Token, { type: `block:${string}` }>;
@@ -266,7 +266,7 @@ export function autolink({ cursor }: Context): null | {
 	if (cursor.eat('<')) {
 		text = cursor.locate(/(?=>)/);
 		if (!text || /\s/.test(text)) return null;
-		cursor.eat('>'); // eat closing `>`
+		cursor.eat('>');
 	} else {
 		text = cursor.locate(/\s|$/);
 	}
@@ -309,20 +309,15 @@ export function codespan({ cursor }: Context): null | {
 	}
 	if (!cursor.eat('`'.repeat(backticks))) return null;
 	code = code.replace(/\n/g, ' ');
-	const check = [
-		code.length > 2,
-		code[0] === ' ' && code.endsWith(' '),
-		/[` ]/.test(code.slice(1, -1)),
-	];
-	if (check.every(Boolean)) code = code.slice(1, -1);
-	return { type: 'inline:code', text: code };
+	const trim = code.length > 2 && code[0] === ' ' && code.endsWith(' ');
+	return { type: 'inline:code', text: trim ? code.slice(1, -1) : code };
 }
 
 export function escape({ cursor }: Context): null | {
 	type: 'inline:escape';
 	text: string;
 } {
-	if (!cursor.eat('\\')) return null;
+	if (!cursor.eat('\\') || cursor.eat('\n')) return null;
 	let next = cursor.read(1);
 	if (!/[\/_\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
 		next = '\\' + next; // escape character is not a valid inline token
@@ -355,15 +350,6 @@ export function image({ cursor }: Context): null | {
 		type: 'inline:image',
 		attr: { src, alt, title: title.trim() },
 	};
-}
-
-export function linebreak({ cursor }: Context): null | {
-	type: 'inline:break';
-} {
-	if (cursor.eat('\\\n') || cursor.eat('\n')) {
-		return { type: 'inline:break' };
-	}
-	return null;
 }
 
 export function link({ annotate, extract, cursor }: Context): null | {

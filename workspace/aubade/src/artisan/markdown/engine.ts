@@ -42,7 +42,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			if (token !== tree[tree.length - 1]) tree.push(token);
 			clear(['block:paragraph', 'block:quote']);
 		} else {
-			const text = cursor.locate(/\n|$/).trim();
+			const text = cursor.locate(/\n|$/);
 			cursor.eat('\n'); // eat the line feed
 
 			const q = stack['block:paragraph'];
@@ -57,7 +57,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 
 	for (const parent of tree) {
 		if (parent.type !== 'block:paragraph' || !parent.text) continue;
-		parent.children = annotate(parent.text);
+		parent.children = annotate(parent.text.trim());
 		// @TODO: make it configurable
 		delete parent.text; // cleanup text after inline parsing
 	}
@@ -84,8 +84,7 @@ export function annotate(source: string): Annotation[] {
 	});
 
 	const dispatch = new Map([
-		['\n', [registry.linebreak]],
-		['\\', [registry.linebreak, registry.escape]],
+		['\\', [registry.escape]],
 		['<', [registry.comment, registry.markup, registry.autolink]],
 		['`', [registry.codespan]],
 		['!', [registry.image]],
@@ -103,10 +102,19 @@ export function annotate(source: string): Annotation[] {
 		const token = match({ cursor, stack, rules });
 		if (token) runs.push(token);
 		else {
+			const bs = cursor.eat('\\'); // backslash hard break
 			const char = cursor.read(1);
 			const last = runs[runs.length - 1];
-			if (last?.type === 'inline:text') last.text += char;
-			else runs.push({ type: 'inline:text', text: char });
+			if (last?.type === 'inline:text') {
+				const linebreak = bs || / {2,}$/.test(last.text);
+				const lf = char === '\n';
+				last.text = lf ? last.text.trimEnd() : last.text;
+				lf && cursor.trim();
+				if (!lf || !linebreak) last.text += char;
+				else runs.push({ type: 'inline:break' });
+			} else {
+				runs.push({ type: 'inline:text', text: char });
+			}
 		}
 		index = cursor.index;
 	}

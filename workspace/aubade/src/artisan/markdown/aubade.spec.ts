@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { engrave, forge } from './index.js';
+import { engrave } from './index.js';
 
 describe('extensions', ({ concurrent: it }) => {
 	it('block comments', ({ expect }) => {
@@ -55,23 +55,5 @@ describe('HTML', ({ concurrent: it }) => {
 
 	it('treated as text', ({ expect }) => {
 		expect(engrave('<p>hello').html()).toBe('<p>&lt;p&gt;hello</p>');
-	});
-});
-
-describe('misc', ({ concurrent: it }) => {
-	it('inline break', ({ expect }) => {
-		const engrave = forge({
-			renderer: { 'inline:break': () => '<br />' },
-		});
-
-		expect(engrave('hello\nworld').tokens[0]).toEqual({
-			type: 'block:paragraph',
-			children: [
-				{ type: 'inline:text', text: 'hello' },
-				{ type: 'inline:break' },
-				{ type: 'inline:text', text: 'world' },
-			],
-		});
-		expect(engrave('hello\nworld').html()).toBe('<p>hello<br />world</p>');
 	});
 });
