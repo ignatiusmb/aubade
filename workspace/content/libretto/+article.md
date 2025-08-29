@@ -28,13 +28,11 @@ Setext headings are not recognized. Only ATX headings are valid.
 
 ### Indented code blocks
 
-Indented code blocks are not recognized. Only fenced code blocks are valid.  
-Indentation outside lists and fenced blocks is stripped.
+Indented code blocks are not recognized. Only fenced code blocks are valid. Indentation outside lists and fenced blocks is stripped.
 
 ### Block quotes
 
-Each line of a block quote must begin (optionally preceded by spaces) with `>`.  
-A line without `>` terminates the block quote.
+Each line of a block quote must begin (optionally preceded by spaces) with `>`. A line without `>` terminates the block quote.
 
 ### Bare links
 
