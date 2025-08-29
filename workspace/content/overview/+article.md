@@ -53,9 +53,9 @@ Aubade follows the [principle](/docs/philosophy) of keeping prose separate from 
     graph.svg
 ```
 
-- each directory is a slug,  
-- `+article.md` is the main entry point,  
-- additional `+*.md` files become sub-pages,  
-- assets stay alongside the articles.  
+- each directory is a slug,
+- `+article.md` is the main entry point,
+- additional `+*.md` files become sub-pages,
+- assets stay alongside the articles.
 
 this convention keeps each article self-contained and makes large collections more maintainable. Aubade recommends this layout, but never enforces it — the structure of your project is always your decision.
