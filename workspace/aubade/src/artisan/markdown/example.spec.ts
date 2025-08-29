@@ -497,8 +497,26 @@ describe('spec', ({ concurrent: it }) => {
 			'<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>',
 		],
 		'482': ['[link](/uri "title")', '<p><a href="/uri" title="title">link</a></p>'],
-		// @TODO: 483-571 [links]
-		// @TODO: 572-593 [images]
+		'483': ['[link](/uri)', '<p><a href="/uri">link</a></p>'],
+		'484': ['[](./target.md)', '<p><a href="./target.md"></a></p>'],
+		'485': ['[link]()', '<p><a href="">link</a></p>'],
+		'486|todo': ['[link](<>)', '<p><a href="">link</a></p>'],
+		'487': ['[]()', '<p><a href=""></a></p>'],
+		'488': ['[link](/my uri)', '<p>[link](/my uri)</p>'],
+		'489|todo': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
+		// @TODO: 490-571 [links]
+		'572|plus': [
+			'![foo](/url "title")',
+			'<figure>\n<img src="/url" alt="foo" />\n<figcaption>title</figcaption>\n</figure>',
+		],
+		'572|mod': ['a ![foo](/url "title")', '<p>a <img src="/url" alt="foo" title="title" /></p>'],
+		'573|skip': [
+			'![foo *bar*]\n\n[foo *bar*]: train.jpg "train & tracks"',
+			'<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>',
+		],
+		'574|todo': ['a ![foo ![bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
+		'575|todo': ['a ![foo [bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
+		// @TODO: 576-593 [images]
 		// @TODO: 594-612 [auto links]
 		// @TODO: 613-632 [raw html]
 		// @TODO: 633-647 [hard line breaks]

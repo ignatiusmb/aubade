@@ -34,7 +34,7 @@ describe('extensions', ({ concurrent: it }) => {
 
 	it('leaf image with title', ({ expect }) => {
 		expect(engrave('![alt](img.png "annotated *title* for caption")').html()).toBe(
-			'<figure>\n<img src="img.png" alt="alt" /><figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
+			'<figure>\n<img src="img.png" alt="alt" />\n<figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
 		);
 	});
 });
