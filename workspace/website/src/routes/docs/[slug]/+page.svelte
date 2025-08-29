@@ -187,6 +187,9 @@
 				border-bottom: 1px solid var(--color-border);
 				text-align: left;
 			}
+			td {
+				vertical-align: top;
+			}
 		}
 
 		[data-aubade='block'] {

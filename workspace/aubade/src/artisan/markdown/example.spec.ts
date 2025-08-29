@@ -308,11 +308,62 @@ describe('spec', ({ concurrent: it }) => {
 			'># Foo\n>bar\n> baz',
 			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
 		],
-		'230|todo': [
+		'230': [
 			'   > # Foo\n   > bar\n > baz',
 			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
 		],
-		// @TODO: 231-252 [block quotes]
+		'231|deny': [
+			'    > # Foo\n    > bar\n    > baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'232|deny': [
+			'> # Foo\n> bar\nbaz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar</p>\n</blockquote>\n<p>baz</p>',
+		],
+		'233|deny': [
+			'> bar\nbaz\n> foo',
+			'<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>\n<blockquote>\n<p>foo</p>\n</blockquote>',
+		],
+		'234': ['> foo\n---', '<blockquote>\n<p>foo</p>\n</blockquote>\n<hr />'],
+		'235|todo': [
+			'> - foo\n- bar',
+			'<blockquote>\n<ul>\n<li>foo</li>\n<li>bar</li>\n</ul>\n</blockquote>',
+		],
+		'236|deny': ['>     foo\n    bar', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>bar</p>'],
+		'237': [
+			'> ```\nfoo\n```',
+			'<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>',
+		],
+		'238|todo|deny': [
+			'> foo\n    - bar',
+			'<blockquote>\n<p>foo</p>\n<ul>\n<li>bar</li>\n</ul>\n</blockquote>',
+		],
+		'239': ['>', '<blockquote>\n</blockquote>'],
+		'240': ['>\n>  \n> ', '<blockquote>\n</blockquote>'],
+		'241': ['>\n> foo\n>  ', '<blockquote>\n<p>foo</p>\n</blockquote>'],
+		'242': [
+			'> foo\n\n> bar',
+			'<blockquote>\n<p>foo</p>\n</blockquote>\n<blockquote>\n<p>bar</p>\n</blockquote>',
+		],
+		'243': ['> foo\n> bar', '<blockquote>\n<p>foo\nbar</p>\n</blockquote>'],
+		'244': ['> foo\n>\n> bar', '<blockquote>\n<p>foo</p>\n<p>bar</p>\n</blockquote>'],
+		'245': ['foo\n> bar', '<p>foo</p>\n<blockquote>\n<p>bar</p>\n</blockquote>'],
+		'246': [
+			'> aaa\n***\n> bbb',
+			'<blockquote>\n<p>aaa</p>\n</blockquote>\n<hr />\n<blockquote>\n<p>bbb</p>\n</blockquote>',
+		],
+		'247|deny': ['> bar\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'248': ['> bar\n\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'249': ['> bar\n>\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'250|deny': [
+			'> > > foo\nbar',
+			'<blockquote>\n<blockquote>\n<blockquote>\n<p>foo</p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>bar</p>',
+		],
+		'251|deny': [
+			'>>> foo\n> bar\n>>baz',
+			'<blockquote>\n<blockquote>\n<blockquote>\n<p>foo</p>\n</blockquote>\n</blockquote>\n<p>bar</p>\n<blockquote>\n<p>baz</p>\n</blockquote>\n</blockquote>',
+		],
+		'252|deny': ['>     code\n>    not code', '<blockquote>\n<p>code\nnot code</p>\n</blockquote>'],
 		// @TODO: 253-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],

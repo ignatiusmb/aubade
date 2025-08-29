@@ -246,10 +246,16 @@ export function quote({ compose, cursor }: Context): null | {
 	type: 'block:quote';
 	children: Block[];
 } {
-	if (cursor.see(0) !== '>') return null;
-	const block = cursor.locate(/\n(?!>)|$/).trim();
-	const body = block.split('\n').map((l) => l.slice(1).trim());
-	const { children } = compose(body.join('\n'));
+	let line = cursor.peek(/\n|$/).trim();
+	if (line[0] !== '>') return null;
+	let block = '';
+	while (line.startsWith('>')) {
+		const body = cursor.locate(/\n|$/).trim();
+		block += body.slice(1).trim() + '\n';
+		if (!cursor.eat('\n')) break;
+		line = cursor.peek(/\n|$/).trim();
+	}
+	const { children } = compose(block);
 	return { type: 'block:quote', children };
 }
 
