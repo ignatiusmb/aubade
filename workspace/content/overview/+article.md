@@ -34,7 +34,7 @@ these are the primitives behind [`assemble()`](#core). they are platform-agnosti
 
 Aubade also layers **platform-specific utilities** on these primitives, such as:
 
-- **[content orchestration](/docs/conductor)** — recursively load and assemble markdown files from a filesystem (`node:fs`).
+- **[content conductor](/docs/conductor)** — recursively load and assemble markdown files from a filesystem (`node:fs`).
 
 ## structure
 

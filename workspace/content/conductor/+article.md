@@ -4,9 +4,11 @@ title: /conductor
 description: filesystem orchestration for Aubade
 ---
 
-the `/conductor` module orchestrates content in the filesystem. it provides an `orchestrate()` function to traverse directories and build a structured tree of articles and its metadata.
+the `/conductor` module orchestrates content in the filesystem. it provides an `orchestrate()` function to traverse directories and build a structured tree of articles with their metadata.
 
 > requires [`node:fs`](https://nodejs.org/api/fs.html) for filesystem access.
+
+## orchestrate
 
 ```typescript
 export async function orchestrate<Output extends Record<string, any>>(
@@ -15,7 +17,7 @@ export async function orchestrate<Output extends Record<string, any>>(
 ): Promise<Output[]>;
 ```
 
-by default, `orchestrate` will only include markdown files.
+`orchestrate()` walks a directory tree, collecting and processing files. by default, only markdown files are included. use the optional `inspect` function to filter files and control how each one is transformed.
 
 ```typescript
 const outputs = await orchestrate('content');
@@ -30,7 +32,7 @@ const outputs = await orchestrate('content', ({ path }) => {
 });
 ```
 
-the first argument is the entrypoint directory, it will be traversed recursively until the tree ends.
+the first argument is the entrypoint directory. it will be traversed recursively until the tree ends.
 
 ## Inspect
 
@@ -42,12 +44,12 @@ interface Inspect<Output extends Record<string, any>> {
 }
 ```
 
-the second argument is an `inspect` function. it receives an [Options](#inspect-options) object and should either:
+the second argument to `orchestrate()` is an `inspect` function. it receives an [Options](#inspect-options) object and should either:
 
 - return a falsy value to skip the file, or
 - return a function to process the file with a [Chunk](#inspect-chunk).
 
-this lets you control which files are included and how they're transformed.
+this gives you full control over which files are included and how they're converted.
 
 ### Options
 
