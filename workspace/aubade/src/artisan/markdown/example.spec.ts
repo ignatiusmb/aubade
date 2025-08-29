@@ -230,7 +230,7 @@ describe('spec', ({ concurrent: it }) => {
 		// @TODO: 107-118 [indented code blocks]
 		'119|plus': ['```\n<\n >\n```', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
 		'120|skip': ['~~~\n<\n >\n~~~', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
-		'121|todo': ['``\nfoo\n``', '<pre><code>foo</code></pre>'],
+		'121': ['``\nfoo\n``', '<p><code>foo</code></p>'],
 		'122|plus': ['```\naaa\n~~~\n```', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
 		'123|skip': ['~~~\naaa\n```\n~~~', '<pre><code>aaa</code>\n<code>```</code></pre>'],
 		'124|plus': ['````\naaa\n```\n``````', '<pre><code>aaa</code>\n<code>```</code></pre>'],
@@ -275,7 +275,7 @@ describe('spec', ({ concurrent: it }) => {
 			'<pre data-language="ruby"><code>def foo(x)</code>\n<code>	return 3</code>\n<code>end</code></pre>',
 		],
 		'144|mod': ['````;\n````', '<pre data-language=";"></pre>'],
-		'145|todo': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
+		'145': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
 		'146|skip': ['~~~ aa ``` ~~~\nfoo\n~~~', '<pre data-language="aa"><code>aa</code></pre>'],
 		'147': ['```\n``` aaa\n```', '<pre><code>``` aaa</code></pre>'],
 		'148|skip': [

@@ -266,7 +266,7 @@ export function autolink({ cursor }: Context): null | {
 	if (cursor.eat('<')) {
 		text = cursor.locate(/(?=>)/);
 		if (!text || /\s/.test(text)) return null;
-		cursor.eat('>'); // eat closing `>`
+		cursor.eat('>');
 	} else {
 		text = cursor.locate(/\s|$/);
 	}
@@ -309,13 +309,8 @@ export function codespan({ cursor }: Context): null | {
 	}
 	if (!cursor.eat('`'.repeat(backticks))) return null;
 	code = code.replace(/\n/g, ' ');
-	const check = [
-		code.length > 2,
-		code[0] === ' ' && code.endsWith(' '),
-		/[` ]/.test(code.slice(1, -1)),
-	];
-	if (check.every(Boolean)) code = code.slice(1, -1);
-	return { type: 'inline:code', text: code };
+	const trim = code.length > 2 && code[0] === ' ' && code.endsWith(' ');
+	return { type: 'inline:code', text: trim ? code.slice(1, -1) : code };
 }
 
 export function escape({ cursor }: Context): null | {
