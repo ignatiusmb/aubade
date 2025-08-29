@@ -4,22 +4,11 @@ title: Overview
 description: introduction to Aubade
 ---
 
-Aubade is a filesystem-first framework for authoring in markdown. it treats your markdown files (with front matter) as the source of truth, turning them into structured data you can query and HTML you can publish — letting you power a full site or application directly from plain text.
-
-## batteries
-
-Aubade ships with tools you can use together or independently in any JavaScript environment:
-
-- **[markdown compiler](/docs/artisan#markdown)** — tokenize markdown into `{ tokens, html() }`; call `.html()` for direct output.
-- **[front matter parser](/docs/manifest)** — parse a minimal YAML subset into plain JavaScript objects and primitives.
+Aubade is a minimal framework for authoring in markdown. it provides the primitives and utilities to treat markdown files (with front matter) as the source of truth, turning them into structured data you can query and HTML you can publish. Aubade offers a [recommended layout](#structure) for keeping prose and assets organized — the overall architecture remains yours to define.
 
 ## core
 
-`assemble()` is the main building block. it takes a markdown string and returns:
-
-- `manifest` — parsed [front matter](/docs/manifest#frontmatter),
-- `md` — `{ tokens, html() }`, and
-- `meta` — `{ body, ... }` with generated metadata.
+the entry point of Aubade is the `assemble()` function — it takes a markdown file with front matter and returns everything in one call. it is built on the **front matter parser** and **markdown compiler**, which are also available as [standalone modules](#batteries).
 
 ```javascript
 import { assemble } from 'aubade';
@@ -28,11 +17,28 @@ const source = ''; // markdown source placeholder
 const { manifest, md, meta } = assemble(source);
 ```
 
-for collections, [`orchestrate()` from `/conductor`](/docs/conductor) walks your directories and applies the same batteries across the content tree.
+| prop       | description                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| `manifest` | parsed [front matter](/docs/manifest#frontmatter)                       |
+| `md`       | `{ tokens, html() }` from [`engrave()`](/docs/artisan#markdown-engrave) |
+| `meta`     | raw `head` and `body` slices, plus generated metadata                   |
+
+for [structured collections](#structure) in a filesystem, use [`orchestrate()` from `/conductor`](/docs/conductor) — content orchestration built on top of `assemble()`.
+
+## batteries
+
+these are the primitives behind [`assemble()`](#core). they are platform-agnostic and work in any JavaScript environment:
+
+- **[markdown compiler](/docs/artisan#markdown)** — tokenize markdown into `{ tokens, html() }`; call `.html()` for direct output.
+- **[front matter parser](/docs/manifest)** — parse a minimal YAML subset into plain JavaScript objects and primitives.
+
+Aubade also layers **platform-specific utilities** on these primitives, such as:
+
+- **[content orchestration](/docs/conductor)** — recursively load and assemble markdown files from a filesystem (`node:fs`).
 
 ## structure
 
-Aubade's [principle](/docs/philosophy) is to keep content separate from code and collocate articles with their assets. a common layout:
+Aubade follows the [principle](/docs/philosophy) of keeping prose separate from code and collocating articles with their assets. the recommended layout looks like this:
 
 ```
 /posts
@@ -47,9 +53,9 @@ Aubade's [principle](/docs/philosophy) is to keep content separate from code and
     graph.svg
 ```
 
-- directories are slugs,
-- `+article.md` is the main entry,
-- extra `+*.md` files become sub-pages,
-- assets stay alongside the articles.
+- each directory is a slug,  
+- `+article.md` is the main entry point,  
+- additional `+*.md` files become sub-pages,  
+- assets stay alongside the articles.  
 
-this keeps each article self-contained and easier to manage. Aubade doesn't enforce this layout — the primitives adapt to any structure, and you can drop it into existing markdown projects without friction.
+this convention keeps each article self-contained and makes large collections more maintainable. Aubade recommends this layout, but never enforces it — the structure of your project is always your decision.

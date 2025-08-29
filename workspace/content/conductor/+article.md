@@ -6,7 +6,7 @@ description: filesystem orchestration for Aubade
 
 the `/conductor` module orchestrates content in the filesystem. it provides an `orchestrate()` function to traverse directories and build a structured tree of articles and its metadata.
 
-> requires filesystem access via [`node:fs`](https://nodejs.org/api/fs.html).
+> requires [`node:fs`](https://nodejs.org/api/fs.html) for filesystem access.
 
 ```typescript
 export async function orchestrate<Output extends Record<string, any>>(
@@ -60,12 +60,12 @@ interface Options {
 }
 ```
 
-provides context for the file:
-
-- `breadcrumb` — path segments leading to the file, in reverse order.
-- `depth` — depth in the directory tree, starting at `0`.
-- `parent` — parent directory path, absolute from `entry`.
-- `path` — full path of the file, absolute from `entry`.
+| prop         | context                                             |
+| ------------ | --------------------------------------------------- |
+| `breadcrumb` | path segments leading to the file, in reverse order |
+| `depth`      | depth in the directory tree, starting at `0`        |
+| `parent`     | parent directory path, absolute from `entry`        |
+| `path`       | full path of the file, absolute from `entry`        |
 
 ### Chunk
 
@@ -79,10 +79,10 @@ interface Chunk {
 }
 ```
 
-gives access to file contents and processing utilities:
-
-- `assemble` — the [`assemble()` function from core](/docs/overview#core).
-- `buffer` — raw file content as a `Buffer`.
-- `engrave` — the [`engrave()` function from `/artisan`](/docs/artisan#markdown-engrave).
-- `siblings` — sibling files in the same directory, with filenames and lazy buffers.
-- `task(fn)` — register async work to run in parallel, e.g. image conversion or asset copying.
+| prop       | context                                                                         |
+| ---------- | ------------------------------------------------------------------------------- |
+| `assemble` | the [`assemble()` function from core](/docs/overview#core)                      |
+| `buffer`   | raw file content as a `Buffer`                                                  |
+| `engrave`  | the [`engrave()` function from `/artisan`](/docs/artisan#markdown-engrave)      |
+| `siblings` | sibling files in the same directory, with filenames and lazy buffers            |
+| `task(fn)` | register async work to run in parallel (e.g. image conversion or asset copying) |

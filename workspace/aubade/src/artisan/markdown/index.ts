@@ -39,7 +39,9 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
 		},
 		'block:quote': ({ token, render }) => {
-			return `<blockquote>\n${token.children.map(render).join('\n')}\n</blockquote>`;
+			const children = token.children.map(render).join('\n');
+			const body = children ? '\n' + children + '\n' : '\n';
+			return `<blockquote>${body}</blockquote>`;
 		},
 		'block:list': ({ token, render }) => `<ul>${token.children.map(render).join('')}</ul>`,
 		// 'block:item': ({ token, render }) => `<li>${token.children.map(render).join('')}</li>`,

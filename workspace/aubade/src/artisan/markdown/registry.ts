@@ -247,9 +247,15 @@ export function quote({ compose, cursor }: Context): null | {
 	children: Block[];
 } {
 	if (cursor.see(0) !== '>') return null;
-	const block = cursor.locate(/\n(?!>)|$/).trim();
-	const body = block.split('\n').map((l) => l.slice(1).trim());
-	const { children } = compose(body.join('\n'));
+	const block: string[] = [];
+	let line = cursor.peek(/\n|$/).trim();
+	while (line.startsWith('>')) {
+		const body = cursor.locate(/\n|$/).trim();
+		block.push(body.slice(1).trim());
+		if (!cursor.eat('\n')) break;
+		line = cursor.peek(/\n|$/).trim();
+	}
+	const { children } = compose(block.join('\n'));
 	return { type: 'block:quote', children };
 }
 
