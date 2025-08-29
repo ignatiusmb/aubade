@@ -4,7 +4,9 @@ title: /transform
 description: transformation utilities for Aubade
 ---
 
-the `/transform` module provides a `chain()` function to link items in a list with their previous and next neighbors.
+the `/transform` module provides utilities for processing and linking lists of items. its primary function, `chain()`, lets you connect each item with its previous and next neighbors, while optionally grouping, sorting, and transforming them.
+
+## chain
 
 ```typescript
 export function chain<
@@ -27,18 +29,18 @@ export function chain<
 ): Finalized[];
 ```
 
-the signature is quite complex, but that makes the function convenient to use. it takes a list of items that will be grouped, sorted, and linked. the `options` object allows you to customize each step of the process:
+`chain` takes a list of items and links them according to previous and next relationships. the `options` object allows you to control grouping, sorting, breaking points, transformations, and final processing.
 
-| option       | description                                                |
-| ------------ | ---------------------------------------------------------- |
-| `key`        | the property name which will contain the linked neighbors. |
-| `group`      | determine the group an item belongs to.                    |
-| `sorter`     | determine the sorting function for a group.                |
-| `breakpoint` | determine if the chain should be stop at this item.        |
-| `transform`  | transform an item into the output format for linking.      |
-| `finalize`   | process the grouped items into the final output list.      |
+| option       | description                                              |
+| ------------ | -------------------------------------------------------- |
+| `key`        | the property name that will contain the linked neighbors |
+| `group`      | determine which group an item belongs to                 |
+| `sorter`     | define the sorting function for a group                  |
+| `breakpoint` | specify if the chain should stop at this item            |
+| `transform`  | convert an item into the output format for linking       |
+| `finalize`   | process grouped items into the final output list         |
 
-the final output is the list of items with their neighbors linked in the specified `key` property. a minimal example:
+the result is a list of items with their neighbors linked under the specified `key` property. a minimal example:
 
 ```typescript
 import { orchestrate } from 'aubade/conductor';
