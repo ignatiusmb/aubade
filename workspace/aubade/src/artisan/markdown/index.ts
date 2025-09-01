@@ -23,6 +23,7 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<${token.tag}${attributes ? ' ' + attributes : ''}>${children}</${token.tag}>`;
 		},
 
+		'block:break': () => `<hr />`,
 		'block:heading': ({ token, render, sanitize }) => {
 			const tag = `h${token.meta.level}`;
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
@@ -43,19 +44,24 @@ export function forge({ renderer = {} }: Options = {}) {
 			const body = children ? '\n' + children + '\n' : '\n';
 			return `<blockquote>${body}</blockquote>`;
 		},
-		'block:list': ({ token, render }) => `<ul>${token.children.map(render).join('')}</ul>`,
-		// 'block:item': ({ token, render }) => `<li>${token.children.map(render).join('')}</li>`,
+		'block:list': ({ token, render }) => {
+			const tag = token.ordered ? 'ol' : 'ul';
+			const start = token.ordered && token.ordered !== 1 ? ` start="${token.ordered}"` : '';
+			return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
+		},
+		'block:item': ({ token, render }) => {
+			const [first, ...rest] = token.children;
+			const pad = rest.length || (first && first.type !== 'block:paragraph') ? '\n' : '';
+			const body = !pad && first?.type === 'block:paragraph' ? first : token;
+			return `<li>${pad}${body.children.map(render).join(pad)}${pad}</li>`;
+		},
 		'block:image': ({ token, render, sanitize }) => {
 			const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 			const title = token.children.map(render).join('');
 			const caption = title ? `\n<figcaption>${title}</figcaption>` : '';
 			return `<figure>\n${img}${caption}\n</figure>`;
 		},
-		'block:paragraph': ({ token, render, sanitize }) => {
-			const children = token.children.map(render).join('');
-			return `<p>${children || sanitize(token.text || '')}</p>`;
-		},
-		'block:break': () => `<hr />`,
+		'block:paragraph': ({ token, render }) => `<p>${token.children.map(render).join('')}</p>`,
 
 		'inline:escape': ({ token, sanitize }) => `${sanitize(token.text)}`,
 		'inline:autolink': ({ token, sanitize }) => {

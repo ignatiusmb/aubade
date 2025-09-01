@@ -4,14 +4,15 @@ export type Registry = [
 	// aubade registries
 	typeof comment,
 	typeof markup,
+	typeof figure,
 
 	// block registries
-	typeof codeblock,
 	typeof divider,
 	typeof heading,
-	typeof list,
+	typeof codeblock,
 	typeof quote,
-	typeof figure,
+	typeof list,
+	() => { type: 'block:item'; children: Block[] },
 	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
@@ -229,17 +230,48 @@ export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	return stack['block:heading'][stack['block:heading'].length - 1];
 }
 
-export function list({ compose, cursor }: Context): null | {
+export function list({ compose, cursor, stack }: Context): null | {
 	type: 'block:list';
-	ordered: boolean;
-	children: Block[];
+	ordered: false | number;
+	children: { type: 'block:item'; children: Block[] }[];
 } {
-	const match = cursor.peek(/^[ \t]{0,1}([-+*]|\d+[.)])\s+/);
-	if (!match) return null;
-	// const ordered = /^\d/.test(match[1]);
-	// @TODO: implement
-	compose; // recursive call to parse the list items
-	return null;
+	let line = cursor.peek(/\n|$/);
+	const check = /^([-+*]|\d{1,9}[.)])$/;
+	const [marker] = line.trim().split(' ', 1);
+	if (!check.test(marker)) return null;
+
+	const pos = line.trim().slice(marker.length).search(/[^ ]/);
+	if (pos === -1) {
+		if (stack['block:paragraph'].length) return null;
+		if (line.trim().length > marker.length) return null;
+	}
+
+	const items: string[] = [];
+	const closing = marker[marker.length - 1];
+	const indent = line.search(/[^ ]/) + marker.length + (pos === -1 ? 0 : pos);
+	const ordered = /\d+[.)]/.test(marker) && Number(marker.slice(0, -1));
+	for (;;) {
+		let item = cursor.locate(/\n|$/).slice(indent);
+		while (cursor.eat('\n')) {
+			if (cursor.peek(/\n|$/).slice(0, indent).trim()) break;
+			item += '\n' + cursor.locate(/\n|$/).slice(indent);
+		}
+		items.push(item);
+
+		line = cursor.peek(/\n|$/).trim();
+		const [next] = line.split(' ', 1);
+		if (!check.test(next)) break;
+		if (!next.endsWith(closing)) break;
+	}
+	return {
+		type: 'block:list',
+		ordered,
+		children: items.map((item) => {
+			console.log({ item });
+			const { children } = compose(item);
+			return { type: 'block:item', children };
+		}),
+	};
 }
 
 export function quote({ compose, cursor }: Context): null | {

@@ -24,6 +24,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		['!', [registry.figure]],
 		['-', [registry.divider, registry.list]],
 		['*', [registry.divider, registry.list]],
+		['+', [registry.list]],
 		['_', [registry.divider]],
 	]);
 
@@ -32,15 +33,15 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		const cursor = contextualize(input.slice(index));
 		if (cursor.eat('\n')) {
 			while (cursor.eat('\n'));
-			clear(['block:paragraph', 'block:quote']);
+			clear(['block:paragraph']);
 		}
 
 		const start = dispatch.get(input[index + cursor.index]);
-		const rules = start || [registry.divider, registry.heading];
+		const rules = start || [registry.divider, registry.heading, registry.list];
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
-			clear(['block:paragraph', 'block:quote']);
+			clear(['block:paragraph']);
 		} else {
 			const text = cursor.locate(/\n|$/);
 			cursor.eat('\n'); // eat the line feed
