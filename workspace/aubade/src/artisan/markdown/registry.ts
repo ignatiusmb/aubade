@@ -174,8 +174,8 @@ export function codeblock({ cursor }: Context): null | {
 export function divider({ cursor }: Context): null | {
 	type: 'block:break';
 } {
-	const source = cursor.locate(/\n|$/).trim();
-	if (!['---', '***', '___'].includes(source)) return null;
+	const source = cursor.locate(/\n|$/).replace(/\s/g, '');
+	if (!/^([*_-])\1{2,}$/.test(source)) return null;
 	return { type: 'block:break' };
 }
 
@@ -355,8 +355,9 @@ export function escape({ cursor }: Context): null | {
 	type: 'inline:escape';
 	text: string;
 } {
-	if (!cursor.eat('\\') || cursor.eat('\n')) return null;
+	if (!cursor.eat('\\')) return null;
 	let next = cursor.read(1);
+	if (!next || next === '\n') return null;
 	if (!/[\/_\\`*{}\[\]()#+\-!.<>:"'?=|~^&$%,@;]/.test(next)) {
 		next = '\\' + next; // escape character is not a valid inline token
 	}
