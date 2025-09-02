@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { engrave } from './index.js';
+import { forge } from './index.js';
 
 // `deny` disallow features, either:
 //  - outright, like indented code block and setext headings
@@ -114,10 +114,7 @@ describe('spec', ({ concurrent: it }) => {
 		'057': ['- foo\n***\n- bar', '<ul>\n<li>foo</li>\n</ul>\n<hr />\n<ul>\n<li>bar</li>\n</ul>'],
 		'058': ['foo\n***\nbar', '<p>foo</p>\n<hr />\n<p>bar</p>'],
 		'059|deny': ['Foo\n---\nbar', '<p>Foo</p>\n<hr />\n<p>bar</p>'],
-		'060|todo': [
-			'* Foo\n* * *\n* Bar',
-			'<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>',
-		],
+		'060': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>'],
 		'061|todo': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
 		'062|plus': [
 			'# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo',
@@ -583,6 +580,7 @@ describe('spec', ({ concurrent: it }) => {
 		// that's all the examples from the spec!
 	};
 
+	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
 		const [, prop] = test.split('|');
@@ -592,6 +590,8 @@ describe('spec', ({ concurrent: it }) => {
 			skip: prop === 'skip',
 			todo: prop === 'todo',
 		};
-		it(test, options, ({ expect }) => expect(engrave(input).html()).toBe(output));
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
 	}
 });

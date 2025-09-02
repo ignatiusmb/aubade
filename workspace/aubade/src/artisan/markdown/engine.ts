@@ -41,7 +41,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
-			clear(['block:paragraph']);
+			clear([token.type !== 'block:list' && 'block:list', 'block:paragraph']);
 		} else {
 			const text = cursor.locate(/\n|$/);
 			cursor.eat('\n'); // eat the line feed
@@ -65,9 +65,12 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 
 	return root;
 
-	function clear(blocks: Array<keyof Context['stack']>) {
+	function clear(blocks: Array<false | keyof Context['stack']>) {
 		for (const type of blocks) {
-			while (stack[type].length) stack[type].pop();
+			if (!type) continue;
+			while (stack[type].length) {
+				stack[type].pop();
+			}
 		}
 	}
 }
