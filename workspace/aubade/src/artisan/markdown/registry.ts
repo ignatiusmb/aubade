@@ -258,7 +258,7 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 	while (cursor.eat('\n')) {
 		const line = normalize(cursor.peek(/\n|$/));
 		const inside = whitespace(line);
-		if ((inside < indent && line.trim()) || line.slice(0, inside).trim()) break;
+		if (inside < indent && line.trim()) break;
 		item.push(normalize(cursor.locate(/\n|$/)).slice(indent));
 	}
 
