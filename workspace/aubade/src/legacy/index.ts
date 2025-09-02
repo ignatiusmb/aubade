@@ -1,24 +1,19 @@
 import markdown from 'markdown-it';
-import { transform } from '../palette/index.js';
+import { highlight } from '../palette/index.js';
 
 export const marker = markdown({
 	html: true,
 	typographer: true,
 	highlight(source, language, attributes) {
-		const content: string[] = [];
-		const dataset: Record<string, string> = { language };
-		for (const line of source.split('\n')) {
-			const match = line.match(/^#\$ (\w+): (.+)/);
-			if (!match) content.push(line);
-			else dataset[match[1]] = match[2]?.trim() || '';
-		}
+		const dataset: Record<string, string | undefined> = { language };
 		for (const attr of attributes.split(';')) {
 			const separator = attr.indexOf(':');
-			if (separator === -1) continue;
-			const key = attr.slice(0, separator).trim();
-			dataset[key] = attr.slice(separator + 1).trim();
+			const pair = separator !== -1;
+			const key = pair ? attr : attr.slice(0, separator);
+			const val = pair ? attr.slice(separator + 1) : '';
+			dataset[key.trim()] = val.trim() || undefined;
 		}
-		return transform(content.join('\n').trim(), dataset);
+		return highlight(source, dataset);
 	},
 });
 
