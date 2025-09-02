@@ -14,10 +14,6 @@ The objective is not broad compatibility but a restricted, consistent syntax tha
 
 ## Deviations from CommonMark
 
-### Thematic breaks
-
-Only `---`, `***`, and `___` are recognized as thematic breaks. Variations such as `- - -` or `* * *` are treated as plain text.
-
 ### ATX headings
 
 Closing hashes are not recognized. Any trailing `#` characters are rendered literally.

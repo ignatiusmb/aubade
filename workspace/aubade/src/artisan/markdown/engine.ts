@@ -111,7 +111,7 @@ export function annotate(source: string): Annotation[] {
 				const lf = char === '\n';
 				last.text = lf ? last.text.trimEnd() : last.text;
 				lf && cursor.trim();
-				if (!lf || !linebreak) last.text += char;
+				if (!lf || !linebreak) last.text += char || '\\';
 				else runs.push({ type: 'inline:break' });
 			} else {
 				runs.push({ type: 'inline:text', text: char });
