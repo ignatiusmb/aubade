@@ -28,9 +28,11 @@ export function highlight(source: string, dataset: Dataset): string {
 		highlighted += `${code}</code>\n`;
 	}
 
-	const attrs = Object.entries(dataset).map(([k, v]) => {
+	dataset['file'] = dataset['file'] || '';
+	const attrs = Object.entries(dataset).flatMap(([k, v]) => {
 		if (k === 'file') return `data-file="${escape(v || 'empty')}"`;
 		const name = k.toLowerCase().replace(/[^a-z\-]/g, '');
+		if (!name) return [];
 		if (v == null) return `data-${name}`;
 		return `data-${name}="${escape(v)}"`;
 	});
