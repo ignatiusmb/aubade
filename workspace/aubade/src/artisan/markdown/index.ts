@@ -11,16 +11,27 @@ export interface Options {
 	renderer?: { [T in Token as T['type']]?: Resolver<T> };
 }
 
-export const engrave = forge();
+export const engrave = forge({
+	renderer: {
+		'block:code'({ token, render, sanitize }) {
+			const attributes = Object.entries(token.attr)
+				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
+				.join(' ');
+			const children = token.children.map(render).join('\n');
+			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
+		},
+	},
+});
 export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
 		'aubade:comment': () => '',
 		'aubade:html': ({ token, render, sanitize }) => {
+			const { tag } = token.meta;
 			const attributes = Object.entries(token.attr)
 				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
 				.join(' ');
 			const children = token.children.map(render).join('');
-			return `<${token.tag}${attributes ? ' ' + attributes : ''}>${children}</${token.tag}>`;
+			return `<${tag}${attributes ? ' ' + attributes : ''}>${children}</${tag}>`;
 		},
 
 		'block:break': () => `<hr />`,
@@ -45,8 +56,9 @@ export function forge({ renderer = {} }: Options = {}) {
 			return `<blockquote>${body}</blockquote>`;
 		},
 		'block:list': ({ token, render }) => {
-			const tag = token.ordered ? 'ol' : 'ul';
-			const start = token.ordered && token.ordered !== 1 ? ` start="${token.ordered}"` : '';
+			const { ordered } = token.meta;
+			const tag = ordered ? 'ol' : 'ul';
+			const start = ordered && ordered !== 1 ? ` start="${ordered}"` : '';
 			return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
 		},
 		'block:item': ({ token, render }) => {

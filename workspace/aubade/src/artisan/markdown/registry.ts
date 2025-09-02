@@ -44,7 +44,7 @@ export function comment({ cursor }: Context): null | {
 	return { type: 'aubade:comment', text: comment.trim() };
 }
 
-export function delimiter({ cursor, is }: Context): null | {
+export function delimiter({ cursor, util }: Context): null | {
 	type: 'aubade:delimiter';
 	text: string;
 	meta: {
@@ -62,9 +62,9 @@ export function delimiter({ cursor, is }: Context): null | {
 	// underscore cannot be used for emphasis inside words
 	// https://spec.commonmark.org/0.31.2/#example-360
 	// https://spec.commonmark.org/0.31.2/#example-374
-	const intra = is.alphanumeric(before) && is.alphanumeric(after);
-	const left = is['left-flanking'](before, after);
-	const right = is['right-flanking'](before, after);
+	const intra = util.is.alphanumeric(before) && util.is.alphanumeric(after);
+	const left = util.is['left-flanking'](before, after);
+	const right = util.is['right-flanking'](before, after);
 	const can = {
 		open: char === '_' ? !intra && left : left,
 		close: char === '_' ? !intra && right : right,
@@ -78,7 +78,7 @@ export function delimiter({ cursor, is }: Context): null | {
 
 export function markup({ compose, cursor }: Context): null | {
 	type: 'aubade:html';
-	tag: string;
+	meta: { tag: string };
 	attr: Record<string, string>;
 	children: Block[];
 } {
@@ -118,7 +118,7 @@ export function markup({ compose, cursor }: Context): null | {
 	if (!contents.length && !cursor.eat(close)) return null;
 
 	const { children } = compose(contents);
-	return { type: 'aubade:html', tag, attr, children };
+	return { type: 'aubade:html', meta: { tag }, attr, children };
 
 	// --- internal helpers ---
 
@@ -190,7 +190,7 @@ export function figure(context: Context): null | {
 	return { type: 'block:image', attr: token.attr, children };
 }
 
-export function heading({ annotate, extract, cursor, stack }: Context): null | {
+export function heading({ annotate, extract, cursor, stack, util }: Context): null | {
 	type: 'block:heading';
 	meta: { level: number };
 	attr: { id: string; 'data-text': string };
@@ -226,52 +226,46 @@ export function heading({ annotate, extract, cursor, stack }: Context): null | {
 	}
 	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
 
-	stack['block:heading'].push({ type: 'block:heading', meta: { level }, attr, children });
-	return stack['block:heading'][stack['block:heading'].length - 1];
+	return util.commit(stack['block:heading'], {
+		type: 'block:heading',
+		meta: { level },
+		attr,
+		children,
+	});
 }
 
-export function list({ compose, cursor, stack }: Context): null | {
+export function list({ compose, cursor, stack, util }: Context): null | {
 	type: 'block:list';
-	ordered: false | number;
+	meta: { marker: string; ordered: false | number };
 	children: { type: 'block:item'; children: Block[] }[];
 } {
-	let line = cursor.peek(/\n|$/);
-	const check = /^([-+*]|\d{1,9}[.)])$/;
-	const [marker] = line.trim().split(' ', 1);
-	if (!check.test(marker)) return null;
+	const lead = cursor.peek(/\n|$/);
+	const [marker] = lead.trim().split(' ', 1);
+	if (!/^([-+*]|\d{1,9}[.)])$/.test(marker)) return null;
 
-	const pos = line.trim().slice(marker.length).search(/[^ ]/);
+	const pos = lead.trim().slice(marker.length).search(/[^ ]/);
 	if (pos === -1) {
 		if (stack['block:paragraph'].length) return null;
-		if (line.trim().length > marker.length) return null;
+		if (lead.trim().length > marker.length) return null;
 	}
 
-	const items: string[] = [];
-	const closing = marker[marker.length - 1];
-	const indent = line.search(/[^ ]/) + marker.length + (pos === -1 ? 0 : pos);
+	const indent = lead.search(/[^ ]/) + marker.length + pos;
+	const item = [cursor.locate(/\n|$/).slice(indent)];
+	while (cursor.eat('\n')) {
+		if (cursor.peek(/\n|$/).slice(0, indent).trim()) break;
+		item.push(cursor.locate(/\n|$/).slice(indent));
+	}
+
 	const ordered = /\d+[.)]/.test(marker) && Number(marker.slice(0, -1));
-	for (;;) {
-		let item = cursor.locate(/\n|$/).slice(indent);
-		while (cursor.eat('\n')) {
-			if (cursor.peek(/\n|$/).slice(0, indent).trim()) break;
-			item += '\n' + cursor.locate(/\n|$/).slice(indent);
-		}
-		items.push(item);
-
-		line = cursor.peek(/\n|$/).trim();
-		const [next] = line.split(' ', 1);
-		if (!check.test(next)) break;
-		if (!next.endsWith(closing)) break;
-	}
-	return {
+	const list = util.last(stack['block:list']) || {
 		type: 'block:list',
-		ordered,
-		children: items.map((item) => {
-			console.log({ item });
-			const { children } = compose(item);
-			return { type: 'block:item', children };
-		}),
+		meta: { marker, ordered },
+		children: [],
 	};
+
+	const { children } = compose(item.join('\n'));
+	list.children.push({ type: 'block:item', children });
+	return util.commit(stack['block:list'], list);
 }
 
 export function quote({ compose, cursor }: Context): null | {
