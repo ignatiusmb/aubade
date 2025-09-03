@@ -395,7 +395,22 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	if (!cursor.eat('](')) return null;
 	cursor.trim(); // whitespace between opening `(` and link
 
-	const href = cursor.locate(/\s|\)/);
+	let dest = '';
+	if (cursor.eat('<')) {
+		while (!cursor.eat('>')) {
+			cursor.eat('\\');
+			const char = cursor.read(1);
+			if (!char || char === '\n') return null;
+			dest += char === ' ' ? '%20' : char;
+		}
+	} else {
+		// while (!cursor.eat(' ')) {
+		// 	cursor.eat('\\');
+		// 	const char = cursor.read(1);
+		// 	dest += char;
+		// }
+		dest = cursor.locate(/\s|\)/);
+	}
 	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
@@ -403,13 +418,13 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	cursor.trim();
 
 	// codespan backticks that invalidates "](" pattern
-	const invalid = name.includes('`') && href.includes('`');
+	const invalid = name.includes('`') && dest.includes('`');
 	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:link',
 		attr: {
-			href: annotate(href).map(extract).join(''),
+			href: annotate(dest).map(extract).join(''),
 			title: annotate(title.trim()).map(extract).join(''),
 		},
 		children: annotate(name),
