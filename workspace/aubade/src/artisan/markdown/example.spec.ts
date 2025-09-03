@@ -571,7 +571,21 @@ describe('spec', ({ concurrent: it }) => {
 		// @TODO: 576-593 [images]
 		// @TODO: 594-612 [auto links]
 		// @TODO: 613-632 [raw html]
-		// @TODO: 633-647 [hard line breaks]
+		'633': ['foo  \nbaz', '<p>foo<br />\nbaz</p>'],
+		'634': ['foo\\\nbaz', '<p>foo<br />\nbaz</p>'],
+		'635': ['foo       \nbaz', '<p>foo<br />\nbaz</p>'],
+		'636': ['foo  \n     bar', '<p>foo<br />\nbar</p>'],
+		'637': ['foo\\\n     bar', '<p>foo<br />\nbar</p>'],
+		'638': ['*foo  \nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'639': ['*foo\\\nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'640': ['`code  \nspan`', '<p><code>code   span</code></p>'],
+		'641': ['`code\\\nspan`', '<p><code>code\\ span</code></p>'],
+		'642|skip': ['<a href="foo  \nbar">', '<a href="foo  \nbar">'],
+		'643|skip': ['<a href="foo\\\nbar">', '<a href="foo\\\nbar">'],
+		'644': ['foo\\', '<p>foo\\</p>'],
+		'645': ['foo  ', '<p>foo</p>'],
+		'646|plus': ['### foo\\', '<h3 id="foo" data-text="foo\\">foo\\</h3>'],
+		'647|plus': ['### foo  ', '<h3 id="foo" data-text="foo">foo</h3>'],
 		'648': ['foo\nbaz', '<p>foo\nbaz</p>'],
 		'649': ['foo \n baz', '<p>foo\nbaz</p>'],
 		'650': ["hello $.;'there", "<p>hello $.;'there</p>"],
