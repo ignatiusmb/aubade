@@ -132,9 +132,10 @@ export function annotate(source: string): Annotation[] {
 	return pair(runs);
 }
 
+type Stack = { run: Run; tokens: Annotation[] }[];
 function pair(runs: Array<Annotation | Run>): Annotation[] {
-	const stack: { run: Run; tokens: Annotation[] }[] = [];
 	const root: Annotation[] = [];
+	const stack: Stack = [];
 	for (const current of runs) {
 		if (current.type !== 'aubade:delimiter') {
 			const tree = stack[stack.length - 1]?.tokens || root;
@@ -153,33 +154,28 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
 				continue;
 			}
-
-			const used = Math.min(opening.meta.count, current.meta.count, 2);
-			const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
 			const tree = stack[stack.length - 1]?.tokens || root;
-			tree.push({ type: `inline:${mod}`, children: tokens });
+			tree.push(close(opening, current, tokens));
 
-			opening.meta.count -= used;
-			current.meta.count -= used;
 			if (opening.meta.count) {
 				if (tree !== root) stack[stack.length - 1].tokens = [];
 				stack.push({ run: opening, tokens: tree.slice() });
 				if (tree === root) root.length = 0;
 			}
 			while (current.meta.count) {
-				if (stack.find(({ run }) => run.meta.char === current.meta.char)) {
-					const { run, tokens } = stack.pop()!;
-					const tree = stack[stack.length - 1]?.tokens || root;
-					if (run.meta.char !== current.meta.char) {
-						const remainder = current.meta.char.repeat(current.meta.count);
-						tree.push({ type: 'inline:text', text: remainder });
-					} else tree.push(...pair([run, ...tokens, current]));
-				} else {
+				if (!stack.find(({ run }) => run.meta.char === current.meta.char)) {
 					const remainder = current.meta.char.repeat(current.meta.count);
 					const tree = stack[stack.length - 1]?.tokens || root;
 					tree.push({ type: 'inline:text', text: remainder });
 					break;
 				}
+
+				const { run, tokens } = stack.pop()!;
+				const tree = stack[stack.length - 1]?.tokens || root;
+				if (run.meta.char !== current.meta.char) {
+					const remainder = current.meta.char.repeat(current.meta.count);
+					tree.push({ type: 'inline:text', text: remainder });
+				} else tree.push(...pair([run, ...tokens, current]));
 			}
 		} else if (current.meta.can.open) {
 			stack.push({ run: current, tokens: [] });
@@ -194,4 +190,14 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 		root.push({ type: 'inline:text', text: remainder }, ...tokens);
 	}
 	return root;
+
+	function close(opening: Run, current: Run, children: Annotation[]): Annotation {
+		const used = Math.min(opening.meta.count, current.meta.count, 2);
+		const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
+
+		opening.meta.count -= used;
+		current.meta.count -= used;
+
+		return { type: `inline:${mod}`, children };
+	}
 }
