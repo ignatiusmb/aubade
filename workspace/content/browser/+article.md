@@ -4,7 +4,7 @@ title: /browser
 description: framework-agnostic hydration for Aubade
 ---
 
-the `/browser` module provides client-side hydration utilities. it exposes a single `hydrate()` function that attaches interactivity to rendered markdown, enabling features such as toggling line numbers or copying code blocks to the clipboard.
+the `/browser` module provides client-side hydration utilities. it exposes a single `hydrate()` function that attaches interactivity to markdown rendered from [`engrave()`](/docs/artisan#engrave), enabling features such as toggling line numbers or copying code blocks to the clipboard.
 
 ## hydrate
 

@@ -14,11 +14,39 @@ export interface Options {
 export const engrave = forge({
 	renderer: {
 		'block:code'({ token, render, sanitize }) {
-			const attributes = Object.entries(token.attr)
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
+			const dataset: Record<string, string | undefined> = {
+				language: token.attr['data-language'],
+				file: '',
+			};
+			for (const attr of token.meta.info.split(';')) {
+				if (!attr.trim()) continue;
+				const separator = attr.indexOf(':');
+				const pair = separator !== -1;
+				const key = pair ? attr.slice(0, separator) : attr;
+				const val = pair ? attr.slice(separator + 1) : '';
+				dataset[key.trim()] = val.trim() || undefined;
+			}
+			const attrs = Object.entries(dataset).flatMap(([k, v]) => {
+				if (k === 'file') return `data-file="${sanitize(v || 'empty')}"`;
+				const name = k.toLowerCase().replace(/[^a-z\-]/g, '');
+				if (!name) return [];
+				if (v == null) return `data-${name}`;
+				return `data-${name}="${sanitize(v)}"`;
+			});
+
 			const children = token.children.map(render).join('\n');
-			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
+			return [
+				'<div data-aubade="block">',
+				`<header data-aubade="header" ${attrs.join(' ')}>`,
+				dataset.file ? `<span>${dataset.file}</span>` : '',
+				'<div data-aubade="toolbar">',
+				`<button data-aubade-toolbar="copy" data-aubade-tooltip="Copy"></button>`,
+				`<button data-aubade-toolbar="list" data-aubade-tooltip="Toggle\nNumbering"></button>`,
+				'</div>',
+				'</header>',
+				`<pre data-aubade="pre">${children}</pre>`,
+				'</div>',
+			].join('');
 		},
 	},
 });

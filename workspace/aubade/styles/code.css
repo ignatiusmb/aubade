@@ -304,6 +304,7 @@ code {
 	cursor: pointer;
 	width: 1.5rem;
 	height: 1.5rem;
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -321,7 +322,8 @@ code {
 [data-aubade-toolbar]:focus {
 	outline: 1px solid rgba(255, 255, 255, 0.4);
 }
-[data-aubade-toolbar] > [data-aubade='tooltip'] {
+[data-aubade-toolbar]::after {
+	content: attr(data-aubade-tooltip);
 	user-select: none;
 	position: absolute;
 	bottom: 2rem;
@@ -332,20 +334,23 @@ code {
 	color: var(--aubade-header-light);
 	transition: var(--aubade-transition);
 }
-[data-aubade-toolbar] > [data-aubade='tooltip']::after {
+[data-aubade-toolbar]::before {
 	content: '';
 	position: absolute;
-	bottom: 0;
+	top: 0;
 	left: 50%;
+	display: none;
 	margin-left: -5px;
 	border-width: 5px;
 	border-style: solid;
 	border-color: transparent;
 	border-top-color: var(--aubade-overlay);
-	transform: translateY(99%);
+	transform: translateY(-100%);
 }
-[data-aubade-toolbar]:focus > [data-aubade='tooltip'],
-[data-aubade-toolbar]:hover > [data-aubade='tooltip'] {
+[data-aubade-toolbar]:focus::after,
+[data-aubade-toolbar]:focus::before,
+[data-aubade-toolbar]:hover::after,
+[data-aubade-toolbar]:hover::before {
 	display: inline-flex;
 }
 

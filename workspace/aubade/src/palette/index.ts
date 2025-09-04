@@ -14,45 +14,23 @@ export const shiki = await createHighlighter({
 
 export function highlight(source: string, dataset: Dataset): string {
 	const { codeToTokensBase } = shiki;
-
-	let highlighted = '';
-	let line = +(dataset['line-start'] || 1);
+	const highlighted: string[] = [];
 	for (const tokens of codeToTokensBase(source, {
 		lang: dataset.language as import('shiki').BundledLanguage,
 	})) {
-		let code = `<code data-line="${line++}">`;
+		let code = '';
 		for (const { content, color } of tokens) {
 			const style = color ? ` style="color: ${color}"` : '';
 			code += `<span${style}>${escape(content)}</span>`;
 		}
-		highlighted += `${code}</code>\n`;
+		highlighted.push(code);
 	}
 
-	dataset['file'] = dataset['file'] || '';
-	const attrs = Object.entries(dataset).flatMap(([k, v]) => {
-		if (k === 'file') return `data-file="${escape(v || 'empty')}"`;
-		const name = k.toLowerCase().replace(/[^a-z\-]/g, '');
-		if (!name) return [];
-		if (v == null) return `data-${name}`;
-		return `data-${name}="${escape(v)}"`;
+	while (!highlighted[highlighted.length - 1].trim()) highlighted.pop();
+	const pre = highlighted.map((code, idx) => {
+		const line = +(dataset['start'] || 1) + idx;
+		return `<code data-line="${line}">${code}</code>`;
 	});
 
-	// needs to be /^<pre/ to prevent added wrapper from markdown-it
-	return [
-		'<pre data-aubade="block">',
-		`<header data-aubade="header" ${attrs.join(' ')}>`,
-		dataset.file ? `<span>${dataset.file}</span>` : '',
-		'<div data-aubade="toolbar">',
-		icon('copy', 'Copy'),
-		icon('list', 'Toggle\nNumbering'),
-		'</div>',
-		'</header>',
-		`<div data-aubade="pre" ${attrs.join(' ')}>${highlighted.trim()}</div>`,
-		'</pre>',
-	].join('');
-}
-
-function icon(name: 'copy' | 'list', tooltip: string) {
-	const span = `<span data-aubade="tooltip">${tooltip}</span>`;
-	return `<button data-aubade-toolbar="${name}">${span}</button>`;
+	return pre.join('\n');
 }

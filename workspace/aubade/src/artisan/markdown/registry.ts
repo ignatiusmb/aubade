@@ -137,7 +137,7 @@ export function markup({ compose, cursor }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
-	meta: { info: string[] };
+	meta: { info: string };
 	attr: { 'data-language': string };
 	children: { type: 'inline:code'; text: string }[];
 } {
@@ -161,12 +161,11 @@ export function codeblock({ cursor }: Context): null | {
 	while (cursor.eat('`'));
 	cursor.trim();
 
-	const [language, ...rest] = info.split(/\s+/);
-
+	const separator = info.indexOf(' ');
 	return {
 		type: 'block:code',
-		meta: { info: rest },
-		attr: { 'data-language': language },
+		meta: { info: separator === -1 ? info : info.slice(separator).trim() },
+		attr: { 'data-language': separator === -1 ? info : info.slice(0, separator) },
 		children: code.map((text) => ({ type: 'inline:code', text })),
 	};
 }

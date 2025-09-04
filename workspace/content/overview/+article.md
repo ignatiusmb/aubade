@@ -17,11 +17,11 @@ const source = ''; // markdown source placeholder
 const { manifest, md, meta } = assemble(source);
 ```
 
-| prop       | description                                                             |
-| ---------- | ----------------------------------------------------------------------- |
-| `manifest` | parsed [front matter](/docs/manifest#frontmatter)                       |
-| `md`       | `{ tokens, html() }` from [`engrave()`](/docs/artisan#markdown-engrave) |
-| `meta`     | raw `head` and `body` slices, plus generated metadata                   |
+| prop       | description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `manifest` | parsed [front matter](/docs/manifest#frontmatter)              |
+| `md`       | `{ tokens, html() }` from [`engrave()`](/docs/artisan#engrave) |
+| `meta`     | raw `head` and `body` slices, plus generated metadata          |
 
 for [structured collections](#structure) in a filesystem, use [`orchestrate()` from `/conductor`](/docs/conductor) — content orchestration built on top of `assemble()`.
 
@@ -29,7 +29,7 @@ for [structured collections](#structure) in a filesystem, use [`orchestrate()` f
 
 these are the primitives behind [`assemble()`](#core). they are platform-agnostic and work in any JavaScript environment:
 
-- **[markdown compiler](/docs/artisan#markdown)** — tokenize markdown into `{ tokens, html() }`; call `.html()` for direct output.
+- **[markdown compiler](/docs/artisan)** — tokenize markdown into `{ tokens, html() }`; call `.html()` for direct output.
 - **[front matter parser](/docs/manifest)** — parse a minimal YAML subset into plain JavaScript objects and primitives.
 
 Aubade also layers **platform-specific utilities** on these primitives, such as:
