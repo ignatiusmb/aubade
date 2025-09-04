@@ -6,6 +6,35 @@ description: artisan extensions for Aubade
 
 the `/palette` module provides extensions to the `/artisan` content processing utilities. it includes additional markdown tokens and rendering rules, as well as syntax highlighting integration.
 
+## resolvers
+
+### codeblock
+
+```typescript
+import type { Resolver } from 'aubade/artisan';
+
+export const codeblock: Resolver<'block:code'>;
+```
+
+`codeblock` is a custom resolver for fenced code blocks which wraps the code in `data-aubade` block and adds syntax highlighting via [shiki](https://shiki.style/).
+
+```javascript
+import { forge } from 'aubade/artisan';
+import { codeblock } from 'aubade/palette';
+
+const render = forge({ 
+	renderers: { 'block:code': codeblock },
+});
+```
+
+include the stylesheet provided to ensure proper styling:
+
+```svelte file:+layout.svelte
+<script>
+	import 'aubade/styles/code.css';
+</script>
+```
+
 ## highlight
 
 ```typescript
