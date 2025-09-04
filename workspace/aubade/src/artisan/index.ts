@@ -67,6 +67,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 		'block:paragraph': ({ token, render }) => `<p>${token.children.map(render).join('')}</p>`,
 
+		'inline:break': () => '<br />\n',
 		'inline:escape': ({ token, sanitize }) => `${sanitize(token.text)}`,
 		'inline:autolink': ({ token, sanitize }) => {
 			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
@@ -74,7 +75,6 @@ export function forge({ renderer = {} }: Options = {}) {
 			);
 			return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
 		},
-		'inline:break': () => '<br />\n',
 		'inline:code': ({ token, sanitize }) => {
 			return `<code>${sanitize(token.text.replace(/&/g, '&amp;') || '')}</code>`;
 		},
