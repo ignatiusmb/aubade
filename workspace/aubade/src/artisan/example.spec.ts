@@ -315,9 +315,9 @@ describe('spec', ({ concurrent: it }) => {
 			'<blockquote>\n<ul>\n<li>foo</li>\n</ul>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>',
 		],
 		'236|deny': ['>     foo\n    bar', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>bar</p>'],
-		'237|mod': [
+		'237': [
 			'> ```\nfoo\n```',
-			'<blockquote>\n<pre></pre>\n</blockquote>\n<p>foo</p>\n<pre></pre>',
+			'<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>',
 		],
 		'238|deny': [
 			'> foo\n    - bar',
