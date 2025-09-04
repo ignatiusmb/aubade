@@ -140,6 +140,7 @@ export function codeblock({ cursor }: Context): null | {
 	meta: { code: string; info: string };
 	attr: { 'data-language': string };
 } {
+	cursor.trim();
 	let backticks = +cursor.eat('`');
 	if (backticks === 0) return null;
 	while (cursor.eat('`')) backticks++;
@@ -239,21 +240,23 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 	meta: { marker: string; ordered: false | number };
 	children: { type: 'block:item'; children: Block[] }[];
 } {
-	const lead = cursor.peek(/\n|$/);
-	const [marker] = lead.trim().split(' ', 1);
+	const head = normalize(cursor.peek(/\n|$/));
+	const [marker] = head.trim().split(/[ \t]/, 1);
 	if (!/^([-+*]|\d{1,9}[.)])$/.test(marker)) return null;
 
-	const pos = lead.trim().slice(marker.length).search(/[^ ]/);
+	const pos = head.trim().slice(marker.length).search(/\S/);
 	if (pos === -1) {
 		if (stack['block:paragraph'].length) return null;
-		if (lead.trim().length > marker.length) return null;
+		if (head.trim().length > marker.length) return null;
 	}
 
-	const indent = lead.search(/[^ ]/) + marker.length + pos;
+	const indent = whitespace(head) + marker.length + pos;
 	const item = [cursor.locate(/\n|$/).slice(indent)];
 	while (cursor.eat('\n')) {
-		if (cursor.peek(/\n|$/).slice(0, indent).trim()) break;
-		item.push(cursor.locate(/\n|$/).slice(indent));
+		const line = normalize(cursor.peek(/\n|$/));
+		const inside = whitespace(line);
+		if (inside < indent && line.trim()) break;
+		item.push(normalize(cursor.locate(/\n|$/)).slice(indent));
 	}
 
 	const ordered = /\d+[.)]/.test(marker) && Number(marker.slice(0, -1));
@@ -266,6 +269,21 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 	const { children } = compose(item.join('\n'));
 	list.children.push({ type: 'block:item', children });
 	return util.commit(stack['block:list'], list);
+
+	function normalize(line: string): string {
+		let i = 0;
+		while (i < line.length && /\s/.test(line[i])) i++;
+		return line.slice(0, i).replace(/\t/g, '    ') + line.slice(i);
+	}
+
+	function whitespace(line: string): number {
+		let i = 0;
+		let count = 0;
+		while (i < line.length && /\s/.test(line[i])) {
+			count += line[i++] === '\t' ? 4 : 1;
+		}
+		return count;
+	}
 }
 
 export function quote({ compose, cursor }: Context): null | {
@@ -395,7 +413,22 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	if (!cursor.eat('](')) return null;
 	cursor.trim(); // whitespace between opening `(` and link
 
-	const href = cursor.locate(/\s|\)/);
+	let dest = '';
+	if (cursor.eat('<')) {
+		while (!cursor.eat('>')) {
+			cursor.eat('\\');
+			const char = cursor.read(1);
+			if (!char || char === '\n') return null;
+			dest += char === ' ' ? '%20' : char;
+		}
+	} else {
+		// while (!cursor.eat(' ')) {
+		// 	cursor.eat('\\');
+		// 	const char = cursor.read(1);
+		// 	dest += char;
+		// }
+		dest = cursor.locate(/\s|\)/);
+	}
 	cursor.trim(); // whitespace between link and optional title
 
 	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
@@ -403,13 +436,13 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	cursor.trim();
 
 	// codespan backticks that invalidates "](" pattern
-	const invalid = name.includes('`') && href.includes('`');
+	const invalid = name.includes('`') && dest.includes('`');
 	if (invalid || !cursor.eat(')')) return null;
 
 	return {
 		type: 'inline:link',
 		attr: {
-			href: annotate(href).map(extract).join(''),
+			href: annotate(dest).map(extract).join(''),
 			title: annotate(title.trim()).map(extract).join(''),
 		},
 		children: annotate(name),

@@ -11,14 +11,14 @@ describe('spec', ({ concurrent: it }) => {
 		'001|deny': ['\tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'002|deny': ['  \tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'003|deny': ['    a\ta\n    ὐ\ta', '<p>a\ta\nὐ\ta</p>'],
-		'004|todo': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'005|todo': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'004': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'005': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
 		'006|deny': ['>\t\tfoo', '<blockquote>\n<p>foo</p>\n</blockquote>'],
-		'007|todo': ['-\t\tfoo', '<ul><li><p>foo</p></li></ul>'],
+		'007|deny': ['-\t\tfoo', '<ul>\n<li>foo</li>\n</ul>'],
 		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
 		'009|todo': [
 			' - foo\n   - bar\n\t - baz',
-			'<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>',
+			'<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>',
 		],
 		'010|plus': ['#\tFoo', '<h1 id="foo" data-text="Foo">Foo</h1>'],
 		'011': ['*\t*\t*\t', '<hr />'],
@@ -115,7 +115,7 @@ describe('spec', ({ concurrent: it }) => {
 		'058': ['foo\n***\nbar', '<p>foo</p>\n<hr />\n<p>bar</p>'],
 		'059|deny': ['Foo\n---\nbar', '<p>Foo</p>\n<hr />\n<p>bar</p>'],
 		'060': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>'],
-		'061|todo': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
+		'061': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
 		'062|plus': [
 			'# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo',
 			[
@@ -315,9 +315,9 @@ describe('spec', ({ concurrent: it }) => {
 			'<blockquote>\n<ul>\n<li>foo</li>\n</ul>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>',
 		],
 		'236|deny': ['>     foo\n    bar', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>bar</p>'],
-		'237': [
+		'237|mod': [
 			'> ```\nfoo\n```',
-			'<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>',
+			'<blockquote>\n<pre></pre>\n</blockquote>\n<p>foo</p>\n<pre></pre>',
 		],
 		'238|deny': [
 			'> foo\n    - bar',
@@ -549,8 +549,17 @@ describe('spec', ({ concurrent: it }) => {
 		'486|todo': ['[link](<>)', '<p><a href="">link</a></p>'],
 		'487': ['[]()', '<p><a href=""></a></p>'],
 		'488': ['[link](/my uri)', '<p>[link](/my uri)</p>'],
-		'489|todo': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
-		// @TODO: 490-571 [links]
+		'489': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
+		'490': ['[link](foo\nbar)', '<p>[link](foo\nbar)</p>'],
+		'491|todo': ['[link](<foo\nbar>)', '<p>[link](<foo\nbar>)</p>'],
+		'492': ['[a](<b)c>)', '<p><a href="b)c">a</a></p>'],
+		'493': ['[link](<foo\\>)', '<p>[link](&lt;foo&gt;)</p>'],
+		'494|todo': [
+			'[a](<b)c\n[a](<b)c>\n[a](<b>c)',
+			'<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>',
+		],
+		'495|todo': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
+		// @TODO: 496-571 [links]
 		'572|plus': [
 			'![foo](/url "title")',
 			'<figure>\n<img src="/url" alt="foo" />\n<figcaption>title</figcaption>\n</figure>',
@@ -565,7 +574,21 @@ describe('spec', ({ concurrent: it }) => {
 		// @TODO: 576-593 [images]
 		// @TODO: 594-612 [auto links]
 		// @TODO: 613-632 [raw html]
-		// @TODO: 633-647 [hard line breaks]
+		'633': ['foo  \nbaz', '<p>foo<br />\nbaz</p>'],
+		'634': ['foo\\\nbaz', '<p>foo<br />\nbaz</p>'],
+		'635': ['foo       \nbaz', '<p>foo<br />\nbaz</p>'],
+		'636': ['foo  \n     bar', '<p>foo<br />\nbar</p>'],
+		'637': ['foo\\\n     bar', '<p>foo<br />\nbar</p>'],
+		'638': ['*foo  \nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'639': ['*foo\\\nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'640': ['`code  \nspan`', '<p><code>code   span</code></p>'],
+		'641': ['`code\\\nspan`', '<p><code>code\\ span</code></p>'],
+		'642|skip': ['<a href="foo  \nbar">', '<a href="foo  \nbar">'],
+		'643|skip': ['<a href="foo\\\nbar">', '<a href="foo\\\nbar">'],
+		'644': ['foo\\', '<p>foo\\</p>'],
+		'645': ['foo  ', '<p>foo</p>'],
+		'646|plus': ['### foo\\', '<h3 id="foo" data-text="foo\\">foo\\</h3>'],
+		'647|plus': ['### foo  ', '<h3 id="foo" data-text="foo">foo</h3>'],
 		'648': ['foo\nbaz', '<p>foo\nbaz</p>'],
 		'649': ['foo \n baz', '<p>foo\nbaz</p>'],
 		'650': ["hello $.;'there", "<p>hello $.;'there</p>"],

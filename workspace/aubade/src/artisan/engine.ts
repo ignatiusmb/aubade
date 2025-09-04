@@ -5,8 +5,7 @@ import * as registry from './registry.js';
 /** create the root document from the source */
 export function compose(source: string): { type: ':document'; children: Block[] } {
 	const root = { type: ':document' as const, children: [] as Block[] };
-	const input = source.trim();
-	const tree = root.children;
+	const tree = root.children.slice();
 	const stack = new Proxy({} as Context['stack'], {
 		get(target, key: keyof Context['stack']) {
 			const container = target[key] || [];
@@ -29,15 +28,21 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	]);
 
 	let index = 0;
-	while (index < input.length) {
-		const cursor = contextualize(input.slice(index));
+	while (index < source.length) {
+		const cursor = contextualize(source.slice(index));
 		if (cursor.eat('\n')) {
 			while (cursor.eat('\n'));
 			clear(['block:paragraph']);
 		}
 
-		const start = dispatch.get(input[index + cursor.index]);
-		const rules = start || [registry.divider, registry.heading, registry.list];
+		const start = dispatch.get(source[index + cursor.index]);
+		const rules = start || [
+			registry.divider,
+			registry.heading,
+			registry.codeblock,
+			registry.quote,
+			registry.list,
+		];
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
@@ -58,10 +63,11 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	}
 
 	for (const parent of tree) {
-		if (parent.type !== 'block:paragraph' || !parent.text) continue;
-		parent.children = annotate(parent.text.trim());
-		// @TODO: make it configurable
-		delete parent.text; // cleanup text after inline parsing
+		if (parent.type !== 'block:paragraph') root.children.push(parent);
+		else if (parent.text && parent.text.trim()) {
+			const children = annotate(parent.text.trim());
+			root.children.push({ type: 'block:paragraph', children });
+		}
 	}
 
 	return root;
