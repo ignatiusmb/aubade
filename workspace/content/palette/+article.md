@@ -22,7 +22,7 @@ export const codeblock: Resolver<'block:code'>;
 import { forge } from 'aubade/artisan';
 import { codeblock } from 'aubade/palette';
 
-const render = forge({ 
+const render = forge({
 	renderers: { 'block:code': codeblock },
 });
 ```
