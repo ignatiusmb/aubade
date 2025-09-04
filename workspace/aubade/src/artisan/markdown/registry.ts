@@ -243,7 +243,7 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 	meta: { marker: string; ordered: false | number };
 	children: { type: 'block:item'; children: Block[] }[];
 } {
-	const head = cursor.peek(/\n|$/);
+	const head = normalize(cursor.peek(/\n|$/));
 	const [marker] = head.trim().split(/[ \t]/, 1);
 	if (!/^([-+*]|\d{1,9}[.)])$/.test(marker)) return null;
 
