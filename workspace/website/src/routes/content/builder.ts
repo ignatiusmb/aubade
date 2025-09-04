@@ -1,5 +1,5 @@
-import { marker } from 'aubade/artisan';
 import { orchestrate } from 'aubade/conductor';
+import { marker } from 'aubade/legacy';
 import { chain } from 'aubade/transform';
 
 const ROOT = `${process.cwd()}/static/uploads`;

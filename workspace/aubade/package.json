@@ -34,9 +34,17 @@
 			"types": "./index.d.ts",
 			"default": "./src/conductor/index.js"
 		},
+		"./legacy": {
+			"types": "./index.d.ts",
+			"default": "./src/legacy/index.js"
+		},
 		"./manifest": {
 			"types": "./index.d.ts",
 			"default": "./src/manifest/index.js"
+		},
+		"./palette": {
+			"types": "./index.d.ts",
+			"default": "./src/palette/index.js"
 		},
 		"./transform": {
 			"types": "./index.d.ts",
