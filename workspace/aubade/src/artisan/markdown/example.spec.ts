@@ -555,8 +555,17 @@ describe('spec', ({ concurrent: it }) => {
 		'486|todo': ['[link](<>)', '<p><a href="">link</a></p>'],
 		'487': ['[]()', '<p><a href=""></a></p>'],
 		'488': ['[link](/my uri)', '<p>[link](/my uri)</p>'],
-		'489|todo': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
-		// @TODO: 490-571 [links]
+		'489': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
+		'490': ['[link](foo\nbar)', '<p>[link](foo\nbar)</p>'],
+		'491|todo': ['[link](<foo\nbar>)', '<p>[link](<foo\nbar>)</p>'],
+		'492': ['[a](<b)c>)', '<p><a href="b)c">a</a></p>'],
+		'493': ['[link](<foo\\>)', '<p>[link](&lt;foo&gt;)</p>'],
+		'494|todo': [
+			'[a](<b)c\n[a](<b)c>\n[a](<b>c)',
+			'<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>',
+		],
+		'495|todo': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
+		// @TODO: 496-571 [links]
 		'572|plus': [
 			'![foo](/url "title")',
 			'<figure>\n<img src="/url" alt="foo" />\n<figcaption>title</figcaption>\n</figure>',
