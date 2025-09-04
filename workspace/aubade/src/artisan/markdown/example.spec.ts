@@ -11,14 +11,14 @@ describe('spec', ({ concurrent: it }) => {
 		'001|deny': ['\tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'002|deny': ['  \tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'003|deny': ['    a\ta\n    ὐ\ta', '<p>a\ta\nὐ\ta</p>'],
-		'004|todo': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'005|todo': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'004': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'005': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
 		'006|deny': ['>\t\tfoo', '<blockquote>\n<p>foo</p>\n</blockquote>'],
-		'007|todo': ['-\t\tfoo', '<ul><li><p>foo</p></li></ul>'],
+		'007|deny': ['-\t\tfoo', '<ul>\n<li>foo</li>\n</ul>'],
 		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
 		'009|todo': [
 			' - foo\n   - bar\n\t - baz',
-			'<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>',
+			'<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>',
 		],
 		'010|plus': ['#\tFoo', '<h1 id="foo" data-text="Foo">Foo</h1>'],
 		'011': ['*\t*\t*\t', '<hr />'],
@@ -115,7 +115,7 @@ describe('spec', ({ concurrent: it }) => {
 		'058': ['foo\n***\nbar', '<p>foo</p>\n<hr />\n<p>bar</p>'],
 		'059|deny': ['Foo\n---\nbar', '<p>Foo</p>\n<hr />\n<p>bar</p>'],
 		'060': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>'],
-		'061|todo': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
+		'061': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
 		'062|plus': [
 			'# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo',
 			[
@@ -226,7 +226,7 @@ describe('spec', ({ concurrent: it }) => {
 		'123|skip': ['~~~\naaa\n```\n~~~', '<pre><code>aaa</code>\n<code>```</code></pre>'],
 		'124|plus': ['````\naaa\n```\n``````', '<pre><code>aaa</code>\n<code>```</code></pre>'],
 		'125|skip': ['~~~~\naaa\n~~~\n~~~~', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
-		'126': ['```', '<pre><code></code></pre>'],
+		'126|mod': ['```', '<pre></pre>'],
 		'127|plus': [
 			'`````\n\n```\naaa',
 			'<pre><code></code>\n<code>```</code>\n<code>aaa</code></pre>',
@@ -321,9 +321,9 @@ describe('spec', ({ concurrent: it }) => {
 			'<blockquote>\n<ul>\n<li>foo</li>\n</ul>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>',
 		],
 		'236|deny': ['>     foo\n    bar', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>bar</p>'],
-		'237': [
+		'237|mod': [
 			'> ```\nfoo\n```',
-			'<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>',
+			'<blockquote>\n<pre></pre>\n</blockquote>\n<p>foo</p>\n<pre></pre>',
 		],
 		'238|deny': [
 			'> foo\n    - bar',
