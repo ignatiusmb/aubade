@@ -137,9 +137,8 @@ export function markup({ compose, cursor }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
-	meta: { info: string };
+	meta: { code: string; info: string };
 	attr: { 'data-language': string };
-	children: { type: 'inline:code'; text: string }[];
 } {
 	let backticks = +cursor.eat('`');
 	if (backticks === 0) return null;
@@ -150,11 +149,12 @@ export function codeblock({ cursor }: Context): null | {
 	if (/`/.test(info)) return null;
 	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
 
-	const code: string[] = [];
+	let code = '';
 	let line = cursor.peek(/\n|$/).trim();
 	while (/[^`]/.test(line) || line.length < backticks) {
-		code.push(cursor.locate(/\n|$/));
+		code += cursor.locate(/\n|$/);
 		if (!cursor.eat('\n')) break;
+		code += '\n';
 		line = cursor.peek(/\n|$/).trim();
 	}
 	cursor.trim();
@@ -162,11 +162,12 @@ export function codeblock({ cursor }: Context): null | {
 	cursor.trim();
 
 	const separator = info.indexOf(' ');
+	const language = separator === -1 ? info : info.slice(0, separator);
+	const extra = separator === -1 ? '' : info.slice(separator).trim();
 	return {
 		type: 'block:code',
-		meta: { info: separator === -1 ? info : info.slice(separator).trim() },
-		attr: { 'data-language': separator === -1 ? info : info.slice(0, separator) },
-		children: code.map((text) => ({ type: 'inline:code', text })),
+		meta: { code, info: extra },
+		attr: { 'data-language': language },
 	};
 }
 

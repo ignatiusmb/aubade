@@ -2,54 +2,18 @@ import type { Token } from './registry.js';
 import { escape } from './utils.js';
 import { compose } from './engine.js';
 
-interface Resolver<T extends Token = Token> {
-	(panel: { token: T; render(token: Token): string; sanitize: typeof escape }): string;
-}
+export type Resolver<T extends Token['type'] = Token['type']> = (panel: {
+	token: Extract<Token, { type: T }>;
+	render(token: Token): string;
+	sanitize: typeof escape;
+}) => string;
 
 export interface Options {
 	quotes?: 'original' | 'typewriter' | 'typographic';
-	renderer?: { [T in Token as T['type']]?: Resolver<T> };
+	renderer?: { [T in Token as T['type']]?: Resolver<T['type']> };
 }
 
-export const engrave = forge({
-	renderer: {
-		'block:code'({ token, render, sanitize }) {
-			const dataset: Record<string, string | undefined> = {
-				language: token.attr['data-language'],
-				file: '',
-			};
-			for (const attr of token.meta.info.split(';')) {
-				if (!attr.trim()) continue;
-				const separator = attr.indexOf(':');
-				const pair = separator !== -1;
-				const key = pair ? attr.slice(0, separator) : attr;
-				const val = pair ? attr.slice(separator + 1) : '';
-				dataset[key.trim()] = val.trim() || undefined;
-			}
-			const attrs = Object.entries(dataset).flatMap(([k, v]) => {
-				if (k === 'file') return `data-file="${sanitize(v || 'empty')}"`;
-				const name = k.toLowerCase().replace(/[^a-z\-]/g, '');
-				if (!name) return [];
-				if (v == null) return `data-${name}`;
-				return `data-${name}="${sanitize(v)}"`;
-			});
-
-			const children = token.children.map(render).join('\n');
-			return [
-				'<div data-aubade="block">',
-				`<header data-aubade="header" ${attrs.join(' ')}>`,
-				dataset.file ? `<span>${dataset.file}</span>` : '',
-				'<div data-aubade="toolbar">',
-				`<button data-aubade-toolbar="copy" data-aubade-tooltip="Copy"></button>`,
-				`<button data-aubade-toolbar="list" data-aubade-tooltip="Toggle\nNumbering"></button>`,
-				'</div>',
-				'</header>',
-				`<pre data-aubade="pre">${children}</pre>`,
-				'</div>',
-			].join('');
-		},
-	},
-});
+export const engrave = forge({});
 export function forge({ renderer = {} }: Options = {}) {
 	const resolver = {
 		'aubade:comment': () => '',
@@ -71,12 +35,12 @@ export function forge({ renderer = {} }: Options = {}) {
 			const children = token.children.map(render).join('');
 			return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
 		},
-		'block:code': ({ token, render, sanitize }) => {
-			const attributes = Object.entries(token.attr)
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
-			const children = token.children.map(render).join('\n');
-			return `<pre${attributes ? ' ' + attributes : ''}>${children}</pre>`;
+		'block:code': ({ token, sanitize }) => {
+			const { 'data-language': lang } = token.attr;
+			const attr = lang ? ` data-language="${sanitize(lang)}"` : '';
+			const nl = token.meta.code.length && !token.meta.code.endsWith('\n') ? '\n' : '';
+			const code = sanitize(token.meta.code.replace(/&/g, '&amp;'));
+			return `<pre${attr}><code>${code}${nl}</code></pre>`;
 		},
 		'block:quote': ({ token, render }) => {
 			const children = token.children.map(render).join('\n');
@@ -136,8 +100,8 @@ export function forge({ renderer = {} }: Options = {}) {
 		...renderer,
 	} satisfies Options['renderer'];
 
-	function html<T extends Token>(token: T): string {
-		const resolve = resolver[token.type] as Resolver<T> | undefined;
+	function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
+		const resolve = resolver[token.type] as unknown as Resolver<T> | undefined;
 		if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 		return resolve({ token, render: html, sanitize: escape });
 	}
