@@ -643,3 +643,26 @@ describe('spec', ({ concurrent: it }) => {
 		});
 	}
 });
+
+describe('gfm', ({ concurrent: it }) => {
+	const suite: Record<string, [string, string]> = {
+		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
+		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
+		'493|todo': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
+	};
+
+	const mark = forge();
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, prop] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: prop === 'fail',
+			only: prop === 'only',
+			skip: prop === 'skip',
+			todo: prop === 'todo',
+		};
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
+	}
+});
