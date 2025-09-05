@@ -57,8 +57,8 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 		'block:list': ({ token, render }) => {
 			const { ordered } = token.meta;
-			const tag = ordered ? 'ol' : 'ul';
-			const start = ordered && ordered !== 1 ? ` start="${ordered}"` : '';
+			const tag = ordered !== false ? 'ol' : 'ul';
+			const start = tag === 'ol' && ordered !== 1 ? ` start="${ordered}"` : '';
 			return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
 		},
 		'block:item': ({ token, render }) => {
