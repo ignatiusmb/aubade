@@ -137,9 +137,8 @@ export function markup({ compose, cursor }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
-	meta: { info: string[] };
+	meta: { code: string; info: string };
 	attr: { 'data-language': string };
-	children: { type: 'inline:code'; text: string }[];
 } {
 	cursor.trim();
 	let backticks = +cursor.eat('`');
@@ -151,27 +150,25 @@ export function codeblock({ cursor }: Context): null | {
 	if (/`/.test(info)) return null;
 	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
 
-	const code: string[] = [];
+	let code = '';
 	let line = cursor.peek(/\n|$/).trim();
 	while (/[^`]/.test(line) || line.length < backticks) {
-		const next = cursor.locate(/\n|$/);
-		if (next.trim() || cursor.peek('\n')) {
-			code.push(next);
-		}
-
+		code += cursor.locate(/\n|$/);
 		if (!cursor.eat('\n')) break;
+		code += '\n';
 		line = cursor.peek(/\n|$/).trim();
 	}
 	cursor.trim();
 	while (cursor.eat('`'));
 	cursor.trim();
 
-	const [language, ...rest] = info.split(/\s+/);
+	const separator = info.indexOf(' ');
+	const language = separator === -1 ? info : info.slice(0, separator);
+	const extra = separator === -1 ? '' : info.slice(separator).trim();
 	return {
 		type: 'block:code',
-		meta: { info: rest },
+		meta: { code, info: extra },
 		attr: { 'data-language': language },
-		children: code.map((text) => ({ type: 'inline:code', text })),
 	};
 }
 
@@ -293,16 +290,17 @@ export function quote({ compose, cursor }: Context): null | {
 	type: 'block:quote';
 	children: Block[];
 } {
-	let line = cursor.peek(/\n|$/).trim();
-	if (line[0] !== '>') return null;
-	let block = '';
-	while (line.startsWith('>')) {
-		const body = cursor.locate(/\n|$/).trim();
-		block += body.slice(1).trim() + '\n';
+	let peek = cursor.peek(/\n|$/).trim();
+	if (peek[0] !== '>') return null;
+	const block: string[] = [];
+	while (peek.startsWith('>')) {
+		const line = cursor.locate(/\n|$/).trim();
+		const start = line.startsWith('> ') ? 2 : 1;
+		block.push(line.slice(start));
 		if (!cursor.eat('\n')) break;
-		line = cursor.peek(/\n|$/).trim();
+		peek = cursor.peek(/\n|$/).trim();
 	}
-	const { children } = compose(block);
+	const { children } = compose(block.join('\n'));
 	return { type: 'block:quote', children };
 }
 

@@ -1,24 +1,41 @@
 import markdown from 'markdown-it';
-import { transform } from '../palette/index.js';
+import { escape } from '../artisan/utils.js';
+import { highlight } from '../palette/index.js';
 
 export const marker = markdown({
 	html: true,
 	typographer: true,
 	highlight(source, language, attributes) {
-		const content: string[] = [];
-		const dataset: Record<string, string> = { language };
-		for (const line of source.split('\n')) {
-			const match = line.match(/^#\$ (\w+): (.+)/);
-			if (!match) content.push(line);
-			else dataset[match[1]] = match[2]?.trim() || '';
-		}
+		const dataset: Record<string, string | undefined> = { file: '', language };
 		for (const attr of attributes.split(';')) {
+			if (!attr.trim()) continue;
 			const separator = attr.indexOf(':');
-			if (separator === -1) continue;
-			const key = attr.slice(0, separator).trim();
-			dataset[key] = attr.slice(separator + 1).trim();
+			const pair = separator !== -1;
+			const key = pair ? attr.slice(0, separator) : attr;
+			const val = pair ? attr.slice(separator + 1) : '';
+			dataset[key.trim()] = val.trim() || undefined;
 		}
-		return transform(content.join('\n').trim(), dataset);
+		const attrs = Object.entries(dataset).flatMap(([k, v]) => {
+			if (k === 'file') return `data-file="${escape(v || 'empty')}"`;
+			const name = k.toLowerCase().replace(/[^a-z\-]/g, '');
+			if (!name) return [];
+			if (v == null) return `data-${name}`;
+			return `data-${name}="${escape(v)}"`;
+		});
+
+		return [
+			// needs to start with `<pre` to prevent added wrapper
+			'<pre data-aubade="block">',
+			`<header data-aubade="header" ${attrs.join(' ')}>`,
+			dataset.file ? `<span>${dataset.file}</span>` : '',
+			'<div data-aubade="toolbar">',
+			`<button data-aubade-toolbar="copy" data-aubade-tooltip="Copy"></button>`,
+			`<button data-aubade-toolbar="list" data-aubade-tooltip="Toggle\nNumbering"></button>`,
+			'</div>',
+			'</header>',
+			`<div data-aubade="pre" ${attrs.join(' ')}>${highlight(source, dataset)}</div>`,
+			'</pre>',
+		].join('');
 	},
 });
 

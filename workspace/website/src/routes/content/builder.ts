@@ -1,5 +1,5 @@
-import { marker } from 'aubade/artisan';
 import { orchestrate } from 'aubade/conductor';
+import { marker } from 'aubade/legacy';
 import { chain } from 'aubade/transform';
 
 const ROOT = `${process.cwd()}/static/uploads`;
@@ -39,7 +39,9 @@ export const DATA = {
 		});
 
 		return chain(items, {
-			sort: ({ rank: x }, { rank: y }) => Number(x) - Number(y),
+			sorter() {
+				return ({ rank: x }, { rank: y }) => Number(x) - Number(y);
+			},
 			transform: ({ slug, title }) => ({ slug: '/docs/' + slug, title }),
 		});
 	},

@@ -1,5 +1,5 @@
-import type { Token } from '../artisan/markdown/registry.js';
-import { engrave } from '../artisan/markdown/index.js';
+import type { Token } from '../artisan/registry.js';
+import { engrave } from '../artisan/index.js';
 import { parse as manifest } from '../manifest/index.js';
 
 export function assemble(source: string): {
