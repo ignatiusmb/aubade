@@ -359,7 +359,32 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'255': ['- one\n\n two', '<ul>\n<li>one</li>\n</ul>\n<p>two</p>'],
 		'256': ['- one\n\n  two', '<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>'],
-		// @TODO: 253-300 [list items]
+		'257|deny': [' -    one\n\n     two', '<ul>\n<li>one</li>\n</ul>\n<p>two</p>'],
+		'258': [' -    one\n\n      two', '<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>'],
+		'259': [
+			'   > > 1.  one\n>>\n>>     two',
+			'<blockquote>\n<blockquote>\n<ol>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ol>\n</blockquote>\n</blockquote>',
+		],
+		'260': [
+			'>>- one\n>>\n  >  > two',
+			'<blockquote>\n<blockquote>\n<ul>\n<li>one</li>\n</ul>\n<p>two</p>\n</blockquote>\n</blockquote>',
+		],
+		'261': ['-one\n\n2.two', '<p>-one</p>\n<p>2.two</p>'],
+		'262': ['- foo\n\n\n  bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'263|plus': [
+			'1.  foo\n\n    ```\n    bar\n    ```\n\n    baz\n\n    > bam',
+			'<ol>\n<li>\n<p>foo</p>\n<pre><code>bar</code></pre>\n<p>baz</p>\n<blockquote>\n<p>bam</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'264|deny': [
+			'- Foo\n\n      bar\n\n\n      baz',
+			'<ul>\n<li>\n<p>Foo</p>\n<p>bar</p>\n<p>baz</p>\n</li>\n</ul>',
+		],
+		'265': ['123456789. ok', '<ol start="123456789">\n<li>ok</li>\n</ol>'],
+		'266': ['1234567890. not ok', '<p>1234567890. not ok</p>'],
+		'267': ['0. ok', '<ol start="0">\n<li>ok</li>\n</ol>'],
+		'268': ['003. ok', '<ol start="3">\n<li>ok</li>\n</ol>'],
+		'269': ['-1. not ok', '<p>-1. not ok</p>'],
+		// @TODO: 270-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
 		'328': ['`code`', '<p><code>code</code></p>'],
@@ -595,6 +620,29 @@ describe('spec', ({ concurrent: it }) => {
 		'651': ['Foo χρῆν', '<p>Foo χρῆν</p>'],
 		'652': ['Multiple     spaces', '<p>Multiple     spaces</p>'],
 		// that's all the examples from the spec!
+	};
+
+	const mark = forge();
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, prop] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: prop === 'fail',
+			only: prop === 'only',
+			skip: prop === 'skip',
+			todo: prop === 'todo',
+		};
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
+	}
+});
+
+describe('gfm', ({ concurrent: it }) => {
+	const suite: Record<string, [string, string]> = {
+		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
+		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
+		'493|todo': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
 	};
 
 	const mark = forge();

@@ -35,8 +35,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			clear(['block:paragraph']);
 		}
 
-		const start = dispatch.get(source[index + cursor.index]);
-		const rules = start || [
+		const rules = dispatch.get(source[index + cursor.index]) || [
 			registry.divider,
 			registry.heading,
 			registry.codeblock,

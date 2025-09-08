@@ -49,8 +49,8 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 		'block:list': ({ token, render }) => {
 			const { ordered } = token.meta;
-			const tag = ordered ? 'ol' : 'ul';
-			const start = ordered && ordered !== 1 ? ` start="${ordered}"` : '';
+			const tag = ordered !== false ? 'ol' : 'ul';
+			const start = tag === 'ol' && ordered !== 1 ? ` start="${ordered}"` : '';
 			return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
 		},
 		'block:item': ({ token, render }) => {
@@ -93,7 +93,7 @@ export function forge({ renderer = {} }: Options = {}) {
 		},
 
 		'inline:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
-		'inline:strike': ({ token, render }) => `<s>${token.children.map(render).join('')}</s>`,
+		'inline:strike': ({ token, render }) => `<del>${token.children.map(render).join('')}</del>`,
 		'inline:strong': ({ token, render }) =>
 			`<strong>${token.children.map(render).join('')}</strong>`,
 		'inline:text': ({ token, sanitize }) => sanitize(token.text || ''),
