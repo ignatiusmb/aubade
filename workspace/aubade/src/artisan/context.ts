@@ -69,28 +69,38 @@ function extract(token: Token): string {
 	return 'text' in token ? token.text : '';
 }
 
-export const is = {
-	'left-flanking'(before: string, after: string): boolean {
-		return (
-			!is.whitespace(after) &&
-			(!is.punctuation(after) || is.whitespace(before) || is.punctuation(before))
-		);
+const util = {
+	commit<T>(array: T[], item: T) {
+		if (item !== util.last(array)) array.push(item);
+		return item;
 	},
-	'right-flanking'(before: string, after: string): boolean {
-		return (
-			!is.whitespace(before) &&
-			(!is.punctuation(before) || is.whitespace(after) || is.punctuation(after))
-		);
+	last<T>(array: T[]) {
+		return array[array.length - 1];
 	},
 
-	alphanumeric(char: string): boolean {
-		return /\p{L}|\p{N}|_/u.test(char);
-	},
-	punctuation(char: string): boolean {
-		return /\p{P}|\p{S}/u.test(char);
-	},
-	whitespace(char: string): boolean {
-		return /\p{Zs}/u.test(char) || /\s/.test(char);
+	is: {
+		alphanumeric(char: string): boolean {
+			return /\p{L}|\p{N}|_/u.test(char);
+		},
+		punctuation(char: string): boolean {
+			return /\p{P}|\p{S}/u.test(char);
+		},
+		whitespace(char: string): boolean {
+			return /\p{Zs}/u.test(char) || /\s/.test(char);
+		},
+
+		'left-flanking'(before: string, after: string): boolean {
+			return (
+				!util.is.whitespace(after) &&
+				(!util.is.punctuation(after) || util.is.whitespace(before) || util.is.punctuation(before))
+			);
+		},
+		'right-flanking'(before: string, after: string): boolean {
+			return (
+				!util.is.whitespace(before) &&
+				(!util.is.punctuation(before) || util.is.whitespace(after) || util.is.punctuation(after))
+			);
+		},
 	},
 };
 export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
@@ -104,9 +114,9 @@ export function match<Rules extends Array<(ctx: Context) => unknown>>(ctx: {
 			annotate,
 			compose,
 			extract,
-			is,
 			cursor: ctx.cursor,
 			stack: ctx.stack,
+			util,
 		}) as null | ReturnType<Rules[number]>;
 		if (token != null) return token;
 		ctx.cursor.index = start;
@@ -120,6 +130,6 @@ export interface Context {
 	extract: typeof extract;
 
 	cursor: ReturnType<typeof contextualize>;
-	is: typeof is;
 	stack: { [T in Token as T['type']]: T[] };
+	util: typeof util;
 }

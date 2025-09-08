@@ -5,8 +5,7 @@ import * as registry from './registry.js';
 /** create the root document from the source */
 export function compose(source: string): { type: ':document'; children: Block[] } {
 	const root = { type: ':document' as const, children: [] as Block[] };
-	const input = source.trim();
-	const tree = root.children;
+	const tree = root.children.slice();
 	const stack = new Proxy({} as Context['stack'], {
 		get(target, key: keyof Context['stack']) {
 			const container = target[key] || [];
@@ -18,55 +17,67 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 	const dispatch = new Map([
 		['\\', []], // escape falls back to paragraph
 		['<', [registry.comment, registry.markup]],
-		['`', [registry.codeblock]],
 		['#', [registry.heading]],
+		['`', [registry.codeblock]],
 		['>', [registry.quote]],
+		['!', [registry.figure]],
 		['-', [registry.divider, registry.list]],
 		['*', [registry.divider, registry.list]],
+		['+', [registry.list]],
 		['_', [registry.divider]],
 		['@', [registry.youtube]],
 	]);
 
 	let index = 0;
-	while (index < input.length) {
-		const cursor = contextualize(input.slice(index));
+	while (index < source.length) {
+		const cursor = contextualize(source.slice(index));
 		if (cursor.eat('\n')) {
 			while (cursor.eat('\n'));
-			clear(['block:paragraph', 'block:quote']);
+			clear(['block:paragraph']);
 		}
 
-		const start = dispatch.get(input[index + cursor.index]);
-		const rules = start || [registry.divider, registry.heading];
+		const rules = dispatch.get(source[index + cursor.index]) || [
+			registry.divider,
+			registry.heading,
+			registry.codeblock,
+			registry.quote,
+			registry.list,
+		];
 		const token = match({ cursor, stack, rules });
 		if (token) {
 			if (token !== tree[tree.length - 1]) tree.push(token);
-			clear(['block:paragraph', 'block:quote']);
+			clear([token.type !== 'block:list' && 'block:list', 'block:paragraph']);
 		} else {
-			const text = cursor.locate(/\n|$/).trim();
+			const text = cursor.locate(/\n|$/);
 			cursor.eat('\n'); // eat the line feed
 
 			const q = stack['block:paragraph'];
 			if (q.length) q[q.length - 1].text += '\n' + text;
 			else {
-				const p = { type: 'block:paragraph' as const, children: [], text };
-				tree.push(p), q.push(p);
+				q.push({ type: 'block:paragraph', children: [], text });
+				tree.push(q[q.length - 1]);
+				clear(['block:list']);
 			}
 		}
 		index += cursor.index;
 	}
 
 	for (const parent of tree) {
-		if (parent.type !== 'block:paragraph' || !parent.text) continue;
-		parent.children = annotate(parent.text);
-		// @TODO: make it configurable
-		delete parent.text; // cleanup text after inline parsing
+		if (parent.type !== 'block:paragraph') root.children.push(parent);
+		else if (parent.text && parent.text.trim()) {
+			const children = annotate(parent.text.trim());
+			root.children.push({ type: 'block:paragraph', children });
+		}
 	}
 
 	return root;
 
-	function clear(blocks: Array<keyof Context['stack']>) {
+	function clear(blocks: Array<false | keyof Context['stack']>) {
 		for (const type of blocks) {
-			while (stack[type].length) stack[type].pop();
+			if (!type) continue;
+			while (stack[type].length) {
+				stack[type].pop();
+			}
 		}
 	}
 }
@@ -84,8 +95,7 @@ export function annotate(source: string): Annotation[] {
 	});
 
 	const dispatch = new Map([
-		['\n', [registry.linebreak]],
-		['\\', [registry.linebreak, registry.escape]],
+		['\\', [registry.escape]],
 		['<', [registry.comment, registry.markup, registry.autolink]],
 		['`', [registry.codespan]],
 		['!', [registry.image]],
@@ -103,10 +113,19 @@ export function annotate(source: string): Annotation[] {
 		const token = match({ cursor, stack, rules });
 		if (token) runs.push(token);
 		else {
+			const bs = cursor.eat('\\'); // backslash hard break
 			const char = cursor.read(1);
 			const last = runs[runs.length - 1];
-			if (last?.type === 'inline:text') last.text += char;
-			else runs.push({ type: 'inline:text', text: char });
+			if (last?.type === 'inline:text') {
+				const linebreak = bs || / {2,}$/.test(last.text);
+				const lf = char === '\n';
+				last.text = lf ? last.text.trimEnd() : last.text;
+				lf && cursor.trim();
+				if (!lf || !linebreak) last.text += char || '\\';
+				else runs.push({ type: 'inline:break' });
+			} else {
+				runs.push({ type: 'inline:text', text: char });
+			}
 		}
 		index = cursor.index;
 	}

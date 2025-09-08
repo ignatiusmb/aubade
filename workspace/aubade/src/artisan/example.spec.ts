@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { engrave, forge } from './index.js';
+import { forge } from './index.js';
 
 // `deny` disallow features, either:
 //  - outright, like indented code block and setext headings
@@ -11,17 +11,17 @@ describe('spec', ({ concurrent: it }) => {
 		'001|deny': ['\tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'002|deny': ['  \tfoo\tbaz\t\tbim', '<p>foo\tbaz\t\tbim</p>'],
 		'003|deny': ['    a\ta\n    ὐ\ta', '<p>a\ta\nὐ\ta</p>'],
-		'004|todo': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'005|todo': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'006|deny': ['>\t\tfoo', '<blockquote><p>foo</p></blockquote>'],
-		'007|todo': ['-\t\tfoo', '<ul><li><p>foo</p></li></ul>'],
+		'004': ['  - foo\n\n\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'005': ['- foo\n\n\t\tbar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'006|deny': ['>\t\tfoo', '<blockquote>\n<p>foo</p>\n</blockquote>'],
+		'007|deny': ['-\t\tfoo', '<ul>\n<li>foo</li>\n</ul>'],
 		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
 		'009|todo': [
 			' - foo\n   - bar\n\t - baz',
-			'<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>',
+			'<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>',
 		],
 		'010|plus': ['#\tFoo', '<h1 id="foo" data-text="Foo">Foo</h1>'],
-		'011|deny': ['*\t*\t*\t', '<p>*\t*\t*</p>'],
+		'011': ['*\t*\t*\t', '<hr />'],
 		'012': [
 			'\\!\\"\\#\\$\\%\\&\\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~',
 			"<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>",
@@ -52,7 +52,7 @@ describe('spec', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'015': ['\\\\*emphasis*', '<p>\\<em>emphasis</em></p>'],
-		'016|mod': ['foo\\\nbar', '<p>foo\nbar</p>'],
+		'016': ['foo\\\nbar', '<p>foo<br />\nbar</p>'],
 		'017': ['`` \\[\\` ``', '<p><code>\\[\\`</code></p>'],
 		'018|deny': ['    \[\]', '<p>\[\]</p>'],
 		'019|todo': ['~~~\n\[\]\n~~~', '<pre><code>\[\]</code></pre>'],
@@ -66,7 +66,7 @@ describe('spec', ({ concurrent: it }) => {
 			'[foo]\n\n[foo]: /bar\\* "ti\\*tle"',
 			'<p><a href="/bar*" title="ti*tle">foo</a></p>',
 		],
-		'024|plus': ['``` foo\+bar\nfoo\n```', '<pre data-language="foo+bar"><code>foo</code></pre>'],
+		'024|mod': ['``` foo\+bar\nfoo\n```', '<pre data-language="foo+bar"><code>foo\n</code></pre>'],
 		'025|deny': [
 			'&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;',
 			'<p>&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;</p>',
@@ -90,13 +90,13 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'034|skip': ['``` f&ouml;&ouml;\nfoo\n```', '<pre data-language="föö"><code>foo</code></pre>'],
 		'035': ['`f&ouml;&ouml;`', '<p><code>f&amp;ouml;&amp;ouml;</code></p>'],
-		'036|mod': ['```\nf&ouml;f&ouml;\n```', '<pre><code>f&amp;ouml;f&amp;ouml;</code></pre>'],
+		'036|mod': ['```\nf&ouml;f&ouml;\n```', '<pre><code>f&amp;ouml;f&amp;ouml;\n</code></pre>'],
 		'037': ['&#42;foo&#42;\n*foo*', '<p>*foo*\n<em>foo</em></p>'],
-		'038|todo': ['&#42; foo\n\n* foo', '<p>* foo</p>\n<ul>\n<li>foo</li>\n</ul>'],
+		'038': ['&#42; foo\n\n* foo', '<p>* foo</p>\n<ul>\n<li>foo</li>\n</ul>'],
 		'039': ['foo&#10;&#10;bar', '<p>foo\n\nbar</p>'],
 		'040': ['&#9;foo', '<p>\tfoo</p>'],
 		'041': ['[a](url &quot;tit&quot;)', '<p>[a](url &quot;tit&quot;)</p>'],
-		'042|todo': ['- `one\n- two`', '<ul><li>`one</li><li>two`</li></ul>'],
+		'042': ['- `one\n- two`', '<ul>\n<li>`one</li>\n<li>two`</li>\n</ul>'],
 		'043': ['***\n---\n___', '<hr />\n<hr />\n<hr />'],
 		'044': ['+++', '<p>+++</p>'],
 		'045': ['===', '<p>===</p>'],
@@ -104,21 +104,18 @@ describe('spec', ({ concurrent: it }) => {
 		'047': [' ***\n  ***\n   ***', '<hr />\n<hr />\n<hr />'],
 		'048|deny': ['    ***', '<hr />'],
 		'049|deny': ['Foo\n    ***', '<p>Foo</p>\n<hr />'],
-		'050|deny': [
-			'_____________________________________',
-			'<p>_____________________________________</p>',
-		],
-		'051|deny': [' - - -', '<p>- - -</p>'],
-		'052|deny': [' **  * ** * ** * **', '<p>**  * ** * ** * **</p>'],
-		'053|deny': ['-     -      -      -', '<p>-     -      -      -</p>'],
-		'054|deny': ['- - - -    ', '<p>- - - -</p>'],
+		'050|': ['_____________________________________', '<hr />'],
+		'051': [' - - -', '<hr />'],
+		'052': [' **  * ** * ** * **', '<hr />'],
+		'053': ['-     -      -      -', '<hr />'],
+		'054': ['- - - -    ', '<hr />'],
 		'055': [' ***\n  ***\n   ***', '<hr />\n<hr />\n<hr />'],
 		'056': [' *-*', '<p><em>-</em></p>'],
-		'057|todo': ['- foo\n***\n- bar', '<ul><li>foo</li></ul>\n<hr />\n<ul><li>bar</li></ul>'],
+		'057': ['- foo\n***\n- bar', '<ul>\n<li>foo</li>\n</ul>\n<hr />\n<ul>\n<li>bar</li>\n</ul>'],
 		'058': ['foo\n***\nbar', '<p>foo</p>\n<hr />\n<p>bar</p>'],
 		'059|deny': ['Foo\n---\nbar', '<p>Foo</p>\n<hr />\n<p>bar</p>'],
-		'060|todo': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n<li>* *</li>\n<li>Bar</li>\n</ul>'],
-		'061|todo': ['- Foo\n- ***', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
+		'060': ['* Foo\n* * *\n* Bar', '<ul>\n<li>Foo</li>\n</ul>\n<hr />\n<ul>\n<li>Bar</li>\n</ul>'],
+		'061': ['- Foo\n- * * *', '<ul>\n<li>Foo</li>\n<li>\n<hr />\n</li>\n</ul>'],
 		'062|plus': [
 			'# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo',
 			[
@@ -176,10 +173,7 @@ describe('spec', ({ concurrent: it }) => {
 				'<h1 id="foo-2" data-text="foo #">foo #</h1>',
 			].join('\n'),
 		],
-		'077|deny': [
-			'****\n## foo\n****',
-			'<p>****</p>\n<h2 id="foo" data-text="foo">foo</h2>\n<p>****</p>',
-		],
+		'077|deny': ['****\n## foo\n****', '<hr />\n<h2 id="foo" data-text="foo">foo</h2>\n<hr />'],
 		'078|plus': [
 			'Foo bar\n# baz\nBar foo',
 			'<p>Foo bar</p>\n<h1 id="baz" data-text="baz">baz</h1>\n<p>Bar foo</p>',
@@ -187,31 +181,28 @@ describe('spec', ({ concurrent: it }) => {
 		'079|deny': ['## \n#\n### ###', '<p>##\n#</p>\n<h3 data-text="###">###</h3>'],
 		'080|deny': [
 			'Foo *bar*\n=========\n\nFoo *bar*\n---------',
-			'<p>Foo <em>bar</em>\n=========</p>\n<p>Foo <em>bar</em>\n---------</p>',
+			'<p>Foo <em>bar</em>\n=========</p>\n<p>Foo <em>bar</em></p>\n<hr />',
 		],
 		'081|deny': ['Foo *bar\nbaz*\n====', '<p>Foo <em>bar\nbaz</em>\n====</p>'],
 		'082|deny': ['Foo *bar\nbaz*\t\n====', '<p>Foo <em>bar\nbaz</em>\n====</p>'],
-		'083|deny': [
-			'Foo\n-------------------------\n\nFoo\n=',
-			'<p>Foo\n-------------------------</p>\n<p>Foo\n=</p>',
-		],
+		'083|deny': ['Foo\n-------------------------\n\nFoo\n=', '<p>Foo</p>\n<hr />\n<p>Foo\n=</p>'],
 		'084|deny': [
 			'   Foo\n---\n\n  Foo\n-----\n\n  Foo\n  ===',
-			'<p>Foo</p>\n<hr />\n<p>Foo\n-----</p>\n<p>Foo\n===</p>',
+			'<p>Foo</p>\n<hr />\n<p>Foo</p>\n<hr />\n<p>Foo\n===</p>',
 		],
 		'085|deny': ['    Foo\n    ---\n\n    Foo\n---', '<p>Foo</p>\n<hr />\n<p>Foo</p>\n<hr />'],
-		'086|deny': ['Foo\n   ----      ', '<p>Foo\n----</p>'],
+		'086|deny': ['Foo\n   ----      ', '<p>Foo</p>\n<hr />'],
 		'087|deny': ['Foo\n    ---', '<p>Foo</p>\n<hr />'],
-		'088|deny': ['Foo\n= =\n\nFoo\n--- -', '<p>Foo\n= =</p>\n<p>Foo\n--- -</p>'],
-		'089|deny': ['Foo  \n-----', '<p>Foo\n-----</p>'],
-		'090|deny': ['Foo\\\n----', '<p>Foo\n----</p>'],
+		'088': ['Foo\n= =\n\nFoo\n--- -', '<p>Foo\n= =</p>\n<p>Foo</p>\n<hr />'],
+		'089|deny': ['Foo  \n-----', '<p>Foo</p>\n<hr />'],
+		'090|deny': ['Foo\\\n----', '<p>Foo\\</p>\n<hr />'],
 		'091|deny': [
 			'`Foo\n----\n`\n\n<a title="a lot\n---\nof dashes"/>',
-			'<p><code>Foo ---- </code></p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>',
+			'<p>`Foo</p>\n<hr />\n<p>`</p>\n<p>&lt;a title=&quot;a lot</p>\n<hr />\n<p>of dashes&quot;/&gt;</p>',
 		],
-		'092|mod': ['> Foo\n---', '<blockquote><p>Foo</p></blockquote>\n<hr />'],
-		'093|deny': ['> foo\n> bar\n> ===', '<blockquote><p>foo\nbar\n===</p></blockquote>'],
-		'094|todo': ['- Foo\n---', '<ul>\n<li>Foo</li>\n</ul>\n<hr />'],
+		'092': ['> Foo\n---', '<blockquote>\n<p>Foo</p>\n</blockquote>\n<hr />'],
+		'093|deny': ['> foo\n> bar\n> ===', '<blockquote>\n<p>foo\nbar\n===</p>\n</blockquote>'],
+		'094': ['- Foo\n---', '<ul>\n<li>Foo</li>\n</ul>\n<hr />'],
 		'095|deny': ['Foo\nBar\n---', '<p>Foo\nBar</p>\n<hr />'],
 		'096|deny': [
 			'---\nFoo\n---\nBar\n---\nBaz',
@@ -219,65 +210,59 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'097': ['\n====', '<p>====</p>'],
 		'098': ['---\n---', '<hr />\n<hr />'],
-		'099|todo': ['- foo\n-----', '<ul>\n<li>foo</li>\n</ul>\n<p>-----</p>'],
+		'099': ['- foo\n-----', '<ul>\n<li>foo</li>\n</ul>\n<hr />'],
 		'100': ['    foo\n---', '<p>foo</p>\n<hr />'],
-		'101|deny': ['> foo\n-----', '<blockquote><p>foo</p></blockquote>\n<p>-----</p>'],
-		'102|deny': ['\\> foo\n-----', '<p>&gt; foo\n-----</p>'],
+		'101': ['> foo\n-----', '<blockquote>\n<p>foo</p>\n</blockquote>\n<hr />'],
+		'102|deny': ['\\> foo\n-----', '<p>&gt; foo</p>\n<hr />'],
 		'103|deny': ['Foo\n\nbar\n---\nbaz', '<p>Foo</p>\n<p>bar</p>\n<hr />\n<p>baz</p>'],
 		'104': ['Foo\nbar\n\n---\n\nbaz', '<p>Foo\nbar</p>\n<hr />\n<p>baz</p>'],
-		'105|deny': ['Foo\nbar\n* * *\nbaz', '<p>Foo\nbar\n* * *\nbaz</p>'],
+		'105': ['Foo\nbar\n* * *\nbaz', '<p>Foo\nbar</p>\n<hr />\n<p>baz</p>'],
 		'106': ['Foo\nbar\n\\---\nbaz', '<p>Foo\nbar\n---\nbaz</p>'],
 		// @TODO: 107-118 [indented code blocks]
-		'119|plus': ['```\n<\n >\n```', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
+		'119': ['```\n<\n >\n```', '<pre><code>&lt;\n &gt;\n</code></pre>'],
 		'120|skip': ['~~~\n<\n >\n~~~', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
-		'121|todo': ['``\nfoo\n``', '<pre><code>foo</code></pre>'],
-		'122|plus': ['```\naaa\n~~~\n```', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
+		'121': ['``\nfoo\n``', '<p><code>foo</code></p>'],
+		'122': ['```\naaa\n~~~\n```', '<pre><code>aaa\n~~~\n</code></pre>'],
 		'123|skip': ['~~~\naaa\n```\n~~~', '<pre><code>aaa</code>\n<code>```</code></pre>'],
-		'124|plus': ['````\naaa\n```\n``````', '<pre><code>aaa</code>\n<code>```</code></pre>'],
+		'124': ['````\naaa\n```\n``````', '<pre><code>aaa\n```\n</code></pre>'],
 		'125|skip': ['~~~~\naaa\n~~~\n~~~~', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
 		'126': ['```', '<pre><code></code></pre>'],
-		'127|plus': [
-			'`````\n\n```\naaa',
-			'<pre><code></code>\n<code>```</code>\n<code>aaa</code></pre>',
-		],
-		'128|mod': [
+		'127': ['`````\n\n```\naaa', '<pre><code>\n```\naaa\n</code></pre>'],
+		'128': [
 			'> ````\n> aaa\n\nbbb',
-			'<blockquote><pre><code>aaa</code></pre></blockquote>\n<p>bbb</p>',
+			'<blockquote>\n<pre><code>aaa\n</code></pre>\n</blockquote>\n<p>bbb</p>',
 		],
-		'129|plus': ['```\n\n  \n```', '<pre><code></code>\n<code>  </code></pre>'],
-		'130|plus': ['```\n```', '<pre></pre>'],
-		'131|deny': [' ```\n aaa\naaa\n```', '<pre><code> aaa</code>\n<code>aaa</code></pre>'],
-		'132|deny': [
-			'  ```\naaa\n  aaa\naaa\n  ```',
-			'<pre><code>aaa</code>\n<code>  aaa</code>\n<code>aaa</code></pre>',
-		],
+		'129': ['```\n\n  \n```', '<pre><code>\n  \n</code></pre>'],
+		'130': ['```\n```', '<pre><code></code></pre>'],
+		'131|deny': [' ```\n aaa\naaa\n```', '<pre><code> aaa\naaa\n</code></pre>'],
+		'132|deny': ['  ```\naaa\n  aaa\naaa\n  ```', '<pre><code>aaa\n  aaa\naaa\n</code></pre>'],
 		'133|deny': [
 			'   ```\n   aaa\n    aaa\n  aaa\n   ```',
-			'<pre><code>   aaa</code>\n<code>    aaa</code>\n<code>  aaa</code></pre>',
+			'<pre><code>   aaa\n    aaa\n  aaa\n</code></pre>',
 		],
-		'134|deny': ['    ```\n    aaa\n    ```', '<pre><code>    aaa</code></pre>'],
-		'135': ['```\naaa\n  ```', '<pre><code>aaa</code></pre>'],
-		'136': ['   ```\naaa\n  ```', '<pre><code>aaa</code></pre>'],
-		'137|deny': ['```\naaa\n    ```', '<pre><code>aaa</code></pre>'],
+		'134|deny': ['    ```\n    aaa\n    ```', '<pre><code>    aaa\n</code></pre>'],
+		'135': ['```\naaa\n  ```', '<pre><code>aaa\n</code></pre>'],
+		'136': ['   ```\naaa\n  ```', '<pre><code>aaa\n</code></pre>'],
+		'137|deny': ['```\naaa\n    ```', '<pre><code>aaa\n</code></pre>'],
 		'138': ['``` ```\naaa', '<p><code> </code>\naaa</p>'],
 		'139|skip': ['~~~~~~\naaa\n~~~ ~~', '<pre><code>aaa</code>\n<code>~~~ ~~</code></pre>'],
-		'140': ['foo\n```\nbar\n```\nbaz', '<p>foo</p>\n<pre><code>bar</code></pre>\n<p>baz</p>'],
+		'140': ['foo\n```\nbar\n```\nbaz', '<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>'],
 		'141|mod': [
 			'foo\n---\n```\nbar\n```\n# baz',
-			'<p>foo</p>\n<hr />\n<pre><code>bar</code></pre>\n<h1 id="baz" data-text="baz">baz</h1>',
+			'<p>foo</p>\n<hr />\n<pre><code>bar\n</code></pre>\n<h1 id="baz" data-text="baz">baz</h1>',
 		],
-		'142|plus': [
+		'142|mod': [
 			'```ruby\ndef foo(x)\n  return 3\nend\n```',
-			'<pre data-language="ruby"><code>def foo(x)</code>\n<code>  return 3</code>\n<code>end</code></pre>',
+			'<pre data-language="ruby"><code>def foo(x)\n  return 3\nend\n</code></pre>',
 		],
-		'143|plus': [
+		'143|todo': [
 			'```    ruby startline=3 $%@#$\ndef foo(x)\n	return 3\nend\n```',
-			'<pre data-language="ruby"><code>def foo(x)</code>\n<code>	return 3</code>\n<code>end</code></pre>',
+			'<pre data-language="ruby"><code>def foo(x)\n	return 3\nend\n</code></pre>',
 		],
-		'144|mod': ['````;\n````', '<pre data-language=";"></pre>'],
-		'145|todo': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
+		'144|mod': ['````;\n````', '<pre data-language=";"><code></code></pre>'],
+		'145': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
 		'146|skip': ['~~~ aa ``` ~~~\nfoo\n~~~', '<pre data-language="aa"><code>aa</code></pre>'],
-		'147': ['```\n``` aaa\n```', '<pre><code>``` aaa</code></pre>'],
+		'147': ['```\n``` aaa\n```', '<pre><code>``` aaa\n</code></pre>'],
 		'148|skip': [
 			'<table><tr><td>\n<pre>\n**Hello**,\n\n_world_.\n</pre>\n</td</tr></table>',
 			'<table><tr><td>\n<pre>\n**Hello**,\n<p><em>world</em>.\n</pre></p>\n</td></tr></table>',
@@ -286,7 +271,7 @@ describe('spec', ({ concurrent: it }) => {
 			'<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n\nokay.',
 			'<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n<p>okay.</p>',
 		],
-		// @TODO: 150-191
+		// @TODO: 150-191 [HTML blocks]
 		// @TODO: 192-218 [link reference definitions]
 		'219': ['aaa\n\nbbb', '<p>aaa</p>\n<p>bbb</p>'],
 		'220': ['aaa\nbbb\n\nccc\nddd', '<p>aaa\nbbb</p>\n<p>ccc\nddd</p>'],
@@ -295,13 +280,111 @@ describe('spec', ({ concurrent: it }) => {
 		'223': [`aaa\n${' '.repeat(13)}bbb\n${' '.repeat(39)}ccc`, '<p>aaa\nbbb\nccc</p>'],
 		'224': ['   aaa\nbbb', '<p>aaa\nbbb</p>'],
 		'225|deny': ['    aaa\nbbb', '<p>aaa\nbbb</p>'],
-		'226|mod': ['aaa     \nbbb     ', '<p>aaa\nbbb</p>'],
+		'226': ['aaa     \nbbb     ', '<p>aaa<br />\nbbb</p>'],
 		'227|plus': [
 			'  \n\naaa\n   \n\n# aaa\n\n   ',
 			'<p>aaa</p>\n<h1 id="aaa" data-text="aaa">aaa</h1>',
 		],
-		// @TODO: 228-252 [block quotes]
-		// @TODO: 253-300 [list items]
+		'228|plus': [
+			'> # Foo\n> bar\n> baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'229|plus': [
+			'># Foo\n>bar\n> baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'230': [
+			'   > # Foo\n   > bar\n > baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'231|deny': [
+			'    > # Foo\n    > bar\n    > baz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar\nbaz</p>\n</blockquote>',
+		],
+		'232|deny': [
+			'> # Foo\n> bar\nbaz',
+			'<blockquote>\n<h1 id="foo" data-text="Foo">Foo</h1>\n<p>bar</p>\n</blockquote>\n<p>baz</p>',
+		],
+		'233|deny': [
+			'> bar\nbaz\n> foo',
+			'<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>\n<blockquote>\n<p>foo</p>\n</blockquote>',
+		],
+		'234': ['> foo\n---', '<blockquote>\n<p>foo</p>\n</blockquote>\n<hr />'],
+		'235|deny': [
+			'> - foo\n- bar',
+			'<blockquote>\n<ul>\n<li>foo</li>\n</ul>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>',
+		],
+		'236|deny': ['>     foo\n    bar', '<blockquote>\n<p>foo</p>\n</blockquote>\n<p>bar</p>'],
+		'237': [
+			'> ```\nfoo\n```',
+			'<blockquote>\n<pre><code></code></pre>\n</blockquote>\n<p>foo</p>\n<pre><code></code></pre>',
+		],
+		'238|deny': [
+			'> foo\n    - bar',
+			'<blockquote>\n<p>foo</p>\n</blockquote>\n<ul>\n<li>bar</li>\n</ul>',
+		],
+		'239': ['>', '<blockquote>\n</blockquote>'],
+		'240': ['>\n>  \n> ', '<blockquote>\n</blockquote>'],
+		'241': ['>\n> foo\n>  ', '<blockquote>\n<p>foo</p>\n</blockquote>'],
+		'242': [
+			'> foo\n\n> bar',
+			'<blockquote>\n<p>foo</p>\n</blockquote>\n<blockquote>\n<p>bar</p>\n</blockquote>',
+		],
+		'243': ['> foo\n> bar', '<blockquote>\n<p>foo\nbar</p>\n</blockquote>'],
+		'244': ['> foo\n>\n> bar', '<blockquote>\n<p>foo</p>\n<p>bar</p>\n</blockquote>'],
+		'245': ['foo\n> bar', '<p>foo</p>\n<blockquote>\n<p>bar</p>\n</blockquote>'],
+		'246': [
+			'> aaa\n***\n> bbb',
+			'<blockquote>\n<p>aaa</p>\n</blockquote>\n<hr />\n<blockquote>\n<p>bbb</p>\n</blockquote>',
+		],
+		'247|deny': ['> bar\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'248': ['> bar\n\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'249': ['> bar\n>\nbaz', '<blockquote>\n<p>bar</p>\n</blockquote>\n<p>baz</p>'],
+		'250|deny': [
+			'> > > foo\nbar',
+			'<blockquote>\n<blockquote>\n<blockquote>\n<p>foo</p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>bar</p>',
+		],
+		'251|deny': [
+			'>>> foo\n> bar\n>>baz',
+			'<blockquote>\n<blockquote>\n<blockquote>\n<p>foo</p>\n</blockquote>\n</blockquote>\n<p>bar</p>\n<blockquote>\n<p>baz</p>\n</blockquote>\n</blockquote>',
+		],
+		'252|deny': ['>     code\n>    not code', '<blockquote>\n<p>code\nnot code</p>\n</blockquote>'],
+		'253|deny': [
+			'A paragraph\nwith two lines.\n\n    indented code\n\n> A block quote.',
+			'<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>',
+		],
+		'254|deny': [
+			'1.  A paragraph\n    with two lines.\n\n        indented code\n\n    > A block quote.',
+			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'255': ['- one\n\n two', '<ul>\n<li>one</li>\n</ul>\n<p>two</p>'],
+		'256': ['- one\n\n  two', '<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>'],
+		'257|deny': [' -    one\n\n     two', '<ul>\n<li>one</li>\n</ul>\n<p>two</p>'],
+		'258': [' -    one\n\n      two', '<ul>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ul>'],
+		'259': [
+			'   > > 1.  one\n>>\n>>     two',
+			'<blockquote>\n<blockquote>\n<ol>\n<li>\n<p>one</p>\n<p>two</p>\n</li>\n</ol>\n</blockquote>\n</blockquote>',
+		],
+		'260': [
+			'>>- one\n>>\n  >  > two',
+			'<blockquote>\n<blockquote>\n<ul>\n<li>one</li>\n</ul>\n<p>two</p>\n</blockquote>\n</blockquote>',
+		],
+		'261': ['-one\n\n2.two', '<p>-one</p>\n<p>2.two</p>'],
+		'262': ['- foo\n\n\n  bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'263': [
+			'1.  foo\n\n    ```\n    bar\n    ```\n\n    baz\n\n    > bam',
+			'<ol>\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>\n<blockquote>\n<p>bam</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'264|deny': [
+			'- Foo\n\n      bar\n\n\n      baz',
+			'<ul>\n<li>\n<p>Foo</p>\n<p>bar</p>\n<p>baz</p>\n</li>\n</ul>',
+		],
+		'265': ['123456789. ok', '<ol start="123456789">\n<li>ok</li>\n</ol>'],
+		'266': ['1234567890. not ok', '<p>1234567890. not ok</p>'],
+		'267': ['0. ok', '<ol start="0">\n<li>ok</li>\n</ol>'],
+		'268': ['003. ok', '<ol start="3">\n<li>ok</li>\n</ol>'],
+		'269': ['-1. not ok', '<p>-1. not ok</p>'],
+		// @TODO: 270-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
 		'328': ['`code`', '<p><code>code</code></p>'],
@@ -309,11 +392,11 @@ describe('spec', ({ concurrent: it }) => {
 		'330': ['` `` `', '<p><code>``</code></p>'],
 		'331': ['`  ``  `', '<p><code> `` </code></p>'],
 		'332': ['` a`', '<p><code> a</code></p>'],
-		'333': ['` b `', '<p><code> b </code></p>'],
+		'333': ['` b `', '<p><code> b </code></p>'],
 		'334': ['` `\n`  `', '<p><code> </code>\n<code>  </code></p>'],
-		'335|plus': ['``\nfoo\nbar  \nbaz\n``', '<p><code>foo bar baz</code></p>'],
-		'336|plus': ['``\nfoo \n``', '<p><code> foo </code></p>'],
-		'337|plus': ['`foo   bar \nbaz`', '<p><code>foo   bar baz</code></p>'],
+		'335': ['``\nfoo\nbar  \nbaz\n``', '<p><code>foo bar   baz</code></p>'],
+		'336': ['``\nfoo \n``', '<p><code>foo </code></p>'],
+		'337': ['`foo   bar \nbaz`', '<p><code>foo   bar  baz</code></p>'],
 		'338': ['`foo\\`bar`', '<p><code>foo\\</code>bar`</p>'],
 		'339': ['``foo`bar``', '<p><code>foo`bar</code></p>'],
 		'340': ['` foo `` bar `', '<p><code>foo `` bar</code></p>'],
@@ -332,7 +415,7 @@ describe('spec', ({ concurrent: it }) => {
 		'350': ['*foo bar*', '<p><em>foo bar</em></p>'],
 		'351': ['a * foo bar*', '<p>a * foo bar*</p>'],
 		'352': ['a*"foo"*', '<p>a*&quot;foo&quot;*</p>'],
-		'353': ['* a *', '<p>* a *</p>'],
+		'353': ['* a *', '<p>* a *</p>'],
 		'354': [
 			'*$*alpha.\n\n*£*bravo.\n\n*€*charlie.',
 			'<p>*$*alpha.</p>\n<p>*£*bravo.</p>\n<p>*€*charlie.</p>',
@@ -476,21 +559,61 @@ describe('spec', ({ concurrent: it }) => {
 		'477|todo': ['__<a href="__">', '<p>__<a href="__"></p>'],
 		'478': ['*a `*`*', '<p><em>a <code>*</code></em></p>'],
 		'479': ['_a `_`_', '<p><em>a <code>_</code></em></p>'],
-		'480|todo': [
+		'480': [
 			'**a<https://foo.bar/?q=**>',
 			'<p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>',
 		],
-		'481|todo': [
+		'481': [
 			'__a<https://foo.bar/?q=__>',
 			'<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>',
 		],
-		// @TODO: 413-481
 		'482': ['[link](/uri "title")', '<p><a href="/uri" title="title">link</a></p>'],
-		// @TODO: 483-571 [links]
-		// @TODO: 572-593 [images]
+		'483': ['[link](/uri)', '<p><a href="/uri">link</a></p>'],
+		'484': ['[](./target.md)', '<p><a href="./target.md"></a></p>'],
+		'485': ['[link]()', '<p><a href="">link</a></p>'],
+		'486|todo': ['[link](<>)', '<p><a href="">link</a></p>'],
+		'487': ['[]()', '<p><a href=""></a></p>'],
+		'488': ['[link](/my uri)', '<p>[link](/my uri)</p>'],
+		'489': ['[link](</my uri>)', '<p><a href="/my%20uri">link</a></p>'],
+		'490': ['[link](foo\nbar)', '<p>[link](foo\nbar)</p>'],
+		'491|todo': ['[link](<foo\nbar>)', '<p>[link](<foo\nbar>)</p>'],
+		'492': ['[a](<b)c>)', '<p><a href="b)c">a</a></p>'],
+		'493': ['[link](<foo\\>)', '<p>[link](&lt;foo&gt;)</p>'],
+		'494|todo': [
+			'[a](<b)c\n[a](<b)c>\n[a](<b>c)',
+			'<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>',
+		],
+		'495|todo': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
+		// @TODO: 496-571 [links]
+		'572|plus': [
+			'![foo](/url "title")',
+			'<figure>\n<img src="/url" alt="foo" />\n<figcaption>title</figcaption>\n</figure>',
+		],
+		'572|mod': ['a ![foo](/url "title")', '<p>a <img src="/url" alt="foo" title="title" /></p>'],
+		'573|skip': [
+			'![foo *bar*]\n\n[foo *bar*]: train.jpg "train & tracks"',
+			'<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>',
+		],
+		'574|todo': ['a ![foo ![bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
+		'575|todo': ['a ![foo [bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
+		// @TODO: 576-593 [images]
 		// @TODO: 594-612 [auto links]
 		// @TODO: 613-632 [raw html]
-		// @TODO: 633-647 [hard line breaks]
+		'633': ['foo  \nbaz', '<p>foo<br />\nbaz</p>'],
+		'634': ['foo\\\nbaz', '<p>foo<br />\nbaz</p>'],
+		'635': ['foo       \nbaz', '<p>foo<br />\nbaz</p>'],
+		'636': ['foo  \n     bar', '<p>foo<br />\nbar</p>'],
+		'637': ['foo\\\n     bar', '<p>foo<br />\nbar</p>'],
+		'638': ['*foo  \nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'639': ['*foo\\\nbar*', '<p><em>foo<br />\nbar</em></p>'],
+		'640': ['`code  \nspan`', '<p><code>code   span</code></p>'],
+		'641': ['`code\\\nspan`', '<p><code>code\\ span</code></p>'],
+		'642|skip': ['<a href="foo  \nbar">', '<a href="foo  \nbar">'],
+		'643|skip': ['<a href="foo\\\nbar">', '<a href="foo\\\nbar">'],
+		'644': ['foo\\', '<p>foo\\</p>'],
+		'645': ['foo  ', '<p>foo</p>'],
+		'646|plus': ['### foo\\', '<h3 id="foo" data-text="foo\\">foo\\</h3>'],
+		'647|plus': ['### foo  ', '<h3 id="foo" data-text="foo">foo</h3>'],
 		'648': ['foo\nbaz', '<p>foo\nbaz</p>'],
 		'649': ['foo \n baz', '<p>foo\nbaz</p>'],
 		'650': ["hello $.;'there", "<p>hello $.;'there</p>"],
@@ -499,6 +622,7 @@ describe('spec', ({ concurrent: it }) => {
 		// that's all the examples from the spec!
 	};
 
+	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
 		const [, prop] = test.split('|');
@@ -508,26 +632,31 @@ describe('spec', ({ concurrent: it }) => {
 			skip: prop === 'skip',
 			todo: prop === 'todo',
 		};
-		it(test, options, ({ expect }) => expect(engrave(input).html()).toBe(output));
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
 	}
 });
 
-describe('modified', ({ concurrent: it }) => {
-	it('016', ({ expect }) => {
-		const modified = forge({ renderer: { 'inline:break': () => '<br />' } });
-		expect(modified('foo\\\nbar').tokens[0]).toEqual({
-			type: 'block:paragraph',
-			children: [
-				{ type: 'inline:text', text: 'foo' },
-				{ type: 'inline:break' },
-				{ type: 'inline:text', text: 'bar' },
-			],
-		});
-		expect(modified('foo\\\nbar').html()).toBe('<p>foo<br />bar</p>');
-	});
+describe('gfm', ({ concurrent: it }) => {
+	const suite: Record<string, [string, string]> = {
+		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
+		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
+		'493|todo': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
+	};
 
-	it('226', ({ expect }) => {
-		const modified = forge({ renderer: { 'inline:break': () => '<br />\n' } });
-		expect(modified('aaa     \nbbb     ').html()).toBe('<p>aaa<br />\nbbb</p>');
-	});
+	const mark = forge();
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, prop] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: prop === 'fail',
+			only: prop === 'only',
+			skip: prop === 'skip',
+			todo: prop === 'todo',
+		};
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
+	}
 });

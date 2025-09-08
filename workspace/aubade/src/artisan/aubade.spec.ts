@@ -1,8 +1,8 @@
 import { describe } from 'vitest';
-import { engrave, forge } from './index.js';
+import { engrave } from './index.js';
 
-describe('comments', ({ concurrent: it }) => {
-	it('block', ({ expect }) => {
+describe('extensions', ({ concurrent: it }) => {
+	it('block comments', ({ expect }) => {
 		expect(engrave('<!-- comment -->').tokens).toEqual([
 			{ type: 'aubade:comment', text: 'comment' },
 		]);
@@ -11,7 +11,7 @@ describe('comments', ({ concurrent: it }) => {
 		expect(engrave('<!-- comment with -- is fine -->').html()).toBe('');
 	});
 
-	it('inline', ({ expect }) => {
+	it('inline comments', ({ expect }) => {
 		expect(engrave('hello <!-- comment --> world').tokens[0]).toEqual({
 			type: 'block:paragraph',
 			children: [
@@ -24,6 +24,18 @@ describe('comments', ({ concurrent: it }) => {
 		expect(engrave('hello <!-- comment --> world').html()).toBe('<p>hello  world</p>');
 		expect(engrave('hello <!-- comment --> world -->').html()).toBe('<p>hello  world --&gt;</p>');
 		expect(engrave('hello <!-- comment world').html()).toBe('<p>hello &lt;!-- comment world</p>');
+	});
+
+	it('leaf image without title', ({ expect }) => {
+		expect(engrave('![unannotated *alt* text](img.png)').html()).toBe(
+			'<figure>\n<img src="img.png" alt="unannotated *alt* text" />\n</figure>',
+		);
+	});
+
+	it('leaf image with title', ({ expect }) => {
+		expect(engrave('![alt](img.png "annotated *title* for caption")').html()).toBe(
+			'<figure>\n<img src="img.png" alt="alt" />\n<figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
+		);
 	});
 });
 
@@ -52,23 +64,5 @@ describe('HTML', ({ concurrent: it }) => {
 
 	it('treated as text', ({ expect }) => {
 		expect(engrave('<p>hello').html()).toBe('<p>&lt;p&gt;hello</p>');
-	});
-});
-
-describe('misc', ({ concurrent: it }) => {
-	it('inline break', ({ expect }) => {
-		const engrave = forge({
-			renderer: { 'inline:break': () => '<br />' },
-		});
-
-		expect(engrave('hello\nworld').tokens[0]).toEqual({
-			type: 'block:paragraph',
-			children: [
-				{ type: 'inline:text', text: 'hello' },
-				{ type: 'inline:break' },
-				{ type: 'inline:text', text: 'world' },
-			],
-		});
-		expect(engrave('hello\nworld').html()).toBe('<p>hello<br />world</p>');
 	});
 });

@@ -40,11 +40,12 @@
 		grid-template-rows: auto auto;
 		align-items: center;
 		padding: 0.5rem;
-		border-radius: var(--aubade-rounding);
+		border-radius: var(--rounding-base);
+		text-decoration: none;
 
 		&:focus-within,
 		&:hover {
-			background: var(--stone-700);
+			background: var(--color-surface);
 		}
 
 		.chevron {

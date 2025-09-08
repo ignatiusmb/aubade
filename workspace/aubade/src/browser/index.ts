@@ -9,24 +9,15 @@ export function hydrate(signal?: any) {
 
 			for (const item of actions) {
 				const action = item.getAttribute('data-aubade-toolbar');
-				if (action === 'clipboard') {
-					const tooltip = item.querySelector('[data-aubade="tooltip"]');
-					if (!tooltip) continue;
-					const original = tooltip.textContent;
+				if (action === 'copy') {
+					const original = item.getAttribute('data-aubade-tooltip') || 'Copy';
 
 					const handler = () => {
 						copy(source.textContent || '', {
-							accept() {
-								tooltip.textContent = 'Copied to clipboard!';
-							},
-							reject() {
-								tooltip.textContent = `Failed to copy code`;
-							},
+							accept: () => item.setAttribute('data-aubade-tooltip', 'Copied to clipboard!'),
+							reject: () => item.setAttribute('data-aubade-tooltip', 'Failed to copy code'),
 						});
-
-						setTimeout(() => {
-							tooltip.textContent = original;
-						}, 5000);
+						setTimeout(() => item.setAttribute('data-aubade-tooltip', original), 5000);
 					};
 
 					item.addEventListener('click', handler);

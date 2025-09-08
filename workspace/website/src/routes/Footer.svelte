@@ -1,9 +1,7 @@
 <footer>
-	<span>&Larr;</span>
 	<span>crafted by</span>
 	<a href="https://mauss.dev/atelier#aubade">Alkamauss</a>
-	<span>&middot; est. 2019</span>
-	<span>&Rarr;</span>
+	<span>✦ est. 2019</span>
 </footer>
 
 <style>

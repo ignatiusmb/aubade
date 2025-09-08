@@ -4,68 +4,54 @@ title: Libretto
 description: markdown dialect for Aubade
 ---
 
-> **here be dragons** — this spec is a work-in-progress. syntax and behavior may change as the compiler evolves.
+> **Status:** This specification is a work in progress. Syntax and behavior are subject to change as the compiler evolves.
 
-Libretto is a _deliberately selective_ markdown dialect designed for Aubade. it draws from [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), but only implements the parts that serve Aubade's principles.
+Libretto is a selective Markdown dialect defined for Aubade. It is based on [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) but only implements the constructs required to support Aubade's principles.
 
-> Libretto [passes the CommonMark test suite](https://github.com/ignatiusmb/aubade/blob/master/workspace/aubade/src/artisan/markdown/example.spec.ts), but only for the subset of rules it adopts. some tests are skipped, and certain behaviors are redefined to fit Libretto's design.
+> Libretto [passes the CommonMark test suite](https://github.com/ignatiusmb/aubade/blob/master/workspace/aubade/src/artisan/markdown/example.spec.ts) for the subset of rules it adopts. Certain tests are skipped, and some behaviors are redefined.
 
-the goal is clarity and predictability, not broad compatibility: markdown should remain human-readable and convenient to write.
+The objective is not broad compatibility but a restricted, consistent syntax that remains human-readable, convenient to author, and produces predictable HTML.
 
-## deviations
+## Deviations from CommonMark
 
-### exact thematic breaks
+### ATX headings
 
-only `---`, `***`, or `___` are recognized. variations such as `- - -` or `* * *` are treated as plain text.
+Closing hashes are not recognized. Any trailing `#` characters are rendered literally.
 
-### no ATX closing hashes
+### Setext headings
 
-closing hashes in headings are not allowed; they are rendered as literal characters.
+Setext headings are not recognized. Only ATX headings are valid.
 
-### no setext headings
+### Indented code blocks
 
-only ATX-style headings are supported.
+Indented code blocks are not recognized. Only fenced code blocks are valid. Indentation outside lists and fenced blocks is stripped.
 
-### no indented code blocks
+### Block quotes
 
-indented code blocks are not recognized. only fenced blocks are valid. indentation is trimmed unless it belongs to a list or appears inside a code block.
+Each line of a block quote must begin (optionally preceded by spaces) with `>`. A line without `>` terminates the block quote.
 
-### no lazy continuations
+### Bare links
 
-block quotes require `>` on every line. paragraphs cannot continue without it.
+Plain URLs are not autolinked. They must be enclosed in `<...>` or `[text](url)`.
 
-### no bare links
+## Extensions
 
-URLs are not autolinked. use `<...>` or `[text](url)`.
+### Heading attributes
 
-## extensions
+Headings include a required `id` attribute (a URL-friendly slug of the heading text) and a `data-text` attribute containing the unmodified text.
 
-### heading attributes
+### Code block info string
 
-headings include a unique `id` (URL-friendly slug) and a `data-text` attribute containing the raw text.
+The first word after the opening code fence is treated as a language identifier. In the HTML output, the identifier is set as a `data-language` attribute on the `<pre>` element.
 
-### code block attributes
+### Leaf images
 
-fenced code blocks carry a `data-language` attribute on the `<pre>` tag. additional attributes after the language are stored in the token's `meta`.
+Standalone images are rendered as block-level `<figure>` elements. If the image includes a title, it is rendered as a `<figcaption>`.
 
-### code block line wrapping
+### Directives
 
-each line inside a fenced code block is wrapped in its own `<code>` tag.
+Inline directives use the syntax `@{...}`. The semantics of directives are implementation-defined.
 
-### leaf images
+### Containers
 
-> to be implemented
-
-standalone images are treated as block-level elements and wrapped in `<figure>`. if a title is present, it becomes a `<figcaption>`.
-
-### custom directives
-
-> todo: [github#183](https://github.com/ignatiusmb/aubade/pull/183)
-
-inline directives can be defined with the `@{...}` syntax.
-
-### custom containers
-
-> to be implemented
-
-block containers can be defined with `::: type`.
+Block containers use the syntax `::: type`. The semantics of containers are implementation-defined.

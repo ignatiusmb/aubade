@@ -2,47 +2,27 @@
 	--font-scale: 1.068;
 	--font-mono: 'Inconsolata Variable', ui-monospace, monospace;
 
-	--stone-050: #fafaf9;
-	--stone-100: #f5f5f4;
-	--stone-200: #e7e5e4;
-	--stone-300: #d6d3d1;
-	--stone-400: #a8a29e;
-	--stone-500: #78716c;
-	--stone-600: #57534e;
-	--stone-700: #44403c;
-	--stone-800: #292524;
-	--stone-900: #1c1917;
-	--stone-950: #0c0a09;
+	--rounding-base: 0.325rem;
+	--rounding-box: calc(var(--rounding-base) * 2);
 
-	--sky-050: #f0f9ff;
-	--sky-100: #e0f2fe;
-	--sky-200: #bae6fd;
-	--sky-300: #7dd3fc;
-	--sky-400: #38bdf8;
-	--sky-500: #0ea5e9;
-	--sky-600: #0284c7;
-	--sky-700: #0369a1;
-	--sky-800: #075985;
-	--sky-900: #0c4a6e;
-	--sky-950: #082f49;
+	--transition-base: 150ms;
+	--transition-fast: calc(var(--transition-base) / 2);
+	--transition-slow: calc(var(--transition-base) * 2);
 
-	--rose-050: #fff1f2;
-	--rose-100: #ffe4e6;
-	--rose-200: #fecdd3;
-	--rose-300: #fda4af;
-	--rose-400: #fb7185;
-	--rose-500: #f43f5e;
-	--rose-600: #e11d48;
-	--rose-700: #be123c;
-	--rose-800: #9f1239;
-	--rose-900: #881337;
-	--rose-950: #4c0519;
+	--color-base: oklch(0.201 0.007 298);
+	--color-surface: oklch(0.243 0.007 298);
+	--color-overlay: oklch(0.285 0.007 298);
+	--color-border: oklch(0.327 0.007 298);
+
+	--color-text: oklch(0.861 0.007 298);
+	--color-text-muted: oklch(0.708 0.007 298);
+	--color-highlight: oklch(0.722 0.157 242);
 }
 
 html,
 body {
-	background: var(--stone-900);
-	color: var(--stone-200);
+	background: var(--color-base);
+	color: var(--color-text);
 	font-size: calc(1rem * var(--font-scale));
 	font-family: 'Brygada 1918 Variable', serif;
 	font-variation-settings:
@@ -51,13 +31,14 @@ body {
 		'CRSV' 0;
 }
 
-a {
-	color: #34aeff;
+a,
+.underlined {
+	color: var(--aubade-accent);
+	text-decoration-thickness: 2px;
+	text-decoration-line: underline;
+	text-decoration-color: oklch(1 0 0 / 34%);
 }
-
-code,
-[data-aubade] {
-	--font-monospace: var(--font-mono);
-	font-family: var(--font-mono);
-	font-weight: 400;
+a:hover,
+.underlined:hover {
+	text-decoration-color: oklch(1 0 0 / 64%);
 }

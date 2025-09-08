@@ -1,21 +1,24 @@
 {
 	"name": "Aubade",
-	"short_name": "Aubade",
+	"display": "standalone",
+	"theme_color": "#b087fe",
+	"background_color": "#1c1917",
 	"icons": [
 		{
-			"src": "/assets/favicon/android-chrome-192x192.png",
+			"src": "assets/favicon-x192.png",
 			"sizes": "192x192",
-			"type": "image/png",
-			"purpose": "any maskable"
+			"type": "image/png"
 		},
 		{
-			"src": "/assets/favicon/android-chrome-512x512.png",
+			"src": "assets/favicon-x512.png",
 			"sizes": "512x512",
-			"type": "image/png",
-			"purpose": "any maskable"
+			"type": "image/png"
+		},
+		{
+			"src": "assets/maskable.png",
+			"sizes": "512x512",
+			"purpose": "maskable",
+			"type": "image/png"
 		}
-	],
-	"theme_color": "#0070bb",
-	"background_color": "#ffffff",
-	"display": "standalone"
+	]
 }

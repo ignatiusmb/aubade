@@ -4,15 +4,13 @@ title: /artisan
 description: content processing tools for Aubade
 ---
 
-the `/artisan` module provides tools for content processing, including a markdown compiler and a syntax highlighter. built from the ground up to be lightweight and efficient, use it together with the other modules or independently in any JavaScript environment.
-
-## markdown
+the `/artisan` module provides Aubade's content processing utilities, the lightweight markdown compiler. it's designed to work on its own or alongside other Aubade components in any JavaScript environment.
 
 > **here be dragons** — this feature is experimental. expect missing pieces and breaking changes as the compiler evolves.
 
-[Libretto](/docs/libretto) is Aubade's own markdown dialect, it is designed to keep documents readable while giving Aubade precise control over how content is parsed and rendered.
+Aubade implements [Libretto](/docs/libretto), a markdown dialect designed to keep documents readable while giving Aubade precise control over parsing and rendering. this section covers the compiler interface and customization hooks exposed through `/artisan`.
 
-### engrave
+## engrave
 
 ```typescript
 export function engrave(input: string): {
@@ -21,16 +19,16 @@ export function engrave(input: string): {
 };
 ```
 
-a pre-initialized parser with Aubade's defaults. use this if you don't need customization.
+`engrave()` is the default parser, pre-configured with Aubade's settings. use it for common cases where you don't need custom rendering.
 
-```typescript
+```javascript
 import { engrave } from 'aubade/artisan';
 
 engrave('hello world').html();
 // -> <p>hello world</p>
 ```
 
-### forge
+## forge
 
 ```typescript
 interface Resolver<T extends Token = Token> {
@@ -44,9 +42,9 @@ export interface Options {
 export function forge(options: Options = {}): typeof engrave;
 ```
 
-create a parser instance with custom options, overriding renderers for specific tokens. for example, to change how inline emphasis is rendered:
+`forge()` creates a parser instance with custom rendering rules. use it when you need to override how specific tokens are transformed into HTML.
 
-```typescript
+```javascript
 import { engrave, forge } from 'aubade/artisan';
 
 engrave('hello *world*').html();
@@ -60,47 +58,4 @@ const mark = forge({
 
 mark('hello *world*').html();
 // -> <p>hello <i>world</i></p>
-```
-
-## transform
-
-low-level escape hatch: apply Aubade's syntax highlighter directly, without going through the markdown parser.
-
-```typescript
-interface Dataset {
-	file?: string;
-	language?: string;
-	[data: string]: string | undefined;
-}
-
-export function transform(source: string, dataset: Dataset): string;
-```
-
-example: highlight standalone code.
-
-```javascript
-import { transform } from 'aubade/artisan';
-
-transform('const x: number = 1;', { language: 'ts' });
-```
-
-or wire it into another parser:
-
-```javascript
-import { transform } from 'aubade/artisan';
-import markdown from 'markdown-it';
-
-const marker = markdown({
-	highlight: (src, language) => transform(src, { language }),
-});
-```
-
-## highlighter
-
-Aubade bundles a [shiki](https://shiki.style/) highlighter instance for code syntax highlighting.
-
-```typescript
-import { highlighter } from 'aubade/artisan';
-
-await highlighter.codeToHtml('const x = 1', { lang: 'ts' });
 ```
