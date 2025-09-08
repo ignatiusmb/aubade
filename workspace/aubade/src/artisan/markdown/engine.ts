@@ -20,11 +20,12 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		['#', [registry.heading]],
 		['`', [registry.codeblock]],
 		['>', [registry.quote]],
-		['!', [registry.figure]],
+		['_', [registry.divider]],
 		['-', [registry.divider, registry.list]],
 		['*', [registry.divider, registry.list]],
 		['+', [registry.list]],
-		['_', [registry.divider]],
+		['|', [registry.table]],
+		['!', [registry.figure]],
 	]);
 
 	let index = 0;

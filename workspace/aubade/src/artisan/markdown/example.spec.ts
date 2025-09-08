@@ -646,6 +646,10 @@ describe('spec', ({ concurrent: it }) => {
 
 describe('gfm', ({ concurrent: it }) => {
 	const suite: Record<string, [string, string]> = {
+		'198|todo': [
+			'| foo | bar |\n| --- | --- |\n| baz | bim |',
+			'<table>\n<thead>\n<tr>\n<th>foo</th>\n<th>bar</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>baz</td>\n<td>bim</td>\n</tr>\n</tbody>\n</table>',
+		],
 		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
 		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
 		'493|todo': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],

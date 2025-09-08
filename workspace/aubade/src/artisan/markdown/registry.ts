@@ -4,6 +4,7 @@ export type Registry = [
 	// aubade registries
 	typeof comment,
 	typeof markup,
+	typeof table,
 	typeof figure,
 
 	// block registries
@@ -131,6 +132,26 @@ export function markup({ compose, cursor }: Context): null | {
 		if (text[0] !== '"' && text[0] !== "'") return text;
 		return last === text[0] ? text.slice(1, -1) : text;
 	}
+}
+
+export function table({ cursor }: Context): null | {
+	type: 'block:table';
+	meta: {
+		align: Array<'left' | 'center' | 'right'>;
+		rows: Annotation[][];
+	};
+} {
+	let peek = cursor.peek(/\n|$/).trim();
+	if (peek[0] !== '|' || !peek.endsWith(peek[0])) return null;
+
+	const rows = [cursor.locate(/\n|$/).trim()];
+	while (cursor.eat('\n')) {
+		const line = cursor.peek(/\n|$/).trim();
+		if (!line.includes('|')) break;
+		rows.push(cursor.locate(/\n|$/).trim());
+	}
+
+	return null;
 }
 
 // --- block registries ---
