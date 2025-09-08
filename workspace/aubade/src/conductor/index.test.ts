@@ -8,12 +8,12 @@ async (/* traverse */) => {
 	const [item] = await orchestrate('.', ({ breadcrumb: [, slug] }) => {
 		if (!slug.endsWith('.md')) return;
 		return async ({ assemble, buffer }) => {
-			const { manifest, md, meta } = assemble(buffer.toString('utf-8'));
+			const { doc, manifest, meta } = assemble(buffer.toString('utf-8'));
 			if (!manifest) return;
 			return {
 				...manifest,
 				words: meta.words,
-				content: md.html(),
+				content: doc.html(),
 			};
 		};
 	});

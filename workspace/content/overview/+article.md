@@ -14,13 +14,13 @@ the entry point of Aubade is the `assemble()` function — it takes a markdown f
 import { assemble } from 'aubade';
 
 const source = ''; // markdown source placeholder
-const { manifest, md, meta } = assemble(source);
+const { doc, manifest, meta } = assemble(source);
 ```
 
 | prop       | description                                                    |
 | ---------- | -------------------------------------------------------------- |
+| `doc`      | `{ tokens, html() }` from [`engrave()`](/docs/artisan#engrave) |
 | `manifest` | parsed [front matter](/docs/manifest#frontmatter)              |
-| `md`       | `{ tokens, html() }` from [`engrave()`](/docs/artisan#engrave) |
 | `meta`     | raw `head` and `body` slices, plus generated metadata          |
 
 for [structured collections](#structure) in a filesystem, use [`orchestrate()` from `/conductor`](/docs/conductor) — content orchestration built on top of `assemble()`.
