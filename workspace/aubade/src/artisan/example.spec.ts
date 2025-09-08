@@ -371,9 +371,9 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'261': ['-one\n\n2.two', '<p>-one</p>\n<p>2.two</p>'],
 		'262': ['- foo\n\n\n  bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'263|plus': [
+		'263': [
 			'1.  foo\n\n    ```\n    bar\n    ```\n\n    baz\n\n    > bam',
-			'<ol>\n<li>\n<p>foo</p>\n<pre><code>bar</code></pre>\n<p>baz</p>\n<blockquote>\n<p>bam</p>\n</blockquote>\n</li>\n</ol>',
+			'<ol>\n<li>\n<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>\n<blockquote>\n<p>bam</p>\n</blockquote>\n</li>\n</ol>',
 		],
 		'264|deny': [
 			'- Foo\n\n      bar\n\n\n      baz',
