@@ -42,7 +42,7 @@ export function chain<
 
 the result is a list of items with their neighbors linked under the specified `key` property. a minimal example:
 
-```typescript
+```javascript
 import { orchestrate } from 'aubade/conductor';
 import { chain } from 'aubade/transform';
 
