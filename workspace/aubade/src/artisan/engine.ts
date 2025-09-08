@@ -55,6 +55,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			else {
 				q.push({ type: 'block:paragraph', children: [], text });
 				tree.push(q[q.length - 1]);
+				clear(['block:list']);
 			}
 		}
 		index += cursor.index;

@@ -35,7 +35,7 @@ then fork and clone the repository.
 project structure and entry points:
 
 - `workspace/aubade/src/core` — basic building blocks
-- `workspace/aubade/src/artisan` — compiler and content processing
+- `workspace/aubade/src/artisan` — markdown compiler
 - `workspace/aubade/src/browser` — DOM hydration and interactivity
 - `workspace/aubade/src/conductor` — content orchestration
 - `workspace/aubade/src/manifest` — front matter parsing

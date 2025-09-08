@@ -44,10 +44,6 @@ Headings include a required `id` attribute (a URL-friendly slug of the heading t
 
 The first word after the opening code fence is treated as a language identifier. In the HTML output, the identifier is set as a `data-language` attribute on the `<pre>` element.
 
-### Code block line wrapping
-
-Each line within a fenced code block is wrapped in its own `<code>` element.
-
 ### Leaf images
 
 Standalone images are rendered as block-level `<figure>` elements. If the image includes a title, it is rendered as a `<figcaption>`.
