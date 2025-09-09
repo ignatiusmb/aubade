@@ -10,18 +10,20 @@ export const base = {
 			'allowfullscreen',
 			'allow="autoplay; encrypted-media"',
 		];
+		const text = annotate(data.caption || 'youtube video').map(render);
 		return print(
-			'<figure>',
+			data.disclosure ? '<details>' : '<figure>',
+			data.disclosure && `<summary>${text}</summary>`,
 			`<iframe src="${src}" ${attributes.join(' ')}></iframe>`,
-			data.caption && `<figcaption>${annotate(data.caption).map(render)}</figcaption>`,
-			'</figure>',
+			!data.disclosure && data.caption && `<figcaption>${text}</figcaption>`,
+			data.disclosure ? '</details>' : '</figure>',
 		);
 	},
 } satisfies Options['directive'];
 
 export const standard = {
 	'aubade:comment': () => '',
-	'aubade:html': ({ token, render, sanitize }) => {
+	'aubade:html'({ token, render, sanitize }) {
 		const { tag } = token.meta;
 		const attributes = Object.entries(token.attr)
 			.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
@@ -31,7 +33,7 @@ export const standard = {
 	},
 
 	'block:break': () => `<hr />`,
-	'block:heading': ({ token, render, sanitize }) => {
+	'block:heading'({ token, render, sanitize }) {
 		const tag = `h${token.meta.level}`;
 		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 			v.length ? `${k}="${sanitize(v)}"` : [],
@@ -39,56 +41,58 @@ export const standard = {
 		const children = token.children.map(render).join('');
 		return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
 	},
-	'block:code': ({ token, sanitize }) => {
+	'block:code'({ token, sanitize }) {
 		const { 'data-language': lang } = token.attr;
 		const attr = lang ? ` data-language="${sanitize(lang)}"` : '';
 		const nl = token.meta.code.length && !token.meta.code.endsWith('\n') ? '\n' : '';
 		const code = sanitize(token.meta.code.replace(/&/g, '&amp;'));
 		return `<pre${attr}><code>${code}${nl}</code></pre>`;
 	},
-	'block:quote': ({ token, render }) => {
+	'block:quote'({ token, render }) {
 		const children = token.children.map(render).join('\n');
 		const body = children ? '\n' + children + '\n' : '\n';
 		return `<blockquote>${body}</blockquote>`;
 	},
-	'block:list': ({ token, render }) => {
+	'block:list'({ token, render }) {
 		const { ordered } = token.meta;
 		const tag = ordered !== false ? 'ol' : 'ul';
 		const start = tag === 'ol' && ordered !== 1 ? ` start="${ordered}"` : '';
 		return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
 	},
-	'block:item': ({ token, render }) => {
+	'block:item'({ token, render }) {
 		const [first, ...rest] = token.children;
 		const pad = rest.length || (first && first.type !== 'block:paragraph') ? '\n' : '';
 		const body = !pad && first?.type === 'block:paragraph' ? first : token;
 		return `<li>${pad}${body.children.map(render).join(pad)}${pad}</li>`;
 	},
-	'block:image': ({ token, render, sanitize }) => {
+	'block:image'({ token, render, sanitize }) {
 		const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 		const title = token.children.map(render).join('');
 		const caption = title ? `\n<figcaption>${title}</figcaption>` : '';
 		return `<figure>\n${img}${caption}\n</figure>`;
 	},
-	'block:paragraph': ({ token, render }) => `<p>${token.children.map(render).join('')}</p>`,
+	'block:paragraph'({ token, render }) {
+		return `<p>${token.children.map(render).join('')}</p>`;
+	},
 
 	'inline:break': () => '<br />\n',
 	'inline:escape': ({ token, sanitize }) => `${sanitize(token.text)}`,
-	'inline:autolink': ({ token, sanitize }) => {
+	'inline:autolink'({ token, sanitize }) {
 		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 			v.length ? `${k}="${sanitize(v)}"` : [],
 		);
 		return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
 	},
-	'inline:code': ({ token, sanitize }) => {
+	'inline:code'({ token, sanitize }) {
 		return `<code>${sanitize(token.text.replace(/&/g, '&amp;') || '')}</code>`;
 	},
-	'inline:image': ({ token, sanitize }) => {
+	'inline:image'({ token, sanitize }) {
 		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 			v.length ? `${k}="${sanitize(v)}"` : [],
 		);
 		return `<img ${attributes.join(' ')} />`;
 	},
-	'inline:link': ({ token, render, sanitize }) => {
+	'inline:link'({ token, render, sanitize }) {
 		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
 			k === 'href' || v.length ? `${k}="${sanitize(v)}"` : [],
 		);

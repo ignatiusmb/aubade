@@ -98,7 +98,8 @@ export function directive({ cursor }: Context): null | {
 			escaped = equals && !escaped && char === '\\';
 
 			if (!quoted && name && char === ' ') {
-				data[clean(name)] = unquote(value.trim());
+				value = unquote(value.trim());
+				data[clean(name)] = String(value === '' || value);
 				name = value = '';
 				equals = false;
 			} else if (char === '=') {
@@ -110,7 +111,9 @@ export function directive({ cursor }: Context): null | {
 
 			char = cursor.read(1);
 		}
-		if (name && value) data[clean(name)] = unquote(value.trim());
+		if (name && value) {
+			data[clean(name)] = unquote(value.trim());
+		}
 	}
 
 	return { type: 'aubade:directive', meta: { type, data } };
