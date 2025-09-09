@@ -479,7 +479,7 @@ describe('spec', ({ concurrent: it }) => {
 		'409': ['*foo *bar**', '<p><em>foo <em>bar</em></em></p>'],
 		'410': ['*foo **bar** baz*', '<p><em>foo <strong>bar</strong> baz</em></p>'],
 		'411': ['*foo**bar**baz*', '<p><em>foo<strong>bar</strong>baz</em></p>'],
-		'412|todo': ['*foo**bar*', '<p><em>foo**bar</em></p>'],
+		'412': ['*foo**bar*', '<p><em>foo**bar</em></p>'],
 		'413': ['***foo** bar*', '<p><em><strong>foo</strong> bar</em></p>'],
 		'414': ['*foo **bar***', '<p><em>foo <strong>bar</strong></em></p>'],
 		'415': ['*foo**bar***', '<p><em>foo<strong>bar</strong></em></p>'],
@@ -502,7 +502,7 @@ describe('spec', ({ concurrent: it }) => {
 		'426': ['____foo__ bar__', '<p><strong><strong>foo</strong> bar</strong></p>'],
 		'427': ['**foo **bar****', '<p><strong>foo <strong>bar</strong></strong></p>'],
 		'428': ['**foo *bar* baz**', '<p><strong>foo <em>bar</em> baz</strong></p>'],
-		'429|todo': ['**foo*bar*baz**', '<p><strong>foo<em>bar</em>baz</strong></p>'],
+		'429': ['**foo*bar*baz**', '<p><strong>foo<em>bar</em>baz</strong></p>'],
 		'430': ['***foo* bar**', '<p><strong><em>foo</em> bar</strong></p>'],
 		'431': ['**foo *bar***', '<p><strong>foo <em>bar</em></strong></p>'],
 		'432': [
