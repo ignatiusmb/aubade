@@ -30,9 +30,9 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 		...renderer,
 
 		'aubade:directive'({ token: { meta } }) {
-			const fn = { ...base, ...directive }[meta.type];
-			if (!fn) throw new Error(`Unknown directive type: ${meta.type}`);
-			return fn({
+			const transform = { ...base, ...directive }[meta.type];
+			if (!transform) throw new Error(`Unknown directive type: ${meta.type}`);
+			return transform({
 				data: meta.data,
 				annotate,
 				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
