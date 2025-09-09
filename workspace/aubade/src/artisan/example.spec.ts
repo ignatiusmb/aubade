@@ -625,12 +625,12 @@ describe('spec', ({ concurrent: it }) => {
 	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
-		const [, ...prop] = test.split('|');
+		const [, ...props] = test.split('|');
 		const options: Parameters<typeof it>[1] = {
-			fails: prop.includes('fail'),
-			only: prop.includes('only'),
-			skip: prop.includes('skip'),
-			todo: prop.includes('todo'),
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
 			expect(mark(input).html()).toBe(output);
@@ -648,12 +648,12 @@ describe('gfm', ({ concurrent: it }) => {
 	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
-		const [, ...prop] = test.split('|');
+		const [, ...props] = test.split('|');
 		const options: Parameters<typeof it>[1] = {
-			fails: prop.includes('fail'),
-			only: prop.includes('only'),
-			skip: prop.includes('skip'),
-			todo: prop.includes('todo'),
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
 			expect(mark(input).html()).toBe(output);
@@ -703,12 +703,12 @@ describe('libretto', ({ concurrent: it }) => {
 	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
-		const [, ...prop] = test.split('|');
+		const [, ...props] = test.split('|');
 		const options: Parameters<typeof it>[1] = {
-			fails: prop.includes('fail'),
-			only: prop.includes('only'),
-			skip: prop.includes('skip'),
-			todo: prop.includes('todo'),
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
 			expect(mark(input).html()).toBe(output);
