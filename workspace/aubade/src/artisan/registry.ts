@@ -1,13 +1,11 @@
 import type { Context } from './context.js';
 
 export type Registry = [
-	// aubade registries
+	// libretto
+	typeof directive,
 	typeof comment,
-	typeof markup,
-	typeof youtube,
-
-	// extensions
 	typeof figure,
+	typeof markup,
 
 	// block registries
 	typeof divider,
@@ -79,6 +77,59 @@ export function delimiter({ cursor, util }: Context): null | {
 	};
 }
 
+export function directive({ cursor }: Context): null | {
+	type: 'aubade:directive';
+	meta: { type: string; data: Record<string, string> };
+} {
+	cursor.trim();
+	if (!cursor.eat('@')) return null;
+	const type = cursor.locate(/{/);
+	if (!type.length) return null;
+	cursor.eat('{');
+
+	const data: Record<string, string> = {};
+	let char = cursor.read(1);
+	if (char !== '}') {
+		let [equals, escaped] = [false, false];
+		let quoted: '"' | "'" | null = null;
+		let [name, value] = ['', ''];
+		while (char && char !== '}') {
+			quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
+			escaped = equals && !escaped && char === '\\';
+
+			if (!quoted && name && char === ' ') {
+				data[clean(name)] = unquote(value.trim());
+				name = value = '';
+				equals = false;
+			} else if (char === '=') {
+				equals = true;
+			} else if (quoted || char !== ' ') {
+				if (!equals) name += char;
+				else value += char;
+			}
+
+			char = cursor.read(1);
+		}
+		if (name && value) data[clean(name)] = unquote(value.trim());
+	}
+
+	return { type: 'aubade:directive', meta: { type, data } };
+
+	// --- internal helpers ---
+
+	function clean(name: string): string {
+		return name.replace(/[^a-zA-Z0-9_.:-]+/g, '_').replace(/^([^a-zA-Z_:])/, '_');
+	}
+	function unquote(text: string): string {
+		if (text.length < 2) return text;
+		const last = text[text.length - 1];
+		if (text[0] !== '"' && text[0] !== "'") return text;
+		return last === text[0] ? text.slice(1, -1) : text;
+	}
+
+	// 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>'
+}
+
 export function markup({ compose, cursor }: Context): null | {
 	type: 'aubade:html';
 	meta: { tag: string };
@@ -134,34 +185,6 @@ export function markup({ compose, cursor }: Context): null | {
 		if (text[0] !== '"' && text[0] !== "'") return text;
 		return last === text[0] ? text.slice(1, -1) : text;
 	}
-}
-
-export function youtube({ cursor, annotate }: Context): null | {
-	type: 'aubade:youtube';
-	meta: { id: string; caption: Token[] };
-} {
-	if (!cursor.eat('@youtube[')) return null;
-	let depth = 0;
-	let title = '';
-	let char = cursor.read(1);
-	while (char) {
-		if (char === ']') {
-			if (depth === 0) break;
-			depth -= 1;
-		}
-		if (char === '[') {
-			depth += 1;
-		}
-		title += char;
-		char = cursor.read(1);
-	}
-	cursor.eat('(');
-	const id = cursor.locate(/\)/);
-	if (!id.length || !cursor.eat(')')) return null;
-
-	return { type: 'aubade:youtube', meta: { id, caption: annotate(title) } };
-
-	// 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>'
 }
 
 // --- block registries ---

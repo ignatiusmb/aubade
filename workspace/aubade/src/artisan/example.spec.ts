@@ -660,3 +660,49 @@ describe('gfm', ({ concurrent: it }) => {
 		});
 	}
 });
+
+describe('libretto', ({ concurrent: it }) => {
+	const suite: Record<string, [string, string]> = {
+		'directive:youtube': [
+			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive:youtube/no-caption': [
+			'@youtube{id=7TovqLDCosk}',
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive:youtube/newlines': [
+			['@youtube{', '  id=7TovqLDCosk', '  caption="hitoribocchi tokyo"', '}'].join('\n'),
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'</figure>',
+			].join('\n'),
+		],
+	};
+
+	const mark = forge();
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, prop] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: prop === 'fail',
+			only: prop === 'only',
+			skip: prop === 'skip',
+			todo: prop === 'todo',
+		};
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
+	}
+});

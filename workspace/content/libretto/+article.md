@@ -50,8 +50,8 @@ Standalone images are rendered as block-level `<figure>` elements. If the image 
 
 ### Directives
 
-Inline directives use the syntax `@{...}`. The semantics of directives are implementation-defined.
+Inline directives use the syntax `@<type>{<key>=<value> ...}`.
 
 ### Containers
 
-Block containers use the syntax `::: type`. The semantics of containers are implementation-defined.
+Block containers use the syntax `::: type`.

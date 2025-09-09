@@ -1,6 +1,15 @@
 import type { Token } from './registry.js';
 import { escape } from './utils.js';
-import { compose } from './engine.js';
+import { annotate, compose } from './engine.js';
+import { base, standard } from './resolver.js';
+
+export type Director = (panel: {
+	data: Extract<Token, { type: 'aubade:directive' }>['meta']['data'];
+	annotate: typeof annotate;
+	print(...lines: Array<string | false>): string;
+	render(token: Token): string;
+	sanitize: typeof escape;
+}) => string;
 
 export type Resolver<T extends Token['type'] = Token['type']> = (panel: {
 	token: Extract<Token, { type: T }>;
@@ -9,110 +18,28 @@ export type Resolver<T extends Token['type'] = Token['type']> = (panel: {
 }) => string;
 
 export interface Options {
-	quotes?: 'original' | 'typewriter' | 'typographic';
+	directive?: { [key: string]: Director };
 	renderer?: { [T in Token as T['type']]?: Resolver<T['type']> };
+	quotes?: 'original' | 'typewriter' | 'typographic';
 }
 
 export const engrave = forge({});
-export function forge({ renderer = {} }: Options = {}) {
+export function forge({ directive = {}, renderer = {} }: Options = {}) {
 	const resolver = {
-		'aubade:comment': () => '',
-		'aubade:html': ({ token, render, sanitize }) => {
-			const { tag } = token.meta;
-			const attributes = Object.entries(token.attr)
-				.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
-				.join(' ');
-			const children = token.children.map(render).join('');
-			return `<${tag}${attributes ? ' ' + attributes : ''}>${children}</${tag}>`;
-		},
-		'aubade:youtube': ({ token, render }) => {
-			const src = `https://www.youtube-nocookie.com/embed/${token.meta.id}`;
-			const attributes = [
-				'title="YouTube video player"',
-				'frameborder="0"',
-				'allowfullscreen',
-				'allow="autoplay; encrypted-media"',
-			];
-			return [
-				'<figure>',
-				`<iframe src="${src}" ${attributes.join(' ')}></iframe>`,
-				`<figcaption>${token.meta.caption.map(render)}</figcaption>`,
-				'</figure>',
-			].join('');
-		},
-
-		'block:break': () => `<hr />`,
-		'block:heading': ({ token, render, sanitize }) => {
-			const tag = `h${token.meta.level}`;
-			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-				v.length ? `${k}="${sanitize(v)}"` : [],
-			);
-			const children = token.children.map(render).join('');
-			return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
-		},
-		'block:code': ({ token, sanitize }) => {
-			const { 'data-language': lang } = token.attr;
-			const attr = lang ? ` data-language="${sanitize(lang)}"` : '';
-			const nl = token.meta.code.length && !token.meta.code.endsWith('\n') ? '\n' : '';
-			const code = sanitize(token.meta.code.replace(/&/g, '&amp;'));
-			return `<pre${attr}><code>${code}${nl}</code></pre>`;
-		},
-		'block:quote': ({ token, render }) => {
-			const children = token.children.map(render).join('\n');
-			const body = children ? '\n' + children + '\n' : '\n';
-			return `<blockquote>${body}</blockquote>`;
-		},
-		'block:list': ({ token, render }) => {
-			const { ordered } = token.meta;
-			const tag = ordered !== false ? 'ol' : 'ul';
-			const start = tag === 'ol' && ordered !== 1 ? ` start="${ordered}"` : '';
-			return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
-		},
-		'block:item': ({ token, render }) => {
-			const [first, ...rest] = token.children;
-			const pad = rest.length || (first && first.type !== 'block:paragraph') ? '\n' : '';
-			const body = !pad && first?.type === 'block:paragraph' ? first : token;
-			return `<li>${pad}${body.children.map(render).join(pad)}${pad}</li>`;
-		},
-		'block:image': ({ token, render, sanitize }) => {
-			const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
-			const title = token.children.map(render).join('');
-			const caption = title ? `\n<figcaption>${title}</figcaption>` : '';
-			return `<figure>\n${img}${caption}\n</figure>`;
-		},
-		'block:paragraph': ({ token, render }) => `<p>${token.children.map(render).join('')}</p>`,
-
-		'inline:break': () => '<br />\n',
-		'inline:escape': ({ token, sanitize }) => `${sanitize(token.text)}`,
-		'inline:autolink': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-				v.length ? `${k}="${sanitize(v)}"` : [],
-			);
-			return `<a ${attributes.join(' ')}>${sanitize(token.text || '')}</a>`;
-		},
-		'inline:code': ({ token, sanitize }) => {
-			return `<code>${sanitize(token.text.replace(/&/g, '&amp;') || '')}</code>`;
-		},
-		'inline:image': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-				v.length ? `${k}="${sanitize(v)}"` : [],
-			);
-			return `<img ${attributes.join(' ')} />`;
-		},
-		'inline:link': ({ token, sanitize }) => {
-			const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-				k === 'href' || v.length ? `${k}="${sanitize(v)}"` : [],
-			);
-			const children = token.children.map(html).join('');
-			return `<a ${attributes.join(' ')}>${children}</a>`;
-		},
-
-		'inline:emphasis': ({ token, render }) => `<em>${token.children.map(render).join('')}</em>`,
-		'inline:strike': ({ token, render }) => `<del>${token.children.map(render).join('')}</del>`,
-		'inline:strong': ({ token, render }) =>
-			`<strong>${token.children.map(render).join('')}</strong>`,
-		'inline:text': ({ token, sanitize }) => sanitize(token.text || ''),
+		...standard,
 		...renderer,
+
+		'aubade:directive'({ token: { meta } }) {
+			const fn = { ...base, ...directive }[meta.type];
+			if (!fn) throw new Error(`Unknown directive type: ${meta.type}`);
+			return fn({
+				data: meta.data,
+				annotate,
+				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
+				render: html,
+				sanitize: escape,
+			});
+		},
 	} satisfies Options['renderer'];
 
 	function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
