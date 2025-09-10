@@ -255,7 +255,7 @@ describe('spec', ({ concurrent: it }) => {
 			'```ruby\ndef foo(x)\n  return 3\nend\n```',
 			'<pre data-language="ruby"><code>def foo(x)\n  return 3\nend\n</code></pre>',
 		],
-		'143|todo': [
+		'143': [
 			'```    ruby startline=3 $%@#$\ndef foo(x)\n	return 3\nend\n```',
 			'<pre data-language="ruby"><code>def foo(x)\n	return 3\nend\n</code></pre>',
 		],
