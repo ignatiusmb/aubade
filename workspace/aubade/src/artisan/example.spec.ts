@@ -55,7 +55,7 @@ describe('spec', ({ concurrent: it }) => {
 		'016': ['foo\\\nbar', '<p>foo<br />\nbar</p>'],
 		'017': ['`` \\[\\` ``', '<p><code>\\[\\`</code></p>'],
 		'018|deny': ['    \[\]', '<p>\[\]</p>'],
-		'019|todo': ['~~~\n\[\]\n~~~', '<pre><code>\[\]</code></pre>'],
+		'019': ['~~~\n\\[\\]\n~~~', '<pre><code>\\[\\]\n</code></pre>'],
 		'020': [
 			'<https://example.com?find=\\*>',
 			'<p><a href="https://example.com?find=%5C*">https://example.com?find=\\*</a></p>',
@@ -220,12 +220,12 @@ describe('spec', ({ concurrent: it }) => {
 		'106': ['Foo\nbar\n\\---\nbaz', '<p>Foo\nbar\n---\nbaz</p>'],
 		// @TODO: 107-118 [indented code blocks]
 		'119': ['```\n<\n >\n```', '<pre><code>&lt;\n &gt;\n</code></pre>'],
-		'120|skip': ['~~~\n<\n >\n~~~', '<pre><code>&lt;</code>\n<code> &gt;</code></pre>'],
+		'120': ['~~~\n<\n >\n~~~', '<pre><code>&lt;\n &gt;\n</code></pre>'],
 		'121': ['``\nfoo\n``', '<p><code>foo</code></p>'],
 		'122': ['```\naaa\n~~~\n```', '<pre><code>aaa\n~~~\n</code></pre>'],
-		'123|skip': ['~~~\naaa\n```\n~~~', '<pre><code>aaa</code>\n<code>```</code></pre>'],
+		'123': ['~~~\naaa\n```\n~~~', '<pre><code>aaa\n```\n</code></pre>'],
 		'124': ['````\naaa\n```\n``````', '<pre><code>aaa\n```\n</code></pre>'],
-		'125|skip': ['~~~~\naaa\n~~~\n~~~~', '<pre><code>aaa</code>\n<code>~~~</code></pre>'],
+		'125': ['~~~~\naaa\n~~~\n~~~~', '<pre><code>aaa\n~~~\n</code></pre>'],
 		'126': ['```', '<pre><code></code></pre>'],
 		'127': ['`````\n\n```\naaa', '<pre><code>\n```\naaa\n</code></pre>'],
 		'128': [
@@ -245,7 +245,7 @@ describe('spec', ({ concurrent: it }) => {
 		'136': ['   ```\naaa\n  ```', '<pre><code>aaa\n</code></pre>'],
 		'137|deny': ['```\naaa\n    ```', '<pre><code>aaa\n</code></pre>'],
 		'138': ['``` ```\naaa', '<p><code> </code>\naaa</p>'],
-		'139|skip': ['~~~~~~\naaa\n~~~ ~~', '<pre><code>aaa</code>\n<code>~~~ ~~</code></pre>'],
+		'139': ['~~~~~~\naaa\n~~~ ~~', '<pre><code>aaa\n~~~ ~~\n</code></pre>'],
 		'140': ['foo\n```\nbar\n```\nbaz', '<p>foo</p>\n<pre><code>bar\n</code></pre>\n<p>baz</p>'],
 		'141|mod': [
 			'foo\n---\n```\nbar\n```\n# baz',
@@ -261,7 +261,7 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'144|mod': ['````;\n````', '<pre data-language=";"><code></code></pre>'],
 		'145': ['``` aa ```\nfoo', '<p><code>aa</code>\nfoo</p>'],
-		'146|skip': ['~~~ aa ``` ~~~\nfoo\n~~~', '<pre data-language="aa"><code>aa</code></pre>'],
+		'146|mod': ['~~~ aa ``` ~~~\nfoo\n~~~', '<pre data-language="aa"><code>foo\n</code></pre>'],
 		'147': ['```\n``` aaa\n```', '<pre><code>``` aaa\n</code></pre>'],
 		'148|skip': [
 			'<table><tr><td>\n<pre>\n**Hello**,\n\n_world_.\n</pre>\n</td</tr></table>',

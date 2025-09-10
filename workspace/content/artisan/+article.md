@@ -4,7 +4,7 @@ title: /artisan
 description: content processing tools for Aubade
 ---
 
-the `/artisan` module provides Aubade's content processing utilities, the lightweight markdown compiler. it's designed to work on its own or alongside other Aubade components in any JavaScript environment.
+the `/artisan` module provides Aubade's content processing utilities — a token-based markdown compiler rather than a regex-based parser. it's built to handle nested structures reliably, and can be used on its own or alongside other Aubade components in any JavaScript environment.
 
 > **here be dragons** — this feature is experimental. expect missing pieces and breaking changes as the compiler evolves.
 
