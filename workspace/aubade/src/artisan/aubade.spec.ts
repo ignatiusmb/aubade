@@ -39,14 +39,6 @@ describe('extensions', ({ concurrent: it }) => {
 	});
 });
 
-describe.todo('directives', ({ concurrent: it }) => {
-	it;
-});
-
-describe.todo('fences', ({ concurrent: it }) => {
-	it;
-});
-
 describe('HTML', ({ concurrent: it }) => {
 	it('original #21', ({ expect }) => {
 		// https://spec.commonmark.org/0.31.2/#example-21

@@ -25,6 +25,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		['*', [registry.divider, registry.list]],
 		['+', [registry.list]],
 		['_', [registry.divider]],
+		['@', [registry.directive]],
 	]);
 
 	let index = 0;

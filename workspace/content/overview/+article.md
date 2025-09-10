@@ -13,7 +13,7 @@ the entry point of Aubade is the `assemble()` function — it takes a markdown f
 ```javascript
 import { assemble } from 'aubade';
 
-const source = ''; // markdown source placeholder
+const source = 'your markdown text';
 const { doc, manifest, meta } = assemble(source);
 ```
 

@@ -625,12 +625,12 @@ describe('spec', ({ concurrent: it }) => {
 	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
-		const [, prop] = test.split('|');
+		const [, ...props] = test.split('|');
 		const options: Parameters<typeof it>[1] = {
-			fails: prop === 'fail',
-			only: prop === 'only',
-			skip: prop === 'skip',
-			todo: prop === 'todo',
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
 			expect(mark(input).html()).toBe(output);
@@ -648,12 +648,67 @@ describe('gfm', ({ concurrent: it }) => {
 	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
-		const [, prop] = test.split('|');
+		const [, ...props] = test.split('|');
 		const options: Parameters<typeof it>[1] = {
-			fails: prop === 'fail',
-			only: prop === 'only',
-			skip: prop === 'skip',
-			todo: prop === 'todo',
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
+		};
+		it(test, options, ({ expect }) => {
+			expect(mark(input).html()).toBe(output);
+		});
+	}
+});
+
+describe('libretto', ({ concurrent: it }) => {
+	const suite: Record<string, [string, string]> = {
+		'directive#youtube': [
+			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive#youtube/disclosure': [
+			'@youtube{disclosure id=7TovqLDCosk caption="hitoribocchi tokyo"}',
+			[
+				'<details>',
+				'<summary>hitoribocchi tokyo</summary>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'</details>',
+			].join('\n'),
+		],
+		'directive#youtube/newlines': [
+			['@youtube{', '  id=7TovqLDCosk', '  caption="hitoribocchi tokyo"', '}'].join('\n'),
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive#youtube/no-caption': [
+			'@youtube{id=7TovqLDCosk}',
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'</figure>',
+			].join('\n'),
+		],
+	};
+
+	const mark = forge();
+	for (const test in suite) {
+		const [input, output] = suite[test];
+		const [, ...props] = test.split('|');
+		const options: Parameters<typeof it>[1] = {
+			fails: props.includes('fail'),
+			only: props.includes('only'),
+			skip: props.includes('skip'),
+			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
 			expect(mark(input).html()).toBe(output);
