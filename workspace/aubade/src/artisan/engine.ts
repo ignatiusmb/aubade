@@ -25,6 +25,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		['*', [registry.divider, registry.list]],
 		['+', [registry.list]],
 		['|', [registry.table]],
+		['!', [registry.figure]],
 		['@', [registry.directive]],
 	]);
 
