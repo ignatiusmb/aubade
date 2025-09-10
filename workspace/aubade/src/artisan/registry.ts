@@ -198,25 +198,28 @@ export function codeblock({ cursor }: Context): null | {
 	attr: { 'data-language': string };
 } {
 	cursor.trim();
-	let backticks = +cursor.eat('`');
+	const c = cursor.see(0);
+	if (c !== '`' && c !== '~') return null;
+	let backticks = +cursor.eat(c);
 	if (backticks === 0) return null;
-	while (cursor.eat('`')) backticks++;
+	while (cursor.eat(c)) backticks++;
 	if (backticks < 3) return null;
 
 	const info = cursor.locate(/\n/).trim();
-	if (/`/.test(info)) return null;
+	if (c === '`' && /`/.test(info)) return null;
 	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
 
 	let code = '';
 	let line = cursor.peek(/\n|$/).trim();
-	while (/[^`]/.test(line) || line.length < backticks) {
+	const check = new RegExp(`^${c}{${backticks},}$`);
+	while (!check.test(line)) {
 		code += cursor.locate(/\n|$/);
 		if (!cursor.eat('\n')) break;
 		code += '\n';
 		line = cursor.peek(/\n|$/).trim();
 	}
 	cursor.trim();
-	while (cursor.eat('`'));
+	while (cursor.eat(c));
 	cursor.trim();
 
 	const separator = info.indexOf(' ');
