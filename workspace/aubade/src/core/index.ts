@@ -1,10 +1,10 @@
-import type { Token } from '../artisan/markdown/registry.js';
-import { engrave } from '../artisan/markdown/index.js';
+import type { Token } from '../artisan/registry.js';
+import { engrave } from '../artisan/index.js';
 import { parse as manifest } from '../manifest/index.js';
 
 export function assemble(source: string): {
+	doc: ReturnType<typeof engrave>;
 	manifest: Record<string, any>;
-	md: ReturnType<typeof engrave>;
 	meta: {
 		head: string;
 		body: string;
@@ -16,8 +16,8 @@ export function assemble(source: string): {
 	const body = match ? source.slice(match.index + match[0].length) : source;
 	const document = engrave(body.trim());
 	return {
+		doc: document,
 		manifest: match ? (manifest(match[1].trim()) as Record<string, any>) : {},
-		md: document,
 		meta: {
 			head: match ? match[0] : '',
 			body: body.trim() + '\n',

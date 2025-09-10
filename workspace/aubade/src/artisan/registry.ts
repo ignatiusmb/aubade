@@ -1,7 +1,8 @@
 import type { Context } from './context.js';
 
 export type Registry = [
-	// aubade registries
+	// libretto
+	typeof directive,
 	typeof comment,
 	typeof markup,
 	typeof table,
@@ -75,6 +76,62 @@ export function delimiter({ cursor, util }: Context): null | {
 		text: char.repeat(count),
 		meta: { char, count, can },
 	};
+}
+
+export function directive({ cursor }: Context): null | {
+	type: 'aubade:directive';
+	meta: { type: string; data: Record<string, string> };
+} {
+	cursor.trim();
+	if (!cursor.eat('@')) return null;
+	const type = cursor.locate(/{/);
+	if (!type.length) return null;
+	cursor.eat('{');
+
+	const data: Record<string, string> = {};
+	let char = cursor.read(1);
+	if (char !== '}') {
+		let [equals, escaped] = [false, false];
+		let quoted: '"' | "'" | null = null;
+		let [name, value] = ['', ''];
+		while (char && char !== '}') {
+			quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
+			escaped = equals && !escaped && char === '\\';
+
+			if (!quoted && name && char === ' ') {
+				value = unquote(value.trim());
+				data[clean(name)] = String(value === '' || value);
+				name = value = '';
+				equals = false;
+			} else if (char === '=') {
+				equals = true;
+			} else if (quoted || char !== ' ') {
+				if (!equals) name += char;
+				else value += char;
+			}
+
+			char = cursor.read(1);
+		}
+		if (name && value) {
+			data[clean(name)] = unquote(value.trim());
+		}
+	}
+
+	return { type: 'aubade:directive', meta: { type, data } };
+
+	// --- internal helpers ---
+
+	function clean(name: string): string {
+		return name.replace(/[^a-zA-Z0-9_.:-]+/g, '_').replace(/^([^a-zA-Z_:])/, '_');
+	}
+	function unquote(text: string): string {
+		if (text.length < 2) return text;
+		const last = text[text.length - 1];
+		if (text[0] !== '"' && text[0] !== "'") return text;
+		return last === text[0] ? text.slice(1, -1) : text;
+	}
+
+	// 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>'
 }
 
 export function markup({ compose, cursor }: Context): null | {
@@ -158,41 +215,41 @@ export function table({ cursor }: Context): null | {
 
 export function codeblock({ cursor }: Context): null | {
 	type: 'block:code';
-	meta: { info: string[] };
+	meta: { code: string; info: string };
 	attr: { 'data-language': string };
-	children: { type: 'inline:code'; text: string }[];
 } {
 	cursor.trim();
-	let backticks = +cursor.eat('`');
+	const c = cursor.see(0);
+	if (c !== '`' && c !== '~') return null;
+	let backticks = +cursor.eat(c);
 	if (backticks === 0) return null;
-	while (cursor.eat('`')) backticks++;
+	while (cursor.eat(c)) backticks++;
 	if (backticks < 3) return null;
 
 	const info = cursor.locate(/\n/).trim();
-	if (/`/.test(info)) return null;
+	if (c === '`' && /`/.test(info)) return null;
 	if (!cursor.eat('\n') && cursor.peek(/$/)) return null;
 
-	const code: string[] = [];
+	let code = '';
 	let line = cursor.peek(/\n|$/).trim();
-	while (/[^`]/.test(line) || line.length < backticks) {
-		const next = cursor.locate(/\n|$/);
-		if (next.trim() || cursor.peek('\n')) {
-			code.push(next);
-		}
-
+	const check = new RegExp(`^${c}{${backticks},}$`);
+	while (!check.test(line)) {
+		code += cursor.locate(/\n|$/);
 		if (!cursor.eat('\n')) break;
+		code += '\n';
 		line = cursor.peek(/\n|$/).trim();
 	}
 	cursor.trim();
-	while (cursor.eat('`'));
+	while (cursor.eat(c));
 	cursor.trim();
 
-	const [language, ...rest] = info.split(/\s+/);
+	const separator = info.indexOf(' ');
+	const language = separator === -1 ? info : info.slice(0, separator);
+	const extra = separator === -1 ? '' : info.slice(separator).trim();
 	return {
 		type: 'block:code',
-		meta: { info: rest },
+		meta: { code, info: extra },
 		attr: { 'data-language': language },
-		children: code.map((text) => ({ type: 'inline:code', text })),
 	};
 }
 

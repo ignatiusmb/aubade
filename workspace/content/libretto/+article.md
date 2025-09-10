@@ -1,7 +1,7 @@
 ---
 rank: 10
 title: Libretto
-description: markdown dialect for Aubade
+description: Markdown dialect for Aubade
 ---
 
 > **Status:** This specification is a work in progress. Syntax and behavior are subject to change as the compiler evolves.
@@ -12,50 +12,59 @@ Libretto is a selective Markdown dialect defined for Aubade. It is based on [Com
 
 The objective is not broad compatibility but a restricted, consistent syntax that remains human-readable, convenient to author, and produces predictable HTML.
 
-## Deviations from CommonMark
+## Deviations
 
-### ATX headings
+Libretto does not implement the full CommonMark feature set. Certain constructs are omitted or simplified.
 
-Closing hashes are not recognized. Any trailing `#` characters are rendered literally.
+- **Headings** \
+  Only ATX headings are recognized. Closing `#` markers are not required, and any trailing hashes are rendered literally. Setext headings are not supported.
 
-### Setext headings
+- **Code blocks** \
+  Only fenced code blocks are recognized. Indented code blocks are not supported. Indentation outside lists and fenced blocks is stripped.
 
-Setext headings are not recognized. Only ATX headings are valid.
+- **Block quotes** \
+  Each line must begin with `>` (optionally preceded by spaces). A line without `>` terminates the block.
 
-### Indented code blocks
-
-Indented code blocks are not recognized. Only fenced code blocks are valid. Indentation outside lists and fenced blocks is stripped.
-
-### Block quotes
-
-Each line of a block quote must begin (optionally preceded by spaces) with `>`. A line without `>` terminates the block quote.
-
-### Bare links
-
-Plain URLs are not autolinked. They must be enclosed in `<...>` or `[text](url)`.
+- **Links** \
+  Plain URLs are not autolinked. They must be enclosed in `<...>` or `[text](url)`.
 
 ## Extensions
 
-### Heading attributes
+Libretto introduces additional behavior beyond CommonMark.
 
-Headings include a required `id` attribute (a URL-friendly slug of the heading text) and a `data-text` attribute containing the unmodified text.
+- **Heading attributes** \
+  Each heading includes a unique `id` (a URL-friendly slug of the text) and `data-text` attribute containing the raw heading text.
 
-### Code block info string
+- **Code block info string** \
+  The first word after the opening fence is interpreted as a language identifier. In HTML, it is set as `data-language` on the `<pre>` element.
 
-The first word after the opening code fence is treated as a language identifier. In the HTML output, the identifier is set as a `data-language` attribute on the `<pre>` element.
+- **Leaf images** \
+  Standalone images are rendered as block-level `<figure>`. If the image includes a title, it is placed in a `<figcaption>`.
 
-### Code block line wrapping
+## Directives
 
-Each line within a fenced code block is wrapped in its own `<code>` element.
+Directives extend Markdown with inline metadata. They begin with `@`, followed by a name, and enclose properties in braces.
 
-### Leaf images
+```markdown
+@info{type=warning title="Caution!" body="This is a warning note."}
+```
 
-Standalone images are rendered as block-level `<figure>` elements. If the image includes a title, it is rendered as a `<figcaption>`.
+- **Start**: `@` immediately followed by a name.
+- **Name**: must begin with a letter or underscore; may include letters, digits, underscores, or hyphens.
+- **Body**: braces `{ … }` enclose zero or more properties.
+- **Property**: a key with an optional value.
+    - Keys follow the same rules as names.
+    - Values are assigned with `=`, but the `=` may be omitted.
+    - A key with `=` but no value is interpreted as `'true'`.
+    - Quoted values (with `'` or `"`) may contain spaces.
+    - Unquoted values end at the next space or newline.
+- **Separation**: properties are separated by spaces or newlines.
+- **End**: the directive closes with `}`.
 
-### Directives
+### `@youtube`
 
-Inline directives use the syntax `@{...}`. The semantics of directives are implementation-defined.
-
-### Containers
-
-Block containers use the syntax `::: type`. The semantics of containers are implementation-defined.
+| Attribute    | Type    | Description                    | Required |
+| ------------ | ------- | ------------------------------ | -------- |
+| `id`         | string  | YouTube video ID               | yes      |
+| `caption`    | string  | Caption text                   | no       |
+| `disclosure` | boolean | Wraps the frame in `<details>` | no       |

@@ -25,7 +25,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 		['*', [registry.divider, registry.list]],
 		['+', [registry.list]],
 		['|', [registry.table]],
-		['!', [registry.figure]],
+		['@', [registry.directive]],
 	]);
 
 	let index = 0;
@@ -56,6 +56,7 @@ export function compose(source: string): { type: ':document'; children: Block[] 
 			else {
 				q.push({ type: 'block:paragraph', children: [], text });
 				tree.push(q[q.length - 1]);
+				clear(['block:list']);
 			}
 		}
 		index += cursor.index;
@@ -132,66 +133,87 @@ export function annotate(source: string): Annotation[] {
 	return pair(runs);
 }
 
+type Stack = { run: Run; tokens: Annotation[] }[];
 function pair(runs: Array<Annotation | Run>): Annotation[] {
-	const stack: { run: Run; tokens: Annotation[] }[] = [];
 	const root: Annotation[] = [];
+	const stack: Stack = [];
 	for (const current of runs) {
 		if (current.type !== 'aubade:delimiter') {
-			const tree = stack[stack.length - 1]?.tokens || root;
-			tree.push(current);
+			emit(current);
 			continue;
 		}
 
 		if (!current.meta.count) continue;
 		if (current.meta.can.close && stack.length > 0) {
-			const { run: opening, tokens } = stack.pop()!;
-			if (current.meta.can.open && current.meta.count > opening.meta.count) {
-				stack.push({ run: opening, tokens }, { run: current, tokens: [] });
-				continue;
-			} else if (opening.meta.char !== current.meta.char) {
-				const text = current.meta.char.repeat(current.meta.count);
-				stack.push({ run: opening, tokens: [...tokens, { type: 'inline:text', text }] });
-				continue;
-			}
-
-			const used = Math.min(opening.meta.count, current.meta.count, 2);
-			const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
-			const tree = stack[stack.length - 1]?.tokens || root;
-			tree.push({ type: `inline:${mod}`, children: tokens });
-
-			opening.meta.count -= used;
-			current.meta.count -= used;
-			if (opening.meta.count) {
-				if (tree !== root) stack[stack.length - 1].tokens = [];
-				stack.push({ run: opening, tokens: tree.slice() });
-				if (tree === root) root.length = 0;
-			}
-			while (current.meta.count) {
-				if (stack.find(({ run }) => run.meta.char === current.meta.char)) {
-					const { run, tokens } = stack.pop()!;
-					const tree = stack[stack.length - 1]?.tokens || root;
-					if (run.meta.char !== current.meta.char) {
-						const remainder = current.meta.char.repeat(current.meta.count);
-						tree.push({ type: 'inline:text', text: remainder });
-					} else tree.push(...pair([run, ...tokens, current]));
-				} else {
-					const remainder = current.meta.char.repeat(current.meta.count);
-					const tree = stack[stack.length - 1]?.tokens || root;
-					tree.push({ type: 'inline:text', text: remainder });
-					break;
-				}
-			}
+			close(current);
 		} else if (current.meta.can.open) {
 			stack.push({ run: current, tokens: [] });
 		} else {
-			const tree = stack[stack.length - 1]?.tokens || root;
-			const remainder = current.meta.char.repeat(current.meta.count);
-			tree.push({ type: 'inline:text', text: remainder });
+			emit(unwrap(current));
 		}
 	}
 	for (const { run, tokens } of stack) {
-		const remainder = run.meta.char.repeat(run.meta.count);
-		root.push({ type: 'inline:text', text: remainder }, ...tokens);
+		root.push(unwrap(run), ...tokens);
 	}
 	return root;
+
+	function assess(opening: Run, closing: Run, tokens: Annotation[]) {
+		if (opening.meta.char !== closing.meta.char) {
+			stack.push({ run: opening, tokens: [...tokens, unwrap(closing)] });
+			return false;
+		}
+
+		if (opening.meta.can.close || closing.meta.can.open) {
+			const [o, c] = [opening.meta.count, closing.meta.count];
+			// if sum is multiple of 3, both lengths need to be multiple of 3
+			if ((o + c) % 3 === 0 && (o % 3 !== 0 || c % 3 !== 0)) {
+				if (closing.meta.can.open) {
+					stack.push({ run: opening, tokens }, { run: closing, tokens: [] });
+				} else {
+					emit(unwrap(opening), ...tokens);
+					close(closing);
+				}
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function close(current: Run) {
+		const { run: opening, tokens } = stack.pop()!;
+		if (!assess(opening, current, tokens)) return;
+
+		const used = Math.min(opening.meta.count, current.meta.count, 2);
+		const mod = current.meta.char !== '~' ? (used > 1 ? 'strong' : 'emphasis') : 'strike';
+		opening.meta.count -= used;
+		current.meta.count -= used;
+
+		const tree = emit({ type: `inline:${mod}`, children: tokens });
+		if (opening.meta.count) {
+			stack.push({ run: opening, tokens: tree.slice() });
+			tree.length = 0;
+		}
+		while (current.meta.count) {
+			if (!stack.find(({ run }) => run.meta.char === current.meta.char)) {
+				emit(unwrap(current));
+				break;
+			}
+
+			const { run, tokens } = stack.pop()!;
+			if (run.meta.char !== current.meta.char) emit(unwrap(current));
+			else emit(...pair([run, ...tokens, current]));
+		}
+	}
+
+	function emit(...token: Annotation[]) {
+		const tree = stack[stack.length - 1]?.tokens || root;
+		tree.push(...token);
+		return tree;
+	}
+
+	function unwrap(run: Run): Annotation {
+		const remainder = run.meta.char.repeat(run.meta.count);
+		return { type: 'inline:text', text: remainder };
+	}
 }

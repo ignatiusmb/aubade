@@ -25,9 +25,9 @@ const outputs = await orchestrate('content');
 const outputs = await orchestrate('content', ({ path }) => {
 	if (!path.endsWith('.md')) return;
 	return async ({ assemble, buffer }) => {
-		const { manifest, md, meta } = assemble(buffer.toString('utf-8'));
+		const { doc, manifest, meta } = assemble(buffer.toString('utf-8'));
 		if (manifest.draft) return;
-		return { ...manifest, ...meta, content: md.html() };
+		return { ...manifest, ...meta, content: doc.html() };
 	};
 });
 ```
@@ -85,6 +85,6 @@ interface Chunk {
 | ---------- | ------------------------------------------------------------------------------- |
 | `assemble` | the [`assemble()` function from core](/docs/overview#core)                      |
 | `buffer`   | raw file content as a `Buffer`                                                  |
-| `engrave`  | the [`engrave()` function from `/artisan`](/docs/artisan#markdown-engrave)      |
+| `engrave`  | the [`engrave()` function from `/artisan`](/docs/artisan#engrave)               |
 | `siblings` | sibling files in the same directory, with filenames and lazy buffers            |
 | `task(fn)` | register async work to run in parallel (e.g. image conversion or asset copying) |

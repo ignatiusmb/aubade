@@ -1,6 +1,6 @@
 {
 	"name": "aubade",
-	"version": "0.10.4",
+	"version": "0.11.0",
 	"description": "markdown, orchestrated.",
 	"repository": "github:ignatiusmb/aubade",
 	"homepage": "https://aubade.mauss.dev",
@@ -34,9 +34,17 @@
 			"types": "./index.d.ts",
 			"default": "./src/conductor/index.js"
 		},
+		"./legacy": {
+			"types": "./index.d.ts",
+			"default": "./src/legacy/index.js"
+		},
 		"./manifest": {
 			"types": "./index.d.ts",
 			"default": "./src/manifest/index.js"
+		},
+		"./palette": {
+			"types": "./index.d.ts",
+			"default": "./src/palette/index.js"
 		},
 		"./transform": {
 			"types": "./index.d.ts",
