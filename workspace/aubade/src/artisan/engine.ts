@@ -177,6 +177,14 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 			}
 		}
 
+		if (opening.meta.char === '~') {
+			const total = opening.meta.count + closing.meta.count;
+			const match = opening.meta.count === closing.meta.count;
+			if (total <= 4 && match) return true;
+			emit(unwrap(opening), ...tokens, unwrap(closing));
+			return false;
+		}
+
 		return true;
 	}
 
@@ -195,14 +203,12 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 			tree.length = 0;
 		}
 		while (current.meta.count) {
-			if (!stack.find(({ run }) => run.meta.char === current.meta.char)) {
+			if (stack.find(({ run }) => run.meta.char === current.meta.char)) {
+				close(current);
+			} else {
 				emit(unwrap(current));
 				break;
 			}
-
-			const { run, tokens } = stack.pop()!;
-			if (run.meta.char !== current.meta.char) emit(unwrap(current));
-			else emit(...pair([run, ...tokens, current]));
 		}
 	}
 

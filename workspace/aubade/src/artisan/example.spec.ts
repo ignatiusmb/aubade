@@ -642,7 +642,7 @@ describe('gfm', ({ concurrent: it }) => {
 	const suite: Record<string, [string, string]> = {
 		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
 		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
-		'493|todo': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
+		'493': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
 	};
 
 	const mark = forge();
