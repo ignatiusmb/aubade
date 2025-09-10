@@ -153,6 +153,7 @@
 		p:not(:first-child) {
 			margin-top: 1rem;
 		}
+		ol,
 		ul {
 			padding-inline-start: 1.25rem;
 			margin: 0;
@@ -161,10 +162,16 @@
 			li:not(:first-child) {
 				margin-top: 0.25rem;
 			}
+
+			li > ol,
+			li > ul {
+				margin-block-start: 0.25rem;
+			}
 		}
 		blockquote {
 			padding: 1rem;
 			margin: 1rem 0;
+			border-radius: calc(var(--rounding-base) / 2);
 			border-left: 0.25rem solid var(--aubade-accent);
 			background: color-mix(in oklch, var(--aubade-accent) 34%, black);
 		}
