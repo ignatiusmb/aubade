@@ -38,6 +38,9 @@ Libretto introduces additional behavior beyond CommonMark.
 - **Code block info string** \
   The first word after the opening fence is interpreted as a language identifier. In HTML, it is set as `data-language` on the `<pre>` element.
 
+- **Tables** \
+  Tables require leading and trailing pipes on each row. A delimiter row of dashes with optional colons is mandatory. The row above the delimiter, if present, is treated as the header. If no header is given, at least one body row must follow. Whitespace around cell contents is trimmed.
+
 - **Leaf images** \
   Standalone images are rendered as block-level `<figure>`. If the image includes a title, it is placed in a `<figcaption>`.
 

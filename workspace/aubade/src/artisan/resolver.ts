@@ -65,6 +65,23 @@ export const standard = {
 		const body = !pad && first?.type === 'block:paragraph' ? first : token;
 		return `<li>${pad}${body.children.map(render).join(pad)}${pad}</li>`;
 	},
+	'block:table'({ token, render }) {
+		const { align, head, rows } = token.meta;
+		const header = head?.map((cell, i) => {
+			const attr = align[i] !== 'left' ? ` style="text-align:${align[i]}"` : '';
+			return `<th${attr}>${cell.map(render).join('')}</th>`;
+		});
+		const body = rows.map((row) => {
+			const cells = row.map((cell, i) => {
+				const attr = align[i] !== 'left' ? ` style="text-align:${align[i]}"` : '';
+				return `<td${attr}>${cell.map(render).join('')}</td>`;
+			});
+			return `<tr>\n${cells.join('\n')}\n</tr>`;
+		});
+		const thead = header ? `<thead>\n<tr>\n${header.join('\n')}\n</tr>\n</thead>\n` : '';
+		const tbody = `<tbody>\n${body.join('\n')}\n</tbody>`;
+		return `<table>\n${thead}${tbody}\n</table>`;
+	},
 	'block:image'({ token, render, sanitize }) {
 		const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 		const title = token.children.map(render).join('');
