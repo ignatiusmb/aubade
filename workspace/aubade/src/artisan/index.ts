@@ -50,6 +50,7 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 			tokens,
 			html(override: Options['renderer'] = {}) {
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
+					delete override['aubade:directive']; // prevent override of directives
 					const resolve: Resolver<T> = { ...resolver, ...override }[token.type] as any;
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 					return resolve({ token, render: html, sanitize: escape });
