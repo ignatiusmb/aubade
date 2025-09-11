@@ -4,8 +4,9 @@ export type Registry = [
 	// libretto
 	typeof directive,
 	typeof comment,
-	typeof figure,
 	typeof markup,
+	typeof table,
+	typeof figure,
 
 	// block registries
 	typeof divider,
@@ -187,6 +188,65 @@ export function markup({ compose, cursor }: Context): null | {
 		const last = text[text.length - 1];
 		if (text[0] !== '"' && text[0] !== "'") return text;
 		return last === text[0] ? text.slice(1, -1) : text;
+	}
+}
+
+export function table({ cursor, annotate }: Context): null | {
+	type: 'block:table';
+	meta: {
+		align: Array<'left' | 'center' | 'right'>;
+		head?: Annotation[][];
+		rows: Annotation[][][];
+	};
+} {
+	let peek = cursor.peek(/\n|$/).trim();
+	const pattern = /^\|.+\|$/;
+	if (!pattern.test(peek)) return null;
+	const lines = [cursor.locate(/\n|$/).trim()];
+	while (cursor.eat('\n')) {
+		const line = cursor.peek(/\n|$/).trim();
+		if (!pattern.test(line)) break;
+		lines.push(cursor.locate(/\n|$/).trim());
+	}
+	if (lines.length < 2) return null;
+
+	const align = gauge(lines[0]) || gauge(lines[1]);
+	if (align == null) return null;
+
+	const header = !gauge(lines[0]) && segment(lines[0]);
+	const head = header === false ? undefined : header;
+	const rows = lines.slice(header ? 2 : 1).map(segment);
+	return { type: 'block:table', meta: { align, head, rows } };
+
+	function gauge(line: string): null | Array<'left' | 'center' | 'right'> {
+		const alignment: Array<'left' | 'center' | 'right'> = [];
+		const cells = line.split('|');
+		for (let i = 1; i < cells.length - 1; i += 1) {
+			const text = cells[i].trim();
+			if (!/^:?-+:?$/.test(text)) return null;
+			if (!text.endsWith(':')) alignment.push('left');
+			else if (text[0] === ':') alignment.push('center');
+			else alignment.push('right');
+		}
+		return alignment;
+	}
+
+	function segment(line: string): Annotation[][] {
+		const cells: string[] = [];
+		let escaped = false;
+		for (let i = 1, last = i; i < line.length; ) {
+			if (line[i] !== '|') {
+				escaped = !escaped && line[i++] === '\\';
+			} else if (escaped) {
+				escaped = !++i;
+			} else {
+				const text = line.slice(last, i).trim();
+				cells.push(text.replace(/\\\|/g, '|'));
+				i += 2;
+				last = i;
+			}
+		}
+		return cells.map(annotate);
 	}
 }
 
