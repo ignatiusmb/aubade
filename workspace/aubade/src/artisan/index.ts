@@ -29,27 +29,33 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 		...standard,
 		...renderer,
 
-		'aubade:directive'({ token: { meta } }) {
+		'aubade:directive'({ token: { meta }, render, sanitize }) {
 			const transform = { ...base, ...directive }[meta.type];
 			if (!transform) throw new Error(`Unknown directive type: ${meta.type}`);
 			return transform({
 				data: meta.data,
 				annotate,
-				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
-				render: html,
-				sanitize: escape,
+				render,
+				sanitize,
+				print(...lines) {
+					return lines.flatMap((l) => (!l ? [] : l)).join('\n');
+				},
 			});
 		},
 	} satisfies Options['renderer'];
 
-	function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
-		const resolve = resolver[token.type] as unknown as Resolver<T> | undefined;
-		if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
-		return resolve({ token, render: html, sanitize: escape });
-	}
-
 	return (input: string) => {
 		const { children: tokens } = compose(input);
-		return { tokens, html: () => tokens.map(html).join('\n') };
+		return {
+			tokens,
+			html(override: Options['renderer'] = {}) {
+				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
+					const resolve: Resolver<T> = { ...resolver, ...override }[token.type] as any;
+					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
+					return resolve({ token, render: html, sanitize: escape });
+				}
+				return tokens.map(html).join('\n');
+			},
+		};
 	};
 }
