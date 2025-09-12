@@ -1,5 +1,5 @@
 import { orchestrate } from 'aubade/conductor';
-import { marker } from 'aubade/legacy';
+import { codeblock } from 'aubade/palette';
 import { chain } from 'aubade/transform';
 
 const ROOT = `${process.cwd()}/static/uploads`;
@@ -10,9 +10,9 @@ export const DATA = {
 			if (file !== '+article.md') return;
 
 			return async ({ assemble, buffer, siblings, task }) => {
-				const { manifest, meta } = assemble(buffer.toString('utf-8'));
+				const { doc, manifest, meta } = assemble(buffer.toString('utf-8'));
 
-				const content = meta.body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
+				meta.body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
 					const asset = siblings.find(({ filename }) => relative === filename);
 					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return m;
 
@@ -33,7 +33,7 @@ export const DATA = {
 					description: manifest.description,
 					table: meta.table,
 					path: `workspace/content/${file}`,
-					content: marker.render(content),
+					content: doc.html({ 'block:code': codeblock }),
 				};
 			};
 		});
