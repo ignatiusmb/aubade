@@ -9,7 +9,7 @@
 		"check:workspace": "pnpm --filter \"./workspace/*\" check",
 		"test": "pnpm --filter \"./workspace/*\" test"
 	},
-	"packageManager": "pnpm@10.12.1",
+	"packageManager": "pnpm@10.15.1",
 	"prettier": "mauss/prettier.config.js",
 	"devDependencies": {
 		"@types/node": "^24.3.0",

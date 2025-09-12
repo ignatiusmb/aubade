@@ -675,7 +675,7 @@ describe('libretto', ({ concurrent: it }) => {
 			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
 			[
 				'<figure>',
-				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
 				'<figcaption>hitoribocchi tokyo</figcaption>',
 				'</figure>',
 			].join('\n'),
@@ -685,7 +685,7 @@ describe('libretto', ({ concurrent: it }) => {
 			[
 				'<details>',
 				'<summary>hitoribocchi tokyo</summary>',
-				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
 				'</details>',
 			].join('\n'),
 		],
@@ -693,7 +693,7 @@ describe('libretto', ({ concurrent: it }) => {
 			['@youtube{', '  id=7TovqLDCosk', '  caption="hitoribocchi tokyo"', '}'].join('\n'),
 			[
 				'<figure>',
-				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
 				'<figcaption>hitoribocchi tokyo</figcaption>',
 				'</figure>',
 			].join('\n'),
@@ -702,7 +702,16 @@ describe('libretto', ({ concurrent: it }) => {
 			'@youtube{id=7TovqLDCosk}',
 			[
 				'<figure>',
-				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive#youtube/series': [
+			'@youtube{series="PLZRRxQcaEjA4qyEuYfAMCazlL0vQDkIj2" caption="Mind Field: Season 1"}',
+			[
+				'<figure>',
+				'<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLZRRxQcaEjA4qyEuYfAMCazlL0vQDkIj2" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
+				'<figcaption>Mind Field: Season 1</figcaption>',
 				'</figure>',
 			].join('\n'),
 		],

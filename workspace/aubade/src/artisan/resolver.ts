@@ -2,13 +2,16 @@ import type { Options } from './index.js';
 
 export const base = {
 	youtube({ data, annotate, print, render, sanitize }) {
-		const id = sanitize(data.id || '');
-		const src = `https://www.youtube-nocookie.com/embed/${id}`;
+		const id = sanitize(data.series || data.id || '');
+		const prefix = data.series ? 'videoseries?list=' : '';
+		const src = `https://www.youtube-nocookie.com/embed/${prefix}${id}`;
 		const attributes = [
 			'title="YouTube video player"',
+			'loading="lazy"',
 			'frameborder="0"',
 			'allowfullscreen',
-			'allow="autoplay; encrypted-media"',
+			'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"',
+			'referrerpolicy="strict-origin-when-cross-origin"',
 		];
 		const text = annotate(data.caption || 'youtube video').map(render);
 		return print(
