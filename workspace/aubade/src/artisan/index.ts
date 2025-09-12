@@ -45,9 +45,15 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 	} satisfies Options['renderer'];
 
 	return (input: string) => {
-		const { children: tokens } = compose(input);
+		let { children: stream } = compose(input);
 		return {
-			tokens,
+			get tokens() {
+				return stream;
+			},
+			set tokens(v) {
+				stream = v;
+			},
+
 			html(override: Options['renderer'] = {}) {
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
 					delete override['aubade:directive']; // prevent override of directives
@@ -55,7 +61,24 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 					return resolve({ token, render: html, sanitize: escape });
 				}
-				return tokens.map(html).join('\n');
+				return stream.map(html).join('\n');
+			},
+			visit(map: {
+				[T in Token['type']]?: (
+					token: Extract<Token, { type: T }>,
+					parent?: Token,
+				) => Extract<Token, { type: T }>;
+			}): typeof stream {
+				function walk<T extends Token>(token: T, parent?: Token): T {
+					if ('children' in token) {
+						const visited = token.children.map((child) => walk(child, token));
+						token.children = visited as typeof token.children;
+					}
+					type Visitor = (token: T, parent?: Token) => T;
+					const visitor: Visitor = map[token.type] as any;
+					return visitor ? visitor(token, parent) : token;
+				}
+				return stream.map((token) => walk(token));
 			},
 		};
 	};
