@@ -66,10 +66,10 @@ Directives extend Markdown with inline metadata. They begin with `@`, followed b
 
 ### `@youtube`
 
-| Attribute         | Type    | Description                            |
-| ----------------- | ------- | -------------------------------------- |
-| `id` or `series`* | string  | YouTube video or series ID             |
-| `caption`         | string  | Text for `<figcaption>` or `<summary>` |
-| `disclosure`      | boolean | Wraps the frame in `<details>`         |
+| Attribute          | Type    | Description                            |
+| ------------------ | ------- | -------------------------------------- |
+| `id` or `series`\* | string  | YouTube video or series ID             |
+| `caption`          | string  | Text for `<figcaption>` or `<summary>` |
+| `disclosure`       | boolean | Wraps the frame in `<details>`         |
 
 \* one of `id` or `series` must be provided
