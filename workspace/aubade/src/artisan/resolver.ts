@@ -22,6 +22,22 @@ export const base = {
 			data.disclosure ? '</details>' : '</figure>',
 		);
 	},
+	video({ data, annotate, print, render, sanitize }) {
+		const src = sanitize(data.src || '');
+		const type = sanitize(data.type || 'video/mp4').toLowerCase();
+		const text = annotate(data.caption || 'video').map(render);
+		const fallback = sanitize(data.fallback || 'your browser does not support HTML5 video.');
+		return print(
+			data.disclosure ? '<details>' : '<figure>',
+			data.disclosure && `<summary>${text}</summary>`,
+			'<video controls preload="metadata">',
+			`<source src="${src}" type="${type}">`,
+			fallback,
+			'</video>',
+			!data.disclosure && data.caption && `<figcaption>${text}</figcaption>`,
+			data.disclosure ? '</details>' : '</figure>',
+		);
+	},
 } satisfies Options['directive'];
 
 export const standard = {

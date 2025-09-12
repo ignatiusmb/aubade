@@ -73,3 +73,14 @@ Directives extend Markdown with inline metadata. They begin with `@`, followed b
 | `disclosure`       | boolean | Wraps the frame in `<details>`         |
 
 \* one of `id` or `series` must be provided
+
+### `@video`
+
+| Attribute    | Type    | Description                            |
+| ------------ | ------- | -------------------------------------- |
+| `src`\*      | string  | URL of the video file                  |
+| `type`       | string  | MIME type (default: `video/mp4`)       |
+| `caption`    | string  | Text for `<figcaption>` or `<summary>` |
+| `disclosure` | boolean | Wraps the frame in `<details>`         |
+
+\* `src` is required
