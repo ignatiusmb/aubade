@@ -16,6 +16,12 @@ Aubade implements [Libretto](/docs/libretto), a markdown dialect designed to kee
 export function engrave(input: string): {
 	tokens: Token[];
 	html(override?: Options['renderer']): string;
+	visit(map: {
+		[T in Token as T['type']]?: (
+			token: Extract<Token, { type: T['type'] }>,
+			parent?: Token,
+		) => void;
+	}): Block[];
 };
 ```
 
