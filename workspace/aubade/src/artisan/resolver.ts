@@ -26,12 +26,12 @@ export const base = {
 		const src = sanitize(data.src || '');
 		const type = sanitize(data.type || 'video/mp4').toLowerCase();
 		const text = annotate(data.caption || 'video').map(render);
-		const fallback = sanitize(data.fallback || 'your browser does not support HTML5 video.');
+		const fallback = sanitize(data.fallback || 'Your browser does not support HTML5 video.');
 		return print(
 			data.disclosure ? '<details>' : '<figure>',
 			data.disclosure && `<summary>${text}</summary>`,
 			'<video controls preload="metadata">',
-			`<source src="${src}" type="${type}">`,
+			`<source src="${src}" type="${type}" />`,
 			fallback,
 			'</video>',
 			!data.disclosure && data.caption && `<figcaption>${text}</figcaption>`,
