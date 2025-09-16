@@ -670,6 +670,13 @@ describe('spec', ({ concurrent: it }) => {
 
 describe('libretto', ({ concurrent: it }) => {
 	const suite: Record<string, [string, string]> = {
+		'comment#block/1': ['<!-- comment -->', ''],
+		'comment#block/2': ['<!---\ncomment\n--->', ''],
+		'comment#block/3': ['<!-- comment with -- is fine -->', ''],
+		'comment#inline/1': ['a <!-- comment --> b', '<p>a  b</p>'],
+		'comment#inline/2': ['a <!-- comment --> b -->', '<p>a  b --&gt;</p>'],
+		'comment#inline/3': ['a <!-- comment b', '<p>a &lt;!-- comment b</p>'],
+
 		'directive#youtube': [
 			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
 			[
@@ -749,6 +756,15 @@ describe('libretto', ({ concurrent: it }) => {
 				'</video>',
 				'</figure>',
 			].join('\n'),
+		],
+
+		'image#plain': [
+			'![unannotated *alt* text](img.png)',
+			'<figure>\n<img src="img.png" alt="unannotated *alt* text" />\n</figure>',
+		],
+		'image#caption': [
+			'![alt](img.png "annotated *title* for caption")',
+			'<figure>\n<img src="img.png" alt="alt" />\n<figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
 		],
 
 		'strike#single': ['~strike~', '<p>~strike~</p>'],
