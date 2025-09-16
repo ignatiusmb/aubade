@@ -17,10 +17,7 @@ export function engrave(input: string): {
 	tokens: Token[];
 	html(override?: Options['renderer']): string;
 	visit(map: {
-		[T in Token as T['type']]?: (
-			token: Extract<Token, { type: T['type'] }>,
-			parent?: Token,
-		) => void;
+		[T in Token['type']]?: (token: Extract<Token, { type: T }>) => Extract<Token, { type: T }>;
 	}): Block[];
 };
 ```

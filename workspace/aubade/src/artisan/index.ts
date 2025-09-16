@@ -44,6 +44,20 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 		},
 	} satisfies Options['renderer'];
 
+	type Visitors = {
+		[T in Token['type']]?: (token: Extract<Token, { type: T }>) => Extract<Token, { type: T }>;
+	};
+
+	function walk<T extends Token>(token: T, visitors: Visitors = {}): T {
+		if ('children' in token) {
+			const visited = token.children.map((child) => walk(child, visitors));
+			token.children = visited as typeof token.children;
+		}
+		type Visitor = (token: T, parent?: Token) => T;
+		const visitor = visitors[token.type] as Visitor | undefined;
+		return visitor ? visitor(token) : token;
+	}
+
 	return (input: string) => {
 		let { children: stream } = compose(input);
 		return {
@@ -63,22 +77,8 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 				}
 				return stream.map(html).join('\n');
 			},
-			visit(map: {
-				[T in Token['type']]?: (
-					token: Extract<Token, { type: T }>,
-					parent?: Token,
-				) => Extract<Token, { type: T }>;
-			}): typeof stream {
-				function walk<T extends Token>(token: T, parent?: Token): T {
-					if ('children' in token) {
-						const visited = token.children.map((child) => walk(child, token));
-						token.children = visited as typeof token.children;
-					}
-					type Visitor = (token: T, parent?: Token) => T;
-					const visitor: Visitor = map[token.type] as any;
-					return visitor ? visitor(token, parent) : token;
-				}
-				return stream.map((token) => walk(token));
+			visit(map: Visitors): typeof stream {
+				return stream.map((token) => walk(token, map));
 			},
 		};
 	};
