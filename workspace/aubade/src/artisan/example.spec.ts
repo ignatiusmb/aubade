@@ -384,7 +384,37 @@ describe('spec', ({ concurrent: it }) => {
 		'267': ['0. ok', '<ol start="0">\n<li>ok</li>\n</ol>'],
 		'268': ['003. ok', '<ol start="3">\n<li>ok</li>\n</ol>'],
 		'269': ['-1. not ok', '<p>-1. not ok</p>'],
-		// @TODO: 270-300 [list items]
+		'270|deny': ['- foo\n\n      bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'271|deny': [
+			'  10.  foo\n\n           bar',
+			'<ol start="10">\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ol>',
+		],
+		'272|deny': [
+			'    indented code\n\nparagraph\n\n    more code',
+			'<p>indented code</p>\n<p>paragraph</p>\n<p>more code</p>',
+		],
+		'273|deny': [
+			'1.     indented code\n\n   paragraph\n\n       more code',
+			'<ol>\n<li>indented code</li>\n</ol>\n<p>paragraph</p>\n<p>more code</p>',
+		],
+		'274|deny': [
+			'1.      indented code\n\n   paragraph\n\n       more code',
+			'<ol>\n<li>indented code</li>\n</ol>\n<p>paragraph</p>\n<p>more code</p>',
+		],
+		'275': ['   foo\n\nbar', '<p>foo</p>\n<p>bar</p>'],
+		'276': ['-    foo\n\n  bar', '<ul>\n<li>foo</li>\n</ul>\n<p>bar</p>'],
+		'277': ['-  foo\n\n   bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
+		'278|todo': [
+			'-\n  foo\n-\n  ```\n  bar\n  ```\n-\n      baz',
+			'<ul>\n<li>foo</li>\n<li>\n<pre><code>bar\n</code></pre>\n</li>\n<li>baz</li>\n</ul>',
+		],
+		'279|todo': ['-   \n  foo', '<ul>\n<li></li>\n</ul>\n<p>foo</p>'],
+		'280|todo': ['-\n\n  foo', '<ul>\n<li></li>\n</ul>\n<p>foo</p>'],
+		'281': ['- foo\n-\n- bar', '<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>'],
+		'282': ['- foo\n-   \n- bar', '<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>'],
+		'283': ['1. foo\n2.\n3. bar', '<ol>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ol>'],
+		'284': ['*', '<ul>\n<li></li>\n</ul>'],
+		// @TODO: 285-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
 		'328': ['`code`', '<p><code>code</code></p>'],

@@ -370,7 +370,8 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 		if (head.trim().length > marker.length) return null;
 	}
 
-	const indent = whitespace(head) + marker.length + pos;
+	const base = whitespace(head) + marker.length + pos;
+	const indent = Math.max(base, marker.length + 1);
 	const item = [cursor.locate(/\n|$/).slice(indent)];
 	while (cursor.eat('\n')) {
 		const line = normalize(cursor.peek(/\n|$/));
