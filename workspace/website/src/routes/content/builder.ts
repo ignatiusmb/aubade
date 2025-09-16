@@ -12,18 +12,35 @@ export const DATA = {
 			return async ({ assemble, buffer, siblings, task }) => {
 				const { doc, manifest, meta } = assemble(buffer.toString('utf-8'));
 
-				meta.body.replace(/\.\/([^\s)]+)/g, (m, relative) => {
-					const asset = siblings.find(({ filename }) => relative === filename);
-					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return m;
-
+				function materialize(source: string): string {
+					const asset = siblings.find(({ filename }) => source === filename);
+					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return source;
 					task(async ({ fs }) => {
 						await fs.mkdir(ROOT, { recursive: true });
 						const payload = await asset.buffer;
 						const filename = `${ROOT}/${asset.filename}`;
 						return fs.writeFile(filename, payload);
 					});
-
 					return `/uploads/${asset.filename}`;
+				}
+
+				doc.tokens = doc.visit({
+					'aubade:directive'(token) {
+						if (token.meta.type !== 'video') return token;
+						const { source } = token.meta.data;
+						token.meta.data.source = materialize(source);
+						return token;
+					},
+					'block:image'(token) {
+						const { src } = token.attr;
+						token.attr.src = materialize(src);
+						return token;
+					},
+					'inline:image'(token) {
+						const { src } = token.attr;
+						token.attr.src = materialize(src);
+						return token;
+					},
 				});
 
 				return {
