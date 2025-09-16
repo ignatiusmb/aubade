@@ -668,37 +668,6 @@ describe('spec', ({ concurrent: it }) => {
 	}
 });
 
-describe('gfm', ({ concurrent: it }) => {
-	const suite: Record<string, [string, string]> = {
-		'198': [
-			'| foo | bar |\n| --- | --- |\n| baz | bim |',
-			'<table>\n<thead>\n<tr>\n<th>foo</th>\n<th>bar</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>baz</td>\n<td>bim</td>\n</tr>\n</tbody>\n</table>',
-		],
-		'200': [
-			'| f\\|oo  |\n| ------ |\n| b `\\|` az |\n| b **\\|** im |',
-			'<table>\n<thead>\n<tr>\n<th>f|oo</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b <code>|</code> az</td>\n</tr>\n<tr>\n<td>b <strong>|</strong> im</td>\n</tr>\n</tbody>\n</table>',
-		],
-		'491': ['~~Hi~~ Hello, ~there~ world!', '<p><del>Hi</del> Hello, <del>there</del> world!</p>'],
-		'492': ['This ~~has a\n\nnew paragraph~~.', '<p>This ~~has a</p>\n<p>new paragraph~~.</p>'],
-		'493': ['This will ~~~not~~~ strike.', '<p>This will ~~~not~~~ strike.</p>'],
-	};
-
-	const mark = forge();
-	for (const test in suite) {
-		const [input, output] = suite[test];
-		const [, ...props] = test.split('|');
-		const options: Parameters<typeof it>[1] = {
-			fails: props.includes('fail'),
-			only: props.includes('only'),
-			skip: props.includes('skip'),
-			todo: props.includes('todo'),
-		};
-		it(test, options, ({ expect }) => {
-			expect(mark(input).html()).toBe(output);
-		});
-	}
-});
-
 describe('libretto', ({ concurrent: it }) => {
 	const suite: Record<string, [string, string]> = {
 		'directive#youtube': [
@@ -745,40 +714,82 @@ describe('libretto', ({ concurrent: it }) => {
 				'</figure>',
 			].join('\n'),
 		],
+
 		'directive#video': [
-			'@video{src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" caption="Big Buck Bunny"}',
+			'@video{src="./video.mp4" caption="local video"}',
 			[
 				'<figure>',
 				'<video controls preload="metadata">',
-				'<source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />',
+				'<source src="./video.mp4" type="video/mp4" />',
 				'Your browser does not support HTML5 video.',
 				'</video>',
-				'<figcaption>Big Buck Bunny</figcaption>',
+				'<figcaption>local video</figcaption>',
 				'</figure>',
 			].join('\n'),
 		],
 		'directive#video/disclosure': [
-			'@video{disclosure src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" caption="Big Buck Bunny"}',
+			'@video{disclosure src="./video.mp4" caption="local video"}',
 			[
 				'<details>',
-				'<summary>Big Buck Bunny</summary>',
+				'<summary>local video</summary>',
 				'<video controls preload="metadata">',
-				'<source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />',
+				'<source src="./video.mp4" type="video/mp4" />',
 				'Your browser does not support HTML5 video.',
 				'</video>',
 				'</details>',
 			].join('\n'),
 		],
 		'directive#video/no-caption': [
-			'@video{src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}',
+			'@video{src="./video.mp4"}',
 			[
 				'<figure>',
 				'<video controls preload="metadata">',
-				'<source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />',
+				'<source src="./video.mp4" type="video/mp4" />',
 				'Your browser does not support HTML5 video.',
 				'</video>',
 				'</figure>',
 			].join('\n'),
+		],
+
+		'strike#single': ['~strike~', '<p>~strike~</p>'],
+		'strike#normal': ['~~strike~~', '<p><del>strike</del></p>'],
+		'strike#code/1': ['~~`a~~`', '<p>~~<code>a~~</code></p>'],
+		'strike#code/2': ['`~~a`~~', '<p><code>~~a</code>~~</p>'],
+		'strike#links/1': ['[~~a](/url)~~', '<p><a href="/url">~~a</a>~~</p>'],
+		'strike#links/2': ['~~[a~~](/url)', '<p>~~<a href="/url">a~~</a></p>'],
+		'strike#links/3': ['[~~a~~](/url)', '<p><a href="/url"><del>a</del></a></p>'],
+		'strike#nested/1|todo': ['x ~~~~y~~~~', '<p>x <del><del>y</del></del></p>'],
+		'strike#nested/2|todo': ['x ~~~~y~~ z~~', '<p>x <del><del>y</del> z</del></p>'],
+		'strike#nested/3': ['x ~~y ~~z~~~~', '<p>x <del>y <del>z</del></del></p>'],
+		'strike#nested/4|todo': [
+			'x ~~a ~~y~~~~~~~~~~~z~~ b~~',
+			'<p>x <del>a <del>y</del></del>~~~<del><del>z</del> b</del></p>',
+		],
+		'strike#nested/5|todo': [
+			'x ~~a ~~y~~~~~~~~~~~~z~~ b~~',
+			'<p>x <del>a <del>y</del></del>~~~~<del><del>z</del> b</del></p>',
+		],
+		'strike#nested/6': ['~~a ~~b~~ c~~', '<p><del>a <del>b</del> c</del></p>'],
+		'strike#mixed/1|todo': ['**~~a**~~', '<p><strong>~~a</strong>~~</p>'],
+		'strike#mixed/2|todo': ['~~**a~~**', '<p><del>**a</del>**</p>'],
+		'strike#mixed/3': [
+			'~~a **b ~~c d~~ e** f~~',
+			'<p><del>a <strong>b <del>c d</del> e</strong> f</del></p>',
+		],
+		'strike#invalid': ['a ~~ b ~~ c', '<p>a ~~ b ~~ c</p>'],
+		'strike#newline/1': ['~~a\n~~', '<p>~~a\n~~</p>'],
+		'strike#newline/2': ['~~\na~~', '<p>~~\na~~</p>'],
+		'strike#newline/3': ['~~\na\n~~', '<p>~~\na\n~~</p>'],
+		'strike#between/1': ['a~~"b"~~', '<p>a~~&quot;b&quot;~~</p>'],
+		'strike#between/2|todo': ['-~~~~;~~~~~~', '<p>-<del><del>;</del></del>~~</p>'],
+
+		'table#normal': [
+			'| a | b |\n| --- | --- |\n| c | d |',
+			'<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>c</td>\n<td>d</td>\n</tr>\n</tbody>\n</table>',
+		],
+		'table#piped': [
+			'| a\\|bc  |\n| ------ |\n| d `\\|` ef |\n| g **\\|** hi |',
+			'<table>\n<thead>\n<tr>\n<th>a|bc</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>d <code>|</code> ef</td>\n</tr>\n<tr>\n<td>g <strong>|</strong> hi</td>\n</tr>\n</tbody>\n</table>',
 		],
 	};
 
