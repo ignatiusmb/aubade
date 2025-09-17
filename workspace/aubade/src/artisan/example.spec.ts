@@ -1,5 +1,5 @@
 import { describe } from 'vitest';
-import { forge } from './index.js';
+import { engrave, forge } from './index.js';
 
 // `deny` disallow features, either:
 //  - outright, like indented code block and setext headings
@@ -767,6 +767,16 @@ describe('libretto', ({ concurrent: it }) => {
 			'<figure>\n<img src="img.png" alt="alt" />\n<figcaption>annotated <em>title</em> for caption</figcaption>\n</figure>',
 		],
 
+		'quotes#double/1': ['"hello"', '<p>“hello”</p>'],
+		'quotes#double/2': ['"a *b* c"', '<p>“a <em>b</em> c”</p>'],
+		'quotes#single/1': ["'hello'", '<p>‘hello’</p>'],
+		'quotes#single/2': ["'a 'b' c'", '<p>‘a ‘b’ c’</p>'],
+		'quotes#mixed/1': [`"a 'b' c"`, '<p>“a ‘b’ c”</p>'],
+		'quotes#mixed/2': [`'a "b" c'`, '<p>‘a “b” c’</p>'],
+		'quotes#mixed/3': [`'a "b' c"`, '<p>‘a “b’ c”</p>'],
+		'quotes#mixed/4': [`'"hello"'`, '<p>‘“hello”’</p>'],
+		'quotes#mixed/5': [`"'hello'"`, '<p>“‘hello’”</p>'],
+
 		'strike#single': ['~strike~', '<p>~strike~</p>'],
 		'strike#normal': ['~~strike~~', '<p><del>strike</del></p>'],
 		'strike#code/1': ['~~`a~~`', '<p>~~<code>a~~</code></p>'],
@@ -796,7 +806,7 @@ describe('libretto', ({ concurrent: it }) => {
 		'strike#newline/1': ['~~a\n~~', '<p>~~a\n~~</p>'],
 		'strike#newline/2': ['~~\na~~', '<p>~~\na~~</p>'],
 		'strike#newline/3': ['~~\na\n~~', '<p>~~\na\n~~</p>'],
-		'strike#between/1': ['a~~"b"~~', '<p>a~~&quot;b&quot;~~</p>'],
+		'strike#between/1': ['a~~"b"~~', '<p>a~~“b”~~</p>'],
 		'strike#between/2|todo': ['-~~~~;~~~~~~', '<p>-<del><del>;</del></del>~~</p>'],
 
 		'table#normal': [
@@ -809,7 +819,6 @@ describe('libretto', ({ concurrent: it }) => {
 		],
 	};
 
-	const mark = forge();
 	for (const test in suite) {
 		const [input, output] = suite[test];
 		const [, ...props] = test.split('|');
@@ -820,7 +829,7 @@ describe('libretto', ({ concurrent: it }) => {
 			todo: props.includes('todo'),
 		};
 		it(test, options, ({ expect }) => {
-			expect(mark(input).html()).toBe(output);
+			expect(engrave(input).html()).toBe(output);
 		});
 	}
 });
