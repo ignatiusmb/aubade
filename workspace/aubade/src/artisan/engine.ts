@@ -164,6 +164,13 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 			return false;
 		}
 
+		if (opening.meta.char === '~') {
+			const total = opening.meta.count + closing.meta.count;
+			if (total >= 4 && total % 2 === 0) return true;
+			emit(unwrap(opening), ...tokens, unwrap(closing));
+			return false;
+		}
+
 		if (opening.meta.can.close || closing.meta.can.open) {
 			const [o, c] = [opening.meta.count, closing.meta.count];
 			// if sum is multiple of 3, both lengths need to be multiple of 3
@@ -176,14 +183,6 @@ function pair(runs: Array<Annotation | Run>): Annotation[] {
 				}
 				return false;
 			}
-		}
-
-		if (opening.meta.char === '~') {
-			const total = opening.meta.count + closing.meta.count;
-			const match = opening.meta.count === closing.meta.count;
-			if (total <= 4 && match) return true;
-			emit(unwrap(opening), ...tokens, unwrap(closing));
-			return false;
 		}
 
 		return true;
