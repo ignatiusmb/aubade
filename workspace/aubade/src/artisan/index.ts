@@ -1,5 +1,5 @@
 import type { Token } from './registry.js';
-import { escape } from './utils.js';
+import { escape, typographic } from './utils.js';
 import { annotate, compose } from './engine.js';
 import { base, standard } from './resolver.js';
 
@@ -23,8 +23,8 @@ export interface Options {
 	quotes?: 'original' | 'typewriter' | 'typographic';
 }
 
-export const engrave = forge({});
-export function forge({ directive = {}, renderer = {} }: Options = {}) {
+export const engrave = forge({ quotes: 'typographic' });
+export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 	const resolver = {
 		...standard,
 		...renderer,
@@ -60,6 +60,11 @@ export function forge({ directive = {}, renderer = {} }: Options = {}) {
 
 	return (input: string) => {
 		let { children: stream } = compose(input);
+
+		if (quotes === 'typographic') {
+			stream = stream.map((t) => walk(t, { 'inline:text': typographic }));
+		}
+
 		return {
 			get tokens() {
 				return stream;
