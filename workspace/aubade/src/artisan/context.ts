@@ -69,7 +69,7 @@ function extract(token: Token): string {
 	return 'text' in token ? token.text : '';
 }
 
-const util = {
+export const util = {
 	commit<T>(array: T[], item: T) {
 		if (item !== util.last(array)) array.push(item);
 		return item;
