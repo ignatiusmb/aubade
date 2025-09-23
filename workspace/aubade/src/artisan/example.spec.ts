@@ -771,11 +771,13 @@ describe('libretto', ({ concurrent: it }) => {
 		'quotes#double/2': ['"a *b* c"', '<p>“a <em>b</em> c”</p>'],
 		'quotes#single/1': ["'hello'", '<p>‘hello’</p>'],
 		'quotes#single/2': ["'a 'b' c'", '<p>‘a ‘b’ c’</p>'],
+		'quotes#single/3': ["don't", '<p>don’t</p>'],
 		'quotes#mixed/1': [`"a 'b' c"`, '<p>“a ‘b’ c”</p>'],
 		'quotes#mixed/2': [`'a "b" c'`, '<p>‘a “b” c’</p>'],
 		'quotes#mixed/3': [`'a "b' c"`, '<p>‘a “b’ c”</p>'],
 		'quotes#mixed/4': [`'"hello"'`, '<p>‘“hello”’</p>'],
 		'quotes#mixed/5': [`"'hello'"`, '<p>“‘hello’”</p>'],
+		'quotes#mixed/6': [`"i've not"`, '<p>“i’ve not”</p>'],
 
 		'strike#single': ['~strike~', '<p>~strike~</p>'],
 		'strike#normal': ['~~strike~~', '<p><del>strike</del></p>'],

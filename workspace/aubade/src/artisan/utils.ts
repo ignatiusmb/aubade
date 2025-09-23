@@ -34,7 +34,7 @@ export function typographic(token: Extract<Token, { type: 'inline:text' }>) {
 		const right = util.is['right-flanking'](prev || ' ', next || ' ');
 
 		const double = left ? '“' : right ? '”' : char;
-		const single = left ? '‘' : right ? '’' : char;
+		const single = right ? '’' : left ? '‘' : char;
 
 		result += char === '"' ? double : single;
 	}
