@@ -30,11 +30,12 @@ export function typographic(token: Extract<Token, { type: 'inline:text' }>) {
 		const prev = token.text[i - 1];
 		const next = token.text[i + 1];
 
+		const prime = /\d/.test(prev);
 		const left = util.is['left-flanking'](prev || ' ', next || ' ');
 		const right = util.is['right-flanking'](prev || ' ', next || ' ');
 
-		const double = left ? '“' : right ? '”' : char;
-		const single = left ? '‘' : right ? '’' : char;
+		const double = left ? '“' : right ? (prime ? '″' : '”') : char;
+		const single = right ? (prime ? '′' : '’') : left ? '‘' : char;
 
 		result += char === '"' ? double : single;
 	}
