@@ -670,6 +670,8 @@ describe('spec', ({ concurrent: it }) => {
 
 describe('libretto', ({ concurrent: it }) => {
 	const suite: Record<string, [string, string]> = {
+		'crlf#paragraph': ['aaa\r\n\r\nbbb', '<p>aaa</p>\n<p>bbb</p>'],
+
 		'comment#block/1': ['<!-- comment -->', ''],
 		'comment#block/2': ['<!---\ncomment\n--->', ''],
 		'comment#block/3': ['<!-- comment with -- is fine -->', ''],

@@ -59,7 +59,7 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 	}
 
 	return (input: string) => {
-		let { children: stream } = compose(input);
+		let { children: stream } = compose(input.replace(/\r\n?/g, '\n'));
 
 		if (quotes === 'typographic') {
 			stream = stream.map((t) => walk(t, { 'inline:text': typographic }));
