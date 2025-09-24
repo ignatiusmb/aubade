@@ -332,9 +332,10 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 
 	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
 		const { attr: parent, meta } = stack['block:heading'][i];
-		if (meta.level >= level) continue;
-		id = `${parent.id}-${id}`;
-		break;
+		if (meta.level < level) {
+			id = `${parent.id}-${id}`;
+			break;
+		}
 	}
 
 	let suffix = 0;
@@ -342,12 +343,11 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 		const check = suffix ? `${id}-${suffix}` : id;
 		if (h.attr.id === check) suffix++;
 	}
-	id = suffix ? `${id}-${suffix}` : id;
 
 	return util.commit(stack['block:heading'], {
 		type: 'block:heading',
 		meta: { level, text: children.map(extract).join('') },
-		attr: { id },
+		attr: { id: suffix ? `${id}-${suffix}` : id },
 		children,
 	});
 }
