@@ -87,7 +87,7 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 				? `<iframe src="https://www.youtube-nocookie.com/embed/${prefix}${link}" frameborder="0" allowfullscreen title="${caption}"></iframe>`
 				: `<iframe src="https://www.youtube-nocookie.com/embed/${yid}" srcdoc="<style>*{padding:0;margin:0;overflow:hidden;transition:300ms}html,body{height:100%}a,span{display:flex;align-items:center;justify-content:center}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{width:5rem;height:5rem;font-size:3rem;color:white;text-shadow:0 0 0.5rem black;background:rgba(0,0,0,0.8);border-radius:50%;padding:0.25rem 0 0.25rem 0.5rem}a:hover span{background:rgb(255,0,0)}</style><a href=https://www.youtube-nocookie.com/embed/${yid}?autoplay=1&${params}><img src=https://img.youtube.com/vi/${yid}/hqdefault.jpg alt='${caption}'><span>&#x25BA;</span></a>" frameborder="0" allowfullscreen title="${caption}"></iframe>`;
 		} else if (['video'].includes(type)) {
-			media.data = `<video controls><source src="${link}" type="video/mp4"></video>`;
+			media.data = `<video controls>\n<source src="${link}" type="video/mp4">\n</video>`;
 		}
 	} else {
 		token.attrSet('alt', alt.replace(/#\w+/g, ''));
@@ -106,13 +106,13 @@ marker.renderer.rules.image = (tokens, idx, options, env, self) => {
 		top: ['breakout', 'full-bleed'].filter((c) => mAttrs.has(c)),
 	};
 
-	media.data = `<div class="${classes.div.join(' ')}">${media.data}</div>`;
+	media.data = `<div class="${classes.div.join(' ')}">\n${media.data}\n</div>`;
 	const rendered = marker.renderInline(caption);
 	if (mAttrs.has('disclosure')) {
-		const body = `<summary>${rendered}</summary>${media.data}`;
+		const body = `\n<summary>${rendered}</summary>\n${media.data}\n`;
 		return `<details class="${classes.top.join(' ')}">${body}</details>`;
 	} else {
-		const body = `${media.data}<figcaption>${rendered}</figcaption>`;
+		const body = `\n${media.data}\n<figcaption>${rendered}</figcaption>\n`;
 		return `<figure class="${classes.top.join(' ')}">${body}</figure>`;
 	}
 };

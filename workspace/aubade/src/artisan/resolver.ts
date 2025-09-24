@@ -17,7 +17,9 @@ export const base = {
 		return print(
 			data.disclosure ? '<details>' : '<figure>',
 			data.disclosure && `<summary>${text}</summary>`,
+			'<div data-aubade="youtube">',
 			`<iframe src="${src}" ${attributes.join(' ')}></iframe>`,
+			'</div>',
 			!data.disclosure && data.caption && `<figcaption>${text}</figcaption>`,
 			data.disclosure ? '</details>' : '</figure>',
 		);
@@ -26,14 +28,15 @@ export const base = {
 		const src = sanitize(data.src || '');
 		const type = sanitize(data.type || 'video/mp4').toLowerCase();
 		const text = annotate(data.caption || 'video').map(render);
-		const fallback = sanitize(data.fallback || 'Your browser does not support HTML5 video.');
 		return print(
 			data.disclosure ? '<details>' : '<figure>',
 			data.disclosure && `<summary>${text}</summary>`,
+			'<div data-aubade="video">',
 			'<video controls preload="metadata">',
 			`<source src="${src}" type="${type}" />`,
-			fallback,
+			sanitize(data.fallback || 'Your browser does not support HTML5 video.'),
 			'</video>',
+			'</div>',
 			!data.disclosure && data.caption && `<figcaption>${text}</figcaption>`,
 			data.disclosure ? '</details>' : '</figure>',
 		);
@@ -54,11 +57,11 @@ export const standard = {
 	'block:break': () => `<hr />`,
 	'block:heading'({ token, render, sanitize }) {
 		const tag = `h${token.meta.level}`;
-		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-			v.length ? `${k}="${sanitize(v)}"` : [],
-		);
+		const attributes = Object.entries(token.attr)
+			.flatMap(([k, v]) => (v.length ? `${k}="${sanitize(v)}"` : []))
+			.join(' ');
 		const children = token.children.map(render).join('');
-		return `<${tag} ${attributes.join(' ')}>${children}</${tag}>`;
+		return `<${tag}${attributes ? ' ' + attributes : ''}>${children}</${tag}>`;
 	},
 	'block:code'({ token, sanitize }) {
 		const { 'data-language': lang } = token.attr;
@@ -102,10 +105,11 @@ export const standard = {
 		return `<table>\n${thead}${tbody}\n</table>`;
 	},
 	'block:image'({ token, render, sanitize }) {
-		const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
 		const title = token.children.map(render).join('');
 		const caption = title ? `\n<figcaption>${title}</figcaption>` : '';
-		return `<figure>\n${img}${caption}\n</figure>`;
+		const img = `<img src="${sanitize(token.attr.src)}" alt="${sanitize(token.attr.alt)}" />`;
+		const body = `<div data-aubade="image">\n${img}\n</div>`;
+		return `<figure>\n${body}${caption}\n</figure>`;
 	},
 	'block:paragraph'({ token, render }) {
 		return `<p>${token.children.map(render).join('')}</p>`;

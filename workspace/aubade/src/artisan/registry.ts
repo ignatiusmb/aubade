@@ -313,8 +313,8 @@ export function figure(context: Context): null | {
 
 export function heading({ annotate, extract, cursor, stack, util }: Context): null | {
 	type: 'block:heading';
-	meta: { level: number };
-	attr: { id: string; 'data-text': string };
+	meta: { level: number; text: string };
+	attr: { id: string };
 	children: Annotation[];
 } {
 	cursor.trim(); // trim leading whitespace
@@ -325,32 +325,29 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 	if (!title.length) return null;
 
 	const children = annotate(title);
-	const attr = {
-		id: title
-			.toLowerCase()
-			.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
-			.replace(/^-+|-+$|(?<=-)-+/g, ''),
-		'data-text': children.map(extract).join(''),
-	};
+	let id = title
+		.toLowerCase()
+		.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+		.replace(/^-+|-+$|(?<=-)-+/g, '');
 
 	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
 		const { attr: parent, meta } = stack['block:heading'][i];
 		if (meta.level >= level) continue;
-		attr.id = `${parent.id}-${attr.id}`;
+		id = `${parent.id}-${id}`;
 		break;
 	}
 
 	let suffix = 0;
 	for (const h of stack['block:heading']) {
-		const check = suffix ? `${attr.id}-${suffix}` : attr.id;
+		const check = suffix ? `${id}-${suffix}` : id;
 		if (h.attr.id === check) suffix++;
 	}
-	attr.id = suffix ? `${attr.id}-${suffix}` : attr.id;
+	id = suffix ? `${id}-${suffix}` : id;
 
 	return util.commit(stack['block:heading'], {
 		type: 'block:heading',
-		meta: { level },
-		attr,
+		meta: { level, text: children.map(extract).join('') },
+		attr: { id },
 		children,
 	});
 }
