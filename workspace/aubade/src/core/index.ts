@@ -28,7 +28,7 @@ export function assemble(source: string): {
 					if (token.type !== 'block:heading') continue;
 					toc.push({
 						id: token.attr.id,
-						title: token.attr['data-text'],
+						title: token.meta.text,
 						level: token.meta.level,
 					});
 				}
