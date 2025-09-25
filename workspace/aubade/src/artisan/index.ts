@@ -70,8 +70,8 @@ export function forge({ directive = {}, renderer = {}, transform = {} }: Options
 			},
 
 			html(overrides: Options['renderer'] = {}) {
+				delete overrides['aubade:directive']; // prevent override of directives
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
-					delete overrides['aubade:directive']; // prevent override of directives
 					const resolve: Resolver<T> = { ...resolver, ...overrides }[token.type] as any;
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 					return resolve({ token, render: html, sanitize: escape });
