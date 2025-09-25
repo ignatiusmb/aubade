@@ -21,11 +21,13 @@ export type Resolver<T extends Token['type'] = Token['type']> = (panel: {
 export interface Options {
 	directive?: { [key: string]: Director };
 	renderer?: { [T in Token as T['type']]?: Resolver<T['type']> };
-	quotes?: 'original' | 'typewriter' | 'typographic';
+	transform?: { [T in Token as T['type']]?: (token: T) => T };
 }
 
-export const engrave = forge({ quotes: 'typographic' });
-export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
+export const engrave = forge({
+	transform: { 'inline:text': ({ type, text }) => ({ type, text: typography(text) }) },
+});
+export function forge({ directive = {}, renderer = {}, transform = {} }: Options = {}) {
 	const resolver = {
 		...standard,
 		...renderer,
@@ -45,11 +47,7 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 		},
 	} satisfies Options['renderer'];
 
-	type Visitors = {
-		[T in Token['type']]?: (token: Extract<Token, { type: T }>) => Extract<Token, { type: T }>;
-	};
-
-	function walk<T extends Token>(token: T, visitors: Visitors = {}): T {
+	function walk<T extends Token>(token: T, visitors: Options['transform'] = {}): T {
 		if ('children' in token) {
 			const visited = token.children.map((child) => walk(child, visitors));
 			token.children = visited as typeof token.children;
@@ -61,12 +59,7 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 
 	return (input: string) => {
 		let { children: stream } = compose(input.replace(/\r\n?/g, '\n'));
-
-		if (quotes === 'typographic') {
-			stream = stream.map((t) =>
-				walk(t, { 'inline:text': ({ type, text }) => ({ type, text: typography(text) }) }),
-			);
-		}
+		if (Object.keys(transform).length) stream = stream.map((t) => walk(t, transform));
 
 		return {
 			get tokens() {
@@ -77,15 +70,15 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 			},
 
 			html(overrides: Options['renderer'] = {}) {
+				delete overrides['aubade:directive']; // prevent override of directives
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
-					delete overrides['aubade:directive']; // prevent override of directives
 					const resolve: Resolver<T> = { ...resolver, ...overrides }[token.type] as any;
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 					return resolve({ token, render: html, sanitize: escape });
 				}
 				return stream.map(html).join('\n');
 			},
-			visit(visitors: Visitors): typeof stream {
+			visit(visitors: Options['transform']): typeof stream {
 				return stream.map((token) => walk(token, visitors));
 			},
 		};
