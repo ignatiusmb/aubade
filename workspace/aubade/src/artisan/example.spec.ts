@@ -656,8 +656,8 @@ describe('libretto', ({ concurrent: it }) => {
 		'comment#block/2': ['<!---\ncomment\n--->', ''],
 		'comment#block/3': ['<!-- comment with -- is fine -->', ''],
 		'comment#inline/1': ['a <!-- comment --> b', '<p>a  b</p>'],
-		'comment#inline/2': ['a <!-- comment --> b -->', '<p>a  b --&gt;</p>'],
-		'comment#inline/3': ['a <!-- comment b', '<p>a &lt;!-- comment b</p>'],
+		'comment#inline/2': ['a <!-- comment --> b -->', '<p>a  b –&gt;</p>'],
+		'comment#inline/3': ['a <!-- comment b', '<p>a &lt;!– comment b</p>'],
 
 		'directive#youtube': [
 			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
