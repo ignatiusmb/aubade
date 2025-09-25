@@ -15,8 +15,8 @@ Aubade implements [Libretto](/docs/libretto), a markdown dialect designed to kee
 ```typescript
 export function engrave(input: string): {
 	tokens: Token[];
-	html(override?: Options['renderer']): string;
-	visit(map: {
+	html(overrides?: Options['renderer']): string;
+	visit(visitors: {
 		[T in Token['type']]?: (token: Extract<Token, { type: T }>) => Extract<Token, { type: T }>;
 	}): Block[];
 };
@@ -73,3 +73,11 @@ const mark = forge({
 mark('hello *world*').html();
 // -> <p>hello <i>world</i></p>
 ```
+
+## typography
+
+```typescript
+export function typography(text: string): string;
+```
+
+`typography()` applies smart punctuation transformations to plain text, such as converting typewriter (straight) quotes to typographic (fancy) quotes, replacing double and triple hyphens with en and em dashes, and converting three consecutive dots to an ellipsis.
