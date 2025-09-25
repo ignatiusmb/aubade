@@ -49,9 +49,7 @@ export type Resolver<T extends Token['type'] = Token['type']> = (panel: {
 export interface Options {
 	directive?: { [key: string]: Director };
 	renderer?: { [T in Token as T['type']]?: Resolver<T['type']> };
-	transform?: {
-		[T in Token['type']]?: (token: Extract<Token, { type: T }>) => Extract<Token, { type: T }>;
-	};
+	transform?: { [T in Token as T['type']]?: (token: T) => T };
 }
 
 export function forge(options: Options = {}): typeof engrave;
