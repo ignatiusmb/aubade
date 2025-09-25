@@ -1,7 +1,8 @@
 import type { Token } from './registry.js';
-import { escape, typographic } from './utils.js';
+import { util } from './context.js';
 import { annotate, compose } from './engine.js';
 import { base, standard } from './resolver.js';
+import { escape } from './utils.js';
 
 export type Director = (panel: {
 	data: Extract<Token, { type: 'aubade:directive' }>['meta']['data'];
@@ -62,7 +63,9 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 		let { children: stream } = compose(input.replace(/\r\n?/g, '\n'));
 
 		if (quotes === 'typographic') {
-			stream = stream.map((t) => walk(t, { 'inline:text': typographic }));
+			stream = stream.map((t) =>
+				walk(t, { 'inline:text': ({ type, text }) => ({ type, text: typography(text) }) }),
+			);
 		}
 
 		return {
@@ -73,18 +76,42 @@ export function forge({ directive = {}, renderer = {}, quotes }: Options = {}) {
 				stream = v;
 			},
 
-			html(override: Options['renderer'] = {}) {
+			html(overrides: Options['renderer'] = {}) {
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
-					delete override['aubade:directive']; // prevent override of directives
-					const resolve: Resolver<T> = { ...resolver, ...override }[token.type] as any;
+					delete overrides['aubade:directive']; // prevent override of directives
+					const resolve: Resolver<T> = { ...resolver, ...overrides }[token.type] as any;
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
 					return resolve({ token, render: html, sanitize: escape });
 				}
 				return stream.map(html).join('\n');
 			},
-			visit(map: Visitors): typeof stream {
-				return stream.map((token) => walk(token, map));
+			visit(visitors: Visitors): typeof stream {
+				return stream.map((token) => walk(token, visitors));
 			},
 		};
 	};
+}
+
+export function typography(text: string): string {
+	let output = '';
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char !== "'" && char !== '"') {
+			output += char;
+			continue;
+		}
+
+		const prev = text[i - 1];
+		const next = text[i + 1];
+
+		const prime = /\d/.test(prev);
+		const left = util.is['left-flanking'](prev || ' ', next || ' ');
+		const right = util.is['right-flanking'](prev || ' ', next || ' ');
+
+		const double = left ? '“' : right ? (prime ? '″' : '”') : char;
+		const single = right ? (prime ? '′' : '’') : left ? '‘' : char;
+		output += char === '"' ? double : single;
+	}
+	output = output.replace(/---/g, '—').replace(/--/g, '–');
+	return output.replace(/\.{3,}/g, '…');
 }
