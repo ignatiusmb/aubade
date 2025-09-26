@@ -103,7 +103,7 @@ export function directive({ cursor }: Context): null | {
 				data[clean(name)] = String(value === '' || value);
 				name = value = '';
 				equals = false;
-			} else if (char === '=') {
+			} else if (!quoted && char === '=') {
 				equals = true;
 			} else if (quoted || char !== ' ') {
 				if (!equals) name += char;

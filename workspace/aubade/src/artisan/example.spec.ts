@@ -703,13 +703,24 @@ describe('libretto', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'directive#youtube/series': [
-			'@youtube{series="PLZRRxQcaEjA4qyEuYfAMCazlL0vQDkIj2" caption="Mind Field: Season 1"}',
+			'@youtube{series=PLZRRxQcaEjA4qyEuYfAMCazlL0vQDkIj2 caption="Mind Field: Season 1"}',
 			[
 				'<figure>',
 				'<div data-aubade="youtube">',
 				'<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLZRRxQcaEjA4qyEuYfAMCazlL0vQDkIj2" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
 				'</div>',
 				'<figcaption>Mind Field: Season 1</figcaption>',
+				'</figure>',
+			].join('\n'),
+		],
+		'directive#youtube/timestamp': [
+			'@youtube{id="B3akM3m_tz0?t=37" caption="Guitar, Loneliness and Blue Planet"',
+			[
+				'<figure>',
+				'<div data-aubade="youtube">',
+				'<iframe src="https://www.youtube-nocookie.com/embed/B3akM3m_tz0?t=37" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
+				'</div>',
+				'<figcaption>Guitar, Loneliness and Blue Planet</figcaption>',
 				'</figure>',
 			].join('\n'),
 		],
