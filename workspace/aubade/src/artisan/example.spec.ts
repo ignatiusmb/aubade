@@ -598,7 +598,40 @@ describe('spec', ({ concurrent: it }) => {
 			'<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>',
 		],
 		'495|todo': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
-		// @TODO: 496-571 [links]
+		// @TODO: 496-506 [links]
+		'507': ['[link](/url "title")', '<p><a href="/url%C2%A0%22title%22">link</a></p>'],
+		'508': [
+			'[link](/url "title "and" title")',
+			'<p>[link](/url &quot;title &quot;and&quot; title&quot;)</p>',
+		],
+		'509': [
+			`[link](/url 'title "and" title')`,
+			'<p><a href="/url" title="title &quot;and&quot; title">link</a></p>',
+		],
+		'510': ['[link](   /uri\n  "title"  )', '<p><a href="/uri" title="title">link</a></p>'],
+		'511': ['[link] (/uri)', '<p>[link] (/uri)</p>'],
+		'512': ['[link [foo [bar]]](/uri)', '<p><a href="/uri">link [foo [bar]]</a></p>'],
+		'513': ['[link] bar](/uri)', '<p>[link] bar](/uri)</p>'],
+		'514': ['[link [bar](/uri)', '<p>[link <a href="/uri">bar</a></p>'],
+		'515': ['[link \\[bar](/uri)', '<p><a href="/uri">link [bar</a></p>'],
+		'516': [
+			'[link *foo **bar** `#`*](/uri)',
+			'<p><a href="/uri">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>',
+		],
+		'517': [
+			'[![moon](moon.jpg)](/uri)',
+			'<p><a href="/uri"><img src="moon.jpg" alt="moon" /></a></p>',
+		],
+		'518': ['[foo [bar](/uri)](/uri)', '<p>[foo <a href="/uri">bar</a>](/uri)</p>'],
+		'519': [
+			'[foo *[bar [baz](/uri)](/uri)*](/uri)',
+			'<p>[foo <em>[bar <a href="/uri">baz</a>](/uri)</em>](/uri)</p>',
+		],
+		'520|mod|todo': [
+			'a ![[[foo](uri1)](uri2)](uri3)',
+			'<p>a <img src="uri3" alt="[foo](uri2)" /></p>',
+		],
+		// @TODO: 521-571 [links]
 		'572|mod': ['a ![foo](/url "title")', '<p>a <img src="/url" alt="foo" title="title" /></p>'],
 		'573|skip': [
 			'![foo *bar*]\n\n[foo *bar*]: train.jpg "train & tracks"',
