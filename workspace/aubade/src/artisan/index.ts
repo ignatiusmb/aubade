@@ -101,7 +101,7 @@ export function typography(text: string): string {
 		const left = util.is['left-flanking'](prev || ' ', next || ' ');
 		const right = util.is['right-flanking'](prev || ' ', next || ' ');
 
-		const double = left ? '“' : right ? (prime ? '″' : '”') : char;
+		const double = right ? (prime ? '″' : '”') : left ? '“' : char;
 		const single = right ? (prime ? '′' : '’') : left ? '‘' : char;
 		output += char === '"' ? double : single;
 	}

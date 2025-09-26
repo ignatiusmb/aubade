@@ -68,5 +68,5 @@ export const codeblock: Resolver<'block:code'> = ({ token, sanitize }) => {
 		'</header>',
 		`<pre data-aubade="pre">${highlight(token.meta.code, dataset)}</pre>`,
 		'</div>',
-	].join('');
+	].join('\n');
 };

@@ -13,7 +13,7 @@ export const DATA = {
 				const { doc, manifest, meta } = assemble(buffer.toString('utf-8'));
 
 				function materialize(source: string): string {
-					const asset = siblings.find(({ filename }) => source === filename);
+					const asset = siblings.find(({ filename }) => source.endsWith(filename));
 					if (!asset || !/\.(jpe?g|png|svg|mp4)$/.test(asset.filename)) return source;
 					task(async ({ fs }) => {
 						await fs.mkdir(ROOT, { recursive: true });
