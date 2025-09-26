@@ -794,6 +794,10 @@ describe('libretto', ({ concurrent: it }) => {
 		'quotes#mixed/5': [`"'hello'"`, '<p>“‘hello’”</p>'],
 		'quotes#mixed/6': [`"i'm sure"`, '<p>“i’m sure”</p>'],
 		'quotes#mixed/7': [`"13" laptop"`, '<p>“13″ laptop”</p>'],
+		'quotes#mixed/8': [
+			`"first!", "second?", and "third?".`,
+			'<p>“first!”, “second?”, and “third?”.</p>',
+		],
 
 		'strike#single': ['~strike~', '<p>~strike~</p>'],
 		'strike#normal': ['~~strike~~', '<p><del>strike</del></p>'],
