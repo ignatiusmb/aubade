@@ -1,7 +1,7 @@
 import type { Options } from './index.js';
 
 export const base = {
-	youtube({ data, annotate, print, render, sanitize }) {
+	youtube({ data, annotate, print, sanitize }) {
 		const id = sanitize(data.series || data.id || '');
 		const prefix = data.series ? 'videoseries?list=' : '';
 		const src = `https://www.youtube-nocookie.com/embed/${prefix}${id}`;
@@ -13,7 +13,7 @@ export const base = {
 			'allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"',
 			'referrerpolicy="strict-origin-when-cross-origin"',
 		];
-		const text = annotate(data.caption || 'youtube video').map(render);
+		const text = annotate(data.caption || 'youtube video');
 		return print(
 			data.disclosure ? '<details>' : '<figure>',
 			data.disclosure && `<summary>${text}</summary>`,
@@ -24,10 +24,10 @@ export const base = {
 			data.disclosure ? '</details>' : '</figure>',
 		);
 	},
-	video({ data, annotate, print, render, sanitize }) {
+	video({ data, annotate, print, sanitize }) {
 		const src = sanitize(data.src || '');
 		const type = sanitize(data.type || 'video/mp4').toLowerCase();
-		const text = annotate(data.caption || 'video').map(render);
+		const text = annotate(data.caption || 'video');
 		return print(
 			data.disclosure ? '<details>' : '<figure>',
 			data.disclosure && `<summary>${text}</summary>`,
