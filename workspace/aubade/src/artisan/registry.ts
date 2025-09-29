@@ -573,7 +573,7 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	}
 
 	cursor.trim();
-	if (balance >= 0 && !cursor.eat(')')) return null;
+	if (balance === 0 && !cursor.eat(')')) return null;
 	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && dest.includes('`');
 	if (invalid || dest.includes('\n')) return null;
