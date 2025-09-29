@@ -6,9 +6,8 @@ import { escape } from './utils.js';
 
 export type Director = (panel: {
 	data: Extract<Token, { type: 'aubade:directive' }>['meta']['data'];
-	annotate: typeof annotate;
 	print(...lines: Array<string | false>): string;
-	render(token: Token): string;
+	render(source: string): string;
 	sanitize: typeof escape;
 }) => string;
 
@@ -37,12 +36,9 @@ export function forge({ directive = {}, renderer = {}, transform = {} }: Options
 			if (!transform) throw new Error(`Unknown directive type: ${meta.type}`);
 			return transform({
 				data: meta.data,
-				annotate,
-				render,
+				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
+				render: (source) => annotate(source).map(render).join(''),
 				sanitize,
-				print(...lines) {
-					return lines.flatMap((l) => (!l ? [] : l)).join('\n');
-				},
 			});
 		},
 	} satisfies Options['renderer'];
@@ -74,7 +70,8 @@ export function forge({ directive = {}, renderer = {}, transform = {} }: Options
 				function html<T extends Token['type']>(token: Extract<Token, { type: T }>): string {
 					const resolve: Resolver<T> = { ...resolver, ...overrides }[token.type] as any;
 					if (!resolve) throw new Error(`Unknown token type: ${token.type}`);
-					return resolve({ token, render: html, sanitize: escape });
+					const visited = transform[token.type] ? walk(token, transform) : token;
+					return resolve({ token: visited, render: html, sanitize: escape });
 				}
 				return stream.map(html).join('\n');
 			},

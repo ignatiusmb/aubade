@@ -693,13 +693,13 @@ describe('libretto', ({ concurrent: it }) => {
 		'comment#inline/3': ['a <!-- comment b', '<p>a &lt;!– comment b</p>'],
 
 		'directive#youtube': [
-			'@youtube{id=7TovqLDCosk caption="hitoribocchi tokyo"}',
+			'@youtube{id=7TovqLDCosk caption="[hitoribocchi tokyo](https://music.youtube.com/watch?v=7TovqLDCosk) by kessoku band"}',
 			[
 				'<figure>',
 				'<div data-aubade="youtube">',
 				'<iframe src="https://www.youtube-nocookie.com/embed/7TovqLDCosk" title="YouTube video player" loading="lazy" frameborder="0" allowfullscreen allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
 				'</div>',
-				'<figcaption>hitoribocchi tokyo</figcaption>',
+				'<figcaption><a href="https://music.youtube.com/watch?v=7TovqLDCosk">hitoribocchi tokyo</a> by kessoku band</figcaption>',
 				'</figure>',
 			].join('\n'),
 		],
@@ -715,7 +715,7 @@ describe('libretto', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'directive#youtube/newlines': [
-			['@youtube{', '  id=7TovqLDCosk', '  caption="hitoribocchi tokyo"', '}'].join('\n'),
+			'@youtube{\n  id=7TovqLDCosk\n  caption="hitoribocchi tokyo"\n}',
 			[
 				'<figure>',
 				'<div data-aubade="youtube">',
