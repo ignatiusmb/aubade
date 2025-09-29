@@ -174,6 +174,7 @@ export function markup({ compose, cursor }: Context): null | {
 	const close = `</${tag}>`;
 	const contents = cursor.locate(new RegExp(close));
 	if (!contents.length && !cursor.eat(close)) return null;
+	cursor.eat(close);
 
 	const { children } = compose(contents);
 	return { type: 'aubade:html', meta: { tag }, attr, children };
@@ -528,42 +529,66 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	children: Annotation[];
 } {
 	if (!cursor.eat('[')) return null;
-	const name = cursor.locate(/]/).replace(/\n/g, ' ');
-	if (!cursor.eat('](')) return null;
-	cursor.trim(); // whitespace between opening `(` and link
+	let balance = 1;
+	let name = '';
+	while (balance > 0) {
+		const escaped = cursor.eat('\\');
+		const char = cursor.read(1);
+		if (!char) return null;
+		if (!escaped) {
+			balance += char === '[' ? 1 : char === ']' ? -1 : 0;
+		}
+		if (balance > 0) name += char;
+	}
+	if (!cursor.eat('(')) return null;
 
+	cursor.trim();
 	let dest = '';
 	if (cursor.eat('<')) {
 		while (!cursor.eat('>')) {
 			cursor.eat('\\');
 			const char = cursor.read(1);
 			if (!char || char === '\n') return null;
-			dest += char === ' ' ? '%20' : char;
+			dest += char;
 		}
 	} else {
-		// while (!cursor.eat(' ')) {
-		// 	cursor.eat('\\');
-		// 	const char = cursor.read(1);
-		// 	dest += char;
-		// }
-		dest = cursor.locate(/\s|\)/);
+		dest = cursor.locate(/ |\n|\)/);
 	}
-	cursor.trim(); // whitespace between link and optional title
 
-	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"');
 	cursor.trim();
-
+	let title = '';
+	const c = cursor.see(0);
+	if (c === '"' || c === "'") {
+		cursor.eat(c);
+		while (!cursor.eat(c)) {
+			cursor.eat('\\');
+			const char = cursor.read(1);
+			if (!char || char === '\n') return null;
+			title += char;
+		}
+	}
+	while (cursor.eat(' '));
 	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && dest.includes('`');
 	if (invalid || !cursor.eat(')')) return null;
 
+	const children = annotate(name.replace(/\n/g, ' '));
+	if (trace(children)) return null;
+
 	return {
 		type: 'inline:link',
 		attr: {
-			href: annotate(dest).map(extract).join(''),
+			href: encodeURI(annotate(dest).map(extract).join('')),
 			title: annotate(title.trim()).map(extract).join(''),
 		},
-		children: annotate(name),
+		children,
 	};
+
+	function trace(tokens: Token[]): boolean {
+		for (const token of tokens) {
+			if (token.type === 'inline:link') return true;
+			if ('children' in token && trace(token.children)) return true;
+		}
+		return false;
+	}
 }
