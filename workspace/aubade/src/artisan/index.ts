@@ -6,8 +6,8 @@ import { escape } from './utils.js';
 
 export type Director = (panel: {
 	data: Extract<Token, { type: 'aubade:directive' }>['meta']['data'];
+	annotate(source: string): string;
 	print(...lines: Array<string | false>): string;
-	render(source: string): string;
 	sanitize: typeof escape;
 }) => string;
 
@@ -36,8 +36,8 @@ export function forge({ directive = {}, renderer = {}, transform = {} }: Options
 			if (!transform) throw new Error(`Unknown directive type: ${meta.type}`);
 			return transform({
 				data: meta.data,
+				annotate: (source) => annotate(source).map(render).join(''),
 				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
-				render: (source) => annotate(source).map(render).join(''),
 				sanitize,
 			});
 		},

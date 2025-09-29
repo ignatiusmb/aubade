@@ -34,9 +34,8 @@ engrave('hello world').html();
 ```typescript
 export type Director = (panel: {
 	data: Extract<Token, { type: 'aubade:directive' }>['meta']['data'];
-	annotate: typeof annotate;
+	annotate(source: string): string;
 	print(...lines: Array<string | false>): string;
-	render(token: Token): string;
 	sanitize: typeof escape;
 }) => string;
 
