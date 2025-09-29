@@ -544,15 +544,19 @@ export function link({ annotate, extract, cursor }: Context): null | {
 
 	cursor.trim();
 	let dest = '';
-	if (cursor.eat('<')) {
-		while (!cursor.eat('>')) {
-			cursor.eat('\\');
-			const char = cursor.read(1);
-			if (!char || char === '\n') return null;
-			dest += char;
+	for (;;) {
+		const escaped = cursor.eat('\\');
+		const char = cursor.read(1);
+		if (!char) return null;
+		if (dest[0] !== '<' && / |\n/.test(char)) break;
+		if (!escaped && dest[0] !== '<') {
+			balance += char === '(' ? 1 : char === ')' ? -1 : 0;
 		}
-	} else {
-		dest = cursor.locate(/ |\n|\)/);
+		dest += balance >= 0 ? char : '';
+		if (balance < 0) break;
+		if (dest[0] === '<' && char === '>') {
+			if (!escaped) dest = dest.slice(1, -1);
+		}
 	}
 
 	cursor.trim();
@@ -567,10 +571,12 @@ export function link({ annotate, extract, cursor }: Context): null | {
 			title += char;
 		}
 	}
-	while (cursor.eat(' '));
+
+	cursor.trim();
+	if (balance === 0 && !cursor.eat(')')) return null;
 	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && dest.includes('`');
-	if (invalid || !cursor.eat(')')) return null;
+	if (invalid || dest.includes('\n')) return null;
 
 	const children = annotate(name.replace(/\n/g, ' '));
 	if (trace(children)) return null;

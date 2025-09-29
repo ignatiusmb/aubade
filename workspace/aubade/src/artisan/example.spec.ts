@@ -597,8 +597,27 @@ describe('spec', ({ concurrent: it }) => {
 			'[a](<b)c\n[a](<b)c>\n[a](<b>c)',
 			'<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>',
 		],
-		'495|todo': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
-		// @TODO: 496-506 [links]
+		'495': ['[link](\\(foo\\))', '<p><a href="(foo)">link</a></p>'],
+		'496': ['[link](foo(and(bar)))', '<p><a href="foo(and(bar))">link</a></p>'],
+		'497': ['[link](foo(and(bar))', '<p>[link](foo(and(bar))</p>'],
+		'498': ['[link](foo\\(and\\(bar\\))', '<p><a href="foo(and(bar)">link</a></p>'],
+		'499': ['[link](<foo(and(bar)>)', '<p><a href="foo(and(bar)">link</a></p>'],
+		'500': ['[link](foo\\)\\:)', '<p><a href="foo):">link</a></p>'],
+		'501': [
+			'[link](#fragment)\n\n[link](https://example.com#fragment)\n\n[link](https://example.com?foo=3#frag)',
+			'<p><a href="#fragment">link</a></p>\n<p><a href="https://example.com#fragment">link</a></p>\n<p><a href="https://example.com?foo=3#frag">link</a></p>',
+		],
+		'502|todo': ['[link](foo\\bar)', '<p><a href="foo%5Cbar">link</a></p>'],
+		'503|skip': ['[link](foo%20b&auml;)', '<p><a href="foo%20b%C3%A4">link</a></p>'],
+		'504': ['[link]("title")', '<p><a href="%22title%22">link</a></p>'],
+		'505|todo': [
+			`[link](/url "title")\n[link](/url 'title')\n[link](/url (title))`,
+			'<p><a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a></p>',
+		],
+		'506|todo': [
+			'[link](/url "title \"&quot;")',
+			'<p><a href="/url" title="title &quot;&quot;">link</a></p>',
+		],
 		'507': ['[link](/url "title")', '<p><a href="/url%C2%A0%22title%22">link</a></p>'],
 		'508': [
 			'[link](/url "title "and" title")',
