@@ -36,7 +36,7 @@ export function forge({ directive = {}, renderer = {}, transform = {} }: Options
 			if (!transform) throw new Error(`Unknown directive type: ${meta.type}`);
 			return transform({
 				data: meta.data,
-				annotate: (source) => annotate(source).map(render).join(''),
+				annotate: (source) => annotate(source).map(render).join(' '),
 				print: (...lines) => lines.flatMap((l) => (!l ? [] : l)).join('\n'),
 				sanitize,
 			});
