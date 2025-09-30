@@ -1,6 +1,16 @@
 import type { Options } from './index.js';
 
 export const base = {
+	disclosure({ data, annotate, print }) {
+		return print(
+			`<details${data.open === 'true' ? ' open' : ''}>`,
+			`<summary>${annotate(data.summary || 'more')}</summary>`,
+			'<div data-aubade="disclosure">',
+			annotate(data.body || ''),
+			'</div>',
+			'</details>',
+		);
+	},
 	youtube({ data, annotate, print, sanitize }) {
 		const id = sanitize(data.series || data.id || '');
 		const prefix = data.series ? 'videoseries?list=' : '';
@@ -25,7 +35,12 @@ export const base = {
 		);
 	},
 	video({ data, annotate, print, sanitize }) {
-		const src = sanitize(data.src || '');
+		let source = data.src || '';
+		const pairs: Record<string, string> = { '<': '>', '[': ']' };
+		if (pairs[data.src[0]] === data.src[data.src.length - 1]) {
+			source = data.src.slice(1, -1);
+		}
+
 		const type = sanitize(data.type || 'video/mp4').toLowerCase();
 		const text = annotate(data.caption || 'video');
 		return print(
@@ -33,7 +48,7 @@ export const base = {
 			data.disclosure && `<summary>${text}</summary>`,
 			'<div data-aubade="video">',
 			'<video controls preload="metadata">',
-			`<source src="${src}" type="${type}" />`,
+			`<source src="${sanitize(source)}" type="${type}" />`,
 			sanitize(data.fallback || 'Your browser does not support HTML5 video.'),
 			'</video>',
 			'</div>',
