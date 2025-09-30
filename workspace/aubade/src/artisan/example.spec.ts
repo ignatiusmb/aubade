@@ -778,7 +778,7 @@ describe('libretto', ({ concurrent: it }) => {
 		],
 
 		'directive#video': [
-			'@video{src=./video.mp4 caption="local video"}',
+			`@video{src=./video.mp4 caption="don't go, it's ok"}`,
 			[
 				'<figure>',
 				'<div data-aubade="video">',
@@ -787,7 +787,7 @@ describe('libretto', ({ concurrent: it }) => {
 				'Your browser does not support HTML5 video.',
 				'</video>',
 				'</div>',
-				'<figcaption>local video</figcaption>',
+				'<figcaption>don’t go, it’s ok</figcaption>',
 				'</figure>',
 			].join('\n'),
 		],
