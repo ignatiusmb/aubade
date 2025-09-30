@@ -64,6 +64,14 @@ Directives extend Markdown with inline metadata. They begin with `@`, followed b
 - **Separation**: properties are separated by spaces or newlines.
 - **End**: the directive closes with `}`.
 
+### `@disclosure`
+
+| Attribute | Type    | Description                            |
+| --------- | ------- | -------------------------------------- |
+| `summary` | string  | Text for `<summary>` (default: "more") |
+| `body`    | string  | Content inside the disclosure          |
+| `open`    | boolean | If `true`, the disclosure is expanded  |
+
 ### `@youtube`
 
 | Attribute          | Type    | Description                            |

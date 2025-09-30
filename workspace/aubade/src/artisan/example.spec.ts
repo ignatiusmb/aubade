@@ -778,7 +778,7 @@ describe('libretto', ({ concurrent: it }) => {
 		],
 
 		'directive#video': [
-			'@video{src="./video.mp4" caption="local video"}',
+			'@video{src=./video.mp4 caption="local video"}',
 			[
 				'<figure>',
 				'<div data-aubade="video">',
@@ -792,13 +792,13 @@ describe('libretto', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'directive#video/disclosure': [
-			'@video{disclosure src="./video.mp4" caption="local video"}',
+			'@video{disclosure src=<http://127.0.0.1/video.mp4> caption="local video"}',
 			[
 				'<details>',
 				'<summary>local video</summary>',
 				'<div data-aubade="video">',
 				'<video controls preload="metadata">',
-				'<source src="./video.mp4" type="video/mp4" />',
+				'<source src="http://127.0.0.1/video.mp4" type="video/mp4" />',
 				'Your browser does not support HTML5 video.',
 				'</video>',
 				'</div>',
@@ -806,12 +806,12 @@ describe('libretto', ({ concurrent: it }) => {
 			].join('\n'),
 		],
 		'directive#video/no-caption': [
-			'@video{src="./video.mp4"}',
+			'@video{src=[http://127.0.0.1/video.mp4]}',
 			[
 				'<figure>',
 				'<div data-aubade="video">',
 				'<video controls preload="metadata">',
-				'<source src="./video.mp4" type="video/mp4" />',
+				'<source src="http://127.0.0.1/video.mp4" type="video/mp4" />',
 				'Your browser does not support HTML5 video.',
 				'</video>',
 				'</div>',

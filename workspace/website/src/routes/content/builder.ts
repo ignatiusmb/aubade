@@ -27,8 +27,8 @@ export const DATA = {
 				doc.tokens = doc.visit({
 					'aubade:directive'(token) {
 						if (token.meta.type !== 'video') return token;
-						const { source } = token.meta.data;
-						token.meta.data.source = materialize(source);
+						const { src } = token.meta.data;
+						token.meta.data.src = materialize(src);
 						return token;
 					},
 					'block:image'(token) {
