@@ -95,8 +95,10 @@ export function directive({ cursor }: Context): null | {
 		let quoted: '"' | "'" | null = null;
 		let [name, value] = ['', ''];
 		while (char && char !== '}') {
-			quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
 			escaped = equals && !escaped && char === '\\';
+			if (char === '"' || char === "'") {
+				quoted = quoted === char ? null : quoted || char;
+			}
 
 			if (!quoted && name && char === ' ') {
 				value = unquote(value.trim());
@@ -150,14 +152,16 @@ export function markup({ compose, cursor }: Context): null | {
 		let quoted: '"' | "'" | null = null;
 		let [name, value] = ['', ''];
 		while (char && char !== '>') {
-			quoted = char === quoted ? null : char === '"' || char === "'" ? char : quoted;
 			escaped = equals && !escaped && char === '\\';
+			if (char === '"' || char === "'") {
+				quoted = quoted === char ? null : quoted || char;
+			}
 
 			if (!quoted && name && char === ' ') {
 				attr[clean(name)] = unquote(value);
 				name = value = '';
 				equals = false;
-			} else if (char === '=') {
+			} else if (!quoted && char === '=') {
 				equals = true;
 			} else if (quoted || char !== ' ') {
 				if (!equals) name += char;
@@ -557,21 +561,25 @@ export function link({ annotate, extract, cursor }: Context): null | {
 		}
 	}
 
-	cursor.trim();
 	let title = '';
-	const c = cursor.see(0);
-	if (c === '"' || c === "'") {
-		cursor.eat(c);
-		while (!cursor.eat(c)) {
-			cursor.eat('\\');
-			const char = cursor.read(1);
-			if (!char || char === '\n') return null;
-			title += char;
+	if (balance === 0) {
+		cursor.trim();
+		const c = cursor.see(0);
+		if (c === '"' || c === "'") {
+			cursor.eat(c);
+			while (!cursor.eat(c)) {
+				cursor.eat('\\');
+				const char = cursor.read(1);
+				if (!char || char === '\n') return null;
+				title += char;
+			}
 		}
 	}
 
-	cursor.trim();
-	if (balance === 0 && !cursor.eat(')')) return null;
+	if (balance === 0) {
+		while (cursor.eat(' '));
+		if (!cursor.eat(')')) return null;
+	}
 	// codespan backticks that invalidates "](" pattern
 	const invalid = name.includes('`') && dest.includes('`');
 	if (invalid || dest.includes('\n')) return null;
