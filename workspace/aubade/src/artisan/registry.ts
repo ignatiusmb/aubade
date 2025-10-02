@@ -503,25 +503,17 @@ export function image({ cursor }: Context): null | {
 	type: 'inline:image';
 	attr: { src: string; alt: string; title: string };
 } {
-	if (!cursor.eat('![')) return null;
-	const alt = cursor.locate(/]/);
-	if (!cursor.eat('](')) return null;
-	cursor.trim(); // whitespace between opening `(` and link
-
-	const src = cursor.locate(/\s|\)/);
-	cursor.trim(); // whitespace between link and optional title
-
-	const title = (cursor.eat('"') && cursor.locate(/"/)) || '';
-	cursor.eat('"');
-	cursor.trim();
-
-	// codespan backticks that invalidates "](" pattern
-	const invalid = alt.includes('`') && src.includes('`');
-	if (invalid || !cursor.eat(')')) return null;
+	if (!cursor.eat('!')) return null;
+	const link = construct(cursor);
+	if (!link) return null;
 
 	return {
 		type: 'inline:image',
-		attr: { src, alt, title: title.trim() },
+		attr: {
+			src: link.target,
+			alt: link.label,
+			title: link.title.trim(),
+		},
 	};
 }
 
@@ -530,9 +522,37 @@ export function link({ annotate, extract, cursor }: Context): null | {
 	attr: { href: string; title: string };
 	children: Annotation[];
 } {
+	const link = construct(cursor);
+	if (!link) return null;
+
+	const children = annotate(link.label.replace(/\n/g, ' '));
+	if (trace(children)) return null;
+
+	const dest = annotate(link.target).map(extract).join('');
+	const title = annotate(link.title.trim()).map(extract).join('');
+	return {
+		type: 'inline:link',
+		attr: { href: encodeURI(dest), title },
+		children,
+	};
+
+	function trace(tokens: Token[]): boolean {
+		for (const token of tokens) {
+			if (token.type === 'inline:link') return true;
+			if ('children' in token && trace(token.children)) return true;
+		}
+		return false;
+	}
+}
+
+function construct(cursor: Context['cursor']): null | {
+	label: string;
+	target: string;
+	title: string;
+} {
 	if (!cursor.eat('[')) return null;
 	let balance = 1;
-	let name = '';
+	let label = '';
 	while (balance > 0) {
 		const escaped = cursor.eat('\\');
 		const char = cursor.read(1);
@@ -540,24 +560,24 @@ export function link({ annotate, extract, cursor }: Context): null | {
 		if (!escaped) {
 			balance += char === '[' ? 1 : char === ']' ? -1 : 0;
 		}
-		if (balance > 0) name += char;
+		if (balance > 0) label += char;
 	}
 	if (!cursor.eat('(')) return null;
 
 	cursor.trim();
-	let dest = '';
+	let target = '';
 	for (;;) {
 		const escaped = cursor.eat('\\');
 		const char = cursor.read(1);
 		if (!char) return null;
-		if (dest[0] !== '<' && / |\n/.test(char)) break;
-		if (!escaped && dest[0] !== '<') {
+		if (target[0] !== '<' && / |\n/.test(char)) break;
+		if (!escaped && target[0] !== '<') {
 			balance += char === '(' ? 1 : char === ')' ? -1 : 0;
 		}
-		dest += balance >= 0 ? char : '';
+		target += balance >= 0 ? char : '';
 		if (balance < 0) break;
-		if (dest[0] === '<' && char === '>') {
-			if (!escaped) dest = dest.slice(1, -1);
+		if (target[0] === '<' && char === '>') {
+			if (!escaped) target = target.slice(1, -1);
 		}
 	}
 
@@ -581,26 +601,8 @@ export function link({ annotate, extract, cursor }: Context): null | {
 		if (!cursor.eat(')')) return null;
 	}
 	// codespan backticks that invalidates "](" pattern
-	const invalid = name.includes('`') && dest.includes('`');
-	if (invalid || dest.includes('\n')) return null;
+	const invalid = label.includes('`') && target.includes('`');
+	if (invalid || target.includes('\n')) return null;
 
-	const children = annotate(name.replace(/\n/g, ' '));
-	if (trace(children)) return null;
-
-	return {
-		type: 'inline:link',
-		attr: {
-			href: encodeURI(annotate(dest).map(extract).join('')),
-			title: annotate(title.trim()).map(extract).join(''),
-		},
-		children,
-	};
-
-	function trace(tokens: Token[]): boolean {
-		for (const token of tokens) {
-			if (token.type === 'inline:link') return true;
-			if ('children' in token && trace(token.children)) return true;
-		}
-		return false;
-	}
+	return { label, target, title };
 }
