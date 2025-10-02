@@ -658,7 +658,57 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'574|todo': ['a ![foo ![bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
 		'575|todo': ['a ![foo [bar](/url)](/url2)', '<p>a <img src="/url2" alt="foo bar" /></p>'],
-		// @TODO: 576-593 [images]
+		'576|skip': [
+			'![foo *bar*][]\n\n[foo *bar*]: train.jpg "train & tracks"',
+			'<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>',
+		],
+		'577|skip': [
+			'![foo *bar*][foobar]\n\n[FOOBAR]: train.jpg "train & tracks"',
+			'<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>',
+		],
+		'578|mod': ['a ![foo](train.jpg)', '<p>a <img src="train.jpg" alt="foo" /></p>'],
+		'579': [
+			'My ![foo bar](/path/to/train.jpg  "title"   )',
+			'<p>My <img src="/path/to/train.jpg" alt="foo bar" title="title" /></p>',
+		],
+		'580|mod': ['a ![foo](<url>)', '<p>a <img src="url" alt="foo" /></p>'],
+		'581|mod': ['a ![](/url)', '<p>a <img src="/url" alt="" /></p>'],
+		'582|skip': ['![foo][bar]\n\n[bar]: /url', '<p><img src="/url" alt="foo" /></p>'],
+		'583|skip': ['![foo][bar]\n\n[BAR]: /url', '<p><img src="/url" alt="foo" /></p>'],
+		'584|skip': [
+			'![foo][]\n\n[foo]: /url "title"',
+			'<p><img src="/url" alt="foo" title="title" /></p>',
+		],
+		'585|skip': [
+			'![*foo* bar][]\n\n[*foo* bar]: /url "title"',
+			'<p><img src="/url" alt="foo bar" title="title" /></p>',
+		],
+		'586|skip': [
+			'![Foo][]\n\n[foo]: /url "title"',
+			'<p><img src="/url" alt="Foo" title="title" /></p>',
+		],
+		'587|skip': [
+			'![foo] \n[]\n\n[foo]: /url "title"',
+			'<p><img src="/url" alt="foo" title="title" />\n[]</p>',
+		],
+		'588|skip': [
+			'![foo]\n\n[foo]: /url "title"',
+			'<p><img src="/url" alt="foo" title="title" /></p>',
+		],
+		'589|skip': [
+			'![*foo* bar]\n\n[*foo* bar]: /url "title"',
+			'<p><img src="/url" alt="foo bar" title="title" /></p>',
+		],
+		'590|skip': [
+			'![[foo]]\n\n[[foo]]: /url "title"',
+			'<p>![[foo]]</p>\n<p>[[foo]]: /url &quot;title&quot;</p>',
+		],
+		'591|skip': [
+			'![Foo]\n\n[foo]: /url "title"',
+			'<p><img src="/url" alt="Foo" title="title" /></p>',
+		],
+		'592|skip': ['!\\[foo]\n\n[foo]: /url "title"', '<p>![foo]</p>'],
+		'593|skip': ['\\![foo]\n\n[foo]: /url "title"', '<p>!<a href="/url" title="title">foo</a></p>'],
 		// @TODO: 594-612 [auto links]
 		// @TODO: 613-632 [raw html]
 		'633': ['foo  \nbaz', '<p>foo<br />\nbaz</p>'],

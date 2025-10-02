@@ -143,7 +143,7 @@ export const standard = {
 	},
 	'inline:image'({ token, sanitize }) {
 		const attributes = Object.entries(token.attr).flatMap(([k, v]) =>
-			v.length ? `${k}="${sanitize(v)}"` : [],
+			k !== 'title' || v.length ? `${k}="${sanitize(v)}"` : [],
 		);
 		return `<img ${attributes.join(' ')} />`;
 	},
