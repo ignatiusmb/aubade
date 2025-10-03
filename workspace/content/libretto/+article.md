@@ -25,9 +25,6 @@ Libretto does not implement the full CommonMark feature set. Certain constructs 
 - **Block quotes** \
   Each line must begin with `>` (optionally preceded by spaces). A line without `>` terminates the block.
 
-- **Links** \
-  Plain URLs are not autolinked. They must be enclosed in `<...>` or `[text](url)`.
-
 ## Extensions
 
 Libretto introduces additional behavior beyond CommonMark.

@@ -709,7 +709,43 @@ describe('spec', ({ concurrent: it }) => {
 		],
 		'592|skip': ['!\\[foo]\n\n[foo]: /url "title"', '<p>![foo]</p>'],
 		'593|skip': ['\\![foo]\n\n[foo]: /url "title"', '<p>!<a href="/url" title="title">foo</a></p>'],
-		// @TODO: 594-612 [auto links]
+		'594': ['<http://foo.bar.baz>', '<p><a href="http://foo.bar.baz">http://foo.bar.baz</a></p>'],
+		'595': [
+			'<https://foo.bar.baz/test?q=hello&id=22&boolean>',
+			'<p><a href="https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>',
+		],
+		'596': [
+			'<irc://foo.bar:2233/baz>',
+			'<p><a href="irc://foo.bar:2233/baz">irc://foo.bar:2233/baz</a></p>',
+		],
+		'597': ['<MAILTO:FOO@BAR.BAZ>', '<p><a href="MAILTO:FOO@BAR.BAZ">MAILTO:FOO@BAR.BAZ</a></p>'],
+		'598': ['<a+b+c:d>', '<p><a href="a+b+c:d">a+b+c:d</a></p>'],
+		'599': [
+			'<made-up-scheme://foo,bar>',
+			'<p><a href="made-up-scheme://foo,bar">made-up-scheme://foo,bar</a></p>',
+		],
+		'600': ['<https://../>', '<p><a href="https://../">https://../</a></p>'],
+		'601': ['<localhost:5001/foo>', '<p><a href="localhost:5001/foo">localhost:5001/foo</a></p>'],
+		'602': ['<https://foo.bar/baz bim>', '<p>&lt;https://foo.bar/baz bim&gt;</p>'],
+		'603': [
+			'<https://example.com/\\[\\>',
+			'<p><a href="https://example.com/%5C%5B%5C">https://example.com/\\[\\</a></p>',
+		],
+		'604': [
+			'<foo@bar.example.com>',
+			'<p><a href="mailto:foo@bar.example.com">foo@bar.example.com</a></p>',
+		],
+		'605': [
+			'<foo+special@Bar.baz-bar0.com>',
+			'<p><a href="mailto:foo+special@Bar.baz-bar0.com">foo+special@Bar.baz-bar0.com</a></p>',
+		],
+		'606': ['<foo\\+@bar.example.com>', '<p>&lt;foo+@bar.example.com&gt;</p>'],
+		'607': ['<>', '<p>&lt;&gt;</p>'],
+		'608': ['< https://foo.bar >', '<p>&lt; https://foo.bar &gt;</p>'],
+		'609': ['<m:abc>', '<p>&lt;m:abc&gt;</p>'],
+		'610': ['<foo.bar.baz>', '<p>&lt;foo.bar.baz&gt;</p>'],
+		'611': ['https://example.com', '<p>https://example.com</p>'],
+		'612': ['foo@bar.example.com', '<p>foo@bar.example.com</p>'],
 		// @TODO: 613-632 [raw html]
 		'633': ['foo  \nbaz', '<p>foo<br />\nbaz</p>'],
 		'634': ['foo\\\nbaz', '<p>foo<br />\nbaz</p>'],
