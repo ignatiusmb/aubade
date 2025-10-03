@@ -58,15 +58,15 @@ export const codeblock: Resolver<'block:code'> = ({ token, sanitize }) => {
 	});
 
 	return [
-		'<div data-aubade="block">',
-		`<header data-aubade="header" ${attrs.join(' ')}>`,
+		'<div data-aubade="codeblock">',
+		`<header ${attrs.join(' ')}>`,
 		dataset.file ? `<span>${dataset.file}</span>` : '',
-		'<div data-aubade="toolbar">',
+		'<div data-aubade-codeblock="toolbar">',
 		`<button data-aubade-toolbar="copy" data-aubade-tooltip="Copy"></button>`,
 		`<button data-aubade-toolbar="list" data-aubade-tooltip="Toggle\nNumbering"></button>`,
 		'</div>',
 		'</header>',
-		`<pre data-aubade="pre">${highlight(token.meta.code, dataset)}</pre>`,
+		`<pre>${highlight(token.meta.code, dataset)}</pre>`,
 		'</div>',
 	].join('\n');
 };
