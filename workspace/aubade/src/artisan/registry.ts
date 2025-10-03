@@ -427,33 +427,20 @@ export function quote({ compose, cursor }: Context): null | {
 
 // --- inline registries ---
 
-// only parse http[s]:// and mails for safety
+const SCHEME = /^[a-z][a-z0-9+.-]{1,31}:/i;
+const EMAIL = /^[\w.+-]+@[\w-]+\.[\w.-]+$/;
 export function autolink({ cursor }: Context): null | {
 	type: 'inline:autolink';
 	attr: { href: string };
 	text: string;
 } {
-	let text = '';
+	if (!cursor.eat('<')) return null;
+	const text = cursor.locate(/(?=>)/);
+	if (!text || /\s/.test(text)) return null;
+	cursor.eat('>');
 
-	if (cursor.eat('<')) {
-		text = cursor.locate(/(?=>)/);
-		if (!text || /\s/.test(text)) return null;
-		cursor.eat('>');
-	} else {
-		text = cursor.locate(/\s|$/);
-	}
-
-	let href = '';
-	if (/^https?:\/\//.test(text)) {
-		href = encodeURI(text);
-	} else if (/^mailto:/.test(text)) {
-		href = text;
-	} else if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(text)) {
-		href = `mailto:${text}`;
-	} else {
-		return null;
-	}
-
+	if (!(text.includes(':') ? SCHEME : EMAIL).test(text)) return null;
+	const href = text.includes(':') ? encodeURI(text) : `mailto:${text}`;
 	return { type: 'inline:autolink', attr: { href }, text };
 }
 
