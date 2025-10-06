@@ -80,7 +80,7 @@ describe('spec', ({ concurrent: it }) => {
 		'029': ['&copy', '<p>&amp;copy</p>'],
 		'030|skip': ['&MadeUpEntity;', '<p>&amp;MadeUpEntity;</p>'],
 		'031|deny': ['<a href="&ouml;&ouml;.html"></a>', '<a href="&ouml;&ouml;.html"></a>'],
-		'032|todo': [
+		'032|skip': [
 			'[foo](/f&ouml;&ouml; "f&ouml;&ouml;")',
 			'<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>',
 		],
@@ -388,17 +388,34 @@ describe('spec', ({ concurrent: it }) => {
 		'275': ['   foo\n\nbar', '<p>foo</p>\n<p>bar</p>'],
 		'276': ['-    foo\n\n  bar', '<ul>\n<li>foo</li>\n</ul>\n<p>bar</p>'],
 		'277': ['-  foo\n\n   bar', '<ul>\n<li>\n<p>foo</p>\n<p>bar</p>\n</li>\n</ul>'],
-		'278|todo': [
+		'278': [
 			'-\n  foo\n-\n  ```\n  bar\n  ```\n-\n      baz',
 			'<ul>\n<li>foo</li>\n<li>\n<pre><code>bar\n</code></pre>\n</li>\n<li>baz</li>\n</ul>',
 		],
-		'279|todo': ['-   \n  foo', '<ul>\n<li></li>\n</ul>\n<p>foo</p>'],
-		'280|todo': ['-\n\n  foo', '<ul>\n<li></li>\n</ul>\n<p>foo</p>'],
+		'279': ['-   \n  foo', '<ul>\n<li>foo</li>\n</ul>'],
+		'280': ['-\n\n  foo', '<ul>\n<li></li>\n</ul>\n<p>foo</p>'],
 		'281': ['- foo\n-\n- bar', '<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>'],
 		'282': ['- foo\n-   \n- bar', '<ul>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ul>'],
 		'283': ['1. foo\n2.\n3. bar', '<ol>\n<li>foo</li>\n<li></li>\n<li>bar</li>\n</ol>'],
 		'284': ['*', '<ul>\n<li></li>\n</ul>'],
-		// @TODO: 285-300 [list items]
+		'285': ['foo\n*\n\nfoo\n1.', '<p>foo\n*</p>\n<p>foo\n1.</p>'],
+		'286|deny': [
+			' 1.  A paragraph\n     with two lines.\n\n         indented code\n\n     > A block quote.',
+			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'287|deny': [
+			'  1.  A paragraph\n      with two lines.\n\n          indented code\n\n      > A block quote.',
+			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'288|deny': [
+			'   1.  A paragraph\n       with two lines.\n\n           indented code\n\n       > A block quote.',
+			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		'289|deny': [
+			'    1.  A paragraph\n        with two lines.\n\n            indented code\n\n        > A block quote.',
+			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
+		],
+		// @TODO: 290-300 [list items]
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
 		'328': ['`code`', '<p><code>code</code></p>'],
