@@ -388,12 +388,9 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 		children: [],
 	};
 
-	const { children: blocks } = compose(item.join('\n'));
-	list.children.push({
-		type: 'block:item',
-		meta: { wrapped: item.includes('') && blocks.length > 1 },
-		children: blocks,
-	});
+	const { children } = compose(item.join('\n'));
+	const wrapped = item.includes('') && children.length > 1;
+	list.children.push({ type: 'block:item', meta: { wrapped }, children });
 	return util.commit(stack['block:list'], list);
 
 	function normalize(line: string): string {
