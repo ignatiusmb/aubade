@@ -14,7 +14,7 @@ export type Registry = [
 	typeof codeblock,
 	typeof quote,
 	typeof list,
-	() => { type: 'block:item'; children: Block[] },
+	() => { type: 'block:item'; meta: { wrapped: boolean }; children: Token[] },
 	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
@@ -358,7 +358,7 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 export function list({ compose, cursor, stack, util }: Context): null | {
 	type: 'block:list';
 	meta: { marker: string; ordered: false | number };
-	children: { type: 'block:item'; children: Block[] }[];
+	children: Extract<Token, { type: 'block:item' }>[];
 } {
 	const head = normalize(cursor.peek(/\n|$/));
 	const [marker] = head.trim().split(/[ \t]/, 1);
@@ -388,8 +388,12 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 		children: [],
 	};
 
-	const { children } = compose(item.join('\n'));
-	list.children.push({ type: 'block:item', children });
+	const { children: blocks } = compose(item.join('\n'));
+	list.children.push({
+		type: 'block:item',
+		meta: { wrapped: item.includes('') && blocks.length > 1 },
+		children: blocks,
+	});
 	return util.commit(stack['block:list'], list);
 
 	function normalize(line: string): string {

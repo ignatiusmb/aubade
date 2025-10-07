@@ -97,10 +97,15 @@ export const standard = {
 		return `<${tag}${start}>\n${token.children.map(render).join('\n')}\n</${tag}>`;
 	},
 	'block:item'({ token, render }) {
-		const [first, ...rest] = token.children;
-		const pad = rest.length || (first && first.type !== 'block:paragraph') ? '\n' : '';
-		const body = !pad && first?.type === 'block:paragraph' ? first : token;
-		return `<li>${pad}${body.children.map(render).join(pad)}${pad}</li>`;
+		if (token.children.length === 0) return '<li></li>';
+		const alone = token.children.length === 1;
+		const lead = token.children[0]?.type === 'block:paragraph';
+		const start = !lead || (!alone && token.meta.wrapped) ? '\n' : '';
+		const end = !lead || !alone ? '\n' : '';
+		const children = token.children.map((t) =>
+			t.type !== 'block:paragraph' || start ? render(t) : t.children.map(render).join(''),
+		);
+		return `<li>${start}${children.join('\n')}${end}</li>`;
 	},
 	'block:table'({ token, render }) {
 		const { align, head, rows } = token.meta;

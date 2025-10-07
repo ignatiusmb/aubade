@@ -16,7 +16,7 @@ describe('spec', ({ concurrent: it }) => {
 		'006|deny': ['>\t\tfoo', '<blockquote>\n<p>foo</p>\n</blockquote>'],
 		'007|deny': ['-\t\tfoo', '<ul>\n<li>foo</li>\n</ul>'],
 		'008|deny': ['    foo\n\tbar', '<p>foo\nbar</p>'],
-		'009|todo': [
+		'009': [
 			' - foo\n   - bar\n\t - baz',
 			'<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>',
 		],
@@ -631,8 +631,8 @@ describe('spec', ({ concurrent: it }) => {
 			`[link](/url "title")\n[link](/url 'title')\n[link](/url (title))`,
 			'<p><a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a>\n<a href="/url" title="title">link</a></p>',
 		],
-		'506|todo': [
-			'[link](/url "title \"&quot;")',
+		'506': [
+			'[link](/url "title \\"&quot;")',
 			'<p><a href="/url" title="title &quot;&quot;">link</a></p>',
 		],
 		'507': ['[link](/url "title")', '<p><a href="/url%C2%A0%22title%22">link</a></p>'],
