@@ -589,8 +589,11 @@ function construct(cursor: Context['cursor']): null | {
 		while (cursor.eat(' '));
 		if (!cursor.eat(')')) return null;
 	}
-	// codespan backticks that invalidates "](" pattern
-	const invalid = label.includes('`') && target.includes('`');
+
+	// codespan precedence over link grouping
+	const lookahead = cursor.see(0) === '`' || !!cursor.peek(/`/);
+	const backtick = target.includes('`') || title.includes('`');
+	const invalid = label.includes('`') && (backtick || lookahead);
 	if (invalid || target.includes('\n')) return null;
 
 	return { label, target, title };
