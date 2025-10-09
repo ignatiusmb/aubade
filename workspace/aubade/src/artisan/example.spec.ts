@@ -415,7 +415,47 @@ describe('spec', ({ concurrent: it }) => {
 			'    1.  A paragraph\n        with two lines.\n\n            indented code\n\n        > A block quote.',
 			'<ol>\n<li>\n<p>A paragraph\nwith two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>\n</li>\n</ol>',
 		],
-		// @TODO: 290-300 [list items]
+		'290|deny': [
+			'  1.  A paragraph\nwith two lines.\n\n          indented code\n\n      > A block quote.',
+			'<ol>\n<li>A paragraph</li>\n</ol>\n<p>with two lines.</p>\n<p>indented code</p>\n<blockquote>\n<p>A block quote.</p>\n</blockquote>',
+		],
+		'291|deny': [
+			'  1.  A paragraph\n    with two lines.',
+			'<ol>\n<li>A paragraph</li>\n</ol>\n<p>with two lines.</p>',
+		],
+		'292|deny': [
+			'> 1. > Blockquote\ncontinued here.',
+			'<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote</p>\n</blockquote>\n</li>\n</ol>\n</blockquote>\n<p>continued here.</p>',
+		],
+		'293|deny': [
+			'> 1. > Blockquote\n> continued here.',
+			'<blockquote>\n<ol>\n<li>\n<blockquote>\n<p>Blockquote</p>\n</blockquote>\n</li>\n</ol>\n<p>continued here.</p>\n</blockquote>',
+		],
+		'294': [
+			'- foo\n  - bar\n    - baz\n      - boo',
+			'<ul>\n<li>foo\n<ul>\n<li>bar\n<ul>\n<li>baz\n<ul>\n<li>boo</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>',
+		],
+		'295': [
+			'- foo\n - bar\n  - baz\n   - boo',
+			'<ul>\n<li>foo</li>\n<li>bar</li>\n<li>baz</li>\n<li>boo</li>\n</ul>',
+		],
+		'296': [
+			'10) foo\n    - bar',
+			'<ol start="10">\n<li>foo\n<ul>\n<li>bar</li>\n</ul>\n</li>\n</ol>',
+		],
+		'297|todo': [
+			'10) foo\n   - bar',
+			'<ol start="10">\n<li>foo</li>\n</ol>\n<ul>\n<li>bar</li>\n</ul>',
+		],
+		'298': ['- - foo', '<ul>\n<li>\n<ul>\n<li>foo</li>\n</ul>\n</li>\n</ul>'],
+		'299': [
+			'1. - 2. foo',
+			'<ol>\n<li>\n<ul>\n<li>\n<ol start="2">\n<li>foo</li>\n</ol>\n</li>\n</ul>\n</li>\n</ol>',
+		],
+		'300|deny|plus|todo': [
+			'- # Foo\n- Bar\n  ---\n  baz',
+			'<ul>\n<li>\n<h1 id="foo">Foo</h1>\n</li>\n<li>Bar\n<hr />\nbaz</li>\n</ul>',
+		],
 		// @TODO: 301-326 [lists]
 		'327': ['`hi`lo`', '<p><code>hi</code>lo`</p>'],
 		'328': ['`code`', '<p><code>code</code></p>'],
