@@ -663,11 +663,20 @@ describe('spec', ({ concurrent: it }) => {
 			'[foo *[bar [baz](/uri)](/uri)*](/uri)',
 			'<p>[foo <em>[bar <a href="/uri">baz</a>](/uri)</em>](/uri)</p>',
 		],
-		'520|mod|todo': [
+		'520|mod|skip': [
 			'a ![[[foo](uri1)](uri2)](uri3)',
 			'<p>a <img src="uri3" alt="[foo](uri2)" /></p>',
 		],
-		// @TODO: 521-571 [links]
+		'521': ['*[foo*](/uri)', '<p>*<a href="/uri">foo*</a></p>'],
+		'522': ['[foo *bar](baz*)', '<p><a href="baz*">foo *bar</a></p>'],
+		'523': ['*foo [bar* baz]', '<p><em>foo [bar</em> baz]</p>'],
+		'524|skip': ['[foo <bar attr="](baz)">', '<p>[foo <bar attr="](baz)"></p>'],
+		'525': ['[foo`](/uri)`', '<p>[foo<code>](/uri)</code></p>'],
+		'526|todo': [
+			'[foo<https://example.com/?search=](uri)>',
+			'<p>[foo<a href="https://example.com/?search=%5D(uri)">https://example.com/?search=](uri)</a></p>',
+		],
+		// @TODO: 527-571 [reference links]
 		'572|mod': ['a ![foo](/url "title")', '<p>a <img src="/url" alt="foo" title="title" /></p>'],
 		'573|skip': [
 			'![foo *bar*]\n\n[foo *bar*]: train.jpg "train & tracks"',
