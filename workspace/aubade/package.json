@@ -34,10 +34,6 @@
 			"types": "./index.d.ts",
 			"default": "./src/conductor/index.js"
 		},
-		"./legacy": {
-			"types": "./index.d.ts",
-			"default": "./src/legacy/index.js"
-		},
 		"./manifest": {
 			"types": "./index.d.ts",
 			"default": "./src/manifest/index.js"
@@ -77,8 +73,6 @@
 		"typescript"
 	],
 	"dependencies": {
-		"@types/markdown-it": "^14.1.2",
-		"markdown-it": "^14.1.0",
 		"shiki": "^3.12.0"
 	},
 	"devDependencies": {
