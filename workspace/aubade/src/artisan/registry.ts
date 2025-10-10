@@ -330,7 +330,8 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 	const children = annotate(title);
 	let id = title
 		.toLowerCase()
-		.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+		.replace(/[\s\][+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+		.replace(/[^a-z0-9-]/g, '')
 		.replace(/^-+|-+$|(?<=-)-+/g, '');
 
 	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
