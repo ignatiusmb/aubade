@@ -14,7 +14,7 @@ export type Registry = [
 	typeof codeblock,
 	typeof quote,
 	typeof list,
-	() => { type: 'block:item'; children: Block[] },
+	() => { type: 'block:item'; meta: { wrapped: boolean }; children: Token[] },
 	() => { type: 'block:paragraph'; children: Annotation[]; text?: string },
 
 	// inline registries
@@ -330,7 +330,8 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 	const children = annotate(title);
 	let id = title
 		.toLowerCase()
-		.replace(/[\s\][!"#$%&'()*+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+		.replace(/[\s\][+,./:;<=>?@\\^_`{|}~-]+/g, '-')
+		.replace(/[^a-z0-9-]/g, '')
 		.replace(/^-+|-+$|(?<=-)-+/g, '');
 
 	for (let i = stack['block:heading'].length - 1; i >= 0; i--) {
@@ -358,7 +359,7 @@ export function heading({ annotate, extract, cursor, stack, util }: Context): nu
 export function list({ compose, cursor, stack, util }: Context): null | {
 	type: 'block:list';
 	meta: { marker: string; ordered: false | number };
-	children: { type: 'block:item'; children: Block[] }[];
+	children: Extract<Token, { type: 'block:item' }>[];
 } {
 	const head = normalize(cursor.peek(/\n|$/));
 	const [marker] = head.trim().split(/[ \t]/, 1);
@@ -377,6 +378,7 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 		const line = normalize(cursor.peek(/\n|$/));
 		const inside = whitespace(line);
 		if (inside < indent && line.trim()) break;
+		if (item[0] === '' && !line.trim()) break;
 		item.push(normalize(cursor.locate(/\n|$/)).slice(indent));
 	}
 
@@ -388,7 +390,8 @@ export function list({ compose, cursor, stack, util }: Context): null | {
 	};
 
 	const { children } = compose(item.join('\n'));
-	list.children.push({ type: 'block:item', children });
+	const wrapped = item.includes('') && children.length > 1;
+	list.children.push({ type: 'block:item', meta: { wrapped }, children });
 	return util.commit(stack['block:list'], list);
 
 	function normalize(line: string): string {
@@ -587,8 +590,11 @@ function construct(cursor: Context['cursor']): null | {
 		while (cursor.eat(' '));
 		if (!cursor.eat(')')) return null;
 	}
-	// codespan backticks that invalidates "](" pattern
-	const invalid = label.includes('`') && target.includes('`');
+
+	// codespan precedence over link grouping
+	const lookahead = cursor.see(0) === '`' || !!cursor.peek(/`/);
+	const backtick = target.includes('`') || title.includes('`');
+	const invalid = label.includes('`') && (backtick || lookahead);
 	if (invalid || target.includes('\n')) return null;
 
 	return { label, target, title };
