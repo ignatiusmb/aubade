@@ -2,9 +2,9 @@ export function hydrate(signal?: any) {
 	signal; // listen to signal changes and re-run the function if needed
 	return (node: HTMLElement) => {
 		const active: Array<() => void> = [];
-		for (const block of node.querySelectorAll('[data-aubade="block"]')) {
+		for (const block of node.querySelectorAll('[data-aubade="codeblock"]')) {
 			const actions = block.querySelectorAll('[data-aubade-toolbar]');
-			const source = block.querySelector('[data-aubade="pre"]');
+			const source = block.querySelector('pre');
 			if (!actions.length || !source) continue;
 
 			for (const item of actions) {
