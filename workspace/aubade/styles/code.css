@@ -17,18 +17,18 @@
 	--aubade-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
-[data-aubade='block'],
-[data-aubade='header'],
-[data-aubade='pre'] {
+[data-aubade='codeblock'],
+[data-aubade='codeblock'] pre,
+[data-aubade-codeblock='header'] {
 	width: 100%;
 	position: relative;
 	tab-size: var(--aubade-tab-size);
 }
-[data-aubade='block'] {
+[data-aubade='codeblock'] {
 	white-space: normal;
 	margin-top: 1rem;
 }
-[data-aubade='pre'] {
+[data-aubade='codeblock'] pre {
 	white-space: pre;
 }
 code {
@@ -40,7 +40,7 @@ code {
 
 /* ---- <div data-aubade="pre"> ---- */
 
-[data-aubade='pre'] {
+[data-aubade='codeblock'] pre {
 	overflow-x: auto;
 	overflow-y: hidden;
 	padding: 1.8rem 1rem 1rem 1.6rem;
@@ -51,23 +51,23 @@ code {
 	font-family: var(--font-mono);
 	font-variation-settings: var(--font-mono-variation);
 }
-[data-aubade='pre'] code {
+[data-aubade='codeblock'] pre code {
 	top: 0;
 	padding: 0;
 	margin: 0;
 	border-radius: 0;
 	white-space: pre;
 }
-[data-aubade='pre'],
-[data-aubade='pre'] code {
+[data-aubade='codeblock'] pre,
+[data-aubade='codeblock'] pre code {
 	line-height: 1.5;
 	font-size: 0.85rem;
 }
 
-[data-aubade='pre'].numbered {
+[data-aubade='codeblock'] pre.numbered {
 	padding-left: 0.6rem;
 }
-[data-aubade='pre'].numbered code::before {
+[data-aubade='codeblock'] pre.numbered code::before {
 	content: attr(data-line);
 	max-width: 2rem;
 	width: 100%;
@@ -79,20 +79,22 @@ code {
 }
 
 /* header check */
-[data-aubade='header'][data-file='empty'] + [data-aubade='pre'] {
+[data-aubade-codeblock='header'][data-file='empty'] + [data-aubade='codeblock'] pre {
 	padding-top: 2rem;
 }
-[data-aubade='header'][data-language='']:not([data-file='empty']) + [data-aubade='pre'] {
+[data-aubade-codeblock='header'][data-language='']:not([data-file='empty'])
+	+ [data-aubade='codeblock']
+	pre {
 	padding-top: 1rem;
 }
-[data-aubade='header'][data-file='empty'] + [data-aubade='pre'] {
+[data-aubade-codeblock='header'][data-file='empty'] + [data-aubade='codeblock'] pre {
 	border-top-right-radius: var(--aubade-rounding);
 	border-top-left-radius: var(--aubade-rounding);
 }
 
 /* ---- <header data-aubade="header"> ---- */
 
-[data-aubade='header'] {
+[data-aubade-codeblock='header'] {
 	padding: 0.5rem 1rem;
 	margin: 0;
 	border-top-right-radius: var(--aubade-rounding);
@@ -104,26 +106,26 @@ code {
 	font-size: clamp(0.8rem, 2vw, 0.95rem);
 	font-variation-settings: var(--font-mono-variation);
 }
-[data-aubade='header'][data-file='empty'] {
+[data-aubade-codeblock='header'][data-file='empty'] {
 	padding: 0;
 	background: transparent;
 }
-[data-aubade='header'][data-file='empty']::after {
+[data-aubade-codeblock='header'][data-file='empty']::after {
 	top: 0;
 	border-top-right-radius: var(--aubade-rounding);
 }
-[data-aubade='header']::after,
-[data-aubade='header']::before {
+[data-aubade-codeblock='header']::after,
+[data-aubade-codeblock='header']::before {
 	font-family: var(--font-sans);
 	font-size: 0.75rem;
 }
-[data-aubade='header'] > span {
+[data-aubade-codeblock='header'] > span {
 	overflow: hidden;
 	width: 100%;
 	display: inline-flex;
 }
 /* language coloured line */
-[data-aubade='header']::before {
+[data-aubade-codeblock='header']::before {
 	content: '';
 	z-index: 1;
 	height: 0.4rem;
@@ -135,32 +137,33 @@ code {
 	transition: var(--aubade-transition);
 	transition-timing-function: var(--aubade-function);
 }
-[data-aubade='header'][data-file='empty']::before {
+[data-aubade-codeblock='header'][data-file='empty']::before {
 	height: 0.6rem;
 	top: 0;
 	border-top-left-radius: var(--aubade-rounding);
 	border-top-right-radius: var(--aubade-rounding);
 }
 
-[data-aubade='block']:focus-within > [data-aubade='header']::before,
-[data-aubade='block']:hover > [data-aubade='header']::before {
+[data-aubade='codeblock']:focus-within > [data-aubade-codeblock='header']::before,
+[data-aubade='codeblock']:hover > [data-aubade-codeblock='header']::before {
 	right: var(--aubade-bounce);
 	transition: var(--aubade-transition);
 }
-[data-aubade='block']:focus-within
-	> [data-aubade='header'][data-file='empty'][data-language='']::before,
-[data-aubade='block']:hover > [data-aubade='header'][data-file='empty'][data-language='']::before {
+[data-aubade='codeblock']:focus-within
+	> [data-aubade-codeblock='header'][data-file='empty'][data-language='']::before,
+[data-aubade='codeblock']:hover
+	> [data-aubade-codeblock='header'][data-file='empty'][data-language='']::before {
 	right: 0;
 }
 
 /* ---- data-language ---- */
 
-[data-aubade='header'] {
+[data-aubade-codeblock='header'] {
 	--aubade-header-dark: oklch(0.212 0.007 298);
 	--aubade-header-light: oklch(0.942 0.007 298);
 }
 
-[data-aubade='header']::after {
+[data-aubade-codeblock='header']::after {
 	z-index: 1;
 	position: absolute;
 	top: 100%;
@@ -174,102 +177,102 @@ code {
 	transition: var(--aubade-transition);
 	transition-timing-function: var(--aubade-function);
 }
-[data-aubade='header'][data-language]::after {
+[data-aubade-codeblock='header'][data-language]::after {
 	content: attr(data-language);
 }
-[data-aubade='block']:focus-within > [data-aubade='header']::after,
-[data-aubade='block']:hover > [data-aubade='header']::after {
+[data-aubade='codeblock']:focus-within > [data-aubade-codeblock='header']::after,
+[data-aubade='codeblock']:hover > [data-aubade-codeblock='header']::after {
 	right: var(--aubade-bounce);
 	border-bottom-right-radius: var(--aubade-rounding);
 	border-bottom-left-radius: var(--aubade-rounding);
 	transition: var(--aubade-transition);
 }
-[data-aubade='header'][data-language='']:not([data-file='empty'])::after,
-[data-aubade='header'][data-language='']:not([data-file='empty'])::before {
+[data-aubade-codeblock='header'][data-language='']:not([data-file='empty'])::after,
+[data-aubade-codeblock='header'][data-language='']:not([data-file='empty'])::before {
 	content: none;
 }
-[data-aubade='header'][data-language='']::before {
+[data-aubade-codeblock='header'][data-language='']::before {
 	background: var(--aubade-header);
 }
 
 /* Language Styles */
-[data-aubade='header'][data-language='bash']::after,
-[data-aubade='header'][data-language='bash']::before {
+[data-aubade-codeblock='header'][data-language='bash']::after,
+[data-aubade-codeblock='header'][data-language='bash']::before {
 	background: #363377;
 	color: #a2a0d6;
 }
-[data-aubade='header'][data-language='css']::after,
-[data-aubade='header'][data-language='css']::before {
+[data-aubade-codeblock='header'][data-language='css']::after,
+[data-aubade-codeblock='header'][data-language='css']::before {
 	background: #264de4;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='htaccess']::after,
-[data-aubade='header'][data-language='htaccess']::before {
+[data-aubade-codeblock='header'][data-language='htaccess']::after,
+[data-aubade-codeblock='header'][data-language='htaccess']::before {
 	background: #8bc34a;
 	color: var(--aubade-header-dark);
 }
-[data-aubade='header'][data-language='html']::after,
-[data-aubade='header'][data-language='html']::before {
+[data-aubade-codeblock='header'][data-language='html']::after,
+[data-aubade-codeblock='header'][data-language='html']::before {
 	background: #e34f26;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='java']::after,
-[data-aubade='header'][data-language='java']::before {
+[data-aubade-codeblock='header'][data-language='java']::after,
+[data-aubade-codeblock='header'][data-language='java']::before {
 	background: #f89820;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='javascript']::after,
-[data-aubade='header'][data-language='javascript']::before,
-[data-aubade='header'][data-language='json']::after,
-[data-aubade='header'][data-language='json']::before,
-[data-aubade='header'][data-language='js']::after,
-[data-aubade='header'][data-language='js']::before {
+[data-aubade-codeblock='header'][data-language='javascript']::after,
+[data-aubade-codeblock='header'][data-language='javascript']::before,
+[data-aubade-codeblock='header'][data-language='json']::after,
+[data-aubade-codeblock='header'][data-language='json']::before,
+[data-aubade-codeblock='header'][data-language='js']::after,
+[data-aubade-codeblock='header'][data-language='js']::before {
 	background: #f0db4f;
 	color: var(--aubade-header-dark);
 }
-[data-aubade='header'][data-language='markdown']::after,
-[data-aubade='header'][data-language='markdown']::before,
-[data-aubade='header'][data-language='md']::after,
-[data-aubade='header'][data-language='md']::before {
+[data-aubade-codeblock='header'][data-language='markdown']::after,
+[data-aubade-codeblock='header'][data-language='markdown']::before,
+[data-aubade-codeblock='header'][data-language='md']::after,
+[data-aubade-codeblock='header'][data-language='md']::before {
 	background: #083fa1;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='python']::after,
-[data-aubade='header'][data-language='python']::before {
+[data-aubade-codeblock='header'][data-language='python']::after,
+[data-aubade-codeblock='header'][data-language='python']::before {
 	background: #dddddd;
 	color: var(--aubade-header-dark);
 }
-[data-aubade='header'][data-language='shell']::after,
-[data-aubade='header'][data-language='shell']::before {
+[data-aubade-codeblock='header'][data-language='shell']::after,
+[data-aubade-codeblock='header'][data-language='shell']::before {
 	background: #f3e2bb;
 	color: #c09022;
 }
-[data-aubade='header'][data-language='svelte']::after,
-[data-aubade='header'][data-language='svelte']::before {
+[data-aubade-codeblock='header'][data-language='svelte']::after,
+[data-aubade-codeblock='header'][data-language='svelte']::before {
 	background: #ff3e00;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='terminal']::after,
-[data-aubade='header'][data-language='terminal']::before {
+[data-aubade-codeblock='header'][data-language='terminal']::after,
+[data-aubade-codeblock='header'][data-language='terminal']::before {
 	background: #dddddd;
 	color: var(--aubade-header-dark);
 }
-[data-aubade='header'][data-language='typescript']::after,
-[data-aubade='header'][data-language='typescript']::before,
-[data-aubade='header'][data-language='ts']::after,
-[data-aubade='header'][data-language='ts']::before {
+[data-aubade-codeblock='header'][data-language='typescript']::after,
+[data-aubade-codeblock='header'][data-language='typescript']::before,
+[data-aubade-codeblock='header'][data-language='ts']::after,
+[data-aubade-codeblock='header'][data-language='ts']::before {
 	background: #3178c6;
 	color: var(--aubade-header-light);
 }
-[data-aubade='header'][data-language='yaml']::after,
-[data-aubade='header'][data-language='yaml']::before {
+[data-aubade-codeblock='header'][data-language='yaml']::after,
+[data-aubade-codeblock='header'][data-language='yaml']::before {
 	background: #000000;
 	color: var(--aubade-header-light);
 }
 
 /* ---- <div data-aubade="toolbar"> ---- */
 
-[data-aubade='toolbar'] {
+[data-aubade-codeblock='toolbar'] {
 	z-index: 1;
 	opacity: 0;
 	position: absolute;
@@ -282,23 +285,25 @@ code {
 	transform: translateY(-50%);
 }
 
-[data-aubade='header'][data-file='empty'] [data-aubade='toolbar'] {
+[data-aubade-codeblock='header'][data-file='empty'] [data-aubade-codeblock='toolbar'] {
 	transform: translateY(50%);
 }
-[data-aubade='header'][data-file='empty']:not([data-language='']) [data-aubade='toolbar'] {
+[data-aubade-codeblock='header'][data-file='empty']:not([data-language=''])
+	[data-aubade-codeblock='toolbar'] {
 	transform: translateY(10%);
 }
-[data-aubade='header']:not([data-language='']):not([data-file='empty']) [data-aubade='toolbar'] {
+[data-aubade-codeblock='header']:not([data-language='']):not([data-file='empty'])
+	[data-aubade-codeblock='toolbar'] {
 	top: 100%;
 	transform: translateY(10%);
 }
 
-[data-aubade='block']:focus-within [data-aubade='toolbar'],
-[data-aubade='block']:hover [data-aubade='toolbar'] {
+[data-aubade='codeblock']:focus-within [data-aubade-codeblock='toolbar'],
+[data-aubade='codeblock']:hover [data-aubade-codeblock='toolbar'] {
 	opacity: 1;
 }
 
-[data-aubade='toolbar'] > [data-aubade-toolbar] {
+[data-aubade-codeblock='toolbar'] > [data-aubade-toolbar] {
 	--aubade-overlay: oklch(0.412 0.017 298);
 
 	cursor: pointer;

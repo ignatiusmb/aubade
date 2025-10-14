@@ -59,7 +59,7 @@ export const codeblock: Resolver<'block:code'> = ({ token, sanitize }) => {
 
 	return [
 		'<div data-aubade="codeblock">',
-		`<header ${attrs.join(' ')}>`,
+		`<header data-aubade-codeblock="header" ${attrs.join(' ')}>`,
 		dataset.file ? `<span>${dataset.file}</span>` : '',
 		'<div data-aubade-codeblock="toolbar">',
 		`<button data-aubade-toolbar="copy" data-aubade-tooltip="Copy"></button>`,
