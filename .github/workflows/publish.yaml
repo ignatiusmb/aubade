@@ -1,7 +1,6 @@
 name: PUB
 
 on:
-  pull_request:
   release:
     types: [published]
 
@@ -9,7 +8,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       id-token: write
 
     steps:
@@ -21,6 +19,5 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: pnpm install
-      - run: npm -v
-      #- working-directory: ./workspace/aubade
-      #  run: pnpm publish --no-git-checks
+      - working-directory: ./workspace/aubade
+        run: pnpm publish --no-git-checks
